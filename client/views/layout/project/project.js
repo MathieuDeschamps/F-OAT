@@ -4,12 +4,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Form } from '../../../../lib/components/Form.js'
 import { Parser } from '../../../../lib/components/Parser.js'
 import { Writer } from '../../../../lib/components/Writer.js'
+import {Projects} from '../../../../lib/collections/Project.js';
+
 import './project.html';
 
 Template.project.onRendered(()=>{
   var xml;
   console.log(Router.current().params._id);
-  Meteor.call("getXml","/home/boby/Documents/M1/F-OAT/server/xmlFiles/mix_format.xml",(err,result)=>{
+  Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/mix_format.xml",(err,result)=>{
     if(err){
       alert(err.reason);
     }else{
@@ -38,6 +40,86 @@ Template.project.events({
         $(e).attr('style','display:none')
       }
     })
+  },
+
+  //Test to merge XML file
+  'click #testmerge1'(event,instance){
+    var MergeXML = require('mergexml');
+    var oMX = new MergeXML();
+    var project = Projects.findOne(Router.current().params._id);
+    //Récupération du fichier XML déjà créé sur le serveur
+    Meteor.call("getXml","/tmp/"+project.owner+project.name+"/annotation.xml",(err,result)=>{
+      if(err){
+        alert(err.reason);
+      }else{
+        oMX.AddSource(result.data);
+        console.log(oMX.Get(1));
+        if(oMX.error.code!==''){
+          console.log('Merge Error annotation.xml '+oMX.error.text);
+        }
+        else{
+          //Merge avec un nouveau fichier XML.
+          Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/testmerge1.xml",(err,result)=>{
+            if(err){
+              alert(err.reason);
+            }else{
+              oMX.AddSource(result.data);
+              console.log(oMX.Get(1));
+              if(oMX.error.code !== ''){
+                console.log("Merge Error new file "+oMX.error.text);
+              }
+              else if(oMX.count<2){
+                console.log("Merge Error : 2 files needed");
+              }
+              else{
+                Meteor.call("mergeXML",project,oMX.Get(1),(err,result)=>{
+                  if(err){
+                    alert(err.reason);
+                  }
+                })
+              }
+          }});
+        }
+    }});
+  },
+
+  //Test2 to merge XML file
+  'click #testmerge2'(event,instance){
+    var MergeXML = require('mergexml');
+    var oMX = new MergeXML();
+    var project = Projects.findOne(Router.current().params._id);
+    //Récupération du fichier XML déjà créé sur le serveur
+    Meteor.call("getXml","/tmp/"+project.owner+project.name+"/annotation.xml",(err,result)=>{
+      if(err){
+        alert(err.reason);
+      }else{
+        oMX.AddSource(result.data);
+        if(oMX.error.code!==''){
+          console.log('Merge Error annotation.xml '+oMX.error.text);
+        }
+        else{
+          //Merge avec un nouveau fichier XML.
+          Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/testmerge2.xml",(err,result)=>{
+            if(err){
+              alert(err.reason);
+            }else{
+              oMX.AddSource(result.data);
+              if(oMX.error.code !== ''){
+                console.log("Merge Error new file "+oMX.error.text);
+              }
+              else if(oMX.count<2){
+                console.log("Merge Error : 2 files needed");
+              }
+              else{
+                Meteor.call("mergeXML",project,oMX.Get(1),(err,result)=>{
+                  if(err){
+                    alert(err.reason);
+                  }
+                })
+              }
+          }});
+        }
+    }});
   }
 });
 

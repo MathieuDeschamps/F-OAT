@@ -63,8 +63,30 @@ Meteor.methods({
   saveDocument: function(project){
     return Projects.insert(project);
   },
+
+/**
+  Save the merged xml files of a project
+  @project : the project modified
+  @buffer : the content of XML that needs to be saved
+*/
+  mergeXML: function(project,buffer){
+    var fs = Npm.require("fs");
+    var dir = "/tmp/"+project.owner+project.name;
+
+    fs.writeFile(dir+"/annotation.xml", buffer, function(err) {
+      if(err) {
+        throw (new Meteor.Error(500, 'Failed to save file.', err));
+      }
+      else{
+        console.log("File saved successfully!")
+      }
+    });
+  }
 });
 
+/**
+  Method used to create the XML file when creating a new project
+*/
 createFileXML = function(project){
   var fs = Npm.require("fs");
   //  var dir = "/tmp/"+project._id;
@@ -84,10 +106,12 @@ createFileXML = function(project){
   });
 }
 
-
+/**
+  Method used to generate the basic content of a new XML file of a project.
+*/
 generateContent = function(project){
     var builder = require('xmlbuilder');
-    var doc = builder.create('root')
+    var doc = builder.create('root',{version: '1.0', encoding: 'UTF-8'})
       .ele('version')
         .txt('0.1')
       .up()
@@ -109,8 +133,6 @@ generateContent = function(project){
             .txt('/tmp/'+project.owner+project.name+'/'+project.url)
           .up()
         .up()
-      .up()
-      .ele('scenes')
       .up()
     .end({ pretty: true });
     return doc.toString();
