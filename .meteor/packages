@@ -31,3 +31,4 @@ meteorhacks:npm
 npm-container
 peerlibrary:xml2js
 npm-bcrypt@0.9.3
+d3js:d3
