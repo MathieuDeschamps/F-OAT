@@ -1,7 +1,18 @@
 <template name="project">
-  {{> notifications}}
-  <h2>Faites votre boulot içi ;-)</h2>
-  {{test}}
+    <style>
+    video {display: block; margin:2px auto;}
+    </style>  
+      <video id="maVideo" width="800" height="720" controls>
+        <source src="https://archive.org/download/SF121/SF121_512kb.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+      {{> notifications}}
+  
+    <div id="timeLine" >
+    </div>   
+    {{timeLine}}
+
   <div class="row">
     <div class="col s8">
     <label>Frames</label>
