@@ -5,6 +5,19 @@ methods callable from the client relative to the team of a project
 */
 Meteor.methods({
 
+  /*
+  Get the participants in a json object
+  @_projectId the id of the Project
+  */
+  getParticipants: (_projectId)=>{
+    return Projects.findOne({_id:_projectId}).participants;
+
+  },
+  /**
+  Remove a participant from  a Project
+  @ _projectId the id of the Project
+  @ _username the user to remove from the participant list
+*/
   removeParticipants: (_projectId,_username)=>{
 
     console.log(_projectId);
