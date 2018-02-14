@@ -9,9 +9,11 @@ Method callable from the client for a project
 Meteor.methods({
   /**
   Create the xml file of a project
-  @project : the project to wich we want to cretae an xml fime
+  @id : the id of the project
+  @project : the project to wich we want to create an xml file
+  @buffer : content of the file
   */
-  createFile: function({id, buffer}){
+  createFile: function(id, project, buffer){
     //Write the file on server
     var fs = Npm.require("fs");
     //var dir = "/tmp/"+project._id;
@@ -75,7 +77,7 @@ createFileXML = function(id){
   if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
   }
-  var buff = generateContent(Projects.findOne({_id: id}));
+  var buff = generateContent(Projects.findOne({_id: id}), id);
   fs.writeFile(dir+"/"+"annotation.xml",buff,function(err){
     if(err) {
       throw (new Meteor.Error(500, 'Failed to save file.', err));
@@ -87,7 +89,7 @@ createFileXML = function(id){
 }
 
 
-generateContent = function(project){
+generateContent = function(project, id){
     var builder = require('xmlbuilder');
     var doc = builder.create('root')
       .ele('version')

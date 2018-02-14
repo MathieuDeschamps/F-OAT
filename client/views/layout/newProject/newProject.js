@@ -85,13 +85,12 @@ Template.newproject.events({
 
                         var buffer = reader.result;
                         //Call a method from project.js on server side
-                        Meteor.call('createFile', {res,buffer}, function(error, result){
+                        Meteor.call('createFile', res, project, buffer, function(error, result){
                             if(error){
                                 alert(error.reason);
                             }
                             else{
                                 //Create a notification if the file has been uploaded
-                                console.log(res);
                                 Projects.update({
                                     _id: res
                                 }, {
@@ -104,7 +103,6 @@ Template.newproject.events({
                     Router.go("/");
                 }
                 else{
-                    console.log(res);
                     Meteor.call('createXMLFile',res,function(error,result){
                       if(error){
                         alert(error.reason);
