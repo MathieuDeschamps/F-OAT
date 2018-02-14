@@ -1,4 +1,5 @@
-  import {Projects} from '../../lib/collections/Project.js';
+import {Projects} from '../../lib/collections/Project.js';
+var crypto = require('crypto');
 
 /**
 Method callable from the client for a project
@@ -8,19 +9,36 @@ Meteor.methods({
   Create the xml file of a project
   @project : the project to wich we want to cretae an xml fime
   */
-  createFile: function({project, buffer}){
+  createFile: function({id,buffer}){
     //Write the file on server
     var fs = Npm.require("fs");
     //var dir = "/tmp/"+project._id;
-    var dir = "/tmp/"+project.owner+project.name;
+    var dir = "/tmp/"+id;
+    var dirSi = "/tmp/signature";
 
     //Create a directory for the project if it doesn't exist
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
     }
 
+    if (!fs.existsSync(dirSi)){
+      fs.mkdirSync(dirSi);
+    }
+
     //By default, write file in .meteor/local/build/programs/server/ but we write in tmp.
-    fs.writeFile(dir+"/"+project.url, buffer, 'base64', function(err) {
+    fs.writeFile(dir+"/"+id, buffer, 'base64', function(err) {
+      if(err) {
+        throw (new Meteor.Error(500, 'Failed to save file.', err));
+      }
+      else{
+        console.log("File saved successfully!")
+      }
+    });
+
+    //Création du hacher avec la foction MD5 en utlilisant les données de la vidéo "buffer"
+    let si = JSON.stringify({signature: crypto.createHash('md5').update(buffer).digest("hex")});
+    //Creation du fichier pour la signature des videos
+    fs.writeFile(dirSi+"/"+id+ ".json", si, function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
       }
@@ -44,10 +62,10 @@ Meteor.methods({
   Create the xml file of a project
   @project : the project to wich we want to cretae an xml fime
   */
-  createXMLFile: function(project){
+  createXMLFile: function(id){
     var fs = Npm.require("fs");
     //  var dir = "/tmp/"+project._id;
-    var dir = "/tmp/"+project.owner+project.name;
+     var dir = "/tmp/"+id;
 
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);

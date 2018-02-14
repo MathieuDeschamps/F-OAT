@@ -24,6 +24,10 @@ h2{
   padding-bottom: 30px;
 }
 
+.toast{
+  background-color: #e6651d;
+}
+
 .content{
   background: white;
   height: 100%;
