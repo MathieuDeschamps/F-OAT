@@ -51,12 +51,37 @@ Template.team.events({
       $('#name').addClass("invalid");
     }else{
       $('#name').addClass("valid");
-      Meteor.call("userNameExist",newCoworker_name,(err)=>{
+      Meteor.call("userNameExist",newCoworker_name,(err,result)=>{
         if(err){
           alert(err.reason);
         }
         else{
-          Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
+          Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
+            console.log(result);
+            if(err){
+              console.log(err.reason);
+              return;
+            }
+            var participants = Object.values(result);
+            var present=false;
+            participants.forEach(
+              (item)=>{
+                  console.log(item.username);
+                  if(item.username === newCoworker_name){
+                    present = true;
+                    return;
+                  }
+              }
+            );
+            console.log("present? "+present);
+            if(!present && newCoworker_name != project.owner){
+
+              Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
+            }else{
+              console.log(project);
+              toastr.warning("The user is already in the project");
+            }
+          });
         }
       });
     }
