@@ -7,7 +7,7 @@ import './editor.html';
 
 Template.editor.onRendered(()=>{
 
-  var path = '/tmp/' + Router.current().params._id + '/annontation.xml'
+  var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
   // var path = '/workspace/meteor/F-OAT/server/xmlFiles/mix_format.xml'
 
   Meteor.call("getXml",path,(err,result)=>{
