@@ -7,8 +7,7 @@ import './editor.html';
 
 Template.editor.onRendered(()=>{
 
-  var path = '/tmp/' + Router.current().params._id + '/annontation.xml'
-  // var path = '/workspace/meteor/F-OAT/server/xmlFiles/mix_format.xml'
+  var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
 
   Meteor.call("getXml",path,(err,result)=>{
     if(err){
@@ -30,9 +29,12 @@ Template.editor.events({
   // temporary event which links and XMLForm
   'change #listFrame'(event,instance){
     var value = $(event.currentTarget).val()
-    var elm = $('#XMLForm').find('input[name="timeId"][value="' + value + '"]').parent().parent().parent().parent()
-    $(elm).attr('style','display:block')
-    console.log('elm', $(elm).get(0))
+    var elm = $('#XMLForm').find('input[name="timeId"][value="' + value + '"]')
+    $(elm).parents('fieldset').each(function(i,e){
+      console.log('e', $(e).get(0))
+      $(e).children('a').children('div').children('i').text('keyboard_arrow_down')
+      $(e).children('ul').attr('style', 'display:block')
+    })
   },
 
   // show or hide the attributes and the children of the element

@@ -69,6 +69,12 @@ h2{
   border-radius: 10px;
   border-width: 2px;
   border-color: #0d47a1;
+  margin-bottom: 5px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+
 }
 .centered {
   margin: 15% auto;
