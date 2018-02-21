@@ -10,6 +10,6 @@
     "bcrypt": "^1.0.3",
     "mergexml": "^1.1.2",
     "meteor-node-stubs": "^0.3.2",
-    "xmlbuilder": "^9.0.4"
+    "xmlbuilder": "^9.0.7"
   }
 }
