@@ -16,7 +16,7 @@ Template.videoPlayer.onRendered(function () {
       success: function (mediaElement, domObject) {
         Player =mediaElement;
         mediaElement.setSrc((Projects.findOne(Router.current().params._id).url));
-        Player.play();
+        
       }
     });
     vid=$("#videoDisplayId").get(0);
