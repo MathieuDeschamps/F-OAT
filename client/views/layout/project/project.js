@@ -9,7 +9,7 @@ import './project.html';
 Template.project.onRendered(()=>{
   var xml;
   console.log(Router.current().params._id);
-  Meteor.call("getXml","/home/boby/Documents/M1/F-OAT/server/xmlFiles/mix_format.xml",(err,result)=>{
+  Meteor.call("getXml","/inetpub/wwwroot/F-OAT/server/xmlFiles/mix_format.xml",(err,result)=>{
     if(err){
       alert(err.reason);
     }else{
