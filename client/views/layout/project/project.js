@@ -1,35 +1,21 @@
 import './project.html';
 import {Projects} from '../../../../lib/collections/Project.js';
-var em;
 
 Template.project.onRendered(()=>{
+  // var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
+  //
+  // Meteor.call("getXml",path,(err,result)=>{
+  //   if(err){
+  //     alert(err.reason);
+  //   }else{
+  //     Session.set('xmlDoc', result.data)
+  //     console.log('project.js', Session)
+  //   }
+  // })
+})
 
-if(!em){
-  em = new EventDDP('test',Meteor.collection);
-  em.addListener('hello',()=>{
-    console.log('tralala1');
-  });
-}
-  em.setClient({
-    appId: Router.current().params._id,
-    _id: Meteor.userId()
-  })
-
-  console.log(em);
-});
-
-Template.project.onDestroyed(()=>{
-
-  em.setClient({
-    appId: -1,
-    _id: -1
-  });
-});
 Template.project.events({
-    'click #ddp'(event,instance){
-      alert("ok!");
-      em.emit('hello');
-    },
+
     //Test to merge XML file
     'click #testmerge1'(event,instance){
       var MergeXML = require('mergexml');
@@ -111,5 +97,4 @@ Template.project.events({
     }
 });
 
-Template.project.helpers({
-});
+Template.project.helpers({});
