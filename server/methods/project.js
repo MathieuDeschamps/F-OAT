@@ -133,6 +133,8 @@ generateContent = function(project, id){
           .up()
         .up()
       .up()
+      .ele('extractors')
+      .up()
     .end({ pretty: true });
     return doc.toString();
 }

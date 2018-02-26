@@ -11,6 +11,7 @@ Template.register.events({
   */
   'click #registerForm' (event,instance){
 
+
     var ok = true;
     var _name = $('#userName').val();
     var _mail = $('#mail').val();
@@ -25,10 +26,10 @@ Template.register.events({
         extractors:[]
       }
 
-    }
+    };
 
     //User validation is done on server/accounts.js in method Accounts.validateNewUser()
-    Accounts.createUser(_newUsr , (err)=>{
+    Accounts.createUser(_newUsr , (err,result)=>{
       if(err){
         throwError(err.reason);
       }else{

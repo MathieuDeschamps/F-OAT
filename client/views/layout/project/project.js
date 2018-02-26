@@ -1,4 +1,5 @@
 import './project.html';
+import {Projects} from '../../../../lib/collections/Project.js';
 
 Template.project.onRendered(()=>{
   // var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
@@ -14,7 +15,7 @@ Template.project.onRendered(()=>{
 })
 
 Template.project.events({
-  /*
+
     //Test to merge XML file
     'click #testmerge1'(event,instance){
       var MergeXML = require('mergexml');
@@ -93,7 +94,7 @@ Template.project.events({
             }});
           }
       }});
-    }*/
+    }
 });
 
 Template.project.helpers({});
