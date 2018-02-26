@@ -1,11 +1,22 @@
 
 <template  name="editor">
+
+
   <div class="row">
     <label>Frames</label>
     <select id="listFrame" class="browser-default">
       <option>select a frame</option>
     </select>
   </div>
+  <nav>
+    <div class="nav-wrapper white-text blue darken-4 row">
+      <div id="XMLNav" class="col s12">
+        <a class="breadcrumb">Current path</a>
+      </div>
+    </div>
+  </nav>
+  <form id="hiddenForm" class="orange-text" style="display:none">
+  </form>
   <div class="row">
     <form id="XMLForm">
     </form>

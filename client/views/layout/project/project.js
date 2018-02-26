@@ -1,6 +1,17 @@
 import './project.html';
 
-Template.project.onRendered(()=>{  })
+Template.project.onRendered(()=>{
+  // var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
+  //
+  // Meteor.call("getXml",path,(err,result)=>{
+  //   if(err){
+  //     alert(err.reason);
+  //   }else{
+  //     Session.set('xmlDoc', result.data)
+  //     console.log('project.js', Session)
+  //   }
+  // })
+})
 
 Template.project.events({
   /*
@@ -82,8 +93,7 @@ Template.project.events({
             }});
           }
       }});
-    }*/m
+    }*/
 });
 
-Template.project.helpers({
-});
+Template.project.helpers({});

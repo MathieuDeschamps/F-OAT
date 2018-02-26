@@ -6,7 +6,6 @@ import { Writer } from '../../../../lib/components/Writer.js'
 import './editor.html';
 
 Template.editor.onRendered(()=>{
-
   var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
 
   Meteor.call("getXml",path,(err,result)=>{
@@ -14,12 +13,17 @@ Template.editor.onRendered(()=>{
       alert(err.reason);
     }else{
       // fill the listFrame temp
+      Session.set('xmlDoc', result.data)
       var listTimeId = Parser.getListTimeId(result.data)
       $(listTimeId).each(function(i,e){
       $('#listFrame').append('<option>' + e + '</option>')
     });
     var XMLObject = $.parseXML(result.data)
     Form.browseXML($(XMLObject).children('root'), 0, '#XMLForm')
+    // Materiliaze initalisation for the collapsible
+    $(document).ready(function(){
+      $('.collapsible').collapsible();
+    });
   }});
 
 })
@@ -28,30 +32,47 @@ Template.editor.onRendered(()=>{
 Template.editor.events({
   // temporary event which links and XMLForm
   'change #listFrame'(event,instance){
-    var value = $(event.currentTarget).val()
-    var elm = $('#XMLForm').find('input[name="timeId"][value="' + value + '"]')
-    $(elm).parents('fieldset').each(function(i,e){
-      console.log('e', $(e).get(0))
-      $(e).children('a').children('div').children('i').text('keyboard_arrow_down')
-      $(e).children('ul').attr('style', 'display:block')
-    })
+    var numFrame = $(event.currentTarget).val()
+    var frameXML = Parser.getFrame(Session.get('xmlDoc'), numFrame)
+    $('#XMLForm').empty()
+    Form.browseXML(frameXML, 0, '#XMLForm')
+    // Materiliaze initalisation for the collapsible
+    $(document).ready(function(){
+      $('.collapsible').collapsible();
+    });
   },
 
-  // show or hide the attributes and the children of the element
-  'click .XMLButton'(event, instance){
+  // move in the children element
+  'click .collapsible-header'(event, instance){
     var elm = event.currentTarget
-    var linkId = $(elm).attr('id')
-    console.log('elm',$(elm).parent().find('ul[link="' + linkId + '"]'))
-    if($(elm).parent().find('ul[link="' + linkId + '"]').attr('style') == 'display:none'){
-      $(elm).parent().find('ul[link="' + linkId + '"]').attr('style','display:block')
-      $(elm).children('div').children('i').text('keyboard_arrow_down')
-      // $(elm).parent().attr('class','border-fold')
-
+    var id = $(elm).attr('id').substr(6)
+    if($(elm).find('i').text() == 'keyboard_arrow_left'){
+      $(elm).find('i').text('keyboard_arrow_down')
+      Form.assembleForms('hiddenForm', 'XMLForm')
+      Form.buildParentNav($(elm).parents(),'XMLForm','XMLNav')
+      Form.moveInForm(id,'XMLForm','hiddenForm')
+      $(document).ready(function(){
+        $('.collapsible').collapsible();
+      });
     }else{
-      $(elm).parent().find('ul[link="' + linkId + '"]').attr('style','display:none')
-      $(elm).children('div').children('i').text('keyboard_arrow_left')
-      // $(elm).parent().attr('class','border-unfold')
+      $(elm).find('i').text('keyboard_arrow_left')
     }
+
+  },
+
+  // move in the parent element
+  'click .breadcrumb'(event, instance){
+    var elm = event.currentTarget
+    var id = $(elm).attr('id').substr(3)
+
+    Form.assembleForms('hiddenForm', 'XMLForm')
+    elm =  $('#XMLForm').find('div[id="header' + id + '"]')
+    Form.buildParentNav($(elm).parents(),'hiddenForm','XMLNav')
+
+    Form.moveInForm(id,'XMLForm','hiddenForm')
+    $(document).ready(function(){
+      $('.collapsible').collapsible();
+    });
   }
 });
 
