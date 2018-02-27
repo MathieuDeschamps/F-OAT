@@ -14,6 +14,7 @@ Template.editor.onRendered(()=>{
       alert(err.reason);
     }else{
       // fill the listFrame temp
+      Session.set('xmlDoc',result.data)
       var listTimeId = Parser.getListTimeId(result.data)
       $(listTimeId).each(function(i,e){
       $('#listFrame').append('<option>' + e + '</option>')
