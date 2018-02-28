@@ -127,8 +127,5 @@ export class TimeLine {
             })
             .attr("dy", ".5ex")
             .attr("text-anchor", "end");
-    
-        console.log("gen ",gen);
-        console.log("timeL ",timeL);
     }     
 }
