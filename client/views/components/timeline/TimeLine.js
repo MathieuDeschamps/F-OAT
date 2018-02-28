@@ -9,8 +9,7 @@ export class TimeLine {
     entry = ["Frame","Shot","Scene"];
     entry_length = entry.length;
     items = data;
-    vidCtrl.setBeginSelect(debut);
-    vidCtrl.setEndSelect(fin);
+    vidCtrl.setPlayingInterval(debut,fin);
     extMargin = 5;
     wTot = 960;
     lineH = 30;
@@ -54,7 +53,7 @@ export class TimeLine {
            // console.log("old_rect: " + old_rect.style)
           old_rect.attr("style").fill = myColor[items[rect_actif].entry];
         }
-        if ((rect_actif !== i) | ( vidCtrl.getPartialPlaying(false) === false)) {
+        if ((rect_actif !== i) | ( vidCtrl.getPartialPlaying() === false)) {
             debut = d.start;
             fin = d.end;
             var id = "#rect"+i;
@@ -63,8 +62,7 @@ export class TimeLine {
             new_rect.attr("style").fill = mySelectedColor[d.entry];
             rect_actif = i;
             vidCtrl.setPartialPlaying(true);
-            vidCtrl.setBeginSelect(debut);
-            vidCtrl.setEndSelect(fin);
+            vidCtrl.setPlayingInterval(debut,fin);
 
            if (debut < fin) {
                 console.log("debut = " + debut + " fin = " + fin);
