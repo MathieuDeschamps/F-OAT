@@ -11,33 +11,17 @@ export class TimeLine {
     items = data;
     vidCtrl.setBeginSelect(debut);
     vidCtrl.setEndSelect(fin);
-    /*vid = $("#maVideo").get(0);*/
-    /*controleVideo = function() {
-        if (debut === fin) {
-            console.log("pause 2");
-            vid.pause();
-        }
-        if (lecture_partielle) {
-            if (vid.currentTime > fin + 0.001 || vid.currentTime < debut - 0.001) {
-                vid.currentTime = debut;
-            }
-        }
-    };
-  vid.ontimeupdate = function () {
-      controleVideo();
-    };*/
-    
     extMargin = 5;
     wTot = 960;
     lineH = 30;
     lineHeight = 30;
     hTot = lineHeight * entry_length;
-    //hTot = 90;
     trbl = [20, 15, 15, 120]; //top right bottom left;
     genH = hTot - 2 * extMargin;
     genW = wTot - 2 * extMargin - trbl[1] - trbl[3];
     myColor = ["#ff1010", "#1010ff", "#10C010"];
     mySelectedColor = ['#801010', "#101080", "#106010"];
+    
     timeL = d3.select("#timeLine")
                      .append("svg")
                      .attr("width", 960)
@@ -71,8 +55,8 @@ export class TimeLine {
           old_rect.attr("style").fill = myColor[items[rect_actif].entry];
         }
         if ((rect_actif !== i) | ( vidCtrl.getPartialPlaying(false) === false)) {
-            debut = d.start / frame_rate;
-            fin = d.end / frame_rate;
+            debut = d.start;
+            fin = d.end;
             var id = "#rect"+i;
             var new_rect = $(id );
           console.log("new_rect: " + new_rect.attr("style"));
