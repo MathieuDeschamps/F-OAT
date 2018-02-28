@@ -7,7 +7,7 @@ Template.project.onRendered(()=>{
 if(!em){
   em = new EventDDP('test',Meteor.collection);
   em.addListener('hello',()=>{
-    console.log('tralala1');
+    console.log('je me met à jour!');
   });
 }
   em.setClient({
