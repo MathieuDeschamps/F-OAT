@@ -91,7 +91,7 @@ export class videoControler {
 				// Affichage d'une frame. On met en pause.
 				if (this.beginSelect==this.endSelect){
 					this.setCurrentFrame(this.beginSelect);
-					this.vid.pause();
+					this.pause();
 				}
 				else {
 					if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
@@ -105,6 +105,8 @@ export class videoControler {
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		for(var i=0; i<this.attachedObject.length;i++){
 			this.attachedObject[i].notify(this.getCurrentFrame());
+			// if (this.getCurrentFrame()%this.attachedObject[i].period==0){
+			// 	{this.attachedObject[i].object.notify(this.getCurrentFrame());}
 		};
 	}
 	
@@ -112,6 +114,10 @@ export class videoControler {
 	attach(object){
 		this.attachedObject[this.attachedObject.length]=object;
 	}
+	
+	//attach(object,period){
+	//	this.attachedObject[this.attachedObject.length]={object: object,period: period};
+	//}---> Bof! Faire une map object --> caractéristiques ~~> plus extensible
 	
 	// Desabonnement d'un objet 
 	detach(object){
@@ -121,6 +127,8 @@ export class videoControler {
 			this.attachedObject.splice(i,1);
 		}
 	}
+	
+	
 	
 	
 	// partial playing management : 
@@ -135,7 +143,7 @@ export class videoControler {
 	}
 	
 	setBeginSelect(begin){
-		if (begin>=0 && begin<=this.endVid){
+		if (begin>=1 && begin<=this.endVid){
 			this.beginSelect=begin;
 			if (this.endSelect<begin){
 				this.endSelect=begin;
@@ -144,7 +152,7 @@ export class videoControler {
 	}
 	
 	setEndSelect(end){
-		if (end>=0 && end<=this.endVid){
+		if (end>=1 && end<=this.endVid){
 			this.endSelect=end;
 			if (this.beginSelect>end){
 				this.beginSelect=end;
@@ -158,7 +166,7 @@ export class videoControler {
 		console.log(this.partialPlaying);
 	}
 		
-	getPartialPlaying(pp){
+	getPartialPlaying(){
 		return this.partialPlaying;
 	}
 
