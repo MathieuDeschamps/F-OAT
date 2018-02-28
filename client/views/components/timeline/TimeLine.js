@@ -63,14 +63,8 @@ export class TimeLine {
             rect_actif = i;
             vidCtrl.setPartialPlaying(true);
             vidCtrl.setPlayingInterval(debut,fin);
-
-           if (debut < fin) {
-                console.log("debut = " + debut + " fin = " + fin);
-                vidCtrl.play();
-            } else {
-                console.log("pause 1");
-                vidCtrl.pause();
-            }
+            console.log("debut = " + debut + " fin = " + fin);
+            vidCtrl.play();
         } else {
             rect_actif = -1;
             vidCtrl.setPartialPlaying(false);
