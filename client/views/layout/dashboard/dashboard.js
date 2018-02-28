@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
-import {Session} from 'meteor/session';
 import './dashboard.html';
+
 
 Template.dashboard.helpers({
 
@@ -23,9 +23,7 @@ Template.dashboard.helpers({
 });
 
 Template.dashboard.events({
-/*  'click #ddp' (event,instance){
-    em.emit('hello');
-  },*/
+
   'click .remove' (event, instance){
     var elm = event.target;
     var $elm = $(elm);

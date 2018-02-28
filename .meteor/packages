@@ -33,6 +33,4 @@ peerlibrary:xml2js
 npm-bcrypt@0.9.3
 johndyer:mediaelement
 chrismbeckett:toastr
-http
-raix:eventddp
-check
+d3js:d3

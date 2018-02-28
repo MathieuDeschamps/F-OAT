@@ -5,16 +5,6 @@ export const xmlPath = "/tmp/";
 
 Meteor.startup(() => {
   // code to run on server at startup
-  em = new EventDDP('test');
-  console.log(em);
-  em.addListener('hello',(client)=>{
-    console.log(client);
-    em.matchEmit("hello",{
-        _id: {$ne: client._id},
-        appId: client.appId
-    });
-  });
-
 });
 
 
