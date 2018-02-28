@@ -136,7 +136,7 @@ export class videoControler {
 	// Définition de l'intervalle de lecture
 	setPlayingInterval(begin,end){
 		this.setBeginSelect(begin);
-		this.setBeginSelect(end);
+		this.setEndSelect(end);
 		//this.vid.currentTime=this.beginVid;
 		//var affTemps=document.getElementById("temps");
 		//affTemps.innerHTML="Coucou!" + this.beginVid+this.endVid;
