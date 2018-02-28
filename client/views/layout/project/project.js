@@ -109,7 +109,7 @@ Template.project.events({
             }});
           }
       }});
-    }*/m
+    }
 });
 
 Template.project.helpers({
