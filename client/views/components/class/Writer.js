@@ -1,4 +1,4 @@
-import { Parser } from '../components/Parser.js'
+import { Parser } from '../class/Parser.js'
 
 export class Writer{
 
@@ -82,6 +82,7 @@ export class Writer{
 
   }
 
+  // TODO update with the new XML format
   // add a frame to the xmlDoc to the right place(timeId) and return the XML into a String
   static addFrame(xml, frame){
 
@@ -133,4 +134,17 @@ export class Writer{
       }
     }
   }
+
+  // add remove an extrator to the XMLObject
+  static removeExtractor(XMLObject,nameExtractor){
+    $(XMLObject).find('extractors').children(nameExtractor).remove()
+    return XMLObject
+  }
+
+  // add an extractor to the XMLObject
+  static addExtractor(XMLObject,extractor){
+    $(XMLObject).find('extractors').append(extractor)
+    return XMLObject
+  }
+
 }

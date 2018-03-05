@@ -15,7 +15,16 @@ if(!em){
     _id: Meteor.userId()
   })
 
-  console.log(em);
+  console.log(em)
+
+var path = '/tmp/' + Router.current().params._id + '/annotation.xml'
+
+Meteor.call("getXml",path,(err,result)=>{
+  if(err){
+    alert(err.reason);
+  }else{
+    Session.set('XMLDoc', result.data)
+    }})
 });
 
 Template.project.onDestroyed(()=>{
