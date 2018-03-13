@@ -1,5 +1,6 @@
 export class Parser{
 
+// TODO update with the new format
   // return a JSON object with the startTime and enTime of Scenes shots and frames
   static getTimelineData(xml){
     var xmlDoc = $.parseXML(xml)
@@ -32,8 +33,18 @@ export class Parser{
     return timeline
   }
 
+  // return a JSON object with the list of extractors
+  static getListExtractors(xml){
+    var XMLDoc = $.parseXML(xml)
+    var extractors= []
+    $(XMLDoc).find('extractors').children().each(function(i,e){
+      extractors[i] = e.tagName
+    })
+    return extractors
 
+  }
 
+  // TODO update with the new format
   // return a JSON object with the previous frame and the next frame
   static getFrames(xml,numFrame){
     var xmlDoc = $.parseXML(xml)
@@ -72,6 +83,7 @@ export class Parser{
     return result
   }
 
+  // TODO update with the new format
   // return int of the number of frames
   static getNbFrames(xml){
     var xmlDoc = $.parseXML(xml)
@@ -91,6 +103,7 @@ export class Parser{
     return endFrame - startFrame
   }
 
+  // TODO update with the new format
   // return a JSON object with the previous frame and the next frame in the shot
   static getShotFrames(xml, numFrame){
     var xmlDoc = $.parseXML(xml)
@@ -141,6 +154,7 @@ export class Parser{
     return result
   }
 
+  // TODO update with the new format
   // return a JSON object with the frame or the previous frame and the next frame
   static getFrame(xml, numFrame){
     var xmlDoc = $.parseXML(xml)
@@ -161,6 +175,7 @@ export class Parser{
 
   }
 
+  // TODO update with the new format
   // return a sort array int with the list of all the timeId
   static getListTimeId(xml){
 
@@ -173,10 +188,11 @@ export class Parser{
     result.sort(function compareNumbers(a, b) {
       return a - b;
     })
-    console.log('getListTimeId', result)
+    // console.log('getListTimeId', result)
     return result
   }
 
+  // TODO update with the new format
   // return a JSON object with the frame, id  and the data
   static getFramesActors(xml){
     var xmlDoc = $.parseXML(xml)
@@ -199,6 +215,7 @@ export class Parser{
     return actorsFramesArray
   }
 
+  // TODO update with the new format
   // return a JSON object with the shot where the actor is present
 	static getShotsActor(xml, id){
     var xmlDoc = $.parseXML(xml)
@@ -231,6 +248,7 @@ export class Parser{
     return shotsArray
 	}
 
+  // TODO update with the new format
   //return a JSON object of an actor
   static getActor(xml, id){
     var xmlDoc = $.parseXML(xml)
@@ -246,6 +264,7 @@ export class Parser{
 
   }
 
+  // TODO update with the new format
   // return the max id actor
   static getMaxIdActor(xml){
     var xmlDoc = $.parseXML(xml)

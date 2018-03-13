@@ -24,6 +24,10 @@ h2{
   padding-bottom: 30px;
 }
 
+.toast{
+  background-color: #e6651d;
+}
+
 .content{
   background: white;
   height: 100%;
@@ -51,25 +55,26 @@ h2{
     height:50px;
 
 }
-#second
-{
-    float:left;
-    margin-top: 2%;
-    width:40%;
-    height:100%;
-}
-#third
-{
-    float:left;
-    width:60%;
-    height:100%;
-}
 
 .btn{
   display: block;
   margin: 0 auto;
   margin-bottom: 10px;
   width: 200px;
+}
+
+/* ccs for the element of editor */
+.border{
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: #0d47a1;
+  margin-bottom: 5px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+
 }
 .centered {
   margin: 15% auto;
