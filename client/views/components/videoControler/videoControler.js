@@ -1,13 +1,9 @@
 export class videoControler {
 	constructor(vid,frameRate,annotedFrame){
-		//this.vid=vid;
-		//this.frameRate=frameRate;
-		//this.frameTime=1./frameRate;
-		//this.partialPlaying=false;
-		//this.annotedFrame=annotedFrame;
 		this.vid=vid;
 		//this.vidLength=this.vid.duration;
 		this.attachedObject=[];
+		this.attachedObjectFrequency=new Map();
 		// beginVid et endVid : numéros de frame de début et fin de la sélection.
 		this.beginVid=0;
 		this.frameRate=frameRate;
@@ -26,16 +22,17 @@ export class videoControler {
 		
 		
 		this.annotedFrame=annotedFrame;
-		//this.annotedFrame.sort();
 	}
 	
 	// Lecture de la vidéo
 	play(){
-		that=this;
-		this.updateInterval=setInterval(function(){
-			that.notify();
-		},1/this.frameRate);
-		this.vid.play();
+		if (this.beginSelect!=this.endSelect|| !this.partialPlaying){
+			this.vid.play();
+			that=this;
+			this.updateInterval=setInterval(function(){
+				that.notify();
+			},1/this.frameRate);
+		}
 	}
 	
 	// Mise en pause de la vidéo.
@@ -100,24 +97,27 @@ export class videoControler {
 				}
 			}
 		
-		//console.log(this.getCurrentFrame());
-		
+		var curFrame=this.getCurrentFrame();
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		for(var i=0; i<this.attachedObject.length;i++){
-			this.attachedObject[i].notify(this.getCurrentFrame());
-			// if (this.getCurrentFrame()%this.attachedObject[i].period==0){
-			// 	{this.attachedObject[i].object.notify(this.getCurrentFrame());}
+			if (curFrame % this.attachedObjectFrequency(this.attachedObject[i])==1){
+				this.attachedObject[i].notify(curFrame);
+				
+			}
 		};
 	}
 	
 	// Abonnement d'un objet (les tableaux js sont dynamiques)
 	attach(object){
 		this.attachedObject[this.attachedObject.length]=object;
+		this.attachedObjectFrequency.set(object,1);
 	}
 	
-	//attach(object,period){
-	//	this.attachedObject[this.attachedObject.length]={object: object,period: period};
-	//}---> Bof! Faire une map object --> caractéristiques ~~> plus extensible
+	attach(object,frequency){
+		this.attachedObject[this.attachedObject.length]=object;
+		this.attachedObjectFrequency.set(object,frequency);
+	}
+	
 	
 	// Desabonnement d'un objet 
 	detach(object){
@@ -125,6 +125,7 @@ export class videoControler {
 		if (i!=-1){
 			// La fonction splice(i,j) enlève les j éléments d'un tableau à partir de l'indice i.
 			this.attachedObject.splice(i,1);
+			this.attachedObjectFrequency.delete(object);
 		}
 	}
 	
@@ -137,9 +138,6 @@ export class videoControler {
 	setPlayingInterval(begin,end){
 		this.setBeginSelect(begin);
 		this.setEndSelect(end);
-		//this.vid.currentTime=this.beginVid;
-		//var affTemps=document.getElementById("temps");
-		//affTemps.innerHTML="Coucou!" + this.beginVid+this.endVid;
 	}
 	
 	setBeginSelect(begin){
@@ -163,7 +161,6 @@ export class videoControler {
 	// Mode de lecture partielle.
 	setPartialPlaying(pp){
 		this.partialPlaying=pp;
-		console.log(this.partialPlaying);
 	}
 		
 	getPartialPlaying(){
@@ -257,4 +254,3 @@ export class videoControler {
 	}
 		
 }
-
