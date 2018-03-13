@@ -82,10 +82,17 @@ Template.newproject.events({
 
                     //When reading file is done
                     reader.onload = function(event){
-
+                        var nameV = project.url;
+                        nameV = nameV.replace('.mp4', '');
                         var buffer = reader.result;
+                        console.log(nameV);
                         //Call a method from project.js on server side
-                        Meteor.call('createFile', {res,buffer}, function(error, result){
+                        let a = {
+                          res: res,
+                          buffer: buffer,
+                          name:nameV
+                        };
+                        Meteor.call('createFile', a, function(error, result){
                             if(error){
                                 alert(error.reason);
                             }
