@@ -14,5 +14,16 @@ Template.timeLineDisplay.onRendered(()=>{
         }
     },10)
 
+});
 
+Template.timeLineDisplay.helpers({
+
+ test(){
+/*     
+    console.log("ici" , forms);
+        $(forms).each(function(i,form){
+      console.log("form: " , form);
+    });
+    */
+    }
 });
