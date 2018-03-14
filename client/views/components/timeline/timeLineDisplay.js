@@ -12,7 +12,7 @@ Template.timeLineDisplay.onRendered(()=>{
             var timeLine = new TimeLine($(timeLineData).attr('frameRate'),$(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'));
             clearInterval(timelineInterval);
         }
-    },10)
+    },10);
 
 });
 

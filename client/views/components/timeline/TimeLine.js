@@ -2,7 +2,6 @@ export class TimeLine {
     constructor(frameRate,nbFrame,data) {
     debut = 0;
     fin = nbFrame;
-    lecture_partielle = false;
     rect_actif = -1;
     frame_rate = frameRate;
     nb_frame = nbFrame;
