@@ -6,7 +6,7 @@ import './timeLineDisplay.html';
 
 Template.timeLineDisplay.onRendered(()=>{
     timelineInterval=setInterval(function(){
-        var xml = Session.get('xmlDoc');
+        var xml = Session.get('XMLDoc');
         if (typeof xml !== 'undefined'){
             var timeLineData = Parser.getTimelineData(xml);
             var timeLine = new TimeLine($(timeLineData).attr('frameRate'),$(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'));

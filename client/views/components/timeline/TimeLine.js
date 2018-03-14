@@ -20,7 +20,6 @@ export class TimeLine {
     genW = wTot - 2 * extMargin - trbl[1] - trbl[3];
     myColor = ["#ff1010", "#1010ff", "#10C010"];
     mySelectedColor = ['#801010', "#101080", "#106010"];
-    
     timeL = d3.select("#timeLine")
                      .append("svg")
                      .attr("width", 960)
@@ -40,12 +39,12 @@ export class TimeLine {
     y1 = d3.scale.linear()
             .domain([0, entry_length])
             .range([0, genH]);
-    
+
     x1 = d3.scale.linear()
             .domain([0, nb_frame])
             .range([0, genW]);
-    
-    
+
+
     blockPlay = function(d, i) {
         if (rect_actif !== -1) {
             var id = "#rect"+i;
@@ -105,7 +104,7 @@ export class TimeLine {
             })
             .attr("stroke", "lightgray")
             .on("click", blockPlay);
-    
+
     timeL.append("text")
             .text("General timeline :")
             .attr("x", 0)
@@ -127,5 +126,5 @@ export class TimeLine {
             })
             .attr("dy", ".5ex")
             .attr("text-anchor", "end");
-    }     
+    }
 }
