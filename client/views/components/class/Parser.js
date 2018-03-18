@@ -176,15 +176,20 @@ export class Parser{
   }
 
   // TODO update with the new format
-  // return a sort array int with the list of all the timeId
+  // return a sort set of int with the list of all the timeId
   static getListTimeId(xml){
 
     var xmlDoc = $.parseXML(xml)
+    var timeId
     var result = []
     $(xmlDoc).find('frame').each(function(i,frame){
-      result.push(parseInt($(frame).attr('timeId')))
+      timeId = parseInt($(frame).attr('timeId'))
+      // add the element once
+      if($.inArray(timeId, result) == -1){
+        result.push(timeId)
+      }
     })
-    //sort array
+    //sort the set
     result.sort(function compareNumbers(a, b) {
       return a - b;
     })
