@@ -60,11 +60,39 @@ export class Form{
   }
 
   // browse the XML and add the input to the form with the data from the xml
-  buildForm(){
-    Form.recBuildForm(this.XMLObject, this.id, this.idDisplayedForm)
-    $(document).ready(function(){
-      $('.collapsible').collapsible();
-    });
+  // idParent the id of the element which will contains the form
+  buildForm(idParent){
+    if(idParent == undefined){
+      alert("buildForm : Illegal Argument Exception")
+    }else{
+      var parentRec
+      var formExtractor
+      $('#' + this.idNav).empty()
+      $('#' + this.idHiddenForm).empty()
+      $('#' + this.idDisplayedForm).empty()
+      formExtractor = '<div id="extractor' + this.id + '" style="display:none">'
+      formExtractor += ' <h6 class="blue-text text-darken-3">' + this.name + '</h6>'
+      formExtractor +=' <nav id="nav-'+ this.id + '">'
+      formExtractor += '<div class="nav-wrapper white-text blue darken-4 row">'
+      formExtractor += '<div class="col s12" id="anchor">'
+      formExtractor += '<a class="breadcrumb">path ' + this.name +'</a>'
+      formExtractor += '</div></div></nav>'
+      formExtractor += '<form id="hidden-' + this.id + '" '
+      formExtractor += 'style="display:none">'
+      formExtractor += '</form>'
+      formExtractor +=  '<form id="form-'+ this.id +'">'
+      formExtractor += '<ul class="collapsible" data-collapsible="expandable"/>'
+      formExtractor += '</form>'
+      formExtractor += '</div>'
+      $('#' + idParent).append(formExtractor)
+      parentRec = $('#' + this.idDisplayedForm).children()
+
+      Form.recBuildForm(this.XMLObject, this.id, parentRec)
+
+      $(document).ready(function(){
+        $('.collapsible').collapsible();
+      });
+    }
   }
 
   // recursive funtion which build the form
@@ -76,21 +104,22 @@ export class Form{
       var attr
       var attrName
       var attrValue
+      var ul
       $(XMLObject).each(function(i,e0){
         nodeName = e0.nodeName
         nodeValue = $(e0).clone().children().remove().end().text()
         // console.log('nodeName', nodeName)
         // console.log("nodeValue", nodeValue)
-        node  = '<ul class="collapsible" data-collapsible="expandable">'
-        node += '<li>'
+        node = '<li>'
         node += '<div id="header' + iNode + '" class="collapsible-header white-text blue darken-4 row">'
         node += '<div class="col s11">' + nodeName + '</div>'
         node += '<i class="col s1 material-icons">keyboard_arrow_left</i>'
         node += '</div>'
         node += '<div id="body' + iNode + '" class="collapsible-body">'
         node += '</div>'
-        node+= '</li></ul>'
-        $('#' + parentNode).append(node)
+        node+= '</li>'
+
+        $(parentNode).append(node)
 
         // add the input for the text
         if($(XMLObject).children().length == 0){
@@ -113,15 +142,17 @@ export class Form{
         })
       })
       if($(XMLObject).children() != undefined){
+        ul = '<ul class="collapsible" data-collapsible="expandable"/>'
+        $('#body'+ iNode).append(ul)
         $(XMLObject).children().each(function(j,e){
-          Form.recBuildForm(e, iNode + "-"+ j, 'body' + iNode)
+          Form.recBuildForm(e, iNode + "-"+ j, $('#body'+ iNode).children('ul'))
         })
       }
   }
 
   // build the nav element of the form which contains the parents tag
   // parents all the parents element
-  buildParentNav(parents){
+  buildNav(parents){
       var parentsArray = []
       var isSelectedParent = true
       var parentHeader
@@ -161,18 +192,35 @@ export class Form{
       })
   }
 
+  // collapse all the element and their children
+  // id
+  collapseAll(id){
+    // TODO find a way to collapse element without trigger the event
+    // may be test close and open method of materialize
+  }
+
   // display the information of the frames in the forms
   // numFrame is the number or the timeId(XML) of the frame to display
   displayFrame(numFrame){
-    this.assembleForms()
-    var input = $('#' + this.idDisplayedForm).find('input[name="timeId"][value="'+ numFrame +'"]')
-    var body = $(input).parents('[class="collapsible-body"]')[0]
-    if(body != undefined){
-      var id = $(body).attr('id').substr(4)
-      this.buildParentNav($(body).parents())
-      this.moveInForm(id)
+    if(numFrame == undefined){
+      alert("displayFrame : Illegal Argument Exception")
+    }else{
+      this.assembleForms()
+      var input = $('#' + this.idDisplayedForm).find('input[name="timeId"][value="'+ numFrame +'"]')
+      var body = $(input).parents('[class="collapsible-body"]')[0]
+      if(body != undefined){
+        var id = $(body).attr('id').substr(4)
+        console.log('id', id)
+        this.buildNav($(body).parents())
+        this.moveInForm(id)
+        // open the frame element if isn't already open
+        if($('#header' + id).children('i').text() == 'keyboard_arrow_left'){
+          $('#header' + id).trigger('click')
+        }
+      }
     }
   }
+
 
   // move in the displayedForm
   // id to the element who become the first child of the form
@@ -181,7 +229,7 @@ export class Form{
       alert("moveInForm : Illegal Argument Exception")
     }else{
       var elm = $('#' + this.idDisplayedForm).find('div[id="header'+ id + '"]').parents('ul').get(0)
-      var elm = $(elm).clone()
+      elm = $(elm).clone()
       $('#' + this.idDisplayedForm).find('div[id="header'+ id + '"]').parents('ul').get(0).remove()
       var form = $('#' + this.idDisplayedForm).children()
       $('#' + this.idHiddenForm).append(form)
@@ -189,6 +237,9 @@ export class Form{
       $('#' + this.idDisplayedForm).append(elm)
     }
 
+    $('#' + this.idHiddenForm).find("[class~=collapsible-header]").each(function(i,e){
+      $(e).collapsible('close',0)
+    })
     $(document).ready(function(){
       $('.collapsible').collapsible();
     });

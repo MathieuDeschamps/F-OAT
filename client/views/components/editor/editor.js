@@ -9,34 +9,6 @@ Template.editor.onRendered(()=>{
 })
 
 Template.editor.events({
-  // check button event
-  'click .filled-in'(event,instance){
-    //toggle
-    if($(event.currentTarget).attr('marked') == 'true'){
-      $(event.currentTarget).attr('marked', 'false')
-      var nameExtractor = $(event.currentTarget).attr('id')
-      $('#nav-' + nameExtractor).remove()
-      $('#hidden-' + nameExtractor).remove()
-      $('#form-' + nameExtractor).remove()
-    }else{
-      var nameExtractor = $(event.currentTarget).attr('id')
-      var index = $(event.currentTarget).attr('index')
-      var XMLObject = $.parseXML(Session.get('XMLDoc'))
-      $(event.currentTarget).attr('marked', 'true')
-      var formExtractor ='<nav id="nav-'+ nameExtractor + '" index="' + index + '">'
-      formExtractor += '<div class="nav-wrapper white-text blue darken-4 row">'
-      formExtractor += '<div class="col s12" id="anchor">'
-      formExtractor += '<a class="breadcrumb">path ' + nameExtractor +'</a>'
-      formExtractor += '</div></div></nav>'
-      formExtractor += '<form id="hidden-' + nameExtractor + '" style="display:none" index="' + index + '">'
-      formExtractor += '</form>'
-      formExtractor +=  '<form id="form-'+ nameExtractor +'" index="' + index + '">'
-      formExtractor += '</form>'
-      $('#forms').append(formExtractor)
-      forms[index].buildForm()
-    }
-  },
-
   //TODO temporary event which simulate Timeline
   'change #listFrame'(event,instance){
     var numFrame = $(event.currentTarget).val()
@@ -45,34 +17,48 @@ Template.editor.events({
     })
   },
 
+  // check button event display form
+  'click .filled-in'(event,instance){
+    //toggle
+    var id = $(event.currentTarget).attr('id')
+    if($(event.currentTarget).attr('marked') == 'true'){
+      $(event.currentTarget).attr('marked', 'false')
+      $('#extractor' + id).attr('style', 'display:none')
+    }else{
+      $(event.currentTarget).attr('marked', 'true')
+      $('#extractor' + id).attr('style', 'display:block')
+    }
+  },
+
   // move in the children element
   'click .collapsible-header'(event, instance){
     var elm = event.currentTarget
     var id = $(elm).attr('id').substr(6)
-    var index = $(elm).parents('form').attr('index')[0]
+    var idExtractor = $(elm).parents('form').attr('id').substr(5)
     if($(elm).find('i').text() == 'keyboard_arrow_left'){
       $(elm).find('i').text('keyboard_arrow_down')
-      forms[index].assembleForms()
-      forms[index].buildParentNav($(elm).parents())
-      forms[index].moveInForm(id)
+      forms[idExtractor].assembleForms()
+      forms[idExtractor].buildNav($(elm).parents())
+      forms[idExtractor].moveInForm(id)
+      forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
       $(document).ready(function(){
         $('.collapsible').collapsible();
       });
     }else{
       $(elm).find('i').text('keyboard_arrow_left')
     }
-
   },
 
   // move in the parent element
   'click .breadcrumb'(event, instance){
     var elm = event.currentTarget
     var id = $(elm).attr('id').substr(3)
-    var index = $(elm).parents('nav').attr('index')[0]
-    forms[index].assembleForms()
+    var idExtractor = $(elm).parents('nav').attr('id').substr(4)
+    forms[idExtractor].assembleForms()
     elm =  $('#forms').find('div[id="header' + id + '"]')
-    forms[index].buildParentNav($(elm).parents())
-    forms[index].moveInForm(id)
+    forms[idExtractor].buildNav($(elm).parents())
+    forms[idExtractor].moveInForm(id)
+    forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
   },
 
   // save the forms information
@@ -96,27 +82,12 @@ Template.editor.events({
 Template.editor.helpers({
 
   init(){
-
+    //TODO temporary element which simulate the timeline interraction
     var XMLDoc = Session.get('XMLDoc')
-    // build the extractors
-    var extractors = Parser.getListExtractors(XMLDoc)
-    var extractor
-    // global table which will contains the form objects
-    forms = [extractors.lenght]
-
-    $(extractors).each(function(i,nameExtractor){
-      extractor = '<p><input class="filled-in"  id="'+ nameExtractor + '" index="' + i + '"type="checkbox" mark="false"/>'
-      extractor += '<label for="'+ nameExtractor + '">' + nameExtractor + '</label></p>'
-      $('#extractors').append(extractor)
-      forms[i] = new Form(i, nameExtractor, $($.parseXML(XMLDoc)).find(nameExtractor), undefined,
-        'nav-' + nameExtractor, 'hidden-' + nameExtractor, 'form-'+ nameExtractor)
-    })
-
-      //TODO temporary element which simulate the timeline interraction
-      var listTimeId = Parser.getListTimeId(XMLDoc)
-      $(listTimeId).each(function(i,e){
-        $('#listFrame').append('<option>' + e + '</option>')
-      });
+    var listTimeId = Parser.getListTimeId(XMLDoc)
+    $(listTimeId).each(function(i,e){
+      $('#listFrame').append('<option>' + e + '</option>')
+    });
   },
 
   test(){
