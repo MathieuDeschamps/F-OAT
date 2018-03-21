@@ -13,4 +13,13 @@ Meteor.methods({
     Extractors.insert({name :   extractor.name, ip: extractor.ip, owner: user.username});
     return 1;
   },
+
+  removeExtractor: (name, user)=>{
+
+    return Extractors.remove({name: name, owner: user.username});
+  },
+
+  updateExtractor: (extractor)=>{
+    return Extractors.update({_id:extractor._id, owner: extractor.owner},{$set:{name: extractor.name, ip: extractor.ip}});
+  },
 })
