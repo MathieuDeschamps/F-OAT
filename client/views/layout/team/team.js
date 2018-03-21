@@ -57,9 +57,7 @@ Template.team.events({
         }
         else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
-            console.log(result);
             if(err){
-              console.log(err.reason);
               return;
             }
             var participants = Object.values(result);

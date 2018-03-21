@@ -1,8 +1,14 @@
 import './options.html'
 import {Projects} from '../../../../lib/collections/Project.js';
+import {Extractors} from '../../../../lib/collections/extractors.js';
+
 import { Template } from 'meteor/templating';
 
 Template.options.helpers({
+
+  extractors: ()=>{
+    return Extractors.find({owner : Meteor.user().username});
+  },
 
 });
 
@@ -15,13 +21,24 @@ Template.options.events({
     var ipExtractor = $('.ip').val();
     var nameExtractor = $('.name').val();
 
-
-
     if(!regex.test(ipExtractor)){
-      Session.set(ipError, "Wrong ip adress");
+        toastr.warning("The ip typed is invalid");
     }else{
       var extractor = {name: nameExtractor, ip: ipExtractor};
-      Meteor.call('addExtractor',extractor,user);
+      Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
+        if(err){
+          toastr.warning(err.reason);
+        }
+        else{
+
+          if(result < 0){
+              toastr.warning("Already exist");
+          }else{
+              toastr.success("Extractor added !");
+          }
+
+        }
+      });
       }
   },
 
