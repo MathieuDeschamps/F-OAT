@@ -39,16 +39,16 @@ Template.project.onRendered(()=>{
         extractor += '<label for="'+ i + '">' + nameExtractor + '</label></p>'
         $('#extractors').append(extractor)
         pathExtractor  = '/tmp/'+ nameExtractor + '/descriptor.xml'
-        //Meteor.call("getXml",pathExtractor,(err,result)=>{
-         // if(err){
-         //   alert(err.reason);
-         // }else{
+        Meteor.call("getXml",pathExtractor,(err,result)=>{
+          if(err){
+            alert(err.reason);
+          }else{
             forms[i] = new Form(i, nameExtractor,
               $($.parseXML(XMLDoc)).find(nameExtractor).children(), undefined,
               'nav-' + i,'hidden-' + i, 'form-'+ i)
               forms[i].buildForm('forms')
-           // }
-         // })
+            }
+          })
         })
       }
     });
