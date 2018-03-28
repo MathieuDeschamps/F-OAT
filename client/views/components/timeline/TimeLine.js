@@ -12,6 +12,7 @@ export class TimeLine {
     extMargin = 5;
     wTot = 960;
     lineH = 30;
+    numFrame = 0;
     lineHeight = 30;
     hTot = lineHeight * entry_length;
     trbl = [20, 15, 15, 120]; //top right bottom left;
@@ -42,7 +43,6 @@ export class TimeLine {
     x1 = d3.scale.linear()
             .domain([0, nb_frame])
             .range([0, genW]);
-
 
     blockPlay = function(d, i) {
         if (rect_actif !== -1) {
@@ -96,7 +96,19 @@ export class TimeLine {
                 return y1(0.8);
             })
             .attr("id", function (d, i) {
-                return "rect" + i;
+              if(d.start === d.end){
+                    return d.start;
+                }else {
+                  return "rect" + i;
+
+                }
+            })
+            .attr("class", function(d){
+                if(d.start === d.end){
+                    return "frame";
+                }else {
+                    return "other";
+                }
             })
             .style("fill", function (d) {
                 return myColor[d.entry];

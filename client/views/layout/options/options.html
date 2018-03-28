@@ -1,7 +1,7 @@
 <template name="options">
   <div class="content">
     <div class="row centered">
-      <h4>Add an extractor:</h4>
+      <h2 class="blue-text text-darken-3">Add an extractor:</h2>
       <div class="input-field col s6">
         <input class="name" id="extractorName" type="text"  />
         <label for="extractorName">Extractor's name</label>
@@ -17,6 +17,36 @@
           </a>
         </div>
       </div>
+      <table class="highlight">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Ip</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each extractors}}
+          <tr>
+            <td>
+              <input id="name" type="text" value="{{name}}" />
+              <input type="hidden" id="id" value="{{_id}}" />
+            </td>
+            <td>
+              <input id="ip" type="text" value={{ip}} />
+            </td>
+            <td>
+              <a class=" btn-floating btn-small waves-effect center waves-light remove red darken-4" id="delete">
+                <i class="material-icons" name="{{name}}">delete</i>
+              </a>
+              <a class=" btn-floating btn-small waves-effect center waves-light remove blue darken-4" id="update">
+                <i class="material-icons" name="{{name}}">send</i>
+              </a>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
