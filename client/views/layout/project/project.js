@@ -40,18 +40,18 @@ Template.project.onRendered(()=>{
         extractor += '<label for="'+ i + '">' + nameExtractor + '</label></p>'
         $('#extractors').append(extractor)
         pathExtractor  = '/tmp/'+ nameExtractor + '/descriptor.xml'
-        // Meteor.call("getXml",pathExtractor,(err,resultExtractor)=>{
-        //   if(err){
-        //     alert(err.reason);
-        //   }else{
-        //     XSDObject = resultExtractor.data
+        Meteor.call("getXml",pathExtractor,(err,resultExtractor)=>{
+          if(err){
+            alert(err.reason);
+          }else{
+            XSDObject = resultExtractor.data
             forms[i] = new Form(i, nameExtractor,
               $($.parseXML(XMLDoc)).find(nameExtractor),
                $.parseXML(XSDObject),
               'nav-' + i,'hidden-' + i, 'form-'+ i)
               forms[i].buildForm('forms')
-          //   }
-          // })
+            }
+          })
         })
       }
     });
@@ -68,13 +68,11 @@ Template.project.onRendered(()=>{
       alert("ok!");
       em.emit('hello');
     },
-    
+
     // check button event display form
   'click .filled-in'(event,instance){
     //toggle
     var id = $(event.currentTarget).attr('id')
-    var val = $(event.currentTarget).val();
-    console.log("id: " , val);
     if($(event.currentTarget).attr('marked') == 'true'){
       $(event.currentTarget).attr('marked', 'false')
       $('#extractor' + id).attr('style', 'display:none')

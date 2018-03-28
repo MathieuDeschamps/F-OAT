@@ -9,8 +9,7 @@ Template.timeLineDisplay.onRendered(()=>{
     timelineInterval=setInterval(function(){
         var xml = Session.get('XMLDoc');
         $(xml).find("extractors").children().each(function(i,e){
-            console.log("e: " , e)
-          if (typeof e !== 'undefined'){
+            if (typeof e !== 'undefined'){
               //console.log("e: ", e);
               $("#timeLine").append("<div id = 'timeLine" + i + "' class = 'row'style = 'display:none'></div>");
             var timeLineData = Parser.getTimelineData(xml,e.localName);
@@ -19,7 +18,7 @@ Template.timeLineDisplay.onRendered(()=>{
             $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
             "timeLine" + i);
             clearInterval(timelineInterval);
-        }  
+        }
         })
     },10);
 
@@ -34,7 +33,7 @@ Template.timeLineDisplay.events({
       //}
     });
   },
-  
+
   'click .filled-in'(event,instance){
     //toggle
     console.log("#document");

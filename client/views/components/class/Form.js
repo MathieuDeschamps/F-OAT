@@ -7,6 +7,7 @@ export class Form{
     this.idNav = idNav
     this.idDisplayedForm = idDisplayedForm
     this.idHiddenForm = idHiddenForm
+    // TODO call to VerifXMLByXSD
   }
 
   // assemble the two forms displayedForm and the hiddenForm
@@ -37,7 +38,7 @@ export class Form{
       })
       if($(parent).children().length == 0){
         // online children of the node
-          $(parent).append(child)
+        $(parent).append(child)
       }
       else if(ul== undefined && $(parent).children('ul').length > 0){
         //first ul element of the node
@@ -47,7 +48,7 @@ export class Form{
       else if (ul== undefined && $(parent).children('div').length > 0) {
         //first ul element of the node
         // append to the after the previous div element which contains the input
-          $(parent).children('div').last().after(child)
+        $(parent).children('div').last().after(child)
       }
       else{
         $(ul).after(child)
@@ -90,107 +91,183 @@ export class Form{
       var XSD = $(this.XSDObject).find('xs\\:schema').children('xs\\:element')
       Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
+      // init the collapsible element
       $(document).ready(function(){
         $('.collapsible').collapsible();
       });
+
     }
   }
 
   // recursive funtion which build the form
+  // XMLObjectData
+  // XMLObjectXSD the first node should be a xs:element
+  // iNode the id of the element
+  // parentNode the element where the form is built
   static recBuildForm(XMLObjectData, XMLObjectXSD, iNode, parentNode){
     // console.log('xml',this.XMLObjectData )
     // console.log('xsd',XMLObjectXSD)
-    var node
+    var nodesXML
     var nodeName
-    var nodeValue
-    var attr
+    var attrXSD
     var attrName
-    var attrValue
+    var attrType
+    var childXSD
+    var childrenXML
+    var childName
     var ul
-    $(XMLObjectData).each(function(i,nodeElem){
-      nodeName = nodeElem.nodeName
-      nodeValue = $(nodeElem).clone().children().remove().end().text()
-      // console.log('nodeName', nodeName)
-      // console.log("nodeValue", nodeValue)
-      node = '<li>'
-      node += '<div id="header' + iNode + '" class="collapsible-header white-text blue darken-4 row">'
-      node += '<div class="col s11">' + nodeName + '</div>'
-      node += '<i class="col s1 material-icons">keyboard_arrow_left</i>'
-      node += '</div>'
-      node += '<div id="body' + iNode + '" class="collapsible-body">'
-      node += '</div>'
-      node+= '</li>'
 
-      $(parentNode).append(node)
+    nodeName = $(XMLObjectXSD).attr('name')
+    // console.log('nodeName', nodeName)
 
-      // add the input for the text
-      if($(XMLObjectData).children().length == 0){
-        attr = '<div class="row"><div class="col s12">'
-        attr += 'text<div class="input-field inline"><input name="text" type="text" value="' + nodeValue + '"/>'
-        attr += '</div></div></div>'
-        $('#body'+ iNode).append(attr)
+    // add the current node to the parentNode (form)
+    node = '<li>'
+    node += '<div id="header' + iNode + '" class="collapsible-header white-text blue darken-4 row">'
+    node += '<div class="col s11">' + nodeName + '</div>'
+    node += '<i class="col s1 material-icons">keyboard_arrow_left</i>'
+    node += '</div>'
+    node += '<div id="body' + iNode + '" class="collapsible-body">'
+    node += '</div>'
+    node += '</li>'
+    $(parentNode).append(node)
+
+    // add the input for the attributes
+    $(XMLObjectData.attributes).each(function(i,attrXML){
+      attrName = attrXML.name
+
+      // case for the nodes and the leaves
+      if($(XMLObjectXSD).children().children('xs\\:attribute').length > 0){
+          attrXSD = $(XMLObjectXSD).children().children('xs\\:attribute[name="' + attrName + '"]')
+      }else{
+        attrXSD = $(XMLObjectXSD).children().children('xs\\:simpleContent')
+        attrXSD = $(attrXSD).children('xs\\:extension')
+        attrXSD = $(attrXSD).children('xs\\:attribute[name="' + attrName + '"]')
       }
 
-      // add the input for the attributes
-      $(nodeElem.attributes).each(function(i,attrElem){
-        attrName = attrElem.name
-        attrValue = attrElem.value
-        //console.log("attrName", attrName)
-        //console.log("attrVal", attrValue)
-        attr = '<div class="row"><div class="col s12">'
-        attr += attrName + '<div class="input-field inline"><input  name="' + attrName + '" type="text" value="' + attrValue + '"/>'
-        attr += '</div></div></div>'
-        $('#body'+ iNode).append(attr)
-      })
+      attrType = $(attrXSD).attr('type')
+      //console.log('attrType', attrType)
+
+      // choose between enum or a simple string field
+      if($(attrXSD).children().length > 0){
+        Form.addEnum(attrXML, attrXSD , 'body' + iNode)
+      }else{
+        Form.addField(attrXML, attrXSD , 'body' + iNode)
+      }
     })
-    if($(XMLObjectData).children() != undefined){
+
+    childrenXML = $(XMLObjectData).children()
+    if(childrenXML.length > 0){
+      // add the element which will contains the children
       ul = '<ul class="collapsible" data-collapsible="expandable"/>'
       $('#body'+ iNode).append(ul)
-      $(XMLObjectData).children().each(function(j,e){
-        Form.recBuildForm(e, XMLObjectXSD, iNode + "-"+ j, $('#body'+ iNode).children('ul'))
+
+      $(childrenXML).each(function(j,childXML){
+        childName = childXML.nodeName
+        // console.log('childName', childName)
+        // retrieve the xsd of the child XML
+        childXSD = $(XMLObjectXSD).children().children()
+        childXSD = $(childXSD).children('xs\\:element[name="' + childName + '"]')
+
+        // call this function on the children of the current element
+        Form.recBuildForm(childXML, childXSD, iNode + "-"+ j, $('#body'+ iNode).children('ul'))
       })
     }
   }
+
+  // function which add an input marker of type string
+  // XMLObjectData
+  // XMLObjectXSD the first node should be a xs:attribute
+  // idParentNode the id element where the field is added
+  static addField(XMLObjectData, XMLObjectXSD, idParentNode){
+    var attr
+    var attrName
+    var attrValue
+    attrName = $(XMLObjectXSD).attr('name')
+    attrValue = XMLObjectData.value
+    // console.log("attrName", attrName)
+    // console.log("attrVal", attrValue)
+
+    attr = '<div class="row"><div class="col s12">'
+    attr += attrName + '<div class="input-field inline"><input  name="' + attrName + '" type="text" value="' + attrValue + '"/></div>'
+    attr += '</div></div>'
+    $('#' + idParentNode).append(attr)
+
+  }
+
+  // function which add an select marker with the value of the enum
+  // XMLObjectData
+  // XMLObjectXSD the first node should be a xs:attribute
+  // idParentNode the element where the field is added
+  static addEnum(XMLObjectData, XMLObjectXSD, idParentNode){
+    var attr
+    var attrName
+    var attrValue
+
+    attrName = $(XMLObjectXSD).attr('name')
+    attrValue = XMLObjectData.value
+    attr = '<div class="row"><div class="input-field col s12">'
+    attr += attrName + '<select>'
+
+    $(XMLObjectXSD).find('xs\\:enumeration').each(function(i,e){
+
+      if($(e).attr('value') == attrValue){
+          attr += '<option value="' + $(e).attr('value') + '" selected>'
+          attr += $(e).attr('value') + "</option>"
+      }else{
+          attr += '<option value="' + $(e).attr('value') + '">'
+          attr += $(e).attr('value') + "</option>"
+      }
+
+    })
+    attr += '</select></div></div>'
+    console.log('idParentNode', idParentNode)
+    $('#' + idParentNode).append(attr)
+    // init the select element
+    // $(document).ready(function(){
+    //   $('select').formSelect();
+    // });
+  }
+
   // build the nav element of the form which contains the parents tag
   // parents all the parents element
   buildNav(parents){
-      var parentsArray = []
-      var isSelectedParent = true
-      var parentHeader
-      var parentName
-      var parentId
-      var navElement
-      // save the this attributs because this did not work in each loop
-      var idDisplayedFrom = this.idDisplayedForm
-      var idNav = this.idNav
-      // filter the parent element
-      $(parents).each(function(i,parent){
-        if($(parent).attr('id') == idDisplayedFrom ){
-          isSelectedParent = false
-        }
-        if(isSelectedParent && $(parent).attr('class') == 'collapsible'){
-
-          parentHeader = $(parent).find('div[class~="collapsible-header"]').get(0)
-
-          parentsArray.push($(parentHeader).clone())
-        }
-      })
-      // remove the last element of the array
-      parentsArray.reverse()
-      parentsArray.pop()
-      $('#' + this.idNav).find('div[id="anchor"]').empty()
-      // default value of nav
-      if(parentsArray.length == 0){
-        $('#' +  this.idNav).find('div[id="anchor"]').append('<a class="breadcrumb">path ' + this.name + '</a>')
+    var parentsArray = []
+    var isSelectedParent = true
+    var parentHeader
+    var parentName
+    var parentId
+    var navElement
+    // save the this attributs because this did not work in each loop
+    var idDisplayedFrom = this.idDisplayedForm
+    var idNav = this.idNav
+    // filter the parent element
+    $(parents).each(function(i,parent){
+      if($(parent).attr('id') == idDisplayedFrom ){
+        isSelectedParent = false
       }
+      if(isSelectedParent && $(parent).attr('class') == 'collapsible'){
 
-      // fill the nav element
-      $(parentsArray).each(function(i,parent){
-        parentId = $(parent).attr('id').substr(6)
-        parentName = $(parent).find('div').text()
-        navElement = '<a id=nav' + parentId + '  href="#!" class="breadcrumb">' + parentName + '</a>'
-        $('#' + idNav).find('div[id="anchor"]').append(navElement)
-      })
+        parentHeader = $(parent).find('div[class~="collapsible-header"]').get(0)
+
+        parentsArray.push($(parentHeader).clone())
+      }
+    })
+    // remove the last element of the array
+    parentsArray.reverse()
+    parentsArray.pop()
+    $('#' + this.idNav).find('div[id="anchor"]').empty()
+    // default value of nav
+    if(parentsArray.length == 0){
+      $('#' +  this.idNav).find('div[id="anchor"]').append('<a class="breadcrumb">path ' + this.name + '</a>')
+    }
+
+    // fill the nav element
+    $(parentsArray).each(function(i,parent){
+      parentId = $(parent).attr('id').substr(6)
+      parentName = $(parent).find('div').text()
+      navElement = '<a id=nav' + parentId + '  href="#!" class="breadcrumb">' + parentName + '</a>'
+      $('#' + idNav).find('div[id="anchor"]').append(navElement)
+    })
   }
 
   // collapse all the element and their children
