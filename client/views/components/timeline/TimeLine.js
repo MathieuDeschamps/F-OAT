@@ -1,5 +1,6 @@
 export class TimeLine {
-    constructor(frameRate,nbFrame,data) {
+    constructor(frameRate,nbFrame,data,idTimeLine) {
+    id_time_line = idTimeLine;
     debut = 0;
     fin = nbFrame;
     rect_actif = -1;
@@ -20,7 +21,7 @@ export class TimeLine {
     genW = wTot - 2 * extMargin - trbl[1] - trbl[3];
     myColor = ["#ff1010", "#1010ff", "#10C010"];
     mySelectedColor = ['#801010', "#101080", "#106010"];
-    timeL = d3.select("#timeLine")
+    timeL = d3.select("#"+id_time_line)
                      .append("svg")
                      .attr("width", 960)
                      .attr("height", 120)

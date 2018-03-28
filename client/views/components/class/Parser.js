@@ -2,12 +2,13 @@ export class Parser{
 
 // TODO update with the new format
   // return a JSON object with the startTime and enTime of Scenes shots and frames
-  static getTimelineData(xml){
+  static getTimelineData(xml,nameExtractor){
+    
     var xmlDoc = $.parseXML(xml)
     // retrieve the list from XML file in jQuerry
-    var listScenes = $(xmlDoc).find('Scene')
-    var listShots = $(xmlDoc).find('shot')
-    var listFrames = $(xmlDoc).find('frame')
+    var listScenes = $(xmlDoc).find(nameExtractor).find('Scene')
+    var listShots = $(xmlDoc).find(nameExtractor).find('shot')
+    var listFrames = $(xmlDoc).find(nameExtractor).find('frame')
 
     // the object returns
     var timeline ={}

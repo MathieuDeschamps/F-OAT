@@ -68,6 +68,23 @@ Template.project.onRendered(()=>{
       alert("ok!");
       em.emit('hello');
     },
+    
+    // check button event display form
+  'click .filled-in'(event,instance){
+    //toggle
+    var id = $(event.currentTarget).attr('id')
+    var val = $(event.currentTarget).val();
+    console.log("id: " , val);
+    if($(event.currentTarget).attr('marked') == 'true'){
+      $(event.currentTarget).attr('marked', 'false')
+      $('#extractor' + id).attr('style', 'display:none')
+      $('#timeLine' + id).attr('style', 'display:none')
+    }else{
+      $(event.currentTarget).attr('marked', 'true')
+      $('#extractor' + id).attr('style', 'display:block')
+      $('#timeLine' + id).attr('style', 'display:block')
+    }
+  },
 
 /*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
     //Test to merge XML file

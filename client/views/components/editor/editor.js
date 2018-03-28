@@ -18,18 +18,6 @@ Template.editor.events({
     })
   },
 
-  // check button event display form
-  'click .filled-in'(event,instance){
-    //toggle
-    var id = $(event.currentTarget).attr('id')
-    if($(event.currentTarget).attr('marked') == 'true'){
-      $(event.currentTarget).attr('marked', 'false')
-      $('#extractor' + id).attr('style', 'display:none')
-    }else{
-      $(event.currentTarget).attr('marked', 'true')
-      $('#extractor' + id).attr('style', 'display:block')
-    }
-  },
 
   // move in the children element
   'click .collapsible-header'(event, instance){

@@ -71,7 +71,7 @@ export class Form{
       $('#' + this.idHiddenForm).empty()
       $('#' + this.idDisplayedForm).empty()
       formExtractor = '<div id="extractor' + this.id + '" style="display:none">'
-      formExtractor += ' <h6 class="blue-text text-darken-3">' + this.name + '</h6>'
+      formExtractor += '<h6 class="blue-text text-darken-3">' + this.name + '</h6>'
       formExtractor +=' <nav id="nav-'+ this.id + '">'
       formExtractor += '<div class="nav-wrapper white-text blue darken-4 row">'
       formExtractor += '<div class="col s12" id="anchor">'
