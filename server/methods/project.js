@@ -65,22 +65,7 @@ Meteor.methods({
   @project : the project to wich we want to cretae an xml fime
   */
   createXMLFile: function(id){
-    var fs = Npm.require("fs");
-    //  var dir = "/tmp/"+project._id;
-     var dir = "/tmp/"+id;
-
-    if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir);
-    }
-
-    fs.writeFile(dir+"/"+"annotation.xml","",function(err){
-      if(err) {
-        throw (new Meteor.Error(500, 'Failed to save file.', err));
-      }
-      else{
-        console.log("File saved successfully!");
-      }
-    });
+      createFileXML(id);
   },
 
   //Function that insert a project in db and returns the id of the inserted project
@@ -89,11 +74,11 @@ Meteor.methods({
   },
 
   /**
-  Save the merged xml files of a project
+  Save the new xml file of a project
   @project : the project modified
   @buffer : the content of XML that needs to be saved
 */
-  mergeXML: function(project,buffer){
+  updateXML: function(project,buffer){
     var fs = Npm.require("fs");
     var dir = "/tmp/"+project._id;
 

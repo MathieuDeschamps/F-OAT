@@ -39,16 +39,16 @@ Template.project.onRendered(()=>{
         extractor += '<label for="'+ i + '">' + nameExtractor + '</label></p>'
         $('#extractors').append(extractor)
         pathExtractor  = '/tmp/'+ nameExtractor + '/descriptor.xml'
-        Meteor.call("getXml",pathExtractor,(err,result)=>{
-          if(err){
-            alert(err.reason);
-          }else{
+        //Meteor.call("getXml",pathExtractor,(err,result)=>{
+        //  if(err){
+            //alert(err.reason);
+        //  }else{
             forms[i] = new Form(i, nameExtractor,
-              $($.parseXML(XMLDoc)).find(nameExtractor).children(), undefined,
+              $($.parseXML(XMLDoc)).find(nameExtractor), undefined,
               'nav-' + i,'hidden-' + i, 'form-'+ i)
               forms[i].buildForm('forms')
-            }
-          })
+          //  }
+          //})
         })
       }
     });
@@ -66,6 +66,7 @@ Template.project.onRendered(()=>{
       em.emit('hello');
     },
 
+/*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
     //Test to merge XML file
     'click #testmerge1'(event,instance){
       var MergeXML = require('mergexml');
@@ -96,11 +97,27 @@ Template.project.onRendered(()=>{
                   console.log("Merge Error : 2 files needed");
                 }
                 else{
-                  Meteor.call("mergeXML",project,oMX.Get(1),(err,result)=>{
+                  Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/testmerge3.xml",(err,result)=>{
                     if(err){
                       alert(err.reason);
+                    }else{
+                      oMX.AddSource(result.data);
+                      console.log(oMX.Get(1));
+                      if(oMX.error.code !== ''){
+                        console.log("Merge Error new file "+oMX.error.text);
+                      }
+                      else if(oMX.count<2){
+                        console.log("Merge Error : 2 files needed");
+                      }
+                      else{
+                        Meteor.call("updateXML",project,oMX.Get(1),(err,result)=>{
+                          if(err){
+                            alert(err.reason);
+                          }
+                        });
+                      }
                     }
-                  })
+                  });
                 }
               }});
             }
@@ -135,7 +152,7 @@ Template.project.onRendered(()=>{
                       console.log("Merge Error : 2 files needed");
                     }
                     else{
-                      Meteor.call("mergeXML",project,oMX.Get(1),(err,result)=>{
+                      Meteor.call("updateXML",project,oMX.Get(1),(err,result)=>{
                         if(err){
                           alert(err.reason);
                         }
@@ -144,7 +161,7 @@ Template.project.onRendered(()=>{
                   }});
                 }
               }});
-            }
+            }*/
           });
 
           Template.project.helpers({

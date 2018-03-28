@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Form } from '../class/Form.js'
 import { Parser } from '../class/Parser.js'
 import { Writer } from '../class/Writer.js'
+import {Projects} from '../../../../lib/collections/Project.js';
 import './editor.html';
 
 Template.editor.onRendered(()=>{
@@ -71,8 +72,14 @@ Template.editor.events({
         XMLObject = Writer.removeExtractor(XMLObject, form.name)
         XMLObject = Writer.addExtractor(XMLObject, result)
       }
-      //console.log('XMLObject', XMLObject)
-      // TODO call merge service
+
+      var project = Projects.findOne(Router.current().params._id);
+      var xml = Writer.convertDocumentToString(XMLObject,0);
+      Meteor.call("updateXML",project,xml,(err,result)=>{
+        if(err){
+          alert(err.reason);
+        }
+      });
       // TODO call to update aother element
     })
 

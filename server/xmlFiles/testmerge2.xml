@@ -48,5 +48,23 @@
     		</Scene>
     	</scenes>
     </extractorx1>
+
+    <extractorx3>
+      <scenes>
+        <Scene startFrame="4537" endFrame="4726">
+          <shot startFrame="4537" endFrame="4726">
+            <frame timeId="4631">
+              <path>4631.png</path>
+            </frame>
+            <frame timeId="4678">
+              <path>4678.png</path>
+            </frame>
+            <frame timeId="4584">
+              <path>4584.png</path>
+            </frame>
+          </shot>
+        </Scene>
+      </scenes>
+    </extractorx3>
   </extractors>
 </root>
