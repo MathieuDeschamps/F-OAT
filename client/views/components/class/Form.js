@@ -85,9 +85,10 @@ export class Form{
       formExtractor += '</form>'
       formExtractor += '</div>'
       $('#' + idParent).append(formExtractor)
-      parentRec = $('#' + this.idDisplayedForm).children()
 
-      Form.recBuildForm(this.XMLObject, this.id, parentRec)
+      parentRec = $('#' + this.idDisplayedForm).children('ul[class~=collapsible]')
+      var XSD = $(this.XSDObject).find('xs\\:schema').children('xs\\:element')
+      Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
       $(document).ready(function(){
         $('.collapsible').collapsible();
@@ -96,60 +97,60 @@ export class Form{
   }
 
   // recursive funtion which build the form
-  static recBuildForm(XMLObject, iNode, parentNode){
-    // console.log('xml',this.XMLObject )
-      var node
-      var nodeName
-      var nodeValue
-      var attr
-      var attrName
-      var attrValue
-      var ul
-      $(XMLObject).each(function(i,e0){
-        nodeName = e0.nodeName
-        nodeValue = $(e0).clone().children().remove().end().text()
-        // console.log('nodeName', nodeName)
-        // console.log("nodeValue", nodeValue)
-        node = '<li>'
-        node += '<div id="header' + iNode + '" class="collapsible-header white-text blue darken-4 row">'
-        node += '<div class="col s11">' + nodeName + '</div>'
-        node += '<i class="col s1 material-icons">keyboard_arrow_left</i>'
-        node += '</div>'
-        node += '<div id="body' + iNode + '" class="collapsible-body">'
-        node += '</div>'
-        node+= '</li>'
+  static recBuildForm(XMLObjectData, XMLObjectXSD, iNode, parentNode){
+    // console.log('xml',this.XMLObjectData )
+    // console.log('xsd',XMLObjectXSD)
+    var node
+    var nodeName
+    var nodeValue
+    var attr
+    var attrName
+    var attrValue
+    var ul
+    $(XMLObjectData).each(function(i,nodeElem){
+      nodeName = nodeElem.nodeName
+      nodeValue = $(nodeElem).clone().children().remove().end().text()
+      // console.log('nodeName', nodeName)
+      // console.log("nodeValue", nodeValue)
+      node = '<li>'
+      node += '<div id="header' + iNode + '" class="collapsible-header white-text blue darken-4 row">'
+      node += '<div class="col s11">' + nodeName + '</div>'
+      node += '<i class="col s1 material-icons">keyboard_arrow_left</i>'
+      node += '</div>'
+      node += '<div id="body' + iNode + '" class="collapsible-body">'
+      node += '</div>'
+      node+= '</li>'
 
-        $(parentNode).append(node)
+      $(parentNode).append(node)
 
-        // add the input for the text
-        if($(XMLObject).children().length == 0){
-          attr = '<div class="row"><div class="col s12">'
-          attr += 'text<div class="input-field inline"><input name="text" type="text" value="' + nodeValue + '"/>'
-          attr += '</div></div></div>'
-          $('#body'+ iNode).append(attr)
-        }
-
-        // add the input for the attributes
-        $(e0.attributes).each(function(i,e1){
-          attrName = e1.name
-          attrValue = e1.value
-          //console.log("attrName", attrName)
-          //console.log("attrVal", attrValue)
-          attr = '<div class="row"><div class="col s12">'
-          attr += attrName + '<div class="input-field inline"><input  name="' + attrName + '" type="text" value="' + attrValue + '"/>'
-          attr += '</div></div></div>'
-          $('#body'+ iNode).append(attr)
-        })
-      })
-      if($(XMLObject).children() != undefined){
-        ul = '<ul class="collapsible" data-collapsible="expandable"/>'
-        $('#body'+ iNode).append(ul)
-        $(XMLObject).children().each(function(j,e){
-          Form.recBuildForm(e, iNode + "-"+ j, $('#body'+ iNode).children('ul'))
-        })
+      // add the input for the text
+      if($(XMLObjectData).children().length == 0){
+        attr = '<div class="row"><div class="col s12">'
+        attr += 'text<div class="input-field inline"><input name="text" type="text" value="' + nodeValue + '"/>'
+        attr += '</div></div></div>'
+        $('#body'+ iNode).append(attr)
       }
-  }
 
+      // add the input for the attributes
+      $(nodeElem.attributes).each(function(i,attrElem){
+        attrName = attrElem.name
+        attrValue = attrElem.value
+        //console.log("attrName", attrName)
+        //console.log("attrVal", attrValue)
+        attr = '<div class="row"><div class="col s12">'
+        attr += attrName + '<div class="input-field inline"><input  name="' + attrName + '" type="text" value="' + attrValue + '"/>'
+        attr += '</div></div></div>'
+        $('#body'+ iNode).append(attr)
+      })
+    })
+    if($(XMLObjectData).children() != undefined){
+      ul = '<ul class="collapsible" data-collapsible="expandable"/>'
+      $('#body'+ iNode).append(ul)
+      $(XMLObjectData).children().each(function(j,e){
+        Form.recBuildForm(e, XMLObjectXSD, iNode + "-"+ j, $('#body'+ iNode).children('ul'))
+      })
+    }
+  }
   // build the nav element of the form which contains the parents tag
   // parents all the parents element
   buildNav(parents){
@@ -252,8 +253,7 @@ export class Form{
     var saveHiddenForm = $('#' + this.idHiddenForm).children()
     this.assembleForms()
 
-    var result = Form.recGetXML('#' + this.idDisplayedForm)
-
+    result = Form.recGetXML('#' + this.idDisplayedForm)
     //TODO call verif function
 
     //restore the previous state of forms
@@ -261,42 +261,45 @@ export class Form{
     $('#' + this.idHiddenForm).empty()
     $('#' + this.idDisplayedForm).append(saveDisplayedForm)
     $('#' + this.idHiddenForm).append(saveHiddenForm)
-
     return result
   }
 
   // recursive funtion which retrieve the XML of the form
-  // parentNode a node tof the form
+  // parentNode a node of the form
   static recGetXML(parentNode){
     var result
     var nodeName
-    var nextsNodes
+    var body
+    var nextNodes
     var attributes
     var attrName
     var attrValue
-
+    //console.log('parentNode', parentNode)
     // name of the current node
     nodeName = $(parentNode).find('div[class~="collapsible-header"]')[0]
     nodeName = $(nodeName).children('div').text()
-    result = $('<' + nodeName + '/>')
 
-    nextsNodes = $(parentNode).find('div[class~="collapsible-body"]')[0]
-    attributes = $(nextsNodes).children('div').find('input')
+
+    body = $(parentNode).find('div[class~="collapsible-body"]')[0]
+    //console.log('parentNode', parentNode)
+    //console.log('nextNodes', nextNodes)
+    nextNodes = $(body).children('ul[class="collapsible"]').children('li')
+    attributes = $(body).children('div').find('input')
+
+    result = $('<' + nodeName + '/>')
 
     // add attributes to the current node of the XML
     $(attributes).each(function(i,attribut){
       attrName = $(attribut).attr('name')
       attrValue = $(attribut).val()
-      $(result).attr(attrName, attrValue)
+      result.attr(attrName, attrValue)
     })
 
     // recursive call on the children of the current node
-    nextsNodes = $(nextsNodes).children('ul[class="collapsible"]')
-    $(nextsNodes).each(function(i,nextNode){
-      $(result).append(Form.recGetXML(nextNode))
+    $(nextNodes).each(function(i,nextNode){
+      result.append(Form.recGetXML(nextNode))
     })
-
-    return result[0]
+    return result
   }
 
 

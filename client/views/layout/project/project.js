@@ -28,6 +28,7 @@ Template.project.onRendered(()=>{
     }else{
       Session.set('XMLDoc', result.data)
       var XMLDoc = result.data
+      var XSDObject
       // build the extractors
       var extractors = Parser.getListExtractors(XMLDoc)
       var extractor
@@ -39,16 +40,18 @@ Template.project.onRendered(()=>{
         extractor += '<label for="'+ i + '">' + nameExtractor + '</label></p>'
         $('#extractors').append(extractor)
         pathExtractor  = '/tmp/'+ nameExtractor + '/descriptor.xml'
-        Meteor.call("getXml",pathExtractor,(err,result)=>{
-          if(err){
-            alert(err.reason);
-          }else{
+        // Meteor.call("getXml",pathExtractor,(err,resultExtractor)=>{
+        //   if(err){
+        //     alert(err.reason);
+        //   }else{
+        //     XSDObject = resultExtractor.data
             forms[i] = new Form(i, nameExtractor,
-              $($.parseXML(XMLDoc)).find(nameExtractor).children(), undefined,
+              $($.parseXML(XMLDoc)).find(nameExtractor),
+               $.parseXML(XSDObject),
               'nav-' + i,'hidden-' + i, 'form-'+ i)
               forms[i].buildForm('forms')
-            }
-          })
+          //   }
+          // })
         })
       }
     });
