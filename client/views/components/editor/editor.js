@@ -60,16 +60,24 @@ Template.editor.events({
         XMLObject = Writer.removeExtractor(XMLObject, form.name)
         XMLObject = Writer.addExtractor(XMLObject, result)
       }
-
+    })
       var project = Projects.findOne(Router.current().params._id);
       var xml = Writer.convertDocumentToString(XMLObject,0);
       Meteor.call("updateXML",project,xml,(err,result)=>{
         if(err){
           alert(err.reason);
+        }else{
+          // update the forms
+          $(forms).each(function(i,form){
+            // TODO maybe return the XML in result
+            form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
+            console.log('form.XMLObject', form)
+            form.update()
+          })
         }
       });
-      // TODO call to update aother element
-    })
+      // TODO call to update other elements
+
 
   }
 });

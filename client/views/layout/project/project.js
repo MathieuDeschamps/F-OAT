@@ -22,9 +22,9 @@ Template.project.onRendered(()=>{
   var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
   var pathExtractor
 
-  Meteor.call("getXml",pathXML,(err,result)=>{
-    if(err){
-      alert(err.reason);
+  Meteor.call("getXml",pathXML,(errXML,result)=>{
+    if(errXML){
+      alert(pathXML, errXML.reason);
     }else{
       Session.set('XMLDoc', result.data)
       var XMLDoc = result.data
@@ -40,9 +40,9 @@ Template.project.onRendered(()=>{
         extractor += '<label for="'+ i + '">' + nameExtractor + '</label></p>'
         $('#extractors').append(extractor)
         pathExtractor  = '/tmp/'+ nameExtractor + '/descriptor.xml'
-        Meteor.call("getXml",pathExtractor,(err,resultExtractor)=>{
-          if(err){
-            alert(err.reason);
+        Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
+          if(errXSD){
+            alert(errXSD.reason);
           }else{
             XSDObject = resultExtractor.data
             forms[i] = new Form(i, nameExtractor,
