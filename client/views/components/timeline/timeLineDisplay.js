@@ -11,14 +11,14 @@ Template.timeLineDisplay.onRendered(()=>{
         $(xml).find("extractors").children().each(function(i,e){
             if (typeof e !== 'undefined'){
               //console.log("e: ", e);
-              $("#timeLine").append("<div id = 'timeLine" + i + "' class = 'row'style = 'display:none'></div>");
-            var timeLineData = Parser.getTimelineData(xml,e.localName);
-            //console.log("timeLineData: " , timeLineData);
-            timeLine = new TimeLine($(timeLineData).attr('frameRate'),
-            $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
-            "timeLine" + i);
-            clearInterval(timelineInterval);
-        }
+              $("#timeLine").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
+              var timeLineData = Parser.getTimelineData(xml,e.localName);
+              //console.log("timeLineData: " , timeLineData);
+              timeLine = new TimeLine(e.localName,$(timeLineData).attr('frameRate'),
+              $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
+              "timeLine" + i);
+              clearInterval(timelineInterval);
+            }
         })
     },10);
 
@@ -27,6 +27,8 @@ Template.timeLineDisplay.onRendered(()=>{
 Template.timeLineDisplay.events({
     'click .frame'(event,instance){
     var numFrame = $(event.currentTarget).attr('id');
+    console.log("numFrame = " , numFrame);
+    //console.log($(forms));
     $(forms).each(function(i,form){
       //if(form.attr("style") === 'display:block'){
               form.displayFrame(numFrame);
