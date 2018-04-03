@@ -1,5 +1,5 @@
 export class TimeLine {
-    constructor(frameRate,nbFrame,data,idTimeLine) {
+    constructor(name,frameRate,nbFrame,data,idTimeLine) {
     id_time_line = idTimeLine;
     debut = 0;
     fin = nbFrame;
@@ -10,61 +10,74 @@ export class TimeLine {
     entry_length = entry.length;
     items = data;
     vidCtrl.setPlayingInterval(debut,fin);
-    extMargin = 5;
-    wTot = 960;
-    lineH = 30;
-    numFrame = 0;
-    lineHeight = 30;
-    hTot = lineHeight * entry_length;
+    ext_margin = 5;
+    width_total = 960;
+    line_height = 30;
+    height_total = line_height * entry_length;
     trbl = [20, 15, 15, 120]; //top right bottom left;
-    genH = hTot - 2 * extMargin;
-    genW = wTot - 2 * extMargin - trbl[1] - trbl[3];
-    myColor = ["#ff1010", "#1010ff", "#10C010"];
-    mySelectedColor = ['#801010', "#101080", "#106010"];
-    timeL = d3.select("#"+id_time_line)
+    gen_height = height_total - 2 * ext_margin;
+    gen_width = width_total - 2 * ext_margin - trbl[1] - trbl[3];
+    my_color = ["#ff1010", "#1010ff", "#10C010"];
+    my_selected_color = ['#801010', "#101080", "#106010"];
+    used_rect = "";
+    used_color = "";
+    time_line = d3.select("#"+id_time_line)
                      .append("svg")
                      .attr("width", 960)
                      .attr("height", 120)
                      .attr("class", "chart");
-    timeL.append('rect')
+    time_line.append('rect')
             .attr('x', 0)
             .attr('y', 0)
-            .attr('width', wTot)
-            .attr('height', hTot + 20)
+            .attr('width', width_total)
+            .attr('height', height_total + 20)
             .style('fill', '#f2f2f2');
-    gen = timeL.append("g")
-            .attr("transform", "translate(" + (trbl[3] + extMargin) + "," + (trbl[0] + extMargin) + ")")
-            .attr("width", genW)
-            .attr("height", genH)
+    gen = time_line.append("g")
+            .attr("transform", "translate(" + (trbl[3] + ext_margin) + "," + (trbl[0] + ext_margin) + ")")
+            .attr("width", gen_width)
+            .attr("height", gen_height)
             .attr("class", "general");
     y1 = d3.scale.linear()
             .domain([0, entry_length])
-            .range([0, genH]);
+            .range([0, gen_height]);
 
     x1 = d3.scale.linear()
             .domain([0, nb_frame])
-            .range([0, genW]);
+            .range([0, gen_width]);
 
     blockPlay = function(d, i) {
+        var id;
+        id = "#rect"+i;   
+        var rect = $(id);
+        // console.log("rect: ",rect);
         if (rect_actif !== -1) {
-            var id = "#rect"+i;
-            var old_rect = $(id);
-           // console.log("old_rect: " + old_rect.style)
-          old_rect.attr("style").fill = myColor[items[rect_actif].entry];
+            if(d.start === d.end){
+                var id = d.start;
+            }else {
+                var id = "#rect"+i;   
+            }
+            rect.attr("style", "fill:" + my_color[items[rect_actif].entry]);
         }
-        if ((rect_actif !== i) | ( vidCtrl.getPartialPlaying() === false)) {
-            debut = d.start;
-            fin = d.end;
-            var id = "#rect"+i;
-            var new_rect = $(id );
-          console.log("new_rect: " + new_rect.attr("style"));
-            new_rect.attr("style").fill = mySelectedColor[d.entry];
+        if ((rect_actif !== i) | ( !vidCtrl.getPartialPlaying())) {
+            //console.log("new_rect: " + rect.attr("style"));
+            if(used_rect !== ""){
+                used_rect.attr("style", "fill:" + used_color);
+            }
+            used_color = my_color[d.entry];
+            rect.attr("style", "fill:" + my_selected_color[d.entry]);
+            used_rect = rect;
             rect_actif = i;
             vidCtrl.setPartialPlaying(true);
-            vidCtrl.setPlayingInterval(debut,fin);
-            console.log("debut = " + debut + " fin = " + fin);
-            vidCtrl.play();
+            vidCtrl.setPlayingInterval(d.start,d.end);
+            console.log("debut = " + d.start + " fin = " + d.end);
+            if (d.start !== d.end) {
+                vidCtrl.play();
+            }
         } else {
+            console.log("debut = " + debut + " fin = " + fin);
+            vidCtrl.setPlayingInterval(debut,fin);
+            vidCtrl.play();
+            used_rect = "";
             rect_actif = -1;
             vidCtrl.setPartialPlaying(false);
         }
@@ -76,7 +89,7 @@ export class TimeLine {
             .attr("y1", function (d, i) {
                 return y1(i + 1);
             })
-            .attr("x2", genW)
+            .attr("x2", gen_width)
             .attr("y2", function (d, i) {
                 return y1(i + 1);
             })
@@ -97,12 +110,11 @@ export class TimeLine {
                 return y1(0.8);
             })
             .attr("id", function (d, i) {
-              if(d.start === d.end){
-                    return d.start;
-                }else {
+             // if(d.start === d.end){
+                  //  return d.start;
+                //}else {
                   return "rect" + i;
-
-                }
+                //}
             })
             .attr("class", function(d){
                 if(d.start === d.end){
@@ -112,13 +124,13 @@ export class TimeLine {
                 }
             })
             .style("fill", function (d) {
-                return myColor[d.entry];
+                return my_color[d.entry];
             })
             .attr("stroke", "lightgray")
             .on("click", blockPlay);
 
-    timeL.append("text")
-            .text("General timeline :")
+    time_line.append("text")
+            .text(name + " timeline")
             .attr("x", 0)
             .attr("y", y1(.5))
             .attr("text-anchor", "start")
