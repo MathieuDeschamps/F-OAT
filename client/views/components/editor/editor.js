@@ -24,17 +24,22 @@ Template.editor.events({
     var elm = event.currentTarget
     var id = $(elm).attr('id').substr(6)
     var idExtractor = $(elm).parents('form').attr('id').substr(5)
-    if($(elm).find('i').text() == 'keyboard_arrow_left'){
+    // TODO debug
+    if($(elm).find('i').text() == 'keyboard_arrow_right'){
       $(elm).find('i').text('keyboard_arrow_down')
-      forms[idExtractor].assembleForms()
-      forms[idExtractor].buildNav($(elm).parents())
-      forms[idExtractor].moveInForm(id)
-      forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
-      $(document).ready(function(){
-        $('.collapsible').collapsible();
-      });
-    }else{
-      $(elm).find('i').text('keyboard_arrow_left')
+      // does not trigger the moveInForm for add element
+      if($(elm).attr('name') != undefined){
+        forms[idExtractor].assembleForms()
+        forms[idExtractor].buildNav($(elm).parents())
+        forms[idExtractor].moveInForm(id)
+        forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
+        $(document).ready(function(){
+          $('.collapsible').collapsible();
+        });
+      }
+
+    }else if($(elm).find('i').text() == 'keyboard_arrow_down'){
+      $(elm).find('i').text('keyboard_arrow_right')
     }
   },
 
@@ -56,6 +61,7 @@ Template.editor.events({
     var XMLObject = $.parseXML(Session.get('XMLDoc'))
     $(forms).each(function(i,form){
       result = form.getXML()
+      // console.log('result getXML', result[0])
       if(result !=  undefined){
         XMLObject = Writer.removeExtractor(XMLObject, form.name)
         XMLObject = Writer.addExtractor(XMLObject, result)
@@ -71,7 +77,6 @@ Template.editor.events({
           $(forms).each(function(i,form){
             // TODO maybe return the XML in result
             form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
-            console.log('form.XMLObject', form)
             form.update()
           })
         }
@@ -88,6 +93,7 @@ Template.editor.helpers({
     //TODO temporary element which simulate the timeline interraction
     var XMLDoc = Session.get('XMLDoc')
     var listTimeId = Parser.getListTimeId(XMLDoc)
+
     $(listTimeId).each(function(i,e){
       $('#listFrame').append('<option>' + e + '</option>')
     });
@@ -95,24 +101,25 @@ Template.editor.helpers({
 
   test(){
     // N'ayez pas peur de supprimer les lignes suivantes
-    // Parser.getTimelineData(Session.get('xmlDoc'))
-    // Parser.getFramesActors(Session.get('xmlDoc'))
-    // Parser.getFrame(Session.get('xmlDoc'),221)
-    // Parser.getShotsActor(Session.get('xmlDoc'),0)
-    // Parser.getFrames(Session.get('xmlDoc'),4725)
-    // Parser.getFrames(Session.get('xmlDoc'),4726)
-    // Parser.getFrames(Session.get('xmlDoc'),4727)
-    // Parser.getShotFrames(Session.get('xmlDoc'),3800)
-    // Parser.getActor(Session.get('xmlDoc'),1)
-    // Parser.getShotsActor(Session.get('xmlDoc'),1)
-    // Parser.getNbFrames(Session.get('xmlDoc'))
-    // Parser.getListTimeId(Session.get('xmlDoc'))
-    // Parser.getShotFrames(Session.get('xmlDoc'),3000)
-    // var id = $(Parser.getFramesActors(Session.get('xmlDoc'))[0]).attr('refId')
-    // Parser.getActor(Session.get('xmlDoc'),id)
-    // Parser.getNbFrames(Session.get('xmlDoc'))
-    // Parser.getShotFrames(Session.get('xmlDoc'),3149)
-    // Parser.getMaxIdActor(Session.get('xmlDoc'))
+    // Parser.getTimelineData(Session.get('XMLDoc'),'extractorx1')
+    // Parser.getFramesActors(Session.get('XMLDoc'))
+    // Parser.getFrame(Session.get('XMLDoc'),221)
+    // Parser.getShotsActor(Session.get('XMLDoc'),0)
+    // Parser.getFrames(Session.get('XMLDoc'),4725)
+    // Parser.getFrames(Session.get('XMLDoc'),4726)
+    // Parser.getFrames(Session.get('XMLDoc'),4727)
+    // Parser.getShotFrames(Session.get('XMLDoc'),3800)
+    // Parser.getActor(Session.get('XMLDoc'),1)
+    // Parser.getShotsActor(Session.get('XMLDoc'),1)
+    // Parser.getNbFrames(Session.get('XMLDoc'))
+    // Parser.getListTimeId(Session.get('XMLDoc'))
+    // Parser.getShotFrames(Session.get('XMLDoc'),3000)
+    // var id = $(Parser.getFramesActors(Session.get('XMLDoc'))[0]).attr('refId')
+    // Parser.getActor(Session.get('XMLDoc'),id)
+    // Parser.getNbFrames(Session.get('XMLDoc'))
+    // Parser.getShotFrames(Session.get('XMLDoc'),3149)
+    // Parser.getMaxIdActor(Session.get('XMLDoc'))
+    // Parser.getOverlayData(Session.get('XMLDoc'))
     // Writer.addFrame(Session.get('xmlDoc'),'<frame timeId="3149"><path>3149</path></frame>')
     // Writer.addActor(Session.get('xmlDoc'),'<actor icon="Actor/Danny.png" id="2" name="Danny" ></actor>')
     // Writer.addFrame(Session.get('xmlDoc'),'<frame timeId="4600"><path>4600.png</path></frame>')

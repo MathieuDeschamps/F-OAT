@@ -12,12 +12,11 @@ Template.timeLineDisplay.onRendered(()=>{
             if (typeof e !== 'undefined'){
               //console.log("e: ", e);
               $("#timeLine").append("<div id = 'timeLine" + i + "' class = 'row'style = 'display:none'></div>");
-            var timeLineData = Parser.getTimelineData(xml,e.localName);
-            //console.log("timeLineData: " , timeLineData);
-            timeLine = new TimeLine($(timeLineData).attr('frameRate'),
-            $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
-            "timeLine" + i);
-            clearInterval(timelineInterval);
+              var timeLineData = Parser.getTimelineData(xml,e.localName);
+              timeLine = new TimeLine($(timeLineData).attr('frameRate'),
+              $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
+              "timeLine" + i);
+              clearInterval(timelineInterval);
         }
         })
     },10);

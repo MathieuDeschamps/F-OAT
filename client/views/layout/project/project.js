@@ -24,7 +24,7 @@ Template.project.onRendered(()=>{
 
   Meteor.call("getXml",pathXML,(errXML,result)=>{
     if(errXML){
-      alert(pathXML, errXML.reason);
+      alert(errXML.reason);
     }else{
       Session.set('XMLDoc', result.data)
       var XMLDoc = result.data

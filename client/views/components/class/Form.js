@@ -94,109 +94,159 @@ export class Form{
       $(document).ready(function(){
         $('.collapsible').collapsible();
       });
-
     }
   }
 
   // recursive funtion which build the form
   // XMLObjectData
   // XMLObjectXSD the first node should be a xs:element
-  // iNode the id of the element
+  // indexParent the index of the parentNode
   // parentNode the element where the form is built
-  static recBuildForm(XMLObjectData, XMLObjectXSD, iNode, parentNode){
-    if(XMLObjectXSD == undefined || iNode == undefined ||
-       parentNode == undefined){
+  static recBuildForm(XMLObjectData, XMLObjectXSD, indexParent, parentNode){
+    if(XMLObjectXSD == undefined || indexParent == undefined ||
+      parentNode == undefined){
       alert("recBuildForm : Illegal Argument Exception")
-    }
+    }else{
+      var nodeName
+      var nodesXSD
+      var nodesXML
+      var nodeXML
+      var attrsXSD
+      var attrName
+      var childrenXSD
+      var childrenXML
+      var childName
+      var currentIdNode
+      var nbChildren = 0
+      var j
+      var maxOccurs
+      var minOccurs
+      var deleteButton = ''
+      var addMenu
+      var addbutton = ''
+      var deleteButton
+      var ul
 
-    // console.log('xml',this.XMLObjectData )
-    // console.log('xsd',XMLObjectXSD)
-
-    var nodeName
-    var attrsXSD
-    var attrName
-    var childrenXSD
-    var childrenXML
-    var childName
-    var nbChildren = 0
-    var j = 0
-    var maxOccurs = 1
-    var minOccurs = 1
-    var ul
-
-    nodeName = $(XMLObjectXSD).attr('name')
-    // console.log('nodeName', nodeName)
-
-    // add the current node to the parentNode (form)
-    node = '<li>'
-    node += '<div id="header' + iNode + '" class="collapsible-header white-text blue darken-4 row">'
-    node += '<div class="col s11">' + nodeName + '</div>'
-    node += '<i class="col s1 material-icons">keyboard_arrow_left</i>'
-    node += '</div>'
-    node += '<div id="body' + iNode + '" class="collapsible-body">'
-    node += '</div>'
-    node += '</li>'
-    $(parentNode).append(node)
-
-    if($(XMLObjectXSD).children().children('xs\\:attribute').length > 0){
-         attrsXSD = $(XMLObjectXSD).children().children('xs\\:attribute')
-     }else{
-       attrsXSD = $(XMLObjectXSD).children().children('xs\\:simpleContent')
-       attrsXSD = $(attrsXSD).children('xs\\:extension')
-       attrsXSD = $(attrsXSD).children('xs\\:attribute')
-     }
-
-     $(attrsXSD).each(function(i,attrXSD){
-       attrName = $(attrXSD).attr('name')
-       attrValue = $(XMLObjectData).attr(attrName)
-
-       if($(attrXSD).children().length > 0){
-         Form.addEnum(attrValue, attrXSD , 'body' + iNode)
-       }else{
-         Form.addField(attrValue, attrXSD , 'body' + iNode)
-       }
-     })
-      nbChildren = 0
-      childrenXSD = $(XMLObjectXSD).children().children()
-      childrenXSD = $(childrenXSD).children('xs\\:element')
-      if(childrenXSD.length > 0){
-        // add the element which will contains the children
-        ul = '<ul class="collapsible" data-collapsible="expandable"/>'
-        $('#body'+ iNode).append(ul)
-        $(childrenXSD).each(function(i, childXSD){
-          j = 0
+      $(XMLObjectXSD).each(function(index,nodeXSD){
+        j = 0
+        nodeName = $(nodeXSD).attr('name')
+        maxOccurs = $(nodeXSD).attr('maxOccurs')
+        minOccurs = parseInt($(nodeXSD).attr('minOccurs'))
+        if(maxOccurs == undefined){
           maxOccurs = 1
+        }
+        if(minOccurs == undefined){
           minOccurs = 1
-          maxOccurs = $(childXSD).attr('maxOccurs')
-          minOccurs = $(childXSD).attr('minOccurs')
-          childName = $(childXSD).attr('name')
-          childrenXML = $(XMLObjectData).children(childName)
+        }
 
-          // set the value of the number of children to display
-          if(maxOccurs == 'unbounded' || childrenXML.length < minOccurs){
-              if(childrenXML.length < minOccurs){
-                maxOccurs = minOccurs
-              }else{
-                maxOccurs = childrenXML.length
-              }
+        // get the node with the right name
+        nodesXML = $(XMLObjectData).filter(nodeName)
+
+        // set the value of the add button
+        if(maxOccurs == 'unbounded' || nodesXML.length < maxOccurs){
+          addbutton += nodeName
+          addbutton += '<a href="#"'
+          addbutton += 'class=" btn-floating btn-tiny waves-effect blue darken-4 right">'
+          addbutton += '<i class="material-icons">add</i></a>'
+
+      }
+
+      // set the value of the delete button
+      if(minOccurs < nodesXML.length){
+        deleteButton +=  '<i class=" red darken-4 material-icons medium" >delete</i>'
+      }
+
+      // set the value of the number of children to display
+      if(maxOccurs == 'unbounded' || nodesXML.length < minOccurs){
+        if(nodesXML.length < minOccurs){
+          maxOccurs = minOccurs
+        }else{
+          maxOccurs = nodesXML.length
+        }
+      }
+
+      childrenXSD = $(nodeXSD).children().children()
+      childrenXSD = $(childrenXSD).children('xs\\:element')
+
+      while(j < maxOccurs){
+          nodeXML = $(nodesXML).get(j)
+          currentIdNode = indexParent + '-' + nbChildren
+
+          // add the current node to the parentNode (form)
+          node = '<li>'
+          node += '<div id="header' + currentIdNode + '" '
+          node += 'name ="' + nodeName + '" '
+          node += 'class="collapsible-header white-text blue darken-4 row">'
+          node += '<div class="col s1">'
+          node += '<i class="material-icons">keyboard_arrow_right</i>'
+          node += '</div>'
+          node += '<div class="col s5">'
+          node += nodeName
+          node += '</div>'
+          node += '<div class="col s1 offset-s5">'
+          node += deleteButton
+          node += '</div>'
+          node += '</div>'
+          node += '<div id="body' + currentIdNode + '" '
+          node += 'name ="' + nodeName + '" '
+          node += 'class="collapsible-body">'
+          node += '</div>'
+          node += '</li>'
+          $(parentNode).append(node)
+
+          // retrieve the attributes
+          if($(nodeXSD).children().children('xs\\:attribute').length > 0){
+            // attributes of the nodes
+            attrsXSD = $(nodeXSD).children().children('xs\\:attribute')
+          }else{
+            // attributes of the leaves
+            attrsXSD = $(nodeXSD).children().children('xs\\:simpleContent')
+            attrsXSD = $(attrsXSD).children('xs\\:extension')
+            attrsXSD = $(attrsXSD).children('xs\\:attribute')
           }
 
-          while(j < maxOccurs){
-            childXML = $(childrenXML).get(j)
-            Form.recBuildForm(childXML, childXSD, iNode + "-" + nbChildren
-              , $('#body'+ iNode).children('ul'))
-              j++
-              nbChildren++
+          // add the attributs to the form
+          $(attrsXSD).each(function(i,attrXSD){
+            attrName = $(attrXSD).attr('name')
+            attrValue = $(nodeXML).attr(attrName)
+            if($(attrXSD).children().length > 0){
+              Form.addEnum(attrValue, attrXSD , 'body' + currentIdNode)
+            }else{
+              Form.addField(attrValue, attrXSD , 'body' + currentIdNode)
+            }
+          })
+
+          if(childrenXSD.length > 0){
+            // add the element which will contains the children
+            ul = '<ul class="collapsible" data-collapsible="expandable"/>'
+            $('#body'+ currentIdNode).append(ul)
+            childrenXML = $(nodeXML).children()
+            Form.recBuildForm(childrenXML, childrenXSD, currentIdNode,
+              $('#body'+ currentIdNode).children('ul')[0])
+            }
+            nbChildren ++
+            j++
           }
         })
-        $(childrenXML).each(function(j,childXML){
-          childName = childXML.nodeName
-          // console.log('childName', childName)
-          // retrieve the xsd of the child XML
-          childXSD = $(XMLObjectXSD).children().children()
-          childXSD = $(childXSD).children('xs\\:element[name="' + childName + '"]')
-
-        })
+      //TODO make a function to add and remove element in the add button
+      // add the menu only if ther is element which can be add
+      if(addbutton != ''){
+        parentName = $(XMLObjectXSD).parents('xs\\:element').attr('name')
+        addMenu = '<li>'
+        addMenu += '<div id="addHeader' + currentIdNode + '" class="collapsible-header white-text blue darken-4 row">'
+        addMenu += '<div class="col s1">'
+        addMenu += '<i class="material-icons">keyboard_arrow_right</i>'
+        addMenu += '</div>'
+        addMenu += '<div class="col s11">'
+        addMenu +=  'Add element to ' + parentName
+        addMenu += '</div>'
+        addMenu += '</div>'
+        addMenu += '<div id="addBody' + currentIdNode + '" class="collapsible-body">'
+        addMenu += addbutton
+        addMenu += '</div>'
+        addMenu += '</li>'
+        $(parentNode).append(addMenu)
+      }
     }
   }
 
@@ -221,16 +271,16 @@ export class Form{
       // set the type of the input mark
       switch (attrType) {
         case 'xs:string':
-          attrType = 'text'
-          break;
+        attrType = 'text'
+        break;
         case 'xs:int':
-          attrType = 'number'
-          break;
+        attrType = 'number'
+        break;
         case 'xs:dateTime':
-          attrType = 'date'
-          break;
+        attrType = 'date'
+        break;
         default:
-          attrType = 'text'
+        attrType = 'text'
 
       }
 
@@ -269,26 +319,24 @@ export class Form{
 
       $(XMLObjectXSD).find('xs\\:enumeration').each(function(i,e){
         if($(e).attr('value') == attrValue){
-            attr += '<option value="' + $(e).attr('value') + '" selected>'
-            attr += $(e).attr('value') + "</option>"
+          attr += '<option value="' + $(e).attr('value') + '" selected>'
+          attr += $(e).attr('value') + "</option>"
         }else{
-            attr += '<option value="' + $(e).attr('value') + '">'
-            attr += $(e).attr('value') + "</option>"
+          attr += '<option value="' + $(e).attr('value') + '">'
+          attr += $(e).attr('value') + "</option>"
         }
       })
       attr += '</select></div>'
       //console.log('idParentNode', idParentNode)
       $('#' + idParentNode).append(attr)
     }
-
-
   }
 
   // build the nav element of the form which contains the parents tag
   // parents all the parents element
   buildNav(parents){
     if(parents == undefined){
-        alert('buildNav : Illegal Argument Exception')
+      alert('buildNav : Illegal Argument Exception')
     }else{
       var parentsArray = []
       var isSelectedParent = true
@@ -305,9 +353,8 @@ export class Form{
           isSelectedParent = false
         }
         if(isSelectedParent && $(parent).attr('class') == 'collapsible'){
-
+          // get the first parent
           parentHeader = $(parent).find('div[class~="collapsible-header"]').get(0)
-
           parentsArray.push($(parentHeader).clone())
         }
       })
@@ -323,12 +370,11 @@ export class Form{
       // fill the nav element
       $(parentsArray).each(function(i,parent){
         parentId = $(parent).attr('id').substr(6)
-        parentName = $(parent).find('div').text()
+        parentName = $(parent).attr('name')
         navElement = '<a id=nav' + parentId + '  href="#!" class="breadcrumb">' + parentName + '</a>'
         $('#' + idNav).find('div[id="anchor"]').append(navElement)
       })
     }
-
   }
 
   // collapse all the element and their children
@@ -349,7 +395,7 @@ export class Form{
       var body = $(input).parents('[class="collapsible-body"]')[0]
       if(body != undefined){
         var id = $(body).attr('id').substr(4)
-        console.log('id', id)
+        // console.log('id', id)
         this.buildNav($(body).parents())
         this.moveInForm(id)
         // open the frame element if isn't already open
@@ -359,7 +405,6 @@ export class Form{
       }
     }
   }
-
 
   // move in the displayedForm
   // id to the element who become the first child of the form
@@ -391,7 +436,9 @@ export class Form{
     var saveHiddenForm = $('#' + this.idHiddenForm).children()
     this.assembleForms()
 
-    result = Form.recGetXML('#' + this.idDisplayedForm)
+    var XSD = $(this.XSDObject).find('xs\\:schema').children('xs\\:element')
+    var form = $('#' + this.idDisplayedForm).children('ul').children('li').children()
+    result = Form.recGetXML(form, XSD)
     //TODO call verif function
 
     //restore the previous state of forms
@@ -404,48 +451,132 @@ export class Form{
 
   // recursive funtion which retrieve the XML of the form
   // parentNode a node of the form
-  // TODO generate the XML with the XSD like buildForm
-  //TODO if attributes XSD fixed set the value to fixed
-  // TODO solve the problem about the uppercase
-  static recGetXML(parentNode){
-    if(parentNode == undefined){
+  static recGetXML(parentNode, XMLObjectXSD){
+
+    if(parentNode == undefined || XMLObjectXSD == undefined){
       alert('recGetXML : Illegal Argument Exception')
     }else{
-      var result
+      var currentNode
+      var result = []
       var nodeName
-      var body
-      var nextNodes
-      var attributes
+      var nodesForm
+      var nodeForm
+      var attrsXSD
       var attrName
+      var attrType
+      var attrsForm
       var attrValue
-      //console.log('parentNode', parentNode)
-      // name of the current node
-      nodeName = $(parentNode).find('div[class~="collapsible-header"]')[0]
-      nodeName = $(nodeName).children('div').text()
+      var childrenXSD
+      var childrenForm
+      var nbChildren = 0
+      var maxOccurs
+      var minOccurs
+      var j
+
+      // browse the XSD element
+      $(XMLObjectXSD).each(function(i,nodeXSD){
+
+        nodeName = $(nodeXSD).attr('name')
+        maxOccurs = $(nodeXSD).attr('maxOccurs')
+        minOccurs = parseInt($(nodeXSD).attr('minOccurs'))
+        j = 0
+
+        nodesForm = $(parentNode).filter('[class~="collapsible-body"][name="'+ nodeName +'"]')
+        // console.log('nodesForm', nodesForm)
+        if(maxOccurs == undefined){
+          maxOccurs = 1
+        }
+        if(minOccurs == undefined){
+          minOccurs = 1
+        }
+
+        if(maxOccurs == 'unbounded'){
+          maxOccurs = nodesForm.length
+        }
+
+        if(minOccurs > nodesForm.length){
+          alert('recGetXML : Invalid data input')
+        }else{
+          childrenXSD = $(nodeXSD).children().children()
+          childrenXSD = $(childrenXSD).children('xs\\:element')
+
+          while(j < maxOccurs){
+            currentNode = $('<' + nodeName + '/>')
+            nodeForm = $(nodesForm).get(j)
+
+            // retrieve the attributes
+
+            if($(nodeXSD).children().children('xs\\:attribute').length > 0){
+              // attributes of the nodes
+              attrsXSD = $(nodeXSD).children().children('xs\\:attribute')
+            }else{
+              // attributes of the leaves
+              attrsXSD = $(nodeXSD).children().children('xs\\:simpleContent')
+              attrsXSD = $(attrsXSD).children('xs\\:extension')
+              attrsXSD = $(attrsXSD).children('xs\\:attribute')
+            }
+            $(attrsXSD).each(function(i,attrXSD){
+              // TODO verif more precisly the value
+              attrName = $(attrXSD).attr('name')
+              attrType = $(attrXSD).attr('type')
+              attrsForm = $(nodeForm).children('div').find('input')
+              $(attrsForm).each(function(i,attrForm){
+                if($(attrForm).attr('name') == attrName){
+                  attrValue = $(attrForm).val()
+                }
+              })
+              if($(attrXSD).attr('fixed') != undefined){
+                attrValue = $(attrXSD).attr('fixed')
+              }
+              if($(attrXSD).attr('default') != undefined &&
+                (attrValue == undefined || $(attrValue).is(':empty'))){
+                  attrValue = $(attrXSD).attr('default')
+              }
+              // console.log(attrName,' ', attrValue)
+              // using setAttribute() to keep the uppercase rather than attr()
+              $(currentNode)[0].setAttribute(attrName, attrValue)
+            })
 
 
-      body = $(parentNode).find('div[class~="collapsible-body"]')[0]
-      //console.log('parentNode', parentNode)
-      //console.log('nextNodes', nextNodes)
-      nextNodes = $(body).children('ul[class="collapsible"]').children('li')
-      attributes = $(body).children('div').find('input')
+            if(childrenXSD.length > 0){
 
-      result = $('<' + nodeName + '/>')
-      // add attributes to the current node of the XML
-      $(attributes).each(function(i,attribut){
-        attrName = $(attribut).attr('name')
-
-        attrValue = $(attribut).val()
-        result.attr(attrName, attrValue)
-      })
-
-      // recursive call on the children of the current node
-      $(nextNodes).each(function(i,nextNode){
-        result.append(Form.recGetXML(nextNode))
+              childrenForm = $(nodesForm).children('ul[class="collapsible"]')
+              childrenForm = $(childrenForm).children('li').children()
+              $(currentNode).append(Form.recGetXML(childrenForm, childrenXSD))
+            }
+            result[nbChildren] = currentNode
+            nbChildren ++
+            j++
+          }
+        }
       })
       return result
     }
   }
+      // nodeName = $(parentNode).find('div[class~="collapsible-header"]')[0]
+      // nodeName = $(nodeName).children('div').text()
+      //
+      //
+      // body = $(parentNode).find('div[class~="collapsible-body"]')[0]
+      // //console.log('parentNode', parentNode)
+      // //console.log('nextNodes', nextNodes)
+      // nextNodes = $(body).children('ul[class="collapsible"]').children('li')
+      // attributes = $(body).children('div').find('input')
+      //
+      // result = $('<' + nodeName + '/>')
+      // // add attributes to the current node of the XML
+      // $(attributes).each(function(i,attribut){
+      //   attrName = $(attribut).attr('name')
+      //
+      //   attrValue = $(attribut).val()
+      //   result.attr(attrName, attrValue)
+      // })
+      //
+      // // recursive call on the children of the current node
+      // $(nextNodes).each(function(i,nextNode){
+      //   result.append(Form.recGetXML(nextNode))
+      // })
+
 
   // update the form with the new XML
   // which is previous set with form.XMLObject = newXML
