@@ -17,6 +17,7 @@ Template.timeLineDisplay.onRendered(()=>{
               timeLine = new TimeLine(e.localName,$(timeLineData).attr('frameRate'),
               $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
               "timeLine" + i);
+             // console.log("data: " , timeLineData);
               clearInterval(timelineInterval);
             }
         })
