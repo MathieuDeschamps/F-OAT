@@ -11,8 +11,8 @@ Template.timeLineDisplay.onRendered(()=>{
         $(xml).find("extractors").children().each(function(i,e){
             if (typeof e !== 'undefined'){
               //console.log("e: ", e);
-              $("#timeLine").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
               var timeLineData = Parser.getTimelineData(xml,e.localName);
+              $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
               //console.log("timeLineData: " , timeLineData);
               timeLine = new TimeLine(e.localName,$(timeLineData).attr('frameRate'),
               $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
@@ -30,6 +30,7 @@ Template.timeLineDisplay.events({
     console.log("numFrame = " , numFrame);
     //console.log($(forms));
     $(forms).each(function(i,form){
+        console.log("form: " , form);
       //if(form.attr("style") === 'display:block'){
               form.displayFrame(numFrame);
       //}

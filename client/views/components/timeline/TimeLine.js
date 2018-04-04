@@ -21,6 +21,8 @@ export class TimeLine {
     my_selected_color = ['#801010', "#101080", "#106010"];
     used_rect = "";
     used_color = "";
+    $("#"+id_time_line).css('width', width_total);
+    $("#"+id_time_line).css('height', height_total);
     time_line = d3.select("#"+id_time_line)
                      .append("svg")
                      .attr("width", 960)

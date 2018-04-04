@@ -5,7 +5,7 @@ export class Parser{
 
     var XMLObject = $.parseXML(xml)
     // retrieve the list from XML file in jQuerry
-    var listScenes = $(XMLObject).find('extractors').children(nameExtractor).find('Scene')
+    var listScenes = $(XMLObject).find('extractors').children(nameExtractor).find('scene')
     var listShots = $(XMLObject).find('extractors').children(nameExtractor).find('shot')
     var listFrames = $(XMLObject).find('extractors').children(nameExtractor).find('frame')
 
@@ -17,7 +17,7 @@ export class Parser{
 
     // add frame to the array
     for(i=0; i < listFrames.length; i++){
-      timeline.data.push({ "entry" : 0 , "startF" : parseInt($(listFrames[i]).attr('timeId')), "end" : parseInt($(listFrames[i]).attr('timeId')) });
+      timeline.data.push({ "entry" : 0 , "start" : parseInt($(listFrames[i]).attr('timeId')), "end" : parseInt($(listFrames[i]).attr('timeId')) });
     }
     // add shot to the array
     for(i=0; i < listShots.length; i++){
