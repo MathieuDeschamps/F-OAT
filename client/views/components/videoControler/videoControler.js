@@ -9,7 +9,7 @@ export class videoControler {
 		this.frameRate=frameRate;
 		this.partialPlaying=false;
 		
-		that=this;
+		var that=this;
 		this.settingInterval=setInterval(function(){
 			if (vid.readyState > 0) {
 				that.endVid=that.timeToFrame(vid.duration);
@@ -28,7 +28,7 @@ export class videoControler {
 	play(){
 		if (this.beginSelect!=this.endSelect|| !this.partialPlaying){
 			this.vid.play();
-			that=this;
+			var that=this;
 			this.updateInterval=setInterval(function(){
 				that.notify();
 			},1/this.frameRate);
@@ -98,24 +98,29 @@ export class videoControler {
 			}
 		
 		var curFrame=this.getCurrentFrame();
+		var that=this;
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
-		for(var i=0; i<this.attachedObject.length;i++){
-			if (curFrame % this.attachedObjectFrequency(this.attachedObject[i])==1){
-				this.attachedObject[i].notify(curFrame);
-				
+		this.attachedObject.forEach(function(object){
+			if (curFrame % that.attachedObjectFrequency.get(object)==1){
+				object.notify(curFrame);
 			}
-		};
+			
+		})
+		
 	}
 	
 	// Abonnement d'un objet (les tableaux js sont dynamiques)
+	/*
 	attach(object){
 		this.attachedObject[this.attachedObject.length]=object;
 		this.attachedObjectFrequency.set(object,1);
 	}
+	*/
 	
 	attach(object,frequency){
 		this.attachedObject[this.attachedObject.length]=object;
 		this.attachedObjectFrequency.set(object,frequency);
+		console.log("attached object",this.attachedObject)
 	}
 	
 	
