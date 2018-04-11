@@ -8,15 +8,14 @@ Meteor.methods({
   /**
   Create the xml file of a project
   @id : the id of the project
-  @project : the project to wich we want to create an xml file
   @buffer : content of the file
+  @nameV : name of file without .mp4
   */
-  createFile: function(a){
+  createFile: function(id, buffer, nameV){
 
     //Write the file on server
     var fs = Npm.require("fs");
-    //var dir = "/tmp/"+project._id;
-    var dir = "/tmp/"+a.id;
+    var dir = "/tmp/"+id;
     var dirSi = "/tmp/signature";
 
     //Create a directory for the project if it doesn't exist
@@ -28,7 +27,7 @@ Meteor.methods({
       fs.mkdirSync(dirSi);
     }
     //By default, write file in .meteor/local/build/programs/server/ but we write in tmp.
-    fs.writeFile(dir+"/"+a.id, a.buffer, 'base64', function(err) {
+    fs.writeFile(dir+"/"+id, buffer, 'base64', function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
       }
@@ -38,9 +37,9 @@ Meteor.methods({
     });
 
     //Création du hacher avec la foction MD5 en utlilisant les données de la vidéo "buffer"
-    let si = JSON.stringify({signature: crypto.createHash('md5').update(a.buffer).digest("hex")});
+    let si = JSON.stringify({signature: crypto.createHash('md5').update(buffer).digest("hex")});
     //Creation du fichier pour la signature des videos
-    fs.writeFile(dirSi+"/"+a.name+ ".json", si, function(err) {
+    fs.writeFile(dirSi+"/"+nameV+ ".json", si, function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
       }
@@ -49,14 +48,7 @@ Meteor.methods({
       }
     });
 
-    fs.writeFile(dir+"/"+"annotation.xml","",function(err){
-      if(err) {
-        throw (new Meteor.Error(500, 'Failed to save file.', err));
-      }
-      else{
-        console.log("File saved successfully!");
-      }
-    });
+    createFileXML(id);
 
   },
 
@@ -101,6 +93,7 @@ createFileXML = function(id){
   if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
   }
+  console.log("ID "+id);
   var buff = generateContent(Projects.findOne({_id: id}), id);
   fs.writeFile(dir+"/"+"annotation.xml",buff,function(err){
     if(err) {
@@ -112,30 +105,21 @@ createFileXML = function(id){
   });
 }
 
-
+/**
+* Function that create the basic XML file of a project.
+*/
 generateContent = function(project, id){
     var builder = require('xmlbuilder');
+    var date = moment().format('MMMM Do YYYY');
+    console.log(project);
     var doc = builder.create('root',{version: '1.0', encoding: 'UTF-8', standalone:'no'})
-      .ele('version')
-        .txt('0.1')
-      .up()
       .ele('project')
-        .att('path','/tmp/'+project._id)
-        .ele('icons')
-          .att('path', 'Icons')
-        .up()
+        .att('author',project.owner)
+        .att('date', date)
         .ele('video')
           .att('id','1')
-          .att('path',project.url)
-        .up()
-      .up()
-      .ele('header')
-        .ele('video')
           .att('fps','25.0')
-          .att('framing','16/9','id=1')
-          .ele('file')
-            .txt('/tmp/'+project._id+'/'+project.url)
-          .up()
+          .att('url',project.url)
         .up()
       .up()
     .end({ pretty: true });
