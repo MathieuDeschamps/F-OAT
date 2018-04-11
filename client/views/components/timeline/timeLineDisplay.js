@@ -16,7 +16,7 @@ Template.timeLineDisplay.onRendered(()=>{
               //console.log("timeLineData: " , timeLineData);
               timeLine = new TimeLine(e.localName,$(timeLineData).attr('frameRate'),
               $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
-              "timeLine" + i);
+              i);
              // console.log("data: " , timeLineData);
               clearInterval(timelineInterval);
             }
@@ -28,10 +28,10 @@ Template.timeLineDisplay.onRendered(()=>{
 Template.timeLineDisplay.events({
     'click .frame'(event,instance){
     var numFrame = $(event.currentTarget).attr('id');
-    console.log("numFrame = " , numFrame);
+   // console.log("numFrame = " , numFrame);
     //console.log($(forms));
     $(forms).each(function(i,form){
-        console.log("form: " , form);
+       // console.log("form: " , form);
       //if(form.attr("style") === 'display:block'){
               form.displayFrame(numFrame);
       //}
@@ -40,7 +40,7 @@ Template.timeLineDisplay.events({
 
   'click .filled-in'(event,instance){
     //toggle
-    console.log("#document");
+   // console.log("#document");
     /*
         if($(event.currentTarget).attr('marked') == 'true'){
       $(event.currentTarget).attr('marked', 'false')
