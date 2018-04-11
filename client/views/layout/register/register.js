@@ -30,7 +30,7 @@ Template.register.events({
     //User validation is done on server/accounts.js in method Accounts.validateNewUser()
     Accounts.createUser(_newUsr , (err)=>{
       if(err){
-        throwError(err.reason);
+        toastr.warning(err.reason);
       }else{
         log.info("new user create",_newUsr,_newUsr._Id);
         Router.go("/");
