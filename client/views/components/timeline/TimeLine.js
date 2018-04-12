@@ -1,6 +1,6 @@
 export class TimeLine {
     constructor(name,frameRate,nbFrame,data,idTimeLine) {
-    id_time_line = idTimeLine;
+    id_time_line = "timeLine" + idTimeLine;
     debut = 0;
     fin = nbFrame;
     rect_actif = -1;
@@ -21,6 +21,12 @@ export class TimeLine {
     my_selected_color = ['#801010', "#101080", "#106010"];
     used_rect = "";
     used_color = "";
+    
+    //donner le div du timeLine la meme taille que le timeLine generer
+    $("#"+id_time_line).css('width', width_total);
+    $("#"+id_time_line).css('height', height_total);
+    console.log("timeLine: " + id_time_line)
+    //generer le timeLine dans son div
     time_line = d3.select("#"+id_time_line)
                      .append("svg")
                      .attr("width", 960)
@@ -47,34 +53,32 @@ export class TimeLine {
 
     blockPlay = function(d, i) {
         var id;
-        id = "#rect"+i;   
+        id = "#rect" +i +idTimeLine;   
         var rect = $(id);
-        // console.log("rect: ",rect);
+        console.log("rect: ",rect);
         if (rect_actif !== -1) {
+            /*
             if(d.start === d.end){
                 var id = d.start;
-            }else {
-                var id = "#rect"+i;   
             }
+            */
             rect.attr("style", "fill:" + my_color[items[rect_actif].entry]);
         }
-        if ((rect_actif !== i) | ( !vidCtrl.getPartialPlaying())) {
-            //console.log("new_rect: " + rect.attr("style"));
+        console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
+        if ((rect_actif !== i + (Number(idTimeLine) + 1)) | ( !vidCtrl.getPartialPlaying())) {
             if(used_rect !== ""){
                 used_rect.attr("style", "fill:" + used_color);
             }
             used_color = my_color[d.entry];
             rect.attr("style", "fill:" + my_selected_color[d.entry]);
             used_rect = rect;
-            rect_actif = i;
+            rect_actif = i + (Number(idTimeLine) + 1);
             vidCtrl.setPartialPlaying(true);
             vidCtrl.setPlayingInterval(d.start,d.end);
             console.log("debut = " + d.start + " fin = " + d.end);
-            if (d.start !== d.end) {
-                vidCtrl.play();
-            }
+            vidCtrl.play();
         } else {
-            console.log("debut = " + debut + " fin = " + fin);
+            console.log("debut2 = " + debut + " fin2 = " + fin);
             vidCtrl.setPlayingInterval(debut,fin);
             vidCtrl.play();
             used_rect = "";
@@ -110,11 +114,7 @@ export class TimeLine {
                 return y1(0.8);
             })
             .attr("id", function (d, i) {
-             // if(d.start === d.end){
-                  //  return d.start;
-                //}else {
-                  return "rect" + i;
-                //}
+                return "rect" + i + idTimeLine ;
             })
             .attr("class", function(d){
                 if(d.start === d.end){

@@ -80,7 +80,7 @@ Template.project.onRendered(()=>{
     }else{
       $(event.currentTarget).attr('marked', 'true')
       $('#extractor' + id).attr('style', 'display:block')
-      $('#timeLine' + id).attr('style', 'display:block')
+      $('#timeLine' + id).css('display', 'block');
     }
   },
 
