@@ -93,12 +93,7 @@ Template.newproject.events({
                         var buffer = reader.result;
                         console.log(nameV);
                         //Call a method from project.js on server side
-                        let a = {
-                          res: res,
-                          buffer: buffer,
-                          name:nameV
-                        };
-                        Meteor.call('createFile', a, function(error, result){
+                        Meteor.call('createFile', res, buffer, nameV , function(error, result){
 
                             if(error){
                                 alert(error.reason);
