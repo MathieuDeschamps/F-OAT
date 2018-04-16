@@ -1,13 +1,13 @@
 <template name="newproject">
   <div class="centered">
-    <h2 class="blue-text text-darken-3">Créer un projet</h2>
+    <h2 class="blue-text text-darken-3">Create a project</h2>
     <div class="content">
       <div class="row">
         <form class="col s12">
           <div class="row">
             <div class="input-field col s6 {{errorClass 'name'}}">
               <input type="text" id="projectName" class="validate projectName" />
-              <label for="projectName">Name</label>
+              <label for="projectName">Name of the project</label>
               <span class="red-text">{{errorMessage 'name'}}</span>
             </div>
             <div class="input-field col s6 {{errorClass 'url'}}">
