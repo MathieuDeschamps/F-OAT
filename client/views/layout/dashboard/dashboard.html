@@ -1,7 +1,7 @@
 <template name="dashboard">
   <div class="content">
     <div class="table-container">
-      <h2 class="blue-text text-darken-3">Liste des projets</h2>
+      <h2 class="blue-text text-darken-3">Your projects</h2>
       <a  href="/newProject"  class=" btn-floating btn-small waves-effect right waves-light blue darken-4"><i class="material-icons">add</i></a>
       <table class="highlight">
         <thead>
@@ -31,7 +31,7 @@
               <a href="/team/{{_id}}" class=" btn-floating btn-small waves-effect center waves-light blue darken-4" projectId="{{_id}}">
                 <i class="material-icons">settings</i>
               </a>
-              <a class=" btn-floating btn-small waves-effect center waves-light remove red darken-4" id="toto">
+              <a class=" btn-floating btn-small waves-effect center waves-light remove red darken-4">
                 <i class="material-icons" name="{{_id}}">delete</i>
               </a>
               {{else}}

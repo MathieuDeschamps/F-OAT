@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import {Projects } from "../lib/collections/Project.js";
+import {HTTP} from "meteor/http";
 const fs = require('fs');
 export const xmlPath = "/tmp/";
 
 Meteor.startup(() => {
   // code to run on server at startup
+
   em = new EventDDP('test');
   em.addListener('hello',(client)=>{
     em.matchEmit("hello",{
