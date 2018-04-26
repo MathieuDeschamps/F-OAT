@@ -78,13 +78,14 @@ Template.editor.events({
   'click .deleteButton'(event, instance){
     var elm = event.currentTarget
     var idExtractor = $(elm).parents('form').attr('id').substr(5)
-
+    elm = $(elm).parents('li')[0]
     // save the state of the form
     var saveDisplayedForm = $('#' + forms[idExtractor].idDisplayedForm).children()
     var saveHiddenForm = $('#' + forms[idExtractor].idHiddenForm).children()
 
     forms[idExtractor].assembleForms()
-    forms[idExtractor].deleteElement(event.currentTarget)
+
+    forms[idExtractor].deleteElement(elm)
 
     //restore the previous state of forms
     $('#' + forms[idExtractor].idDisplayedForm).empty()
