@@ -39,6 +39,8 @@ export class videoControler {
 		// Frame annotée
 		this.annotedFrame=annotedFrame;
 		
+		console.log(annotedFrame);
+		
 	}
 
 	// Frame-Time management
@@ -324,7 +326,7 @@ export class videoControler {
 	getCurrentAnnotedFrame(){
 		var i= this.getCurrentAnnotedFrameIndice();
 		if (i>=0){
-			this.annotedFrame[];
+			return this.annotedFrame[i];
 		}
 	}
 		
