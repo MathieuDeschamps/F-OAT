@@ -55,6 +55,45 @@ Template.editor.events({
     forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
   },
 
+  // add element to the forms
+  'click .addButton'(event, instance){
+    var elm = event.currentTarget.parentNode
+    var idExtractor = $(elm).parents('form').attr('id').substr(5)
+
+    // save the state of the form
+    var saveDisplayedForm = $('#' + forms[idExtractor].idDisplayedForm).children()
+    var saveHiddenForm = $('#' + forms[idExtractor].idHiddenForm).children()
+
+    forms[idExtractor].assembleForms()
+    forms[idExtractor].addElement(elm)
+
+    //restore the previous state of forms
+    $('#' + forms[idExtractor].idDisplayedForm).empty()
+    $('#' + forms[idExtractor].idHiddenForm).empty()
+    $('#' + forms[idExtractor].idDisplayedForm).append(saveDisplayedForm)
+    $('#' + forms[idExtractor].idHiddenForm).append(saveHiddenForm)
+  },
+
+  // delete element to the forms
+  'click .deleteButton'(event, instance){
+    var elm = event.currentTarget
+    var idExtractor = $(elm).parents('form').attr('id').substr(5)
+    elm = $(elm).parents('li')[0]
+    // save the state of the form
+    var saveDisplayedForm = $('#' + forms[idExtractor].idDisplayedForm).children()
+    var saveHiddenForm = $('#' + forms[idExtractor].idHiddenForm).children()
+
+    forms[idExtractor].assembleForms()
+
+    forms[idExtractor].deleteElement(elm)
+
+    //restore the previous state of forms
+    $('#' + forms[idExtractor].idDisplayedForm).empty()
+    $('#' + forms[idExtractor].idHiddenForm).empty()
+    $('#' + forms[idExtractor].idDisplayedForm).append(saveDisplayedForm)
+    $('#' + forms[idExtractor].idHiddenForm).append(saveHiddenForm)
+  },
+
   // save the forms information
   'click #saveForms'(event, instance){
     var result
@@ -67,6 +106,7 @@ Template.editor.events({
         XMLObject = Writer.addExtractor(XMLObject, result)
       }
     })
+      console.log('XMLObject', XMLObject)
       var project = Projects.findOne(Router.current().params._id);
       var xml = Writer.convertDocumentToString(XMLObject,0);
       Meteor.call("updateXML",project,xml,(err,result)=>{
