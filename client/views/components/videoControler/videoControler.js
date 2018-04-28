@@ -1,47 +1,46 @@
 export class videoControler {
 	constructor(vid,frameRate,annotedFrame){
-		this.vid=vid;
-		//this.vidLength=this.vid.duration;
-		this.attachedObject=[];
-		this.attachedObjectFrequency=new Map();
-		// beginVid et endVid : numéros de frame de début et fin de la sélection.
-		this.beginVid=0;
-		this.frameRate=frameRate;
-		this.partialPlaying=false;
 		
+		// Balise vidéo
+		this.vid=vid;
+		
+		// Framerate
+		this.frameRate=frameRate;
+		
+		// Plage de lecture (pour le mode partialPlaying)
+		this.beginVid=1;
+		this.endVid=1;
+		
+		// Récupération du nombre de frame à partir du framerate
+		// On utilise un un intervalle qui vérifie si la vidéo est prête à être lu.
 		var that=this;
 		this.settingInterval=setInterval(function(){
-			if (vid.readyState > 0) {
-				that.endVid=that.timeToFrame(vid.duration);
-				that.beginSelect=0;
+			if (that.vid!=undefined && that.vid.readyState > 0) {
+				that.endVid=that.timeToFrame(that.vid.duration);
+				that.endVid=that.timeToFrame(that.vid.duration);
+				that.beginSelect=1;
 				that.endSelect=that.endVid;
 				clearInterval(that.settingInterval);
 			}
 		},50);
 		
 		
+		// Mode lecture
+		this.mode="full";
+		this.partialPlaying=false;
+		this.isPlaying=false;
 		
+		// Pour le pattern observer
+		this.updateInterval=null;
+		this.attachedObject=[];
+		this.attachedObjectFrequency=new Map();
+
+		
+		// Frame annotée
 		this.annotedFrame=annotedFrame;
+		
 	}
-	
-	// Lecture de la vidéo
-	play(){
-		if (this.beginSelect!=this.endSelect|| !this.partialPlaying){
-			this.vid.play();
-			var that=this;
-			this.updateInterval=setInterval(function(){
-				that.notify();
-			},1/this.frameRate);
-		}
-	}
-	
-	// Mise en pause de la vidéo.
-	pause(){
-		clearInterval(this.updateInterval);
-		this.vid.pause();
-	}
-	
-	
+
 	// Frame-Time management
 	
 	// Conversion 
@@ -55,8 +54,7 @@ export class videoControler {
 	timeToFrame(time){
 		return Math.round(time*this.frameRate)+1;
 	}
-	
-	
+
 	// Current element 
 	
 	// Retourne le temps courant de la vidéo
@@ -69,34 +67,76 @@ export class videoControler {
 		return this.timeToFrame(this.vid.currentTime);
 	}	
 	
-	// Retourne le numéro de la frame courante de la vidéo
+	// Redéfinit le numéro de la frame courante de la vidéo
 	setCurrentFrame(newCurrentFrame){
 		this.vid.currentTime=this.frameToTime(newCurrentFrame);
+		var that=this;
+		if (!this.isPlaying){
+			this.vid.addEventListener('timeupdate',function(){
+					that.pause();
+					that.notifyAttachedObjects();
+					//console.log("Freezed !");
+					that.vid.removeEventListener('timeupdate');
+				});
+		}
 	}
 	
-	// 
+	// Longueur de la vidéo
 	getVidDuration(){
 		return this.vid.duration;
+	}	
+	
+	// Nombre de frames de la vidéo
+	getNbFrame(){
+		return this.endVid;
+	}
+	
+	// Définition du mode de lecture
+	setMode(){
+		var oldMode=this.mode;
+		if (this.partialPlaying){
+			if (this.beginSelect<this.endSelect){
+				this.mode="partial";
+			}else{
+				this.mode="freeze";
+			}
+		}else{
+			this.mode="full";
+		}
+		if (oldMode!=this.mode && this.isPlaying || this.mode=="freeze"){
+			this.configMode();
+		}
+		console.log(this.mode,this.beginSelect,this.endSelect);
 	}
 	
 	
-	// Observer pattern methods : 
+	// Configuration du mode de lecture
+	configMode(){
+		clearInterval(this.updateInterval);
+		var that=this;
+		switch (this.mode){
+			case "full" : 
+				this.vid.removeEventListener('timeupdate');
+				this.updateInterval=setInterval(function(){that.fullPlay()},1/this.frameRate);
+				break;
+			case "partial" : 
+				this.updateInterval=setInterval(function(){that.partialPlay()},1/this.frameRate);
+				this.vid.removeEventListener('timeupdate');
+				break;
+			case 'freeze' :
+				this.setCurrentFrame(this.beginSelect);
+				this.vid.addEventListener('timeupdate',function(){
+					that.pause();
+					that.notifyAttachedObjects();
+					console.log("Freezed !");
+					that.vid.removeEventListener('timeupdate');
+				});
+				break;
+		}
+	}
 	
-	notify(){
-		// Gestion de la lecture partielle
-			if (this.partialPlaying){
-				// Affichage d'une frame. On met en pause.
-				if (this.beginSelect==this.endSelect){
-					this.setCurrentFrame(this.beginSelect);
-					this.pause();
-				}
-				else {
-					if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
-						this.setCurrentFrame(this.beginSelect);
-					}
-				}
-			}
-		
+	// Notification des objets abonnés (Pattern Observer)
+	notifyAttachedObjects(){	
 		var curFrame=this.getCurrentFrame();
 		var that=this;
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
@@ -104,25 +144,87 @@ export class videoControler {
 			if (curFrame % that.attachedObjectFrequency.get(object)==1){
 				object.notify(curFrame);
 			}
-			
-		})
+		});
+	}
+	
+	// Fonction de l'intervalle en mode full
+	fullPlay(){
+		this.notifyAttachedObjects();
+	}
+	
+	// Fonction de l'intervalle en mode partial
+	partialPlay(){
+		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
+			this.setCurrentFrame(this.beginSelect);
+		}
+		this.notifyAttachedObjects();		
+		console.log("partial");
+	}
+	
+	// Lecture de la vidéo
+	play(){
+		if (this.mode!="freeze"){
+			this.isPlaying=true;
+			this.vid.play();
+		}
+		this.configMode();
+	}
+	
+	// Mise en pause de la vidéo.
+	pause(){
+		this.vid.pause();
+		this.isPlaying=false;
+		clearInterval(this.updateInterval);
+		this.vid.removeEventListener('timeupdate');
+	}
+	
+	// Définition de l'intervalle de lecture
+	setPlayingInterval(begin,end){
+		if (begin>=1 &&  begin <= end && end<=this.endVid){
+			this.beginSelect=begin;
+			this.endSelect=end;
+		}
+		this.setMode();
+	}
+	
+	setBeginSelect(begin){
+		console.log("begin :", begin);
+		if (begin>=1 && begin<=this.endVid){
+			this.beginSelect=begin;
+			if (this.endSelect<begin){
+				this.endSelect=begin;
+			}
+		}
+		this.setMode();
+	}
+	
+	setEndSelect(end){
+		console.log("end :", end);
+		if (end>=1 && end<=this.endVid){
+			this.endSelect=end;
+			if (this.beginSelect>end){
+				this.beginSelect=end;
+			}
+		}
+		this.setMode();
+	}
+	
+	// Mode de lecture partielle
+	setPartialPlaying(pp){
+		this.partialPlaying=pp;
+		this.setMode();
+	}
 		
+	getPartialPlaying(){
+		return this.partialPlaying;
 	}
 	
 	// Abonnement d'un objet (les tableaux js sont dynamiques)
-	/*
-	attach(object){
-		this.attachedObject[this.attachedObject.length]=object;
-		this.attachedObjectFrequency.set(object,1);
-	}
-	*/
-	
 	attach(object,frequency){
 		this.attachedObject[this.attachedObject.length]=object;
 		this.attachedObjectFrequency.set(object,frequency);
 		console.log("attached object",this.attachedObject)
 	}
-	
 	
 	// Desabonnement d'un objet 
 	detach(object){
@@ -133,50 +235,14 @@ export class videoControler {
 			this.attachedObjectFrequency.delete(object);
 		}
 	}
-	
-	
-	
-	
-	// partial playing management : 
-	
-	// Définition de l'intervalle de lecture
-	setPlayingInterval(begin,end){
-		this.setBeginSelect(begin);
-		this.setEndSelect(end);
-	}
-	
-	setBeginSelect(begin){
-		if (begin>=1 && begin<=this.endVid){
-			this.beginSelect=begin;
-			if (this.endSelect<begin){
-				this.endSelect=begin;
-			}
-		}
-	}
-	
-	setEndSelect(end){
-		if (end>=1 && end<=this.endVid){
-			this.endSelect=end;
-			if (this.beginSelect>end){
-				this.beginSelect=end;
-			}
-		}
-	}
-	
-	// Mode de lecture partielle.
-	setPartialPlaying(pp){
-		this.partialPlaying=pp;
-	}
-		
-	getPartialPlaying(){
-		return this.partialPlaying;
-	}
 
 	
+	// Passer à la prochaine frame annotée
 	nextAnnotedFrame(){
 		var i=0,
 			j=this.annotedFrame.length-1,
-			currentFrame=this.getCurrentFrame(),k;
+			currentFrame=this.getCurrentFrame(),
+			k;
 		
 		if (currentFrame < this.annotedFrame[0]){
 			this.setCurrentFrame(this.annotedFrame[0]);
@@ -199,6 +265,8 @@ export class videoControler {
 		this.setCurrentFrame(this.annotedFrame[j]);
 		return true;
 	}
+
+	// Passer à la précédente frame annotée
 	prevAnnotedFrame(){
 		var i=0,
 			j=this.annotedFrame.length-1,
@@ -225,9 +293,7 @@ export class videoControler {
 		return true;
 	}
 	
-	/*
-	Private method?
-	*/
+	// Renvoie l'indice dans this.annotedFrame de la frame annotée courante
 	getCurrentAnnotedFrameIndice(){
 		var i=0,
 			j=this.annotedFrame.length-1,
@@ -254,8 +320,12 @@ export class videoControler {
 		return i;
 	}
 	
+	// Renvoie la frame annotée courante
 	getCurrentAnnotedFrame(){
-		this.annotedFrame[this.getCurrentAnnotedFrameIndice()];
+		var i= this.getCurrentAnnotedFrameIndice();
+		if (i>=0){
+			this.annotedFrame[];
+		}
 	}
 		
 }
