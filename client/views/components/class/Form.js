@@ -613,8 +613,9 @@ export class Form{
           addMenuBody = $(addMenuBody).children('[id="addMenuBody"]')
           Form.addToAddMenu(elementName, addMenuBody)
         }
-        //delete the element
-        $(element).remove()
+        //delete the element with the li parent tag
+        $(element).parent().remove()
+
       }
       // init the collapsible element
       $(document).ready(function(){
@@ -739,6 +740,7 @@ export class Form{
     $('#' + this.idHiddenForm).empty()
     $('#' + this.idDisplayedForm).append(saveDisplayedForm)
     $('#' + this.idHiddenForm).append(saveHiddenForm)
+    console.log('getXML : result', result)
     return result
   }
 

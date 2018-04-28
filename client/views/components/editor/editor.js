@@ -93,38 +93,6 @@ Template.editor.events({
     $('#' + forms[idExtractor].idDisplayedForm).append(saveDisplayedForm)
     $('#' + forms[idExtractor].idHiddenForm).append(saveHiddenForm)
   },
-
-  // save the forms information
-  'click #saveForms'(event, instance){
-    var result
-    var XMLObject = $.parseXML(Session.get('XMLDoc'))
-    $(forms).each(function(i,form){
-      result = form.getXML()
-      // console.log('result getXML', result[0])
-      if(result !=  undefined){
-        XMLObject = Writer.removeExtractor(XMLObject, form.name)
-        XMLObject = Writer.addExtractor(XMLObject, result)
-      }
-    })
-      console.log('XMLObject', XMLObject)
-      var project = Projects.findOne(Router.current().params._id);
-      var xml = Writer.convertDocumentToString(XMLObject,0);
-      Meteor.call("updateXML",project,xml,(err,result)=>{
-        if(err){
-          alert(err.reason);
-        }else{
-          // update the forms
-          $(forms).each(function(i,form){
-            // TODO maybe return the XML in result
-            form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
-            form.update()
-          })
-        }
-      });
-      // TODO call to update other elements
-
-
-  }
 });
 
 Template.editor.helpers({

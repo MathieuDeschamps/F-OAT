@@ -2,6 +2,7 @@ import './project.html';
 import { Form } from '../../components/class/Form.js'
 import {Projects} from '../../../../lib/collections/Project.js';
 import { Parser } from '../../components/class/Parser.js'
+import { Writer } from '../../components/class/Writer.js'
 var em;
 
 Template.project.onRendered(()=>{
@@ -49,24 +50,54 @@ Template.project.onRendered(()=>{
               $($.parseXML(XMLDoc)).find(nameExtractor),
                $.parseXML(XSDObject),
               'nav-' + i,'hidden-' + i, 'form-'+ i)
-              forms[i].buildForm('forms')
-            }
-          })
+            forms[i].buildForm('forms')
+          }
         })
-      }
-    });
-  })
-  Template.project.onDestroyed(()=>{
+      })
+    }
+  });
+})
+
+Template.project.onDestroyed(()=>{
     //put wrong values for the event => unsuscribe the user for the channel of this project
     em.setClient({
       appId: -1,
       _id: -1
     });
   });
-  Template.project.events({
-    'click #ddp'(event,instance){
-      alert("ok!");
-      em.emit('hello');
+
+Template.project.events({
+    'click #saveForms'(event,instance){
+      var result
+      var XMLObject = $.parseXML(Session.get('XMLDoc'))
+      $(forms).each(function(i,form){
+        result = form.getXML()
+        console.log('result getXML', result)
+        if(result !=  undefined){
+          XMLObject = Writer.removeExtractor(XMLObject, form.name)
+          XMLObject = Writer.addExtractor(XMLObject, result)
+        }
+      })
+        console.log('XMLObject', XMLObject)
+        var project = Projects.findOne(Router.current().params._id);
+        var xml = Writer.convertDocumentToString(XMLObject,0);
+        Meteor.call("updateXML",project,xml,(err,result)=>{
+          if(err){
+            alert(err.reason);
+          }else{
+            // update the forms
+            $(forms).each(function(i,form){
+              // TODO maybe return the XML in result
+              form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
+              form.update()
+            })
+            alert("ok!");
+            em.emit('hello');
+            // TODO call to update other elements
+
+          }
+        });
+
     },
 
     // check button event display form
