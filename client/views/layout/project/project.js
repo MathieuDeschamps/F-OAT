@@ -107,7 +107,7 @@ Template.project.events({
     if($(event.currentTarget).attr('marked') == 'true'){
       $(event.currentTarget).attr('marked', 'false')
       $('#extractor' + id).attr('style', 'display:none')
-      $('#timeLine' + id).attr('style', 'display:none')
+      $('#timeLine' + id).css('display','none')
     }else{
       $(event.currentTarget).attr('marked', 'true')
       $('#extractor' + id).attr('style', 'display:block')
