@@ -21,11 +21,12 @@ export class TimeLine {
         my_selected_color = ['#801010', "#101080", "#106010"];
         used_rect = "";
         used_color = "";
+        prec_timeLine = -1; // timeline de l'ancien rectangle
     
         //donner le div du timeLine la meme taille que le timeLine generer
         $("#"+id_time_line).css('width', width_total);
         $("#"+id_time_line).css('height', height_total);
-        console.log("timeLine: " + id_time_line)
+       // console.log("timeLine: " + id_time_line)
         //generer le timeLine dans son div
         time_line = d3.select("#"+id_time_line)
                 .append("svg")
@@ -53,26 +54,31 @@ export class TimeLine {
 
         blockPlay = function(d, i) {
             var id;
-            id = "#rect" +i +idTimeLine;   
-            var rect = $(id);
-            console.log("rect: ",rect);
+            id = "rect" +i; 
+            //$('#element_id .data[attribute=value]')
+            //var rect = $(id);
+           // var rect = $(id +" [timelineid='" + idTimeLine + "']");
+            var rect = $( "[id=" + id+ "][timelineid='" + idTimeLine +"']" );
+            var rectTimeId = Number(rect.attr("timelineid"));
+            //console.log("rect: ",rect);
+            //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
             if (rect_actif !== -1) {
-                /*
-            if(d.start === d.end){
-                var id = d.start;
-            }
-                 */
                 rect.attr("style", "fill:" + my_color[items[rect_actif].entry]);
             }
-            console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
-            if ((rect_actif !== i + (Number(idTimeLine) + 1)) | ( !vidCtrl.getPartialPlaying())) {
+            if(prec_timeLine === -1){
+                prec_timeLine = idTimeLine;
+            }
+            //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
+            if ((rect_actif !== i) | prec_timeLine !== idTimeLine | ( !vidCtrl.getPartialPlaying())) {
                 if(used_rect !== ""){
                     used_rect.attr("style", "fill:" + used_color);
                 }
                 used_color = my_color[d.entry];
                 rect.attr("style", "fill:" + my_selected_color[d.entry]);
                 used_rect = rect;
-                rect_actif = i + (Number(idTimeLine) + 1);
+                rect_actif = i;
+                prec_timeLine = idTimeLine;
+                // (Number(idTimeLine)+ 1)
                 vidCtrl.setPartialPlaying(true);
                 vidCtrl.setPlayingInterval(d.start,d.end);
                 console.log("debut = " + d.start + " fin = " + d.end);
@@ -87,47 +93,48 @@ export class TimeLine {
             }
         };
         gen.selectAll(".entryLines")
-                .data(entry)
-                .enter().append("line")
-                .attr("x1", 0)
-                .attr("y1", function (d, i) {
-                    return y1(i + 1);
-        })
-                .attr("x2", gen_width)
-                .attr("y2", function (d, i) {
-                    return y1(i + 1);
-        })
+            .data(entry)
+            .enter().append("line")
+            .attr("x1", 0)
+            .attr("y1", function (d, i) {
+                return y1(i + 1);
+            })
+            .attr("x2", gen_width)
+            .attr("y2", function (d, i) {
+                return y1(i + 1);
+            })
                 .attr("stroke", "lightgray");
         gen.selectAll(".movPart")
-                .data(items)
-                .enter().append("rect")
-                .attr("x", function (d) {
-                    return x1(d.start + 0.1);
-        })
-                .attr("y", function (d) {
-                    return y1(d.entry + 0.1);
-        })
-                .attr("width", function (d) {
-                    return Math.max(x1(d.end - 0.1) - x1(d.start), 10);
-        })
-                .attr("height", function (d) {
-                    return y1(0.8);
-        })
-                .attr("id", function (d, i) {
-                    return "rect" + i + idTimeLine ;
-        })
-                .attr("class", function(d){
-                    if(d.start === d.end){
-                        return "frame";
-            }else {
-                return "other";
-            }
-        })
-                .style("fill", function (d) {
-                    return my_color[d.entry];
-        })
-                .attr("stroke", "lightgray")
-                .on("click", blockPlay);
+            .data(items)
+            .enter().append("rect")
+            .attr("x", function (d) {
+                return x1(d.start + 0.1);
+            })
+            .attr("y", function (d) {
+                return y1(d.entry + 0.1);
+            })
+            .attr("width", function (d) {
+            return Math.max(x1(d.end - 0.1) - x1(d.start), 10);
+            })
+            .attr("height", function (d) {
+            return y1(0.8);
+            })
+            .attr("id", function (d, i) {
+            return "rect" + i;
+            })
+            .attr("timelineid", idTimeLine)
+            .attr("class", function(d){
+                if(d.start === d.end){
+                    return "frame";
+                }else {
+                    return "other";
+                }
+            })
+            .style("fill", function (d) {
+                return my_color[d.entry];
+            })
+            .attr("stroke", "lightgray")
+            .on("click", blockPlay);
 
         time_line.append("text")
                 .text(name + " timeline")
