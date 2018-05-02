@@ -1,28 +1,28 @@
 export class TimeLine {
     constructor(name,frameRate,nbFrame,data,idTimeLine) {
-        id_time_line = "timeLine" + idTimeLine;
-        debut = 0;
-        fin = nbFrame;
+        var id_time_line = "timeLine" + idTimeLine;
+        var debut = 0;
+        var fin = nbFrame;
         rect_actif = -1;
-        frame_rate = frameRate;
-        nb_frame = nbFrame;
-        entry = ["Frame","Shot","Scene"];
-        entry_length = entry.length;
-        items = data;
+        var frame_rate = frameRate;
+        var nb_frame = nbFrame;
+        var entry = ["Frame","Shot","Scene"];
+        var entry_length = entry.length;
+        var items = data;
         vidCtrl.setPlayingInterval(debut,fin);
-        ext_margin = 5;
-        width_total = 960;
-        line_height = 30;
-        height_total = line_height * entry_length;
-        trbl = [20, 15, 15, 120]; //top right bottom left;
-        gen_height = height_total - 2 * ext_margin;
-        gen_width = width_total - 2 * ext_margin - trbl[1] - trbl[3];
-        my_color = ["#ff1010", "#1010ff", "#10C010"];
-        my_selected_color = ['#801010', "#101080", "#106010"];
+        var ext_margin = 5;
+        var width_total = 960;
+        var line_height = 30;
+        var height_total = line_height * entry_length;
+        var trbl = [20, 15, 15, 120]; //top right bottom left;
+        var gen_height = height_total - 2 * ext_margin;
+        var gen_width = width_total - 2 * ext_margin - trbl[1] - trbl[3];
+        var my_color = ["#ff1010", "#1010ff", "#10C010"];
+        var my_selected_color = ['#801010', "#101080", "#106010"];
         used_rect = "";
         used_color = "";
         prec_timeLine = -1; // timeline de l'ancien rectangle
-    
+            
         //donner le div du timeLine la meme taille que le timeLine generer
         $("#"+id_time_line).css('width', width_total);
         $("#"+id_time_line).css('height', height_total);
@@ -55,6 +55,7 @@ export class TimeLine {
         blockPlay = function(d, i) {
             var id;
             id = "rect" +i; 
+            //console.log("items[rect_actif]: " , items[rect_actif]);
             //$('#element_id .data[attribute=value]')
             //var rect = $(id);
            // var rect = $(id +" [timelineid='" + idTimeLine + "']");
