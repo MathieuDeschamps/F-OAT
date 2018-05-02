@@ -20,28 +20,24 @@ Template.editor.events({
 
 
   // move in the children element
-  'click .collapsible-header'(event, instance){
-    var elm = event.currentTarget
-    var id = $(elm).attr('id').substr(6)
-    var idExtractor = $(elm).parents('form').attr('id').substr(5)
-    // TODO debug
-    if($(elm).find('i').text() == 'keyboard_arrow_right'){
-      $(elm).find('i').text('keyboard_arrow_down')
-      // does not trigger the moveInForm for add element
-      if($(elm).attr('name') != undefined){
-        forms[idExtractor].assembleForms()
-        forms[idExtractor].buildNav($(elm).parents())
-        forms[idExtractor].moveInForm(id)
-        forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
-        $(document).ready(function(){
-          $('.collapsible').collapsible();
-        });
+    'click .collapsible-header'(event, instance){
+      var elm = event.currentTarget
+      var id = $(elm).attr('id').substr(6)
+      var idExtractor = $(elm).parents('form').attr('id').substr(5)
+      // TODO debug
+      if($($(elm).find('i')[0]).text() == 'keyboard_arrow_right'){
+        $($(elm).find('i')[0]).text('keyboard_arrow_down')
+        // does not trigger the moveInForm for add element
+        if($(elm).attr('name') != undefined){
+          forms[idExtractor].assembleForms()
+          forms[idExtractor].buildNav($(elm).parents())
+          forms[idExtractor].moveInForm(id)
+          forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
+        }
+      }else if($($(elm).find('i')[0]).text() == 'keyboard_arrow_down'){
+          $($(elm).find('i')[0]).text('keyboard_arrow_right')
       }
-
-    }else if($(elm).find('i').text() == 'keyboard_arrow_down'){
-      $(elm).find('i').text('keyboard_arrow_right')
-    }
-  },
+    },
 
   // move in the parent element
   'click .breadcrumb'(event, instance){
@@ -53,6 +49,7 @@ Template.editor.events({
     forms[idExtractor].buildNav($(elm).parents())
     forms[idExtractor].moveInForm(id)
     forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
+    forms[idExtractor].collapseAll(forms[idExtractor].idDisplayedForm)
   },
 
   // add element to the forms

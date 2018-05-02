@@ -91,6 +91,18 @@ export class Form{
       Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
 
+  $(document).ready(function(){
+    $('.collapsible').collapsible(
+    // {
+    // onOpen: function(elm) {
+    // $($(elm).find('i')[0]).text('keyboard_arrow_down')
+    // }, // Callback for Collapsible open
+    // onClose: function(elm) {   $($(elm).find('i')[0]).text('keyboard_arrow_right') } // Callback for Collapsible close
+    // }
+    );
+  });
+
+
     }
   }
 
@@ -124,8 +136,6 @@ export class Form{
       var hasDeleteButton
       var ul
 
-
-
       $(XMLObjectXSD).each(function(index,nodeXSD){
         hasDeleteButton = false
         j = 0
@@ -153,17 +163,15 @@ export class Form{
       }
 
       // set the value of the number of children to display
-      if(maxOccurs == 'unbounded' || nodesXML.length < minOccurs){
-        if(nodesXML.length < minOccurs){
-          maxOccurs = minOccurs
-        }else{
-          maxOccurs = nodesXML.length
-        }
+      if(nodesXML.length < minOccurs){
+        maxOccurs = minOccurs
+      }else if(maxOccurs == 'unbounded' || nodesXML.length < maxOccurs){
+        maxOccurs = nodesXML.length
       }
+
 
       childrenXSD = $(nodeXSD).children().children()
       childrenXSD = $(childrenXSD).children('xs\\:element')
-
       while(j < maxOccurs){
           nodeXML = $(nodesXML).get(j)
           currentIdNode = indexParent + '-' + nbChildren
@@ -371,7 +379,7 @@ export class Form{
 
 
   // function which add a deleteButton
-  // return the a string which is the code of the dlete button
+  // return the a string which is the code of the delete button
   static addDeleteButton(){
     var deleteButton
     deleteButton = '<i class="red darken-4 material-icons tiny deleteButton" >clear</i>'
@@ -671,10 +679,20 @@ export class Form{
   }
 
   // collapse all the element and their children
-  // id
+  // id the identifiant of the element to collapse
   collapseAll(id){
-    // TODO find a way to collapse element without trigger the event
-    // may be test close and open method of materialize
+    var arrow
+    var toCollapse = $('#' + id).find('[class~="collapsible"]')
+    // console.log('toCollapse', toCollapse)
+    $(toCollapse).each(function(i,e){
+      $(e).children('li').each(function(i, li){
+            $(e).collapsible('close',i)
+            // update the state of the arrow of the header
+            arrow = $(li).children('div[class~="collapsible-header"]')
+            arrow = $(arrow).find('i')[0]
+            $(arrow).text('keyboard_arrow_right')
+      })
+    })
   }
 
   // TODO fix problem with timeLine
@@ -785,7 +803,8 @@ export class Form{
           minOccurs = 1
         }
 
-        if(maxOccurs == 'unbounded'){
+        // set the value of the number of children to display
+        if(maxOccurs == 'unbounded' || nodesForm.length < maxOccurs){
           maxOccurs = nodesForm.length
         }
 
@@ -794,7 +813,8 @@ export class Form{
         }else{
           childrenXSD = $(nodeXSD).children().children()
           childrenXSD = $(childrenXSD).children('xs\\:element')
-
+          console.log('nodeName', nodeName)
+          console.log('maxOccurs', maxOccurs)
           while(j < maxOccurs){
             currentNode = $('<' + nodeName + '/>')
             nodeForm = $(nodesForm).get(j)
