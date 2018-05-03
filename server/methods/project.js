@@ -93,7 +93,6 @@ createFileXML = function(id){
   if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
   }
-  console.log("ID "+id);
   var buff = generateContent(Projects.findOne({_id: id}), id);
   fs.writeFile(dir+"/"+"annotation.xml",buff,function(err){
     if(err) {
@@ -111,7 +110,6 @@ createFileXML = function(id){
 generateContent = function(project, id){
     var builder = require('xmlbuilder');
     var date = moment().format('MMMM Do YYYY');
-    console.log(project);
     var doc = builder.create('root',{version: '1.0', encoding: 'UTF-8', standalone:'no'})
       .ele('project')
         .att('author',project.owner)
