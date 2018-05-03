@@ -54,8 +54,9 @@ Template.team.events({
       Meteor.call("userNameExist",newCoworker_name,(err,result)=>{
         if(err){
           alert(err.reason);
-        }
-        else{
+        }else if(!result){
+          toastr.warning("There user does not exist.");
+        }else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
             if(err){
               return;

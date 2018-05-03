@@ -90,18 +90,15 @@ export class Form{
       var XSD = $(this.XSDObject).find('xs\\:schema').children('xs\\:element')
       Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
-      // init the collapsible element
-      $(document).ready(function(){
-        $('.collapsible').collapsible();
-      });
+
     }
   }
 
   // recursive funtion which build the form
-  // XMLObjectData
+  // XMLObjectData the data which fill the default value of the form
   // XMLObjectXSD the first node should be a xs:element
   // indexParent the index of the parentNode
-  // parentNode the element where the form is built
+  // parentNode the ul element where the form is built
   static recBuildForm(XMLObjectData, XMLObjectXSD, indexParent, parentNode){
     if(XMLObjectXSD == undefined || indexParent == undefined ||
       parentNode == undefined){
@@ -121,13 +118,16 @@ export class Form{
       var j
       var maxOccurs
       var minOccurs
-      var deleteButton = ''
-      var addMenu
-      var addbutton = ''
       var deleteButton
+      var addMenu
+      var elementToAdd = []
+      var hasDeleteButton
       var ul
 
+
+
       $(XMLObjectXSD).each(function(index,nodeXSD){
+        hasDeleteButton = false
         j = 0
         nodeName = $(nodeXSD).attr('name')
         maxOccurs = $(nodeXSD).attr('maxOccurs')
@@ -144,16 +144,12 @@ export class Form{
 
         // set the value of the add button
         if(maxOccurs == 'unbounded' || nodesXML.length < maxOccurs){
-          addbutton += nodeName
-          addbutton += '<a href="#"'
-          addbutton += 'class=" btn-floating btn-tiny waves-effect blue darken-4 right">'
-          addbutton += '<i class="material-icons">add</i></a>'
-
+          elementToAdd.push(nodeName)
       }
 
       // set the value of the delete button
       if(minOccurs < nodesXML.length){
-        deleteButton +=  '<i class=" red darken-4 material-icons medium" >delete</i>'
+        hasDeleteButton = true
       }
 
       // set the value of the number of children to display
@@ -180,11 +176,13 @@ export class Form{
           node += '<div class="col s1">'
           node += '<i class="material-icons">keyboard_arrow_right</i>'
           node += '</div>'
-          node += '<div class="col s5">'
+          node += '<div class="col s9">'
           node += nodeName
           node += '</div>'
-          node += '<div class="col s1 offset-s5">'
-          node += deleteButton
+          node += '<div class="col s2">'
+          if(hasDeleteButton){
+            node += Form.addDeleteButton()
+          }
           node += '</div>'
           node += '</div>'
           node += '<div id="body' + currentIdNode + '" '
@@ -193,6 +191,7 @@ export class Form{
           node += '</div>'
           node += '</li>'
           $(parentNode).append(node)
+
 
           // retrieve the attributes
           if($(nodeXSD).children().children('xs\\:attribute').length > 0){
@@ -228,25 +227,34 @@ export class Form{
             j++
           }
         })
-      //TODO make a function to add and remove element in the add button
-      // add the menu only if ther is element which can be add
-      if(addbutton != ''){
+
+        // add the addMenu if he does not already exists
         parentName = $(XMLObjectXSD).parents('xs\\:element').attr('name')
-        addMenu = '<li>'
-        addMenu += '<div id="addHeader' + currentIdNode + '" class="collapsible-header white-text blue darken-4 row">'
-        addMenu += '<div class="col s1">'
-        addMenu += '<i class="material-icons">keyboard_arrow_right</i>'
-        addMenu += '</div>'
-        addMenu += '<div class="col s11">'
-        addMenu +=  'Add element to ' + parentName
-        addMenu += '</div>'
-        addMenu += '</div>'
-        addMenu += '<div id="addBody' + currentIdNode + '" class="collapsible-body">'
-        addMenu += addbutton
-        addMenu += '</div>'
-        addMenu += '</li>'
-        $(parentNode).append(addMenu)
-      }
+        if($(parentNode).children('li').children('#addMenuBody').length == 0){
+          addMenu = '<li style="display:none">'
+          addMenu += '<div id="addMenuHeader" class="collapsible-header white-text blue darken-4 row">'
+          addMenu += '<div class="col s1">'
+          addMenu += '<i class="material-icons">keyboard_arrow_right</i>'
+          addMenu += '</div>'
+          addMenu += '<div class="col s11">'
+          addMenu +=  'Add element to ' + parentName
+          addMenu += '</div>'
+          addMenu += '</div>'
+          addMenu += '<div id="addMenuBody" class="collapsible-body">'
+          addMenu += '</div>'
+          addMenu += '</li>'
+          $(parentNode).append(addMenu)
+        }
+
+        // add all the elements of the array to the addMenu
+        $(elementToAdd).each(function(i,nodeName){
+          Form.addToAddMenu(nodeName,
+            $(parentNode).children('li').children('#addMenuBody'))
+        })
+        // init the collapsible element
+        $(document).ready(function(){
+          $('.collapsible').collapsible();
+        });
     }
   }
 
@@ -332,6 +340,290 @@ export class Form{
     }
   }
 
+  // function which add a element to the addMenu
+  // name of the element to remove
+  // addMenuBody reference on the addMenuBody
+  static addToAddMenu(name, addMenuBody){
+    var addButton
+    addButton ='<div class="row" name="'+ name +'">'
+    addButton += name
+    addButton += '<a href="#"'
+    addButton += 'class=" btn-floating btn-tiny waves-effect blue darken-4 right addButton">'
+    addButton += '<i class="material-icons">add</i></a>'
+    addButton += '</div>'
+    $(addMenuBody).append(addButton)
+    $(addMenuBody).parent().css('display','block')
+  }
+
+  // function which remove a element to the addMenu
+  // name of the element to remove
+  // addMenuBody reference on the addMenuBody
+  static deleteToAddMenu(name, addMenuBody){
+    if(name == undefined || addMenuBody == undefined){
+      alert("deleteToAddMenu : Illegal Argument Exception")
+    }else{
+      $(addMenuBody).children('div[name="'+ name +'"]').remove()
+      if($(addMenuBody).children().length == 0){
+        $(addMenuBody).parent().css('display','none')
+      }
+    }
+  }
+
+
+  // function which add a deleteButton
+  // return the a string which is the code of the dlete button
+  static addDeleteButton(){
+    var deleteButton
+    deleteButton = '<i class="red darken-4 material-icons tiny deleteButton" >clear</i>'
+    return deleteButton
+  }
+
+  // function which remove element in the form
+  // element the element to add
+  addElement(element){
+    if(element == undefined){
+        alert("addElement : Illegal Argument Exception")
+    }else{
+      var maxOccurs
+      var minOccurs
+      var elementName = $(element).attr('name')
+      var isSelectedParent = true
+      var parentsArray = []
+      var idDisplayedFrom = this.idDisplayedForm
+      var parentHeader
+      var parentName
+      var parentNode
+      var indexParent
+      var nbChildren
+      var elementXSD
+      var attrXSD
+      var childrenXSD
+      var nodesXSD
+      var nbForm
+      var hasDeleteButton = false
+      var addMenuBody
+      var otherChildren
+      var ulMenu
+
+      // filter the parent elem
+      $(element).parents().each(function(i,parent){
+        if($(parent).attr('id') == idDisplayedFrom ){
+          isSelectedParent = false
+        }
+        if(isSelectedParent && $(parent).attr('class') == 'collapsible-body'){
+          // get the header of the parent
+          parentHeader = parent.parentNode
+          parentHeader = $(parentHeader).children('div[class~="collapsible-header"]')
+          parentsArray.push($(parentHeader))
+        }
+      })
+      parentsArray.reverse()
+      parentsArray.pop()
+
+      // retrieve the XSD element to the element to add with the parents
+      nodesXSD = $(this.XSDObject).find('xs\\:schema')
+      $(parentsArray).each(function(i,parent){
+        parentName = $(parent).attr('name')
+        nodesXSD = $(nodesXSD).children('xs\\:element[name="' + parentName + '"]')
+        nodesXSD = $(nodesXSD).children().children()
+      })
+
+      elementXSD = $(nodesXSD).children('xs\\:element[name="' + elementName + '"]')
+
+      minOccurs = $(elementXSD).attr('minOccurs')
+      maxOccurs = $(elementXSD).attr('maxOccurs')
+      if(minOccurs == undefined){
+        minOccurs = 1
+      }
+      if(maxOccurs == undefined){
+        maxOccurs = 1
+      }
+      nbForm = $(element).parents('ul[class~="collapsible"]')[0]
+      nbForm = $(nbForm).children()
+      nbForm = $(nbForm).children('div[name="'+ elementName +'"][class~="collapsible-header"]')
+      nbForm = nbForm.length
+
+      // add the element to the form
+      if(maxOccurs == 'unbounded' || parseInt(maxOccurs) > nbForm){
+        parentNode = $(element).parents('ul[class~="collapsible"]')[0]
+        nbChildren = $(element).parents('ul[class~="collapsible"]')[0]
+        nbChildren = $(nbChildren).children('li').length - 1
+        indexParent = $(element).parents('div[class~="collapsible-body"]')[1]
+        indexParent = $(indexParent).attr('id').substr(4)
+        indexParent += '-' + nbChildren
+        childrenXSD =  $(elementXSD).children().children()
+        childrenXSD = $(childrenXSD).children('xs\\:element')
+
+        // add the new element
+        // set the value of the delete button
+        node = '<li>'
+        node += '<div id="header' + indexParent + '" '
+        node += 'name ="' + elementName + '" '
+        node += 'class="collapsible-header white-text blue darken-4 row">'
+        node += '<div class="col s1">'
+        node += '<i class="material-icons">keyboard_arrow_right</i>'
+        node += '</div>'
+        node += '<div class="col s9">'
+        node += elementName
+        node += '</div>'
+        node += '<div class="col s2">'
+        // add a delete button for the previous node
+        if(minOccurs == nbForm){
+          otherChildren = $(parentNode).children('li')
+          otherChildren = $(otherChildren).children(
+            'div[name="' + elementName +'"][class~="collapsible-header"]'
+          )
+          $(otherChildren).each(function(i,children){
+            $(children).children('div').last().append(Form.addDeleteButton())
+          })
+        }
+        // add the delete button for the current element
+        if(minOccurs < nbForm + 1){
+          node += Form.addDeleteButton()
+        }
+        // add the new element
+        node += '</div>'
+        node += '</div>'
+        node += '<div id="body' + indexParent + '" '
+        node += 'name ="' + elementName + '" '
+        node += 'class="collapsible-body">'
+        node += '</div>'
+        node += '</li>'
+        $(parentNode).children().last().before(node)
+        parentNode = $(parentNode).children('li').children('div[id="body'+ indexParent +'"]')
+        // retrieve the attributes of the new element
+        if($(elementXSD).children().children('xs\\:attribute').length > 0){
+          // attributes of the nodes
+          attrsXSD = $(elementXSD).children().children('xs\\:attribute')
+        }else{
+          // attributes of the leaves
+          attrsXSD = $(elementXSD).children().children('xs\\:simpleContent')
+          attrsXSD = $(attrsXSD).children('xs\\:extension')
+          attrsXSD = $(attrsXSD).children('xs\\:attribute')
+        }
+
+        // add the attributs to the form
+        $(attrsXSD).each(function(i,attrXSD){
+          attrName = $(attrXSD).attr('name')
+          if($(attrXSD).children().length > 0){
+
+            Form.addEnum(undefined, attrXSD , parentNode)
+          }else{
+            Form.addField(undefined, attrXSD , 'body' + indexParent)
+          }
+        })
+        // add the ul element which will contains the children elements
+        ulMenu = '<ul class="collapsible" data-collapsible="expandable">'
+        $('#body' + indexParent).children().last().after(ulMenu)
+
+        // add the children of the new element
+        if(childrenXSD.length > 0){
+          parentNode = $('#body' + indexParent).children('ul[class~="collapsible"]')
+          Form.recBuildForm(undefined, childrenXSD, indexParent, parentNode)
+        }
+        // remove the button to the addMenuBody
+      	if(maxOccurs !='undounded' && nbForm + 1 == maxOccurs){
+          addMenuBody = $(element).parents('div[class~="collapsible-body"]')[0]
+          Form.deleteToAddMenu(elementName, addMenuBody)
+        }
+        // init the collapsible element
+        $(document).ready(function(){
+          $('.collapsible').collapsible()
+        })
+      }
+    }
+  }
+
+  // function which remove element in the form
+  // element the element to delete
+  deleteElement(element){
+    if(element == undefined){
+      alert('deleteElement : Illegal Argument Exception')
+    }else{
+      var idDisplayedFrom = this.idDisplayedForm
+      var isSelectedParent = true
+      var parentName
+      var parentHeader
+      var parentsArray = []
+      var nodesXSD
+      var elementXSD
+      var minOccurs
+      var maxOccurs
+      var nbForm
+      var elementXSD
+      var otherChildren
+
+      element = $(element).children('div[class~="collapsible-header"]')
+      var elementName = $(element).attr('name')
+      var addMenuBody
+
+      // filter the parent elem
+      $(element).parents().each(function(i,parent){
+        if($(parent).attr('id') == idDisplayedFrom ){
+          isSelectedParent = false
+        }
+        if(isSelectedParent && $(parent).attr('class') == 'collapsible-body'){
+          // get the header of the parent
+          parentHeader = parent.parentNode
+          parentHeader = $(parentHeader).children('div[class~="collapsible-header"]')
+          parentsArray.push($(parentHeader))
+        }
+      })
+      parentsArray.reverse()
+      // retrieve the XSD element to the element to add with the parents
+      nodesXSD = $(this.XSDObject).find('xs\\:schema')
+
+      $(parentsArray).each(function(i,parent){
+        parentName = $(parent).attr('name')
+        nodesXSD = $(nodesXSD).children('xs\\:element[name="' + parentName + '"]')
+        nodesXSD = $(nodesXSD).children().children()
+      })
+
+      elementXSD = $(nodesXSD).children('xs\\:element[name="' + elementName + '"]')
+
+      minOccurs = $(elementXSD).attr('minOccurs')
+      maxOccurs = $(elementXSD).attr('maxOccurs')
+      if(minOccurs == undefined){
+        minOccurs = 1
+      }
+      if(maxOccurs == undefined){
+        maxOccurs = 1
+      }
+      nbForm = $(element).parents('ul[class~="collapsible"]')[0]
+      nbForm = $(nbForm).children()
+      nbForm = $(nbForm).children('div[name="'+ elementName +'"][class~="collapsible-header"]')
+      nbForm = nbForm.length
+      console.log()
+      if(nbForm > minOccurs){
+        // remove the delete button
+        if(nbForm - 1 == minOccurs){
+          otherChildren =  $(element).parents('div[class~="collapsible-body"]')[0]
+          otherChildren = $(otherChildren).children('ul').children('li')
+          otherChildren = $(otherChildren).children(
+            'div[name="' + elementName + '"][class~="collapsible-header"]'
+          )
+          otherChildren = $(otherChildren).each(function(i,child){
+            $(child).children().last().empty()
+          })
+        }
+        // add the element to the addMenu
+        if(maxOccurs!= 'unbounded' && nbForm == maxOccurs){
+          addMenuBody = $(element).parents('div[class~="collapsible-body"]')[0]
+          addMenuBody = $(addMenuBody).children('ul').children('li')
+          addMenuBody = $(addMenuBody).children('[id="addMenuBody"]')
+          Form.addToAddMenu(elementName, addMenuBody)
+        }
+        //delete the element with the li parent tag
+        $(element).parent().remove()
+
+      }
+      // init the collapsible element
+      $(document).ready(function(){
+        $('.collapsible').collapsible()
+      })
+    }
+  }
+
   // build the nav element of the form which contains the parents tag
   // parents all the parents element
   buildNav(parents){
@@ -352,15 +644,16 @@ export class Form{
         if($(parent).attr('id') == idDisplayedFrom ){
           isSelectedParent = false
         }
-        if(isSelectedParent && $(parent).attr('class') == 'collapsible'){
-          // get the first parent
-          parentHeader = $(parent).find('div[class~="collapsible-header"]').get(0)
+        if(isSelectedParent && $(parent).attr('class') == 'collapsible-body'){
+          // get the header of the parent
+          parentHeader = parent.parentNode
+          parentHeader = $(parentHeader).children('div[class~="collapsible-header"]')
           parentsArray.push($(parentHeader).clone())
         }
       })
       // remove the last element of the array
       parentsArray.reverse()
-      parentsArray.pop()
+
       $('#' + this.idNav).find('div[id="anchor"]').empty()
       // default value of nav
       if(parentsArray.length == 0){
@@ -384,6 +677,7 @@ export class Form{
     // may be test close and open method of materialize
   }
 
+  // TODO fix problem with timeLine
   // display the information of the frames in the forms
   // numFrame is the number or the timeId(XML) of the frame to display
   displayFrame(numFrame){
@@ -446,6 +740,7 @@ export class Form{
     $('#' + this.idHiddenForm).empty()
     $('#' + this.idDisplayedForm).append(saveDisplayedForm)
     $('#' + this.idHiddenForm).append(saveHiddenForm)
+    console.log('getXML : result', result)
     return result
   }
 
@@ -533,14 +828,13 @@ export class Form{
                   attrValue = $(attrXSD).attr('default')
               }
               // console.log(attrName,' ', attrValue)
-              // using setAttribute() to keep the uppercase rather than attr()
-              $(currentNode)[0].setAttribute(attrName, attrValue)
+              // using setAttributeNS() to keep the uppercase rather than attr()
+              $(currentNode)[0].setAttributeNS('' ,attrName, attrValue)
             })
 
 
             if(childrenXSD.length > 0){
-
-              childrenForm = $(nodesForm).children('ul[class="collapsible"]')
+              childrenForm = $(nodeForm).children('ul[class="collapsible"]')
               childrenForm = $(childrenForm).children('li').children()
               $(currentNode).append(Form.recGetXML(childrenForm, childrenXSD))
             }
@@ -553,30 +847,6 @@ export class Form{
       return result
     }
   }
-      // nodeName = $(parentNode).find('div[class~="collapsible-header"]')[0]
-      // nodeName = $(nodeName).children('div').text()
-      //
-      //
-      // body = $(parentNode).find('div[class~="collapsible-body"]')[0]
-      // //console.log('parentNode', parentNode)
-      // //console.log('nextNodes', nextNodes)
-      // nextNodes = $(body).children('ul[class="collapsible"]').children('li')
-      // attributes = $(body).children('div').find('input')
-      //
-      // result = $('<' + nodeName + '/>')
-      // // add attributes to the current node of the XML
-      // $(attributes).each(function(i,attribut){
-      //   attrName = $(attribut).attr('name')
-      //
-      //   attrValue = $(attribut).val()
-      //   result.attr(attrName, attrValue)
-      // })
-      //
-      // // recursive call on the children of the current node
-      // $(nextNodes).each(function(i,nextNode){
-      //   result.append(Form.recGetXML(nextNode))
-      // })
-
 
   // update the form with the new XML
   // which is previous set with form.XMLObject = newXML

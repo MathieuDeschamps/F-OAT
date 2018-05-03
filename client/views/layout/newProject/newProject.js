@@ -26,6 +26,7 @@ Template.newproject.events({
         event.preventDefault();
         var _projectName = $('.projectName').val();
         var _projectUrl = $('.url').val();
+        var _downUrl = $('.downUrl').val();
 
         var _projectFile = $('#selectedFile')[0].files[0];
 
@@ -45,6 +46,10 @@ Template.newproject.events({
         //If we give an URL for the project
         if(!_projectFile){
             _url = _projectUrl;
+            if(!_downUrl){//we need a download link for the video
+                toastr.warning("We need a download link!");
+                return;
+            }
         }
 
         //Else, if we give a file for the project
@@ -61,6 +66,7 @@ Template.newproject.events({
             name: _projectName,
             owner: ownerId.username,
             url: _url,
+            downUrl: (_downUrl ? _downUrl : null),
             participants:_participant2,
             notifications:[]
         };

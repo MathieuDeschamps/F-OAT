@@ -26,19 +26,12 @@ Template.dashboard.helpers({
 Template.dashboard.events({
 
   'click .remove' (event, instance){
-    Meteor.call("getExtractorsParam","http://127.0.0.1:8080",(error,result)=>{
-        if(error){
-            alert(error.reason);
-        }else{
-            console.log(result);
-        }
+      var elm = event.target;
+      var $elm = $(elm);
 
-    })
-    var elm = event.target;
-    var $elm = $(elm);
     Projects.remove({_id: $elm.attr('name')},(err)=>{
       if(err){
-        alert(error);
+        alert(err);
       }
     })
   },
