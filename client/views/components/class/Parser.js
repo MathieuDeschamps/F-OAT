@@ -38,29 +38,36 @@ export class Parser{
   // static getTimelineData(xml,nameExtractor){
   //   var XMLObject = $.parseXML(xml)
   //   var result = []
+  //   var data =[]
   //   var intervals = $(XMLObject).find('extractors').children(nameExtractor)
   //   var intervalName
   //   var start
   //   var end
   //   var added = false
+  //   var frameRate = parseFloat($(XMLObject).find('header').find('video').attr('fps'))
+  //   var nbFrame = Parser.getNbFrames(xml, nameExtractor)
+  //
+  //
   // //TODO timeId case
   //   intervals = $(intervals).find('[startFrame][endFrame]')
   //   $(intervals).each(function(i,interval){
   //     intervalName = interval.tagName
-  //     start = parseInt($(interval).attr('start'))
-  //     end = parseInt($(interval).attr('end'))
-  //     $(result).each(function(i,e){
+  //     start = parseInt($(interval).attr('startFrame'))
+  //     end = parseInt($(interval).attr('endFrame'))
+  //     $(data).each(function(i,e){
   //       if($(e).attr('name') == intervalName){
-  //         e.data.push({'start': start, 'end': end})
+  //         data.push({'start': start, 'end': end})
   //         added = true
   //       }
   //     })
   //     if(!added){
-  //       result.push({'name': intervalName, 'data' : [
+  //       data.push({'name': intervalName, 'data' : [
   //         {'start' : start, 'end' : end}
   //       ]})
   //     }
   //   })
+  //
+  //   result.push({'frameRate': frameRate, 'nbFrame' : nbFrame, 'data': data})
   //   return result
   // }
 

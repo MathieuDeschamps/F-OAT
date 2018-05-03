@@ -1,11 +1,11 @@
 <template name="playerCommand">
 
-<div id='playerCommand'>
- <button id='playButton' type="button">Play</button> 
- <button id='pauseButton' type="button">Pause</button> 
- <button id='partialButton' type="button">Partial playing</button> 
- <button id='nextAnnotedButton' type="button">Next annoted frame</button> 
- <button id='prevAnnotedButton' type="button">Previous annoted frame</button> 
+<div id='playerCommand' class="row">
+  <a id='playButton' class=" btn-floating btn-tiny waves-effect blue darken-4"><i class="material-icons">play_arrow</i></a>
+  <a id='pauseButton' class=" btn-floating btn-tiny waves-effect blue darken-4"><i class="material-icons">pause</i></a>
+ <button id='partialButton' type="button">Partial playing</button>
+ <button id='nextAnnotedButton' type="button">Next annoted frame</button>
+ <button id='prevAnnotedButton' type="button">Previous annoted frame</button>
  <form class="selection">
 <input id="beginSelect"  type="number">
 <input id="endSelect"  type="number">

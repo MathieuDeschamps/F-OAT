@@ -6,7 +6,7 @@ export class TimeLine {
         rect_actif = -1;
         var frame_rate = frameRate;
         var nb_frame = nbFrame;
-        var entry = ["Frame","Shot","Scene"];
+        var entry = ["frame","shot","scene"];
         var entry_length = entry.length;
         var items = data;
         vidCtrl.setPlayingInterval(debut,fin);
@@ -22,7 +22,7 @@ export class TimeLine {
         used_rect = "";
         used_color = "";
         prec_timeLine = -1; // timeline de l'ancien rectangle
-            
+
         //donner le div du timeLine la meme taille que le timeLine generer
         $("#"+id_time_line).css('width', width_total);
         $("#"+id_time_line).css('height', height_total);
@@ -54,7 +54,7 @@ export class TimeLine {
 
         blockPlay = function(d, i) {
             var id;
-            id = "rect" +i; 
+            id = "rect" +i;
             //console.log("items[rect_actif]: " , items[rect_actif]);
             //$('#element_id .data[attribute=value]')
             //var rect = $(id);
@@ -124,13 +124,16 @@ export class TimeLine {
             return "rect" + i;
             })
             .attr("timelineid", idTimeLine)
-            .attr("class", function(d){
-                if(d.start === d.end){
-                    return "frame";
-                }else {
-                    return "other";
-                }
+            .attr("startframe", function(d){
+              return d.start
             })
+            .attr("endframe", function(d){
+              return d.end
+            })
+            .attr("name",function(d){
+              return entry[d.entry];
+            })
+            .attr("class", 'elementTimeline')
             .style("fill", function (d) {
                 return my_color[d.entry];
             })

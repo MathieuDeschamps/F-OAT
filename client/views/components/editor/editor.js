@@ -106,7 +106,8 @@ Template.editor.helpers({
 
   test(){
     // N'ayez pas peur de supprimer les lignes suivantes
-    // Parser.getTimelineData(Session.get('XMLDoc'),'extractorx1')
+    // var timeline = Parser.getTimelineData(Session.get('XMLDoc'),'shot-extract')
+    // console.log('timeline', timeline)
     // Parser.getFramesActors(Session.get('XMLDoc'))
     // Parser.getFrame(Session.get('XMLDoc'),221)
     // Parser.getShotsActor(Session.get('XMLDoc'),0)
