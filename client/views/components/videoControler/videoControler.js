@@ -25,6 +25,8 @@ export class videoControler {
 		},50);
 		
 		
+		
+		
 		// Mode lecture
 		this.mode="full";
 		this.partialPlaying=false;
@@ -81,7 +83,13 @@ export class videoControler {
 	
 	// Redéfinit le numéro de la frame courante de la vidéo
 	setCurrentFrame(newCurrentFrame){
-		this.vid.currentTime=this.frameToTime(newCurrentFrame);
+		//this.vid.currentTime=this.frameToTime(newCurrentFrame);
+		if (!this.isPlaying){
+			var that=this;
+			this.vid.addEventListener('playing',function(){that.pause();});
+		}
+		this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
+		
 	}
 	
 	// Longueur de la vidéo
@@ -125,7 +133,8 @@ export class videoControler {
 				this.updateInterval=setInterval(function(){that.partialPlay()},1/this.frameRate);
 				break;
 			case 'freeze' :
-				this.isPlaying=false;
+				//this.isPlaying=false;
+				this.pause();
 				this.setCurrentFrame(this.beginSelect);
 				break;
 		}
@@ -171,6 +180,7 @@ export class videoControler {
 		this.vid.pause();
 		this.isPlaying=false;
 		clearInterval(this.updateInterval);
+		this.vid.removeEventListener('playing');
 	}
 	
 	// Définition de l'intervalle de lecture
