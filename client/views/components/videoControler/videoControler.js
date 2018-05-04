@@ -2,11 +2,11 @@ export class videoControler {
 	constructor(vid,frameRate,annotedFrame){
 		
 		// Balise vidéo
-		this.vid=vid;
+		this.vid=vid;		
 		
 		// Framerate
 		this.frameRate=frameRate;
-		
+				
 		// Plage de lecture (pour le mode partialPlaying)
 		this.beginVid=1;
 		this.endVid=1;
@@ -14,9 +14,9 @@ export class videoControler {
 		// Récupération du nombre de frame à partir du framerate
 		// On utilise un un intervalle qui vérifie si la vidéo est prête à être lu.
 		var that=this;
+		
 		this.settingInterval=setInterval(function(){
 			if (that.vid!=undefined && that.vid.readyState > 0) {
-				that.endVid=that.timeToFrame(that.vid.duration);
 				that.endVid=that.timeToFrame(that.vid.duration);
 				that.beginSelect=1;
 				that.endSelect=that.endVid;
@@ -30,6 +30,18 @@ export class videoControler {
 		this.partialPlaying=false;
 		this.isPlaying=false;
 		
+		$(this.vid).on('timeupdate', function() {
+			if (!that.isPlaying || that.mode=='freeze'){
+				that.pause();
+				that.notifyAttachedObjects();
+			}
+			/*if (that.mode=='freeze'){
+				that.vid.currentTime=that.frameToTime(that.beginSelect);
+			}*/
+		});
+		
+		
+		
 		// Pour le pattern observer
 		this.updateInterval=null;
 		this.attachedObject=[];
@@ -38,8 +50,6 @@ export class videoControler {
 		
 		// Frame annotée
 		this.annotedFrame=annotedFrame;
-		
-		console.log(annotedFrame);
 		
 	}
 
@@ -72,15 +82,6 @@ export class videoControler {
 	// Redéfinit le numéro de la frame courante de la vidéo
 	setCurrentFrame(newCurrentFrame){
 		this.vid.currentTime=this.frameToTime(newCurrentFrame);
-		var that=this;
-		if (!this.isPlaying){
-			this.vid.addEventListener('timeupdate',function(){
-					that.pause();
-					that.notifyAttachedObjects();
-					//console.log("Freezed !");
-					that.vid.removeEventListener('timeupdate');
-				});
-		}
 	}
 	
 	// Longueur de la vidéo
@@ -108,7 +109,7 @@ export class videoControler {
 		if (oldMode!=this.mode && this.isPlaying || this.mode=="freeze"){
 			this.configMode();
 		}
-		console.log(this.mode,this.beginSelect,this.endSelect);
+		//console.log(this.mode,this.beginSelect,this.endSelect);
 	}
 	
 	
@@ -118,21 +119,14 @@ export class videoControler {
 		var that=this;
 		switch (this.mode){
 			case "full" : 
-				this.vid.removeEventListener('timeupdate');
 				this.updateInterval=setInterval(function(){that.fullPlay()},1/this.frameRate);
 				break;
 			case "partial" : 
 				this.updateInterval=setInterval(function(){that.partialPlay()},1/this.frameRate);
-				this.vid.removeEventListener('timeupdate');
 				break;
 			case 'freeze' :
+				this.isPlaying=false;
 				this.setCurrentFrame(this.beginSelect);
-				this.vid.addEventListener('timeupdate',function(){
-					that.pause();
-					that.notifyAttachedObjects();
-					console.log("Freezed !");
-					that.vid.removeEventListener('timeupdate');
-				});
 				break;
 		}
 	}
@@ -160,7 +154,7 @@ export class videoControler {
 			this.setCurrentFrame(this.beginSelect);
 		}
 		this.notifyAttachedObjects();		
-		console.log("partial");
+		//console.log("partial");
 	}
 	
 	// Lecture de la vidéo
@@ -177,11 +171,12 @@ export class videoControler {
 		this.vid.pause();
 		this.isPlaying=false;
 		clearInterval(this.updateInterval);
-		this.vid.removeEventListener('timeupdate');
 	}
 	
 	// Définition de l'intervalle de lecture
 	setPlayingInterval(begin,end){
+		begin=Number(begin);
+		end=Number(end);
 		if (begin>=1 &&  begin <= end && end<=this.endVid){
 			this.beginSelect=begin;
 			this.endSelect=end;
@@ -190,22 +185,22 @@ export class videoControler {
 	}
 	
 	setBeginSelect(begin){
-		console.log("begin :", begin);
+		begin=Number(begin);
 		if (begin>=1 && begin<=this.endVid){
 			this.beginSelect=begin;
-			if (this.endSelect<begin){
-				this.endSelect=begin;
+			if (this.endSelect<this.beginSelect){
+				this.endSelect=this.beginSelect;
 			}
 		}
 		this.setMode();
 	}
 	
 	setEndSelect(end){
-		console.log("end :", end);
+		end=Number(end);
 		if (end>=1 && end<=this.endVid){
 			this.endSelect=end;
-			if (this.beginSelect>end){
-				this.beginSelect=end;
+			if (this.beginSelect>this.endSelect){
+				this.beginSelect=this.endSelect;
 			}
 		}
 		this.setMode();
@@ -225,7 +220,7 @@ export class videoControler {
 	attach(object,frequency){
 		this.attachedObject[this.attachedObject.length]=object;
 		this.attachedObjectFrequency.set(object,frequency);
-		console.log("attached object",this.attachedObject)
+		//console.log("attached object",this.attachedObject)
 	}
 	
 	// Desabonnement d'un objet 
