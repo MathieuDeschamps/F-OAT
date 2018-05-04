@@ -84,6 +84,7 @@ export class videoControler {
 	// Redéfinit le numéro de la frame courante de la vidéo
 	setCurrentFrame(newCurrentFrame){
 		//this.vid.currentTime=this.frameToTime(newCurrentFrame);
+		this.vid.play();
 		if (!this.isPlaying){
 			var that=this;
 			this.vid.addEventListener('playing',function(){that.pause();});
