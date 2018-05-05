@@ -7,6 +7,7 @@ import {Requests} from '../../../utils/requests.js'
 
 Template.dashboard.helpers({
 
+  //retourne les projets de l'utiliateur courant.
   projects(){
     return Projects.find({ $or: [ { owner: Meteor.user().username }, { "participants.username": Meteor.user().username } ] });
   },
