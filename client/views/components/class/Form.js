@@ -91,6 +91,16 @@ export class Form{
       Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
 
+      $(document).ready(function(){
+        $('.collapsible').collapsible(
+        {
+        // onOpen: function(elm) {
+        // $($(elm).find('i')[0]).text('keyboard_arrow_down')
+        // }, // Callback for Collapsible open
+        // onClose: function(elm) {   $($(elm).find('i')[0]).text('keyboard_arrow_right') } // Callback for Collapsible close
+        }
+        )
+      })
     }
   }
 
@@ -124,8 +134,6 @@ export class Form{
       var hasDeleteButton
       var ul
 
-
-
       $(XMLObjectXSD).each(function(index,nodeXSD){
         hasDeleteButton = false
         j = 0
@@ -143,7 +151,8 @@ export class Form{
         nodesXML = $(XMLObjectData).filter(nodeName)
 
         // set the value of the add button
-        if(maxOccurs == 'unbounded' || nodesXML.length < maxOccurs){
+        if(maxOccurs == 'unbounded' ||
+          (nodesXML.length < maxOccurs && nodesXML.length > minOccurs)){
           elementToAdd.push(nodeName)
       }
 
@@ -153,17 +162,15 @@ export class Form{
       }
 
       // set the value of the number of children to display
-      if(maxOccurs == 'unbounded' || nodesXML.length < minOccurs){
-        if(nodesXML.length < minOccurs){
-          maxOccurs = minOccurs
-        }else{
-          maxOccurs = nodesXML.length
-        }
+      if(nodesXML.length < minOccurs){
+        maxOccurs = minOccurs
+      }else if(maxOccurs == 'unbounded' || nodesXML.length < maxOccurs){
+        maxOccurs = nodesXML.length
       }
+
 
       childrenXSD = $(nodeXSD).children().children()
       childrenXSD = $(childrenXSD).children('xs\\:element')
-
       while(j < maxOccurs){
           nodeXML = $(nodesXML).get(j)
           currentIdNode = indexParent + '-' + nbChildren
@@ -245,16 +252,12 @@ export class Form{
           addMenu += '</li>'
           $(parentNode).append(addMenu)
         }
-
         // add all the elements of the array to the addMenu
         $(elementToAdd).each(function(i,nodeName){
           Form.addToAddMenu(nodeName,
             $(parentNode).children('li').children('#addMenuBody'))
         })
-        // init the collapsible element
-        $(document).ready(function(){
-          $('.collapsible').collapsible();
-        });
+
     }
   }
 
@@ -371,7 +374,7 @@ export class Form{
 
 
   // function which add a deleteButton
-  // return the a string which is the code of the dlete button
+  // return the a string which is the code of the delete button
   static addDeleteButton(){
     var deleteButton
     deleteButton = '<i class="red darken-4 material-icons tiny deleteButton" >clear</i>'
@@ -527,9 +530,9 @@ export class Form{
           Form.deleteToAddMenu(elementName, addMenuBody)
         }
         // init the collapsible element
-        $(document).ready(function(){
-          $('.collapsible').collapsible()
-        })
+        // $(document).ready(function(){
+        //   $('.collapsible').collapsible()
+        // })
       }
     }
   }
@@ -593,7 +596,6 @@ export class Form{
       nbForm = $(nbForm).children()
       nbForm = $(nbForm).children('div[name="'+ elementName +'"][class~="collapsible-header"]')
       nbForm = nbForm.length
-      console.log()
       if(nbForm > minOccurs){
         // remove the delete button
         if(nbForm - 1 == minOccurs){
@@ -618,9 +620,9 @@ export class Form{
 
       }
       // init the collapsible element
-      $(document).ready(function(){
-        $('.collapsible').collapsible()
-      })
+      // $(document).ready(function(){
+      //   $('.collapsible').collapsible()
+      // })
     }
   }
 
@@ -671,31 +673,59 @@ export class Form{
   }
 
   // collapse all the element and their children
-  // id
+  // id the identifiant of the element to collapse
   collapseAll(id){
-    // TODO find a way to collapse element without trigger the event
-    // may be test close and open method of materialize
+    var arrow
+    var toCollapse = $('#' + id).find('[class~="collapsible"]')
+    // console.log('toCollapse', toCollapse)
+    $(toCollapse).each(function(i,e){
+      $(e).children('li').each(function(i, li){
+            $(e).collapsible('close',i)
+            // update the state of the arrow of the header
+            arrow = $(li).children('div[class~="collapsible-header"]')
+            arrow = $(arrow).find('i')[0]
+            $(arrow).text('keyboard_arrow_right')
+      })
+    })
   }
 
   // TODO fix problem with timeLine
   // display the information of the frames in the forms
-  // numFrame is the number or the timeId(XML) of the frame to display
-  displayFrame(numFrame){
-    if(numFrame == undefined){
+  // name the tag of the element
+  // startFrame the value of the attribut startFrame of the element to display
+  // endFrame the value of the attribut endFrame of the element to display
+  displayFrame(name,startFrame, endFrame){
+    if(name ==undefined || startFrame == undefined || endFrame == undefined){
       alert("displayFrame : Illegal Argument Exception")
     }else{
       this.assembleForms()
-      var input = $('#' + this.idDisplayedForm).find('input[name="timeId"][value="'+ numFrame +'"]')
-      var body = $(input).parents('[class="collapsible-body"]')[0]
-      if(body != undefined){
+      var input = $('#' + this.idDisplayedForm)
+      var body
+      // case for timeId
+      if(startFrame == endFrame){
+        input = $(input).find('input[name="timeId"][value="' + startFrame + '"]')
+      }else {
+        // case for startFrame and endFrame
+        input = $(input).find('input[name="startFrame"][value="' + startFrame + '"]')
+        input = $(input).parents('[class~="collapsible-body"]')
+        // console.log('input', input)
+        input = $(input).find('input[name="endFrame"][value="' + endFrame + '"]')
+      }
+
+      body = $(input).closest('[class="collapsible-body"]')
+      body = $(body).filter('[name="'+ name +'"]')
+      // console.log('body', body)
+      if(body != undefined && body.length == 1){
         var id = $(body).attr('id').substr(4)
+        // open the body of the element
+        var ul = $(body).parents('ul[class="collapsible"]')[0]
+        var lastIndexOf = id.lastIndexOf('-')
+        var index = id.substr(lastIndexOf  + 1)
+        $(ul).collapsible('open', index)
         // console.log('id', id)
+        $($('#header' + id).find('i')[0]).text('keyboard_arrow_down')
         this.buildNav($(body).parents())
         this.moveInForm(id)
-        // open the frame element if isn't already open
-        if($('#header' + id).children('i').text() == 'keyboard_arrow_left'){
-          $('#header' + id).trigger('click')
-        }
       }
     }
   }
@@ -740,7 +770,7 @@ export class Form{
     $('#' + this.idHiddenForm).empty()
     $('#' + this.idDisplayedForm).append(saveDisplayedForm)
     $('#' + this.idHiddenForm).append(saveHiddenForm)
-    console.log('getXML : result', result)
+    // console.log('getXML : result', result)
     return result
   }
 
@@ -785,7 +815,8 @@ export class Form{
           minOccurs = 1
         }
 
-        if(maxOccurs == 'unbounded'){
+        // set the value of the number of children to display
+        if(maxOccurs == 'unbounded' || nodesForm.length < maxOccurs){
           maxOccurs = nodesForm.length
         }
 
@@ -794,7 +825,6 @@ export class Form{
         }else{
           childrenXSD = $(nodeXSD).children().children()
           childrenXSD = $(childrenXSD).children('xs\\:element')
-
           while(j < maxOccurs){
             currentNode = $('<' + nodeName + '/>')
             nodeForm = $(nodesForm).get(j)
@@ -861,8 +891,8 @@ export class Form{
     Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
     // init the collapsible element
-    $(document).ready(function(){
-      $('.collapsible').collapsible();
-    });
+    // $(document).ready(function(){
+    //   $('.collapsible').collapsible();
+    // });
   }
 }

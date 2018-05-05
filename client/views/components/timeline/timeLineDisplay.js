@@ -12,8 +12,9 @@ Template.timeLineDisplay.onRendered(()=>{
             if (typeof e !== 'undefined'){
                 //console.log("e: ", e);
                 var timeLineData = Parser.getTimelineData(xml,e.localName);
+                // console.log("timeLineData: " , timeLineData);
                 $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
-                //console.log("timeLineData: " , timeLineData);
+
                 timeLine = new TimeLine(e.localName,$(timeLineData).attr('frameRate'),
                 $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
                 i);
@@ -25,14 +26,13 @@ Template.timeLineDisplay.onRendered(()=>{
 
 });
 
-Template.timeLineDisplay.events({
-    'click .frame'(event,instance){
-        var numFrame = $(event.currentTarget).attr('id');
-        // console.log("numFrame = " , numFrame);
-        // console.log($(forms));
-        $(forms).each(function(i,form){
-            // console.log("form: " , form);
-            form.displayFrame(numFrame);
-        });
+  Template.timeLineDisplay.events({
+    'click .elementTimeline'(event,instance){
+      // TODO find a way to check NaN values
+      var startFrame = parseInt($(event.currentTarget).attr('startframe'));
+      var endFrame = parseInt($(event.currentTarget).attr('endframe'));
+      var timelineId = parseInt($(event.currentTarget).attr('timelineid'));
+      var name = $(event.currentTarget).attr('name')
+      forms[timelineId].displayFrame(name, startFrame, endFrame)
     },
 });

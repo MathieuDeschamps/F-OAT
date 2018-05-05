@@ -68,36 +68,49 @@ Template.project.onDestroyed(()=>{
 
 Template.project.events({
     'click #saveForms'(event,instance){
-      var result
-      var XMLObject = $.parseXML(Session.get('XMLDoc'))
-      $(forms).each(function(i,form){
-        result = form.getXML()
-        console.log('result getXML', result)
-        if(result !=  undefined){
-          XMLObject = Writer.removeExtractor(XMLObject, form.name)
-          XMLObject = Writer.addExtractor(XMLObject, result)
-        }
+      // check if the current user is the owner or a writer to the project
+      var hasRightToSave = false
+      var idProject = Router.current().params._id
+      var project = Projects.findOne(idProject)
+      var username = Meteor.user().username
+      var participant = $(project.participants).filter(function(i,p){
+        return p.username == username && p.right == "Write"
       })
-        console.log('XMLObject', XMLObject)
-        var project = Projects.findOne(Router.current().params._id);
-        var xml = Writer.convertDocumentToString(XMLObject,0);
-        Meteor.call("updateXML",project,xml,(err,result)=>{
-          if(err){
-            alert(err.reason);
-          }else{
-            // update the forms
-            $(forms).each(function(i,form){
-              // TODO maybe return the XML in result
-              form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
-              form.update()
-            })
-            alert("ok!");
-            em.emit('hello');
-            // TODO call to update other elements
-
+      if(project.owner == username || participant.length > 0){
+        hasRightToSave = true
+      }
+      if(!hasRightToSave){
+        alert('Sorry, you does not have the right to modify this project.')
+        // maybe add code to restore the previous state of the form
+      }else{
+        var result
+        var XMLObject = $.parseXML(Session.get('XMLDoc'))
+        $(forms).each(function(i,form){
+          result = form.getXML()
+          if(result !=  undefined){
+            XMLObject = Writer.removeExtractor(XMLObject, form.name)
+            XMLObject = Writer.addExtractor(XMLObject, result)
           }
-        });
+        })
+          var project = Projects.findOne(Router.current().params._id);
+          var xml = Writer.convertDocumentToString(XMLObject,0);
+          Meteor.call("updateXML",project,xml,(err,result)=>{
+            if(err){
+              alert(err.reason);
+            }else{
+              // update the forms
+              $(forms).each(function(i,form){
+                // TODO maybe return the XML in result
+                form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
+                form.update()
+              })
+              console.log("ok!");
+              em.emit('hello');
+              // TODO call to update other elements
 
+            }
+          });
+      }
     },
 
     // check button event display form
@@ -107,7 +120,7 @@ Template.project.events({
     if($(event.currentTarget).attr('marked') == 'true'){
       $(event.currentTarget).attr('marked', 'false')
       $('#extractor' + id).attr('style', 'display:none')
-      $('#timeLine' + id).attr('style', 'display:none')
+      $('#timeLine' + id).css('display','none')
     }else{
       $(event.currentTarget).attr('marked', 'true')
       $('#extractor' + id).attr('style', 'display:block')
