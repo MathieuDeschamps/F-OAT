@@ -6,18 +6,24 @@ import './timeLineDisplay.html';
 import '../../layout/project/project.html'
 
 Template.timeLineDisplay.onRendered(()=>{
+    var xml;
     timelineInterval=setInterval(function(){
-        var xml = Session.get('XMLDoc');
+        xml = Session.get('XMLDoc');
         $(xml).find("extractors").children().each(function(i,e){
             if (typeof e !== 'undefined'){
                 //console.log("e: ", e);
                 var timeLineData = Parser.getTimelineData(xml,e.localName);
                 // console.log("timeLineData: " , timeLineData);
-                $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
-
+                $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>")
+                //   <button id='updateButton' type='button'>Update</button>");
                 timeLine = new TimeLine(e.localName,$(timeLineData).attr('frameRate'),
                 $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
                 i);
+                /*
+                 $( "#updateButton" ).click(function() {
+                    timeLineData = Parser.getTimelineData(xml,e.localName);    
+                    timeLine.update($(timeLineData).attr('data'),i);} );
+                    */
                 // console.log("data: " , timeLineData);
                 clearInterval(timelineInterval);
             }
