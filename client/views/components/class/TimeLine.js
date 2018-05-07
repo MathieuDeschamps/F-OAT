@@ -1,11 +1,11 @@
 export class TimeLine {
     constructor(name,frameRate,nbFrame,data,idTimeLine) {
         var id_time_line = "timeLine" + idTimeLine;
-        var debut = 0;
-        var fin = nbFrame;
         rect_actif = -1;
         var frame_rate = frameRate;
         var nb_frame = nbFrame;
+        var debut = 0;
+        var fin = nbFrame;
         var entry = ["frame","shot","scene"];
         var entry_length = entry.length;
         var items = data;
@@ -161,5 +161,12 @@ export class TimeLine {
         })
                 .attr("dy", ".5ex")
                 .attr("text-anchor", "end");
+    }
+    update(id_time_line,data){
+        time_line = d3.select("#"+id_time_line);
+        gen = time_line.select("g");
+        gen.selectAll(".movPart")
+           .data(data);
+
     }
 }
