@@ -64,7 +64,7 @@ export class Form{
   // idParent the id of the element which will contains the form
   buildForm(idParent){
     if(idParent == undefined){
-      alert("buildForm : Illegal Argument Exception")
+      alert('buildForm : Illegal Argument Exception')
     }else{
       var parentRec
       var formExtractor
@@ -112,7 +112,7 @@ export class Form{
   static recBuildForm(XMLObjectData, XMLObjectXSD, indexParent, parentNode){
     if(XMLObjectXSD == undefined || indexParent == undefined ||
       parentNode == undefined){
-      alert("recBuildForm : Illegal Argument Exception")
+      alert('recBuildForm : Illegal Argument Exception')
     }else{
       var nodeName
       var nodesXSD

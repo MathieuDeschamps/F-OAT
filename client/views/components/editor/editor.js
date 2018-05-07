@@ -93,17 +93,6 @@ Template.editor.events({
 });
 
 Template.editor.helpers({
-
-  init(){
-    //TODO temporary element which simulate the timeline interraction
-    var XMLDoc = Session.get('XMLDoc')
-    var listTimeId = Parser.getListTimeId(XMLDoc)
-
-    $(listTimeId).each(function(i,e){
-      $('#listFrame').append('<option>' + e + '</option>')
-    });
-  },
-
   test(){
     // N'ayez pas peur de supprimer les lignes suivantes
     // var timeline = Parser.getTimelineData(Session.get('XMLDoc'),'shot-extract')

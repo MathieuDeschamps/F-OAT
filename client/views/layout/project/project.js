@@ -1,18 +1,54 @@
 import './project.html';
-import { Form } from '../../components/class/Form.js'
 import {Projects} from '../../../../lib/collections/Project.js';
+import { Form } from '../../components/class/Form.js'
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
+import {TimeLine} from "../../components/class/TimeLine.js"
 var em;
 
+// function which checked if the current has the right write on the proejct
+hasRightToWrite = function(){
+  var idProject = Router.current().params._id
+  var project = Projects.findOne(idProject)
+  var username = Meteor.user().username
+  var participant = $(project.participants).filter(function(i,p){
+    return p.username == username && p.right == "Write"
+  })
+  if(project.owner == username || participant.length > 0){
+    return true
+  }else{
+    return false
+  }
+}
+
 Template.project.onRendered(()=>{
+  var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
+  var pathExtractor
 
   if(!em){
     em = new EventDDP('test',Meteor.collection);
     em.addListener('hello',()=>{
-      // TODO move to the right place with the right code
-      //maybe in editor.js event save
-      console.log('je me met à jour!');
+      Meteor.call("getXml",pathXML,(errXML,result)=>{
+        if(errXML){
+          alert(errXML.reason);
+        }else{
+          Session.set('XMLDoc', result.data)
+          var XMLDoc = result.data
+          var XSDObject
+          // build the extractors
+          var extractors = Parser.getListExtractors(XMLDoc)
+          var extractor
+          var timelineData
+
+          // update the forms of the editor
+          $(forms).each(function(i,form){
+            form.XMLObject = $($.parseXML(XMLDoc)).find(form.name)
+            form.update()
+          })
+          // TODO update the timeline
+        }
+      });
+
     });
   }
   em.setClient({
@@ -20,8 +56,6 @@ Template.project.onRendered(()=>{
     _id: Meteor.userId()
   })
   console.log(em)
-  var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
-  var pathExtractor
 
   Meteor.call("getXml",pathXML,(errXML,result)=>{
     if(errXML){
@@ -33,8 +67,10 @@ Template.project.onRendered(()=>{
       // build the extractors
       var extractors = Parser.getListExtractors(XMLDoc)
       var extractor
+      var timelineData
       // global table which will contains the form objects
       forms = [extractors.lenght]
+      timelines = [extractors.lenght]
       // add the extractor list and build the forms
       $(extractors).each(function(i,nameExtractor){
         extractor = '<p><input class="filled-in"  id="'+ i + '"  type="checkbox" mark="false"/>'
@@ -45,12 +81,20 @@ Template.project.onRendered(()=>{
           if(errXSD){
             alert(errXSD.reason);
           }else{
+            // build the forms for the editor
             XSDObject = resultExtractor.data
             forms[i] = new Form(i, nameExtractor,
               $($.parseXML(XMLDoc)).find(nameExtractor),
                $.parseXML(XSDObject),
               'nav-' + i,'hidden-' + i, 'form-'+ i)
             forms[i].buildForm('forms')
+
+            // build the timeline
+            timelineData = Parser.getTimelineData(XMLDoc,nameExtractor);
+            $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
+            timelines[i] = new TimeLine(nameExtractor,$(timelineData).attr('frameRate'),
+            $(timelineData).attr('nbFrames'),$(timelineData).attr('data'),
+            i);
           }
         })
       })
@@ -66,54 +110,67 @@ Template.project.onDestroyed(()=>{
     });
   });
 
+Template.project.helpers({
+    // used to display or not the save button
+    hasRightToWrite(){
+      return hasRightToWrite()
+    }
+});
+
 Template.project.events({
-    'click #saveForms'(event,instance){
-      // check if the current user is the owner or a writer to the project
-      var hasRightToSave = false
-      var idProject = Router.current().params._id
-      var project = Projects.findOne(idProject)
-      var username = Meteor.user().username
-      var participant = $(project.participants).filter(function(i,p){
-        return p.username == username && p.right == "Write"
+  'click #saveForms'(event,instance){
+    var XMLObject = $.parseXML(Session.get('XMLDoc'))
+    var xml
+    var result
+    var timelineData
+    var nameExtractor
+    var idProject = Router.current().params._id
+    var project = Projects.findOne(idProject)
+    // check if the current user is the owner or a writer to the project
+    var hasRight = hasRightToWrite()
+    if(!hasRight){
+      alert('Sorry, you does not have the right to modify this project.')
+      $(forms).each(function(i,form){
+        form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
+        form.update()
       })
-      if(project.owner == username || participant.length > 0){
-        hasRightToSave = true
-      }
-      if(!hasRightToSave){
-        alert('Sorry, you does not have the right to modify this project.')
-        // maybe add code to restore the previous state of the form
-      }else{
-        var result
-        var XMLObject = $.parseXML(Session.get('XMLDoc'))
-        $(forms).each(function(i,form){
-          result = form.getXML()
-          if(result !=  undefined){
-            XMLObject = Writer.removeExtractor(XMLObject, form.name)
-            XMLObject = Writer.addExtractor(XMLObject, result)
+    }else{
+      $(forms).each(function(i,form){
+        result = form.getXML()
+        if(result !=  undefined){
+          XMLObject = Writer.removeExtractor(XMLObject, form.name)
+          XMLObject = Writer.addExtractor(XMLObject, result)
+        }
+      })
+        xml = Writer.convertDocumentToString(XMLObject,0);
+        Meteor.call("updateXML",project,xml,(err,result)=>{
+          if(err){
+            alert(err.reason);
+          }else{
+            // update the forms
+            $(forms).each(function(i,form){
+              // TODO maybe return the XML in result
+              form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
+              form.update()
+            })
+            // update the timeLine
+            $(timelines).each(function(i,timeline){
+              // //TODO retrieve the name of the extractor attach to this timeline
+              // nameExtractor
+              // timelineData = Parser.getTimelineData(xml,nameExtractor)
+              // //TODO set the new  value of the attribut
+              // timeline.update()
+            })
+            console.log("ok!");
+            em.emit('hello');
+            // TODO call to update other elements
+
           }
-        })
-          var project = Projects.findOne(Router.current().params._id);
-          var xml = Writer.convertDocumentToString(XMLObject,0);
-          Meteor.call("updateXML",project,xml,(err,result)=>{
-            if(err){
-              alert(err.reason);
-            }else{
-              // update the forms
-              $(forms).each(function(i,form){
-                // TODO maybe return the XML in result
-                form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
-                form.update()
-              })
-              console.log("ok!");
-              em.emit('hello');
-              // TODO call to update other elements
-
-            }
-          });
+        });
       }
-    },
+  },
 
-    // check button event display form
+  // check button event display form
   'click .filled-in'(event,instance){
     //toggle
     var id = $(event.currentTarget).attr('id')
@@ -128,7 +185,7 @@ Template.project.events({
     }
   },
 
-/*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
+  /*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
     //Test to merge XML file
     'click #testmerge1'(event,instance){
       var MergeXML = require('mergexml');
@@ -224,7 +281,4 @@ Template.project.events({
                 }
               }});
             }*/
-          });
-
-          Template.project.helpers({
-          });
+});
