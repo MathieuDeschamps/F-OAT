@@ -32,6 +32,7 @@ export class TimeLine {
                 .append("svg")
                 .attr("width", 960)
                 .attr("height", 120)
+                .attr("extractor",name)
                 .attr("class", "chart");
         time_line.append('rect')
                 .attr('x', 0)
@@ -162,10 +163,10 @@ export class TimeLine {
                 .attr("dy", ".5ex")
                 .attr("text-anchor", "end");
     }
-    update(id_time_line,data){
-        time_line = d3.select("#"+id_time_line);
-        gen = time_line.select("g");
-        gen.selectAll(".movPart")
+    update(){
+      d3.select("#"+id_time_line)
+            .time_line.select("g")
+            .selectAll(".movPart")
            .data(data);
 
     }
