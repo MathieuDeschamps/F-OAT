@@ -26,13 +26,13 @@ export class TimeLine {
         //donner le div du timeLine la meme taille que le timeLine generer
         $("#"+id_time_line).css('width', width_total);
         $("#"+id_time_line).css('height', height_total);
+        $("#"+id_time_line).attr("extractor",name)
        // console.log("timeLine: " + id_time_line)
         //generer le timeLine dans son div
         time_line = d3.select("#"+id_time_line)
                 .append("svg")
                 .attr("width", 960)
                 .attr("height", 120)
-                .attr("extractor",name)
                 .attr("class", "chart");
         time_line.append('rect')
                 .attr('x', 0)

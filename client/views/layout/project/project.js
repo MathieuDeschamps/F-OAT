@@ -157,7 +157,9 @@ Template.project.events({
             $(timelines).each(function(i,timeline){
               // //TODO retrieve the name of the extractor attach to this timeline
               // nameExtractor
-              var extractor = timeline.attr("extractor");
+              //var extractor = timeline.attr("extractor");
+              var id_time_line = "#timeLine" + i;
+              console.log("extr: ",$(id_time_line).attr("extractor"))
               // timelineData = Parser.getTimelineData(xml,nameExtractor)
               // //TODO set the new  value of the attribut
               // timeline.update()
