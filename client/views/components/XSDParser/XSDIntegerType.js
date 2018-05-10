@@ -56,24 +56,42 @@ export class XSDIntegerType {
 		return result;
 	}
 	
+	hasMinEx(){
+		return (this.minEx!="unbounded");
+	}
+	
+	hasMinIn(){
+		return (this.minIn!="unbounded");
+	}
+	
+	hasMaxEx(){
+		return (this.maxEx!="unbounded");
+	}
+	
+	hasMaxIn(){
+		return (this.maxIn!="unbounded");
+	}
+	
 	// setting functions for restriction only
 	setMinEx(newMin){
+		
 		if (this.hasMinEx()){
 			this.minEx=max(this.minEx,newMin);
 		}else{
 			this.minEx=newMin;
 		}
-		if (this.isEnumerated){
+		if (this.isEnumerated()){
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
 	setMinIn(newMin){
+		console.log(newMin,this.hasMinIn());
 		if (this.hasMinIn()){
 			this.minIn=max(this.minIn,newMin);
 		}else{
 			this.minIn=newMin;
 		}
-		if (this.isEnumerated){
+		if (this.isEnumerated()){
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}

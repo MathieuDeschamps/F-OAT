@@ -8,6 +8,7 @@ export class XMLXSDSequence{
 		
 		this.attrs={};
 		
+		this.name="Sequence";
 		
 		console.log('XMLXSDSequence - xsdseq : ',xsdSeq);
 		console.log('XMLXSDSequence - xsdseq.attrs : ',xsdSeq.attrs);

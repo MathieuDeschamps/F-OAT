@@ -3,6 +3,7 @@ import {XSDAttr} from './XSDAttr.js';
 export class XSDExtensionType{
 
 	constructor(extens,table){
+		
 		this.table=table;
 		
 		this.baseType=$(extens).attr('base');
@@ -23,4 +24,9 @@ export class XSDExtensionType{
 		this.attrs=attrs;
 		
 	}
+	
+	accept(visitor){
+		visitor.visitXSDExtensionType(this);
+	}
+	
 }

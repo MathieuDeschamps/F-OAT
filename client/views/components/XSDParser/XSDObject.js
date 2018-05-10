@@ -30,6 +30,16 @@ export class XSDObject{
 		this.table.addType(new XSDIntegerType());
 		this.table.addType(new XSDVoidType());
 		
+		var byteType=new XSDIntegerType();
+		console.log('byteType 1 ',byteType);
+		byteType.name='xs:byte';
+		console.log('byteType 2 ',byteType);
+		byteType.setMinIn(-128);
+		console.log('byteType 3 ',byteType);
+		byteType.setMaxIn(127);
+		console.log('byteType 4 ',byteType);
+		this.table.addType(byteType);
+		
 		// Simple types declarations management
 		$(schema).children('xs\\:simpleType').each(function(i,typeDef){
 			this.table.createSimpleType(typeDef);
