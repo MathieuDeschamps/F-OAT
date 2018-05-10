@@ -1,6 +1,6 @@
 export class TimeLine {
     constructor(name,frameRate,nbFrame,data,idTimeLine) {
-        var id_time_line = "timeLine" + idTimeLine;
+        this.id_time_line = "timeLine" + idTimeLine;
         rect_actif = -1;
         var frame_rate = frameRate;
         var nb_frame = nbFrame;
@@ -8,7 +8,7 @@ export class TimeLine {
         var fin = nbFrame;
         var entry = ["frame","shot","scene"];
         var entry_length = entry.length;
-        var items = data;
+        this.items = data;
         vidCtrl.setPlayingInterval(debut,fin);
         var ext_margin = 5;
         var width_total = 960;
@@ -24,12 +24,12 @@ export class TimeLine {
         prec_timeLine = -1; // timeline de l'ancien rectangle
 
         //donner le div du timeLine la meme taille que le timeLine generer
-        $("#"+id_time_line).css('width', width_total);
-        $("#"+id_time_line).css('height', height_total);
-        $("#"+id_time_line).attr("extractor",name)
-       // console.log("timeLine: " + id_time_line)
+        $("#"+this.id_time_line).css('width', width_total);
+        $("#"+this.id_time_line).css('height', height_total);
+        $("#"+this.id_time_line).attr("extractor",name)
+       // console.log("timeLine: " + this.id_time_line)
         //generer le timeLine dans son div
-        time_line = d3.select("#"+id_time_line)
+        time_line = d3.select("#"+this.id_time_line)
                 .append("svg")
                 .attr("width", 960)
                 .attr("height", 120)
@@ -65,7 +65,7 @@ export class TimeLine {
             //console.log("rect: ",rect);
             //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
             if (rect_actif !== -1) {
-                rect.attr("style", "fill:" + my_color[items[rect_actif].entry]);
+                rect.attr("style", "fill:" + my_color[data[rect_actif].entry]);
             }
             if(prec_timeLine === -1){
                 prec_timeLine = idTimeLine;
@@ -107,7 +107,7 @@ export class TimeLine {
             })
                 .attr("stroke", "lightgray");
         gen.selectAll(".movPart")
-            .data(items)
+            .data(this.items)
             .enter().append("rect")
             .attr("x", function (d) {
                 return x1(d.start + 0.1);
@@ -162,12 +162,12 @@ export class TimeLine {
         })
                 .attr("dy", ".5ex")
                 .attr("text-anchor", "end");
+        console.log("this: " , this);
     }
     update(){
-      d3.select("#"+id_time_line)
-            .time_line.select("g")
-            .selectAll(".movPart")
-           .data(data);
-
+      time_line = d3.select("#"+this.id_time_line);
+      gen = time_line.append("g")
+      gen.selectAll(".movPart")
+         .data(this.items)
     }
 }
