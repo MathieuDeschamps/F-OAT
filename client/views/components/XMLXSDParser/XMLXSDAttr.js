@@ -4,6 +4,7 @@ export class XMLXSDAttr{
 		console.log('XMLXSDAttr', value, xsdAttr);
 		console.log('XMLXSDAttr',xsdAttr.table.getType(xsdAttr.type));
 		this.type=xsdAttr.table.getType(xsdAttr.type);
+		this.name=xsdAttr.name;
 		console.log('XMLXSDAttr - type',this.type);
 		if (xsdAttr.default!=undefined){
 			this.defaultValue=this.type.convert(xsdAttr.default);

@@ -23,22 +23,25 @@ export class XMLXSDObj{
 	
 	this.type.accept();
 	*/
+	if (xml!=undefined){
+		var xmlNode=[];
+		$(xml).children().each(function(i,elt){
+			xmlNode[i]=elt;
+		});
 	
-	var xmlNode=[];
-	$(xml).children().each(function(i,elt){
-		xmlNode[i]=elt;
-	});
-	
-	switch(xmlNode.length){
-		case 0 : 
-			alert('Your xml file is empty');
-			break;
-		case 1 : 
-			console.log("Coucou!", xmlNode);
-			this.content=new XMLXSDElt(xmlNode,xsdObj.root);
-			break;
-		default : 
-			alert('An XML file has only one root node');
+		switch(xmlNode.length){
+			case 0 : 
+				alert('Your xml file is empty');
+				break;
+			case 1 : 
+				console.log("Coucou!", xmlNode);
+				this.content=new XMLXSDElt(xmlNode,xsdObj.root);
+				break;
+			default : 
+				alert('An XML file has only one root node');
+		}
+	}else{
+		this.content=new XMLXSDElt(undefined,xsdObj.root);
 	}
 	
 	

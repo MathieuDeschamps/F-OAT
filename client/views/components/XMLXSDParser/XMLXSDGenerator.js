@@ -13,7 +13,7 @@ export class XMLXSDGenerator{
 		//this.stack.push(xml);
 		
 		//xsdObj.accept(this);
-		console.log(new XMLXSDObj(xml,xsdObj));
+		return new XMLXSDObj(xml,xsdObj);
 	}
 	
 	visitXSDObject(xsdObj){

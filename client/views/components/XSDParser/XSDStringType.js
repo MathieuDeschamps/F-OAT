@@ -43,7 +43,7 @@ export class XSDStringType {
 	
 	setMinLength(newMin){
 		this.minLength=max(this.minLength,newMin);
-		if (this.isEnumerated){
+		if (this.isEnumerated()){
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
@@ -54,7 +54,7 @@ export class XSDStringType {
 		}else{
 			this.minLength=newMax;
 		}
-		if (this.isEnumerated){
+		if (this.isEnumerated()){
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}

@@ -45,7 +45,14 @@ Template.project.onRendered(()=>{
             form.XMLObject = $($.parseXML(XMLDoc)).find(form.name)
             form.update()
           })
-          // TODO update the timeline
+          // update the timeline
+          $(timelines).each(function(i,timeline){
+            idTimeline = "#timeLine" + i
+            nameExtractor = $(idTimeline).attr("extractor")
+            timelineData = Parser.getTimelineData(xml,nameExtractor)
+            console.log('timelineData', timelineData)
+            timeline.update()
+          })
         }
       });
 
@@ -123,6 +130,7 @@ Template.project.events({
     var xml
     var result
     var timelineData
+    var idTimeline
     var nameExtractor
     var idProject = Router.current().params._id
     var project = Projects.findOne(idProject)
@@ -155,11 +163,11 @@ Template.project.events({
             })
             // update the timeLine
             $(timelines).each(function(i,timeline){
-              // //TODO retrieve the name of the extractor attach to this timeline
-              // nameExtractor
-              // timelineData = Parser.getTimelineData(xml,nameExtractor)
-              // //TODO set the new  value of the attribut
-              // timeline.update()
+              idTimeline = "#timeLine" + i
+              nameExtractor = $(idTimeline).attr("extractor")
+              timelineData = Parser.getTimelineData(xml,nameExtractor)
+              console.log('timelineData', timelineData)
+              timeline.update()
             })
             console.log("ok!");
             em.emit('hello');
