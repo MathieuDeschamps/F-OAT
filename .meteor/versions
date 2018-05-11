@@ -69,6 +69,7 @@ momentjs:moment@2.22.0
 mongo@1.2.3
 mongo-dev-server@1.0.1
 mongo-id@1.0.6
+mrt:cheerio@0.3.2
 npm-bcrypt@0.9.3
 npm-container@1.2.0
 npm-mongo@2.2.34

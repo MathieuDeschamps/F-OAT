@@ -20,6 +20,9 @@ Meteor.startup(() => {
 
 Meteor.methods({
 
+/**
+Check if an user exist or not
+**/
   "userNameExist" :function(_userName){
 
     result =  Meteor.users.findOne({username: _userName});
@@ -31,7 +34,7 @@ Meteor.methods({
   },
 
   /**
-    send the string wich represent the xml file name
+    send the string wich represent the xml file path
   */
   "getXml": function(name){
 
