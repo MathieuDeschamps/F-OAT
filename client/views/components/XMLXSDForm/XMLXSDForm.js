@@ -78,7 +78,7 @@ export class XMLXSDForm{
 			
 			that.html+='<li>';
 			
-			that.html+='<div id="'+idName+'" class="col s11 white-text blue darken-4 row">';
+			that.html+='<div id="'+idName+'" class="col s10 offset-s1 white-text blue darken-4 row btn">';
 			that.html+=xmlxsdElt.name;
 			that.html+='</div>'
 			that.eventHandler.push({
@@ -109,7 +109,7 @@ export class XMLXSDForm{
 		if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
 			var idEltAdd='elt'+xmlxsdElt.name +'add';
 			this.html+='<a id="'+idEltAdd+'" class="waves-effect waves-light btn">';
-			this.html+='<i class="col s1 material-icons">add_circle_outline </i>';
+			this.html+='<i class="col s1 material-icons large right">add_circle </i>';
 			this.html+=xmlxsdElt.name+'</a>';
 				
 			this.eventHandler.push({
@@ -163,7 +163,10 @@ export class XMLXSDForm{
 		// generate nav
 		this.generatenav();
 		
-		this.html+='<div id="seq'+xmlxsdSeq.name+'config">'; // class?
+		this.html+='<div id="seq'+xmlxsdSeq.name+'config" class="card">'; // class?
+		
+		this.html+='<div id="seq'+xmlxsdSeq.name+'configTitle" class="card-title white-text blue darken-4">'+this.stack[this.stack.length-1].name+'</div>'; // class?
+		this.html+='<div id="seq'+xmlxsdSeq.name+'configContent" class="card-content ">'
 		
 		this.generateAttrsForm(xmlxsdSeq);
 		
@@ -181,13 +184,14 @@ export class XMLXSDForm{
 			
 					that.html+='<li>';
 			
-					that.html+='<div id="'+idName+'" class="col s11 white-text blue darken-4 row">';
+					that.html+='<div id="'+idName+'" class="col s10 offset-s1 white-text blue darken-4 row btn">';
 					that.html+=xmlxsdElt.name;
 					that.html+='</div>'
 				
 					that.eventHandler.push({
 						function:function(){
 							that.stack.push(xmlxsdSeq); 
+							that.stack.push(xmlxsdElt); 
 							console.log('visit XMLXSDSeq ',elt);
 							elt.accept(that);
 						},
@@ -215,7 +219,7 @@ export class XMLXSDForm{
 				if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
 					var idEltAdd='elt'+xmlxsdElt.name +'add'+k+'_'+j;
 					that.html+='<a id='+idEltAdd+' class="waves-effect waves-light btn">';
-					that.html+='<i class="col s1 material-icons">add_circle_outline </i>';
+					that.html+='<i class="col s1 material-icons large right">add_circle </i>';
 					that.html+=xmlxsdElt.name+'</a>';
 				
 					that.eventHandler.push({
@@ -252,7 +256,7 @@ export class XMLXSDForm{
 		
 		
 		this.html+='</div>';
-		
+		this.html+='</div>';
 		
 		
 		this.html+='</div>';
@@ -286,7 +290,11 @@ export class XMLXSDForm{
 		
 		this.stack.forEach(function(obj,i){
 			console.log(obj);
-			that.html+='<a id="'+that.id+'navConfig'+i+'" class="breadcrumb">  ' + obj.name +'</a>';
+			//if (i!=that.stack.length-1){
+				that.html+='<a id="'+that.id+'navConfig'+i+'"> > ' + obj.name +'</a>';
+			/*}else{
+				that.html+='<a id="'+that.id+'navConfig'+i+'">  ' + obj.name +'</a>';
+			}*/
 			var idName=that.id+'navConfig'+i;
 			
 			that.eventHandler.push({function:function(){that.stack=that.stack.slice(0,i); obj.accept(that);},id:idName,eventName:'click'});
@@ -309,6 +317,13 @@ export class XMLXSDForm{
 		// generate nav
 		this.generatenav();
 		
+		this.html+='<div id="seq'+xmlxsdExt.name+'config" class="card">'; // class?
+		
+		this.html+='<div id="seq'+xmlxsdExt.name+'configTitle" class="card-title white-text blue darken-4">'+this.stack[this.stack.length-1].name+'</div>'; // class?
+		this.html+='<div id="seq'+xmlxsdExt.name+'configContent" class="card-content ">'
+		
+		
+		
 		this.html+='<div id="xmlxsdExtconfig">'; // class?
 		
 		this.generateAttrsForm(xmlxsdExt);
@@ -323,6 +338,7 @@ export class XMLXSDForm{
 		xmlxsdExt.baseType.accept(this);
 		this.htmlUpdate=false;
 		
+		this.html+='</div>';
 		this.html+='</div>';
 	}
 	
@@ -504,7 +520,7 @@ export class XMLXSDForm{
 			}else{
 				var formName=this.attrFormName;
 				//var attrButtonName='button'+formName;
-				this.html+='<input id="'+formName+'" type="number" class="materialize-textarea" value='+attr.value+'/>';
+				this.html+='<input id="'+formName+'" type="number" class="materialize-textarea" value="'+attr.value+'"/>';
 				//this.html+='<a id="'+attrButtonName+'" class="waves-effect waves-light btn">Apply</a>';
 				this.eventHandler.push({
 					function:function(){

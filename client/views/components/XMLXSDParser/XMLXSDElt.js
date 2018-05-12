@@ -14,6 +14,12 @@ export class XMLXSDElt{
 		console.log('XMLXSDElt type ', this.type);
 		this.eltsList=[];
 		
+		console.log('xsdElt fixed : ',xsdElt.fixed);
+		
+		if (xsdElt.fixed!=undefined){
+			this.fixed=xsdElt.fixed;
+		}
+		
 		if (xmlEltsList!=undefined){
 			this.xmlEltsList=xmlEltsList;
 		}else{
@@ -71,54 +77,94 @@ export class XMLXSDElt{
 	visitXSDStringType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
 			console.log("Coucou! XMLXSDElt visits XSDStringType : ",this.xmlEltsList[0].textContent);
-			this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			if (this.fixed==undefined){
+				this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}
 			this.xmlEltsList.shift(); 
 		}else{
-			this.eltsList.push(new XMLXSDNodeValue(undefined,type));
+			if (this.fixed!=undefined){
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.default,type));
+			}
 		}
-
 	}
+	
+	
 	
 	visitXSDDecimalType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
 			console.log("Coucou! XMLXSDElt visits XSDDecimalType : ",this.xmlEltsList[0].textContent);
-			this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));	
+			if (this.fixed==undefined){
+				this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}
 			this.xmlEltsList.shift(); 
 		}else{
-			this.eltsList.push(new XMLXSDNodeValue(undefined,type));
+			if (this.fixed!=undefined){
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.default,type));
+			}
 		}
 	}
 	
 	visitXSDFloatType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
 			console.log("Coucou! XMLXSDElt visits XSDFloatType : ",this.xmlEltsList[0].textContent);
-			this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));	
+			if (this.fixed==undefined){
+				this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}
 			this.xmlEltsList.shift(); 
 		}else{
-			this.eltsList.push(new XMLXSDNodeValue(undefined,type));
+			if (this.fixed!=undefined){
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.default,type));
+			}
 		}
 	}
 	
 	visitXSDIntegerType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
 			console.log("Coucou! XMLXSDElt visits XSDIntegerType : ",this.xmlEltsList[0].textContent);
-			this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			if (this.fixed==undefined){
+				this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}
 			this.xmlEltsList.shift(); 
 		}else{
-			this.eltsList.push(new XMLXSDNodeValue(undefined,type));
+			if (this.fixed!=undefined){
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.default,type));
+			}
 		}
 	}
 	
 	visitXSDBooleanType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
 			console.log("Coucou! XMLXSDElt visits XSDBooleanType : ",this.xmlEltsList[0].textContent);
-			this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));	
+			if (this.fixed==undefined){
+				this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}
 			this.xmlEltsList.shift(); 
 		}else{
-			this.eltsList.push(new XMLXSDNodeValue(undefined,type));
+			if (this.fixed!=undefined){
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.default,type));
+			}
 		}
 	}
-	
 	
 	
 	accept(visitor){

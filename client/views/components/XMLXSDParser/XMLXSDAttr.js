@@ -11,6 +11,7 @@ export class XMLXSDAttr{
 		}
 		console.log('XMLXSDAttr 1');
 		if (xsdAttr.fixed!=undefined){
+			console.log('fixed attribute'); 
 			this.fixedValue=this.type.convert(xsdAttr.fixed);
 		}
 		console.log('XMLXSDAttr 2');
