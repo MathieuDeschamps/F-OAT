@@ -37,11 +37,11 @@ export class configuratorManager{
 			$(JQidDiv).css('display','block');
 			$(JQidDiv).html('<div id="'+idDivForm+'"></div>');
 			$(JQidDiv).append('<div id="'+idDivButton+'"></div>');
-			var path='/parameters.xsd';
-			Meteor.call("getXml",path, (err,result)=>{
+			/*var path='/parameters.xsd';
+			Meteor.call("getXml",path, (err,result)=>{*/
 			
-			/*console.log(extractor.ip);
-			Meteor.call("getExtractorsParam",extractor.ip,(err,result)=>{*/
+			console.log(extractor.ip);
+			Meteor.call("getExtractorsParam",extractor.ip,(err,result)=>{
 				if(err){
 					alert(err.reason);
 					$(JQidDiv).html('The parameters of '+extractor.name+' are not available.'); 
