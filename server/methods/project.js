@@ -120,6 +120,9 @@ generateContent = function(project, id){
           .att('url',project.url)
         .up()
       .up()
+      .ele('extractors')
+        .ele('shot-extract')
+      .up()
     .end({ pretty: true });
     return doc.toString();
 }
