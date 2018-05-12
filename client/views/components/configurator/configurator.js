@@ -1,14 +1,28 @@
 ﻿import { Template } from 'meteor/templating';
 
 import './configurator.html';
-import {XSDObject} from '../XSDParser/XSDObject.js';
-import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
-import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
-import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
+
+import {Extractors} from '/lib/collections/extractors.js';
+
+import {configuratorManager} from './configuratorManager.js';
 
 Template.configurator.onRendered(()=>{
-    console.log('Lecture test.xsd');
-	Meteor.call("getXml",'/parameters.xsd',(err,result)=>{
+    /*console.log('Lecture test.xsd');
+	path='/parameters.xsd';
+	console.log('Path : ',path);*/
+	extractors=Extractors.find();
+	console.log('extractors', extractors)
+	
+	new configuratorManager(extractors,"configurator","configuratorForm");
+	
+	/*extractors.forEach(function(extractor,i){
+		extractorCheckBox= '<p><input class="filled-in"  id="'+ i + '_config"  type="checkbox" mark="false"/>'
+        extractorCheckBox += '<label for="'+ i + '_config">' + extractor.name + '</label></p>'
+		$("#configurator").append(extractorCheckBox);
+	});*/
+	console.log('extractors fin');
+	
+	/*Meteor.call("getXml",path, (err,result)=>{
 		if(err){
 			alert(err.reason);
 		}else{
@@ -21,11 +35,11 @@ Template.configurator.onRendered(()=>{
 
 			var xmlxsdObj= new XMLXSDObj(undefined,xsdObj);
 
-			var xmlxsdForm=new XMLXSDForm(xmlxsdObj,'testId','testName','configurator');
+			var xmlxsdForm=new XMLXSDForm(xmlxsdObj,'testId','shot-extractor','configuratorForm');
 			xmlxsdForm.generate();
 
 			$("#configuratorButton").append(
-				'<div><a id="finalButton" class="waves-effect waves-light btn col s6 offset-s3">Launch Extraction</a></div>'
+				'<div class="row"><a id="finalButton" class="waves-effect waves-light btn col s6 offset-s3">Launch Extraction</a></div>'
 			);
 
 			$('#finalButton').click(function(){
@@ -33,7 +47,7 @@ Template.configurator.onRendered(()=>{
 				console.log(gen.generateXML());
 			});
 		}
-	});
+	});*/
 
 });
 

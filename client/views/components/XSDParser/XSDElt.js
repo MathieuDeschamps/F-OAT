@@ -5,6 +5,16 @@ export class XSDElt{
 		console.log(elt);
 		
 		
+		console.log('elt fixed : ', $(elt).attr('fixed'));
+		
+		if ($(elt).attr('fixed')!=undefined){
+			this.fixed=$(elt).attr('fixed');
+		}
+		
+		if ($(elt).attr('default')!=undefined){
+			this.fixed=$(elt).attr('default');
+		}
+		
 		this.maxOccurs=$(elt).attr('maxOccurs');
 		if (this.maxOccurs== undefined){
 			this.maxOccurs=1;
