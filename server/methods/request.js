@@ -29,6 +29,7 @@ Meteor.methods({
         var url = "http://"+extractorUrl+"/outilParam";
         console.log(url);
         const result = HTTP.call('GET',url);
+        console.log(result.content);
         return result.content;
     },
 

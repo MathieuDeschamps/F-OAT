@@ -23,9 +23,7 @@ Template.options.events({
     var ipExtractor = $('.ip').val();
     var nameExtractor = $('.name').val();
 
-    if(!regex.test(ipExtractor)){
-        toastr.warning("The ip typed is invalid");
-    }else{
+    
       var extractor = {name: nameExtractor, ip: ipExtractor};
       Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
         if(err){
@@ -41,7 +39,7 @@ Template.options.events({
 
         }
       });
-      }
+
   },
 
   'click #delete' (event,instance){
