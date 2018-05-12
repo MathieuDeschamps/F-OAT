@@ -165,8 +165,8 @@ Template.project.events({
             $(timelines).each(function(i,timeline){
               idTimeline = "#timeLine" + i
               nameExtractor = $(idTimeline).attr("extractor")
-              timelineData = Parser.getTimelineData(xml,nameExtractor)
-              console.log('timelineData', timelineData)
+              timeline.items = Parser.getTimelineData(xml,nameExtractor)
+              //console.log('timelineData', timeline.items)
               timeline.update()
             })
             console.log("ok!");
