@@ -20,7 +20,7 @@ export class videoControler {
 		
 		this.settingInterval=setInterval(function(){
 			if (that.vid!=undefined && that.vid.readyState > 1 && that.vid.duration>0) {
-				console.log('duration', that.vid.duration);	
+				//console.log('duration', that.vid.duration);	
 				if (!that.nbFramesSetted && that.endVid==undefined){
 					that.setEndVid(that.timeToFrame(that.vid.duration));
 				}
@@ -46,7 +46,7 @@ export class videoControler {
 		$(this.vid).on('timeupdate', function() {
 			if (!that.isPlaying || that.mode=='freeze'){
 				that.pause();
-				that.notifyAttachedObjects();
+				that.forcedNotifyAttachedObjects(that.timeToFrame(this.currentTime));
 			}
 			/*if (that.mode=='freeze'){
 				that.vid.currentTime=that.frameToTime(that.beginSelect);
@@ -85,13 +85,13 @@ export class videoControler {
 	setFrameRate(){
 		if (this.nbFramesSetted && this.vid.duration>0){
 			this.frameRate=(this.endVid-1)/this.vid.duration;
-			console.log('frameRate',this.frameRate);
+			//console.log('frameRate',this.frameRate);
 		}
 	}
 	
 	setAnnotedFrames(annotedFrame){
 		this.annotedFrame=annotedFrame;
-		console.log('annotedFrame',this.annotedFrame);
+		//console.log('annotedFrame',this.annotedFrame);
 	}
 	
 	// Frame-Time management
@@ -124,13 +124,13 @@ export class videoControler {
 	setCurrentFrame(newCurrentFrame){
 		//this.vid.currentTime=this.frameToTime(newCurrentFrame);
 		this.vid.play();
+		this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
 		if (!this.isPlaying){
 			var that=this;
-			this.vid.addEventListener('playing',function(){that.pause();});
+			this.vid.addEventListener('playing',function(){that.pause(); });
+			//that.forcedNotifyAttachedObjects(newCurrentFrame);
 		}
-		console.log('setCurrentFrame',newCurrentFrame,this.frameToTime(newCurrentFrame),typeof this.frameToTime(newCurrentFrame));
-		this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
-		this.notifyAttachedObjects();
+		//console.log('setCurrentFrame',newCurrentFrame,this.frameToTime(newCurrentFrame),typeof this.frameToTime(newCurrentFrame));
 	}
 	
 	// Longueur de la vidéo
@@ -158,8 +158,8 @@ export class videoControler {
 		if (oldMode!=this.mode && this.isPlaying || this.mode=="freeze"){
 			this.configMode();
 		}
-		//console.log(this.mode,this.beginSelect,this.endSelect);
-	}
+		////console.log(this.mode,this.beginSelect,this.endSelect);
+	} 
 	
 	
 	// Configuration du mode de lecture
@@ -172,12 +172,12 @@ export class videoControler {
 				break;
 			case "partial" : 
 				this.updateInterval=setInterval(function(){that.partialPlay();},1000/this.frameRate);
-				console.log('config Mode period : ',1000/this.frameRate);
+				//console.log('config Mode period : ',1000/this.frameRate);
 				break;
 			case 'freeze' :
 				//this.isPlaying=false;
 				this.pause();
-				console.log("configMode", this.beginSelect);
+				//console.log("configMode", this.beginSelect);
 				this.setCurrentFrame(this.beginSelect);
 				break;
 		}
@@ -191,18 +191,31 @@ export class videoControler {
 		this.attachedObject.forEach(function(object){
 			if (curFrame % that.attachedObjectFrequency.get(object)==1){
 				object.notify(curFrame);
+				//console.log('notify',object);
 			}
+		});
+	}
+	
+	/* 
+	notifying new current frame without taking care of frequency.
+	*/
+	forcedNotifyAttachedObjects(numFrame){	
+		var that=this;
+		// On notifie les objets qui sont abonnés au contrôleur vidéo.
+		this.attachedObject.forEach(function(object){
+			object.notify(numFrame);
 		});
 	}
 	
 	// Fonction de l'intervalle en mode full
 	fullPlay(){
 		this.notifyAttachedObjects();
+		//console.log("full");
 	}
 	
 	// Fonction de l'intervalle en mode partial
 	partialPlay(){
-		console.log('partialPlay',this.getCurrentFrame(),this.beginSelect,this.endSelect)
+		//console.log('partialPlay',this.getCurrentFrame(),this.beginSelect,this.endSelect)
 		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
 			this.setCurrentFrame(this.beginSelect);
 		}
@@ -212,6 +225,7 @@ export class videoControler {
 	
 	// Lecture de la vidéo
 	play(){
+		//console.log('play',this.mode);
 		if (this.mode!="freeze"){
 			this.isPlaying=true;
 			this.vid.play();
@@ -225,6 +239,7 @@ export class videoControler {
 		this.isPlaying=false;
 		clearInterval(this.updateInterval);
 		this.vid.removeEventListener('playing');
+		this.notifyAttachedObjects();
 	}
 	
 	// Définition de l'intervalle de lecture
@@ -264,7 +279,7 @@ export class videoControler {
 				$("#beginSelect").val(this.endSelect);
 			}
 		}
-		console.log('setEndSelect',end,this.endVid,this.endSelect);
+		//console.log('setEndSelect',end,this.endVid,this.endSelect);
 		this.setMode();
 	}
 	
@@ -283,7 +298,7 @@ export class videoControler {
 	attach(object,frequency){
 		this.attachedObject[this.attachedObject.length]=object;
 		this.attachedObjectFrequency.set(object,frequency);
-		//console.log("attached object",this.attachedObject)
+		////console.log("attached object",this.attachedObject)
 	}
 	
 	// Desabonnement d'un objet 
