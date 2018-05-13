@@ -1,25 +1,35 @@
 export class videoControler {
-	constructor(vid,frameRate,annotedFrame){
+	constructor(vid,defaultFrameRate){
 		
 		// Balise vidéo
 		this.vid=vid;		
 		
+		// nbFrame
+		this.nbFramesSetted=false;
+		
 		// Framerate
-		this.frameRate=frameRate;
+		this.frameRate=defaultFrameRate;
 				
 		// Plage de lecture (pour le mode partialPlaying)
 		this.beginVid=1;
-		this.endVid=1;
+		
 		
 		// Récupération du nombre de frame à partir du framerate
 		// On utilise un un intervalle qui vérifie si la vidéo est prête à être lu.
 		var that=this;
 		
 		this.settingInterval=setInterval(function(){
-			if (that.vid!=undefined && that.vid.readyState > 0) {
-				that.endVid=that.timeToFrame(that.vid.duration);
+			if (that.vid!=undefined && that.vid.readyState > 1 && that.vid.duration>0) {
+				console.log('duration', that.vid.duration);	
+				if (!that.nbFramesSetted && that.endVid==undefined){
+					that.setEndVid(that.timeToFrame(that.vid.duration));
+				}
+				that.setFrameRate();
 				that.beginSelect=1;
-				that.endSelect=that.endVid;
+				if (that.endSelect==undefined){
+					that.setEndSelect(that.endVid);
+					//that.endSelect=that.endVid;
+				}
 				clearInterval(that.settingInterval);
 			}
 		},50);
@@ -30,6 +40,7 @@ export class videoControler {
 		// Mode lecture
 		this.mode="full";
 		this.partialPlaying=false;
+		$("#partialButton").prop('checked',false);
 		this.isPlaying=false;
 		
 		$(this.vid).on('timeupdate', function() {
@@ -51,22 +62,50 @@ export class videoControler {
 
 		
 		// Frame annotée
-		this.annotedFrame=annotedFrame;
+		this.annotedFrame=[];
 		
 	}
-
+	
+	setEndVid(end){
+		this.endVid=end;
+		$( "#seekBar" ).prop('max', end);
+	}
+	
+	setNbFrames(nbFrame){
+		this.setEndVid(nbFrame);
+		if (this.endSelect==undefined){
+			this.endSelect=nbFrame;
+		}else{
+			this.endSelect=Math.min(this.endSelect,nbFrame);
+		}
+		this.nbFramesSetted=true;
+		this.setFrameRate();
+	}
+	
+	setFrameRate(){
+		if (this.nbFramesSetted && this.vid.duration>0){
+			this.frameRate=(this.endVid-1)/this.vid.duration;
+			console.log('frameRate',this.frameRate);
+		}
+	}
+	
+	setAnnotedFrames(annotedFrame){
+		this.annotedFrame=annotedFrame;
+		console.log('annotedFrame',this.annotedFrame);
+	}
+	
 	// Frame-Time management
 	
 	// Conversion 
 	
 	// Retourne le temps correspondant au numéro de frame
 	frameToTime(numFrame){
-		return ((numFrame-1)/this.frameRate);
+		return ((Number(numFrame)-1)/this.frameRate);
 	}
 	
 	// Retourne le numéro de frame correspondant au temps
 	timeToFrame(time){
-		return Math.round(time*this.frameRate)+1;
+		return Math.round(Number(time)*this.frameRate)+1;
 	}
 
 	// Current element 
@@ -89,8 +128,9 @@ export class videoControler {
 			var that=this;
 			this.vid.addEventListener('playing',function(){that.pause();});
 		}
+		console.log('setCurrentFrame',newCurrentFrame,this.frameToTime(newCurrentFrame),typeof this.frameToTime(newCurrentFrame));
 		this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
-		
+		this.notifyAttachedObjects();
 	}
 	
 	// Longueur de la vidéo
@@ -128,14 +168,16 @@ export class videoControler {
 		var that=this;
 		switch (this.mode){
 			case "full" : 
-				this.updateInterval=setInterval(function(){that.fullPlay()},1/this.frameRate);
+				this.updateInterval=setInterval(function(){that.fullPlay()},1000/this.frameRate);
 				break;
 			case "partial" : 
-				this.updateInterval=setInterval(function(){that.partialPlay()},1/this.frameRate);
+				this.updateInterval=setInterval(function(){that.partialPlay();},1000/this.frameRate);
+				console.log('config Mode period : ',1000/this.frameRate);
 				break;
 			case 'freeze' :
 				//this.isPlaying=false;
 				this.pause();
+				console.log("configMode", this.beginSelect);
 				this.setCurrentFrame(this.beginSelect);
 				break;
 		}
@@ -160,6 +202,7 @@ export class videoControler {
 	
 	// Fonction de l'intervalle en mode partial
 	partialPlay(){
+		console.log('partialPlay',this.getCurrentFrame(),this.beginSelect,this.endSelect)
 		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
 			this.setCurrentFrame(this.beginSelect);
 		}
@@ -188,38 +231,47 @@ export class videoControler {
 	setPlayingInterval(begin,end){
 		begin=Number(begin);
 		end=Number(end);
-		if (begin>=1 &&  begin <= end && end<=this.endVid){
+		if (begin>=1 &&  begin <= end && (this.endVid==undefined || end<=this.endVid)){
 			this.beginSelect=begin;
 			this.endSelect=end;
+			$("#beginSelect").val(begin);
+			$("#endSelect").val(end);
 		}
 		this.setMode();
 	}
 	
 	setBeginSelect(begin){
 		begin=Number(begin);
-		if (begin>=1 && begin<=this.endVid){
+		if (begin>=1 && (this.endVid==undefined || begin<=this.endVid )){
 			this.beginSelect=begin;
-			if (this.endSelect<this.beginSelect){
+			$("#beginSelect").val(begin);
+			if (this.endSelect==undefined || this.endSelect<this.beginSelect){
 				this.endSelect=this.beginSelect;
+				$("#endSelect").val(this.beginSelect);
 			}
 		}
+		
 		this.setMode();
 	}
 	
 	setEndSelect(end){
 		end=Number(end);
-		if (end>=1 && end<=this.endVid){
+		if (end>=1 && (this.endVid==undefined || end<=this.endVid )){
 			this.endSelect=end;
-			if (this.beginSelect>this.endSelect){
+			$("#endSelect").val(end);
+			if (this.beginSelect==undefined || this.beginSelect>this.endSelect){
 				this.beginSelect=this.endSelect;
+				$("#beginSelect").val(this.endSelect);
 			}
 		}
+		console.log('setEndSelect',end,this.endVid,this.endSelect);
 		this.setMode();
 	}
 	
 	// Mode de lecture partielle
 	setPartialPlaying(pp){
 		this.partialPlaying=pp;
+		$("#partialButton").prop('checked',pp);
 		this.setMode();
 	}
 		
