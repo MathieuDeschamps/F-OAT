@@ -1,15 +1,38 @@
 <template name="playerCommand">
 
-<div id='playerCommand' class="row">
-  <a id='playButton' class=" btn-floating btn-tiny waves-effect blue darken-4"><i class="material-icons">play_arrow</i></a>
-  <a id='pauseButton' class=" btn-floating btn-tiny waves-effect blue darken-4"><i class="material-icons">pause</i></a>
- <button id='partialButton' type="button">Partial playing</button>
- <button id='nextAnnotedButton' type="button">Next annoted frame</button>
- <button id='prevAnnotedButton' type="button">Previous annoted frame</button>
+<div id='playerCommand' class="row grey lighten-4" >
+
+<div class="col s8" style="padding-right:2px; padding-left:5px; margin:0px;" >
+ <button id='playButton' class="col s1 waves-effect waves-light btn" type="button" ><i class="material-icons">play_arrow</i></button> 
+ <button id='pauseButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">pause</i></button>
+
+ <p class="col s8 range-field">
+	<input type="range" id="seekBar" value="0" min="0" max="10"/>
+ </p>
+ <button id='prevAnnotedButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">skip_previous</i></button> 
+ <button id='nextAnnotedButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">skip_next</i></button> 
+ </div>
+ 
  <form class="selection">
-<input id="beginSelect"  type="number">
-<input id="endSelect"  type="number">
-</form>
+<div class="col s3 " style="padding:2px; margin:0px">
+ <span class="col s6" style="padding:2px; margin:0px"> <label> Select. begin </label> <input id="beginSelect"  type="number"> </span>
+<span class="col s6" style="padding:2px; margin:0px"> <label> Select. end </label><input id="endSelect"  type="number"> </span>
 </div>
+<div class = "col s1" style="padding:2px; margin:0px">
+    <label>Part. Play. </label>
+        <div class = "switch">
+			<label>
+				<input id='partialButton' type = "checkbox" checked>
+                <span class = "lever"></span>
+			</label>
+		</div> 
+</div>
+
+</form>
+
+
+
+</div>
+
 
 </template>
