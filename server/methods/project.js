@@ -121,7 +121,7 @@ generateContent = function(project, id){
         .up()
       .up()
       .ele('extractors')
-        .ele('shot-extract')
+        .ele('')
       .up()
     .end({ pretty: true });
     return doc.toString();

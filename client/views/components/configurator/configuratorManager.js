@@ -40,7 +40,7 @@ export class configuratorManager{
 			/*var path='/parameters.xsd';
 			Meteor.call("getXml",path, (err,result)=>{*/
 
-			console.log(extractor.ip);
+			//console.log(extractor.ip);
 			Meteor.call("getExtractorsParam",extractor.ip,(err,result)=>{
 				if(err){
 					alert(err.reason);
@@ -56,25 +56,25 @@ export class configuratorManager{
 	}
 
 	manageParameters(result,extractor,i,idDiv,idDivForm,idDivButton,JQlabelConfig){
-		console.log('parameters.xsd : ', result.data);
-		var xsd=$.parseXML(result.data);
-		console.log('XSD parsé : ',xsd);
+		//console.log('parameters.xsd : ', result);
+		var xsd=$.parseXML(result);
+		//console.log('XSD parsé : ',xsd);
 
 		var xsdObj=new XSDObject(xsd);
-		console.log('xsdObj',xsdObj);
+		//console.log('xsdObj',xsdObj);
 
 		var xmlxsdObj= new XMLXSDObj(undefined,xsdObj);
 
 		var xmlxsdForm=new XMLXSDForm(xmlxsdObj,extractor._id+'_'+i,extractor.name,idDivForm);
 
-		console.log('xmlxsdForm',xmlxsdForm);
+		//console.log('xmlxsdForm',xmlxsdForm);
 
-		console.log('displayForm',xmlxsdForm,extractor,i,idDivButton,idDivForm,JQlabelConfig);
+		//console.log('displayForm',xmlxsdForm,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 		this.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 	}
 
 	displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig){
-		console.log('xmlxsdForm',xmlxsdForm);
+		//console.log('xmlxsdForm',xmlxsdForm);
 		var that=this;
 		xmlxsdForm.generate();
 
@@ -87,18 +87,21 @@ export class configuratorManager{
 			var gen=new XMLGenerator(xmlxsdObj);
 			console.log(gen.generateXML());
 			var paramsXML=gen.generateXML();
+
 			var params={"param" : paramsXML};
 			console.log('param en JSON',params);
 			$(JQidDivButton).html('');
-			var JQidDivForm='#'+idDivForm;
-			$(JQidDivForm).html(extractor.name + ' is downloading your video.');
+
 
 			// Initialisation
 			// _id,extractorUrl,_checksum,_downUrl??
 			var idProject = Router.current().params._id
 			var project = Projects.findOne(idProject)
 			var checksum;
-			Meteor.call("initRequest",idProject,extractor.ip,checksum,project._downUrl,(err,result)=>{
+			toastr.success("Downloading video");
+
+			Meteor.call("initRequest",idProject,extractor.ip,checksum,project.downUrl,(err,result)=>{
+				console.log("finish initRequest");
 				if (err){
 					alert('Download problem by '+extractor.name + ' : ' +err.reason);
 					console.log("initRequest that : ",that);
@@ -111,13 +114,14 @@ export class configuratorManager{
 					that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 				}else{
 					// Extraction launch
+					toastr.success("Extraction in progress");
 					Meteor.call("putRequest",idProject,params,extractor.ip,(err,result)=>{
+
 						if (err){
 							alert('Download problem by '+extractor.name + ' : ' +err.reason);
 							that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 						}else{
-							$(JQidDiv).html(extractor.name +"'s extraction is done.");
-							setTimeout(function(){$(JQlabelConfig).prop('checked',false);},30000);
+
 						}
 					});
 				}
