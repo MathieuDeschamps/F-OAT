@@ -1,14 +1,14 @@
 export class TimeLine {
     constructor(name, frameRate, nbFrame, data, divId) {
-        div_id = divId;
-        this.id_time_line = "timeLine" + div_id;
+        this.div_id = divId;
+        this.id_time_line = "timeLine" + divId;
         rect_actif = -1;
         var frame_rate = frameRate;
         this.nb_frame = nbFrame;
         var debut = 0;
         var fin = nbFrame;
         entry = ["frame", "shot", "scene"];
-        var entry_length = entry.length;
+        entry_length = entry.length;
         this.items = data;
         var itemsB = this.items;
         vidCtrl.setPlayingInterval(debut, fin);
@@ -47,11 +47,11 @@ export class TimeLine {
                 .attr("width", gen_width)
                 .attr("height", gen_height)
                 .attr("class", "general");
-        y1 = d3.scale.linear()
+        var y1 = d3.scale.linear()
                 .domain([0, entry_length])
                 .range([0, gen_height]);
 
-        x1 = d3.scale.linear()
+        var x1 = d3.scale.linear()
                 .domain([0, this.nb_frame])
                 .range([0, gen_width]);
 
@@ -69,10 +69,10 @@ export class TimeLine {
                 rect.attr("style", "fill:" + my_color[itemsB[rect_actif].entry]);
             }
             if (prec_timeLine === -1) {
-                prec_timeLine = div_id;
+                prec_timeLine = divId;
             }
             //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
-            if ((rect_actif !== i) | prec_timeLine !== div_id | (!vidCtrl.getPartialPlaying())) {
+            if ((rect_actif !== i) | prec_timeLine !== divId | (!vidCtrl.getPartialPlaying())) {
                 if (used_rect !== "") {
                     used_rect.attr("style", "fill:" + used_color);
                 }
@@ -80,7 +80,7 @@ export class TimeLine {
                 rect.attr("style", "fill:" + my_selected_color[d.entry]);
                 used_rect = rect;
                 rect_actif = i;
-                prec_timeLine = div_id;
+                prec_timeLine = divId;
                 // (Number(idTimeLine)+ 1)
                 vidCtrl.setPartialPlaying(true);
                 vidCtrl.setPlayingInterval(d.start, d.end);
@@ -107,7 +107,7 @@ export class TimeLine {
                     return y1(i + 1);
                 })
                 .attr("stroke", "lightgray");
-        var rect = gen.selectAll(".movPart")
+        var rect = gen.selectAll("rect")
                 .data(this.items);
         rect.enter().append("rect")
                 .attr("x", function (d) {
@@ -125,7 +125,7 @@ export class TimeLine {
                 .attr("id", function (d, i) {
                     return "rect" + i;
                 })
-                .attr("timelineid", div_id)
+                .attr("timelineid", this.div_id)
                 .attr("startframe", function (d) {
                     return d.start
                 })
@@ -163,14 +163,23 @@ export class TimeLine {
                 })
                 .attr("dy", ".5ex")
                 .attr("text-anchor", "end");
-        console.log("rect1: ", this.items)
+        console.log("rect1: ", rect)
     }
     update() {
         var time_line = d3.select("#" + this.id_time_line).select("svg");
-        var gen = time_line.select("g").selectAll(".movPart").data(this.items);;
-        var rect = time_line.select("g").selectAll(".elementTimeline").data(this.items);
-        rect.exit().remove();
-        gen.enter().append("rect")
+       // var gen = time_line.select("g").selectAll(".movePart").data(this.items);
+        var y1 = d3.scale.linear()
+                .domain([0, entry_length])
+                .range([0, gen_height]);
+
+        var x1 = d3.scale.linear()
+                .domain([0, this.nb_frame])
+                .range([0, gen_width]);
+        //console.log("rect2: ", time_line.select("g").selectAll("rect").data());
+        var rectA = time_line.select("g").selectAll("rect").data([]);
+        rectA.exit().remove();
+        var rectB = time_line.select("g").selectAll("rect").data(this.items);
+        rectB.enter().append("rect")
                 .attr("x", function (d) {
                     return x1(d.start + 0.1);
                 })
@@ -186,7 +195,7 @@ export class TimeLine {
                 .attr("id", function (d, i) {
                     return "rect" + i;
                 })
-                .attr("timelineid", div_id)
+                .attr("timelineid", this.div_id)
                 .attr("startframe", function (d) {
                     return d.start;
                 })
@@ -202,7 +211,7 @@ export class TimeLine {
                 })
                 .attr("stroke", "lightgray")
                 .on("click", blockPlay);
-        console.log("rect2: ", this.items);
+        //console.log("rect2: ", time_line.select("g").selectAll("rect").data());
 
     }
 }
