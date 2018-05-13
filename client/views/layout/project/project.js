@@ -50,7 +50,9 @@ Template.project.onRendered(()=>{
             idTimeline = "#timeLine" + i
             nameExtractor = $(idTimeline).attr("extractor")
             timelineData = Parser.getTimelineData(xml,nameExtractor)
-            console.log('timelineData', timelineData)
+            timeline.items = $(timelineData).attr("data")
+            timeline.nb_frame = $(timelineData).attr("nbFrames")
+            //console.log('timelineData', timelineData)
             timeline.update()
           })
         }
@@ -165,8 +167,10 @@ Template.project.events({
             $(timelines).each(function(i,timeline){
               idTimeline = "#timeLine" + i
               nameExtractor = $(idTimeline).attr("extractor")
-              timeline.items = Parser.getTimelineData(xml,nameExtractor)
-              //console.log('timelineData', timeline.items)
+              timelineData = Parser.getTimelineData(xml,nameExtractor)
+             // console.log("data: " , $(timelineData).attr("data"))
+              timeline.items = $(timelineData).attr("data");
+              console.log('timelineData', timelineData)
               timeline.update()
             })
             console.log("ok!");
