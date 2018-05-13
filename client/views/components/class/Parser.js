@@ -95,20 +95,26 @@ export class Parser{
     }else{
       var XMLObject = $.parseXML(xml)
       // init value
-      var firstScene = ($(XMLObject).find('extractors').children(nameExtractor).find('scene'))[0]
-      var startFrame =parseInt($(firstScene).attr('startFrame'))
-      var endFrame = parseInt($(firstScene).attr('endFrame'))
+	  console.log('scenes??');
+	  var scenes=($(XMLObject).find('extractors').children(nameExtractor).find('scene'));
+	  console.log(scenes);
+	  if (scenes.length>0){
+		var firstScene = ($(XMLObject).find('extractors').children(nameExtractor).find('scene'))[0]
+	  
+		var startFrame =parseInt($(firstScene).attr('startFrame'))
+		var endFrame = parseInt($(firstScene).attr('endFrame'))
 
-      $(XMLObject).find('scene').each(function(i,scene){
-        if(parseInt($(scene).attr('startFrame')) < startFrame){
-          startFrame = parseInt($(scene).attr('startFrame'))
-        }
-        if(parseInt($(scene).attr('endFrame')) > endFrame){
-          endFrame = parseInt($(scene).attr('endFrame'))
-        }
-      })
-      // console.log('getNbFrames', endFrame - startFrame)
-      return endFrame - startFrame
+		$(XMLObject).find('scene').each(function(i,scene){
+			if(parseInt($(scene).attr('startFrame')) < startFrame){
+				startFrame = parseInt($(scene).attr('startFrame'))
+			}
+			if(parseInt($(scene).attr('endFrame')) > endFrame){
+				endFrame = parseInt($(scene).attr('endFrame'))
+			}
+		})
+        console.log('getNbFrames', endFrame - startFrame)
+		return endFrame - startFrame
+	  }
     }
   }
 
