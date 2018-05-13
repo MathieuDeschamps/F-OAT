@@ -56,8 +56,8 @@ Template.project.onRendered(()=>{
             //console.log('timelineData', timelineData)
             timeline.update()
           })
-		  
-		  //Video controler update : 
+
+		  //Video controler update :
 		  var nbFrames=0;
 		extractors.forEach(function(extractor){
 			console.log('nb Frame',extractor);
@@ -74,7 +74,7 @@ Template.project.onRendered(()=>{
 		}
 		console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
 		vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
-		  
+
         }
       });
 
@@ -127,7 +127,7 @@ Template.project.onRendered(()=>{
           }
         })
       })
-	  
+
 	  // VideoControler init
 	    var nbFrames=0;
 		extractors.forEach(function(extractor){
@@ -145,7 +145,7 @@ Template.project.onRendered(()=>{
 		}
 		console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
 		vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
-	  
+
     }
   });
 })
@@ -215,7 +215,7 @@ Template.project.events({
             console.log("ok!");
             em.emit('hello');
             // TODO call to update other elements
-			
+
 			// VideoControler update
 			console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
 			vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));

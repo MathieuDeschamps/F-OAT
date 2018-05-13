@@ -80,7 +80,7 @@ export class configuratorManager{
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';
-		$(JQidDivButton).append('<div class="row"><a id="'+idButton+'" class="waves-effect waves-light btn col s6 offset-s3">Launch '+extractor.name+'</a></div>');
+		$(JQidDivButton).append('<div class="row"><a id="'+idButton+'" class="waves-effect waves-light btn col s6 offset-s3">Launch '+'</a></div>');
 
 		var JQidButton='#'+idButton;
 		$(JQidButton).click(function(){

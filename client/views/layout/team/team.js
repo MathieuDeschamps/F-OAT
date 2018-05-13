@@ -30,7 +30,6 @@ Template.team.events({
     var $buttonEvent = $(event.target);
     var newRight = $buttonEvent.closest('tr').find('select').val();
     Meteor.call('changeRight',Router.current().params._id,this.username,newRight,(error,result)=>{
-      alert(result);
       if(error){
         alert(error.reason);
       }else if(result === 2){
@@ -55,7 +54,7 @@ Template.team.events({
         if(err){
           alert(err.reason);
         }else if(!result){
-          toastr.warning("There user does not exist.");
+          toastr.warning("This user does not exist.");
         }else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
             if(err){
