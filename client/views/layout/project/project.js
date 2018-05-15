@@ -47,7 +47,7 @@ Template.project.onRendered(()=>{
             form.update()
           })
           // update the timeline
-          $(timelines).each(function(i,timeline){
+          $(".timeline").each(function(i,timeline){
             idTimeline = "#timeLine" + i
             nameExtractor = $(idTimeline).attr("extractor")
             timelineData = Parser.getTimelineData(xml,nameExtractor)

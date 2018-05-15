@@ -28,7 +28,8 @@ export class TimeLine {
         //donner le div du timeLine la meme taille que le timeLine generer
         $("#" + this.id_time_line).css('width', width_total);
         $("#" + this.id_time_line).css('height', height_total);
-        $("#" + this.id_time_line).attr("extractor", name)
+        $("#" + this.id_time_line).attr("extractor", name);
+        $("#" + this.id_time_line).addClass("timeline");
         // console.log("timeLine: " + this.id_time_line)
         //generer le timeLine dans son div
         var time_line = d3.select("#" + this.id_time_line)
