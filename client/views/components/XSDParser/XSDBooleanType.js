@@ -1,4 +1,10 @@
+/* 
+Object class for xsd boolean Type
+*/
+
 export class XSDBooleanType {
+	/*Constructor : 
+	*/
 	constructor(){
 		this.name='xs:boolean';
 		
@@ -7,7 +13,8 @@ export class XSDBooleanType {
 	}
 	
 	
-	// 
+	/*
+	
 	restriction(restr,name){
 		// 1) cloner le type
 		type=this.assign();
@@ -15,6 +22,12 @@ export class XSDBooleanType {
 		return type;
 	}
 	
+	*/
+	
+	/* conversion of a string to boolean
+	@str : string
+	@returns : boolean
+	*/
 	convert(str){
 		if (str.toLowerCase()=="true"){
 			return true;
@@ -24,13 +37,19 @@ export class XSDBooleanType {
 		}
 	}
 	
-	
+	/* test if b is a boolean
+	@b : object
+	@returns : boolean
+	*/
 	holds(b){
 		// tester le type de b
 		return ((b==true)||(b==false));
 	}
 	
-	accept(object){
-		object.visitXSDBooleanType(this);
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXSDBooleanType"
+	*/
+	accept(visitor){
+		visitor.visitXSDBooleanType(this);
 	}
 }

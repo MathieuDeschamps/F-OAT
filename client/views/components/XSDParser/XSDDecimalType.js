@@ -1,4 +1,9 @@
+/* 
+Object class for decimal Type
+*/
 export class XSDDecimalType {
+	/* Constructor
+	*/
 	constructor(){
 		this.name='xs:decimal';
 		
@@ -10,42 +15,64 @@ export class XSDDecimalType {
 		this.facets=['enumeration', 'minInclusive', 'minExclusive', 'maxInclusive', 'maxExclusive'];
 	}
 	
+	/* Convert a string to number
+	@str : string
+	@return : number
+	*/
+	convert(str){
+		return Number(str);
+	}
+	
+	/* test if the type is enumerated (when restrictions have been applied)
+	@returns : boolean
+	*/
 	isEnumerated(){
 		return (this.enumeration == undefined)
 	}
 	
-	// return true if n is of this type, false otherwise
+	/* tests if n is of the type taking into account the restrictions applied
+	@n : object
+	@returns : boolean
+	*/
 	holds(n){
 		result=true;
-		if (this.minEx!="unbounded"){
-			if (n <= this.minEx){
-				result=false;
+		if (typeof n == "number"){
+			if (this.minEx!="unbounded"){
+				if (n <= this.minEx){
+					result=false;
+				}
 			}
-		}
-		if (this.minIn!="unbounded"){
-			if (n < this.minIn){
-				result=false;
+			if (this.minIn!="unbounded"){
+				if (n < this.minIn){
+					result=false;
+				}
 			}
-		}
-		if (this.maxEx!="unbounded"){
-			if (n >= this.maxEx){
-				result=false;
+			if (this.maxEx!="unbounded"){
+				if (n >= this.maxEx){
+					result=false;
+				}
 			}
-		}
-		if (this.maxIn!="unbounded"){
-			if (n > this.maxIn){
-				result=false;
+			if (this.maxIn!="unbounded"){
+				if (n > this.maxIn){
+					result=false;
+				}
 			}
-		}
-		if (this.isEnumerated()){
-			if (this.enumeration.indexOf(n)==-1){
-				result=false;
+			if (this.isEnumerated()){
+				if (this.enumeration.indexOf(n)==-1){
+					result=false;
+				}
 			}
+		}else{
+			result=false;
 		}
 		return result;
 	}
 	
-	// setting functions for restriction only
+	/* Setters for various restrictions
+	enumeration is filtered if necessary
+	@newMin : number
+	@newMax : number
+	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
 			this.minEx=max(this.minEx,newMin);
@@ -56,6 +83,7 @@ export class XSDDecimalType {
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
+
 	setMinIn(newMin){
 		if (this.hasMinIn()){
 			this.minIn=max(this.minIn,newMin);
@@ -66,6 +94,7 @@ export class XSDDecimalType {
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
+	
 	setMaxEx(newMax){
 		if (this.hasMaxEx()){
 			this.maxEx=min(this.maxEx,newMax);
@@ -76,6 +105,7 @@ export class XSDDecimalType {
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
+
 	setMaxIn(newMax){
 		if (this.hasMaxIn()){
 			this.maxIn=min(this.maxIn,newMax);
@@ -87,8 +117,10 @@ export class XSDDecimalType {
 		}
 	}
 	
-		
-	accept(object){
-		object.visitXSDDecimalType(this);
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXSDDecimalType"
+	*/
+	accept(visitor){
+		visitor.visitXSDDecimalType(this);
 	}
 }

@@ -1,11 +1,14 @@
-export class XSDElt{
+/*
+Object class for elements in an xsd file.
+*/
 
+export class XSDElt{
+	/* Constructor : 
+	@elt : element description given by JQuery parsing of the xsd file
+	@table : type table
+	*/
 	constructor(elt,table){
 		this.table=table;
-		console.log(elt);
-		
-		
-		console.log('elt fixed : ', $(elt).attr('fixed'));
 		
 		if ($(elt).attr('fixed')!=undefined){
 			this.fixed=$(elt).attr('fixed');
@@ -19,21 +22,21 @@ export class XSDElt{
 		if (this.maxOccurs== undefined){
 			this.maxOccurs=1;
 		}
+		
 		this.minOccurs=$(elt).attr('minOccurs');
 		if (this.minOccurs== undefined){
 			this.minOccurs=1;
 		}
+		
 		if (this.minOccurs>this.maxOccurs){
 			alert("Inconsistent minOccurs and maxOccurs");
 		}
 		
+		// Name obligatoire étant donné les restrictions
 		this.name = $(elt).attr('name');
-		// Obligatoire étant donné les restrictions
 		if (typeof this.name =="undefined"){
 			alert('XSD element problem : name is not optional.')
-			console.log("XSD Elt pb : ", elt);
 		}
-		
 		
 		// this.type is only the name of the elemen's type.
 		var typeName=$(elt).attr('type');
@@ -56,9 +59,11 @@ export class XSDElt{
 					alert('XSD Element '+this.name+' : type multi defined.');
 			}
 		}
-		
 	}
 
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXSDElt"
+	*/
 	accept(visitor){
 		visitor.visitXSDElt(this);
 	}

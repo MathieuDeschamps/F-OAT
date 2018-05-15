@@ -1,6 +1,14 @@
 import {XSDElt} from './XSDElt.js';
 
+/* 
+Object class for sequence in a xsd file.
+*/
 export class XSDSequence{
+	/*Constructor
+	@seqDef : description of the sequence obtained by JQuery parsing
+	@attrs : list of XSDAttr objects
+	@table : symbol table
+	*/
 	constructor(seqDef,attrs,table){
 		this.table=table;
 		this.attrs=attrs;
@@ -20,11 +28,13 @@ export class XSDSequence{
 		this.seqElt=[];
 		that=this;
 		$(seqDef).children('xs\\:element').each(function(i,elt){
-			console.log(i,elt);
 			that.seqElt.push(new XSDElt(elt,table));
 		});
 	}
 	
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXSDSequence"
+	*/
 	accept(visitor){
 		visitor.visitXSDSequence(this);
 	}

@@ -1,59 +1,50 @@
 import {XMLXSDAttr} from './XMLXSDAttr.js';
 
+/*
+Object class for extension type (ie element with basic node value and attributes) linked to its xsd dexcription
+*/
 export class XMLXSDExtensionType{
+	/*Constructor
+	@xml : description of the element by JQuery parsing
+	@extType : XSDExtensionType object
+	*/
 	constructor(xml,extType){
-		
-		console.log('XMLXSDExtensionType',xml,extType);
 		
 		this.type=extType;
 		
 		this.baseType=extType.table.getType(extType.baseType);
 		
-		console.log('XMLXSDExtensionType',this.type,extType.table);
-		
 		this.attrs={};
 		
 		this.name="extension";
 		
-		/*console.log('XMLXSDSequence - xsdseq : ',xsdSeq);
-		console.log('XMLXSDSequence - xsdseq.attrs : ',xsdSeq.attrs);
-		console.log('XMLXSDSequence - xmlElt : ',xmlElt);*/
-		
 		var that=this;
 		if (xml!=undefined){
 			Object.keys(extType.attrs).forEach(function(xsdAttr,i){
-				/*console.log('XMLXSDSequence - xsdAttr.name ',xsdAttr);
-				console.log('XMLXSDSequence - $(xmlElt).attr(xsdAttr)',$(xmlElt).attr(xsdAttr));
-				console.log('XMLXSDSequence - xsdSeq.attrs[xsdAttr]',xsdSeq.attrs[xsdAttr]);*/
 				that.attrs[xsdAttr]=new XMLXSDAttr($(xml).attr(xsdAttr),extType.attrs[xsdAttr]);
 			});
 			var value=this.baseType.convert(xml.textContent);
 			this.setValue(value);
 		}else{
 			Object.keys(extType.attrs).forEach(function(xsdAttr,i){
-				/*console.log('XMLXSDSequence - xsdAttr.name ',xsdAttr);
-				console.log('XMLXSDSequence - $(xmlElt).attr(xsdAttr)',$(xmlElt).attr(xsdAttr));
-				console.log('XMLXSDSequence - xsdSeq.attrs[xsdAttr]',xsdSeq.attrs[xsdAttr]);*/
 				that.attrs[xsdAttr]=new XMLXSDAttr(undefined,extType.attrs[xsdAttr]);
 			});
-			
 		}
-		
-		
-		
-		
-		
 	}
 
-	
+	/* Setter for the node value
+	@value : object
+	*/
 	setValue(value){
 		if (this.baseType.holds(value)){
 			this.value=value;
 		}
 	}
 
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXMLXSDExtensionType"
+	*/
 	accept(visitor){
 		visitor.visitXMLXSDExtensionType(this)
-	}
-	
+	}	
 }

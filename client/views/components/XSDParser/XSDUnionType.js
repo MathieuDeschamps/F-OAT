@@ -1,5 +1,12 @@
-export class XSDUnionType{
+/* 
+Object class for xsd union Type
+*/
 
+export class XSDUnionType{
+	/* Constructor
+	@union : description of the type union obtained by JQuery parsing
+	@table : symbol table
+	*/
 	constructor(union,table){
 		
 		this.table=table;
@@ -13,6 +20,9 @@ export class XSDUnionType{
 		
 	}
 	
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitUnionType"
+	*/
 	accept(visitor){
 		visitor.visitUnionType(this);
 	}

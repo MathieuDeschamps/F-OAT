@@ -5,8 +5,12 @@ import {XSDAttr} from './XSDAttr.js';
 import {XSDRestrictionType} from './XSDRestrictionType.js';
 import {XSDExtensionType} from './XSDExtensionType.js';
 
+/* 
+Object class for symbol table of a xsd file
+*/
 export class XSDSymbolTable{
-
+	/* Constructor
+	*/
 	constructor(){
 		
 		this.typeTable=new Object();
@@ -14,27 +18,39 @@ export class XSDSymbolTable{
 		this.typeIdNumber=0;
 	}
 	
-	
+	/* adding a new type in the table
+	@type : xsd type object
+	*/
 	addType(type){
 		if (typeof this.typeTable[type.name] == "undefined"){
 			//type.table=this;
 			this.typeTable[type.name]=type;
 		}else{
-			console.log(this);
 			alert('XSD problem : type '+type.name+' is already defined.');
 		}
 	}
 	
+	/* getting a type by its name
+	@typeName : string
+	@returns : XSD type object
+	*/
 	getType(typeName){
 		return this.typeTable[typeName];
 	}
 	
+	/* getting an anonymous type name
+	@returns : string
+	*/
 	newTypeName(){
 		typeName="__type__"+this.typeIdNumber;
 		this.typeIdNumber++;
 		return typeName;
 	}
 	
+	/* Create a simple type
+	@typeDef : type description obtained by JQuery parsing
+	@returns : XSD type object
+	*/
 	createSimpleType(typeDef){
 		var typeName=$(typeDef).attr('name');
 		var type;
@@ -86,6 +102,10 @@ export class XSDSymbolTable{
 		return typeName;
 	}
 	
+	/* Create a complex type
+	@typeDef : type description obtained by JQuery parsing
+	@returns : XSD type object
+	*/
 	createComplexType(typeDef){
 		var typeName=$(typeDef).attr("name");
 		
@@ -99,8 +119,6 @@ export class XSDSymbolTable{
 			case "sequence" : 
 				var attrs={};
 				var that=this;
-				console.log("XSDSymbolTable - sequence : ",typeDef);
-				console.log("XSDSymbolTable - sequence : ",$(typeDef).children("xs\\:attribute"));
 				$(typeDef).children("xs\\:attribute").each(function(i,attr){
 					attrObj=new XSDAttr(attr,that);
 					if (attrs[attrObj.name] == undefined){
@@ -113,13 +131,13 @@ export class XSDSymbolTable{
 				var seqDef=$(typeDef).children("xs\\:sequence")[0];
 				type=new XSDSequence(seqDef,attrs,this);
 				break;
-			/*case "complexContent" :
+			/*TODO : complexContent
+			  case "complexContent" :
 				contentDef=$(typeDef).children("xs\\:complexContent")[0]);
 				type=new XSDComplexContent(contentDef,this);
 				break;*/
 			case "simpleContent" :
 				var contentDef=$(typeDef).children("xs\\:simpleContent")[0];
-				//type=new XSDSimpleContent(contentDef,this);
 				var restrict=$(contentDef).children('xs\\:restriction');
 				var extens=$(contentDef).children('xs\\:extension');
 				switch(restrict.length+extens.length){
@@ -147,6 +165,10 @@ export class XSDSymbolTable{
 		return typeName;		
 	}
 
+	/* Determine the kind of a complex type
+	@typeDef : type description obtained by JQuery parsing
+	@returns : string
+	*/
 	complexTypeKind(typeDef){
 		// undefined si mal défini
 		N=0;
@@ -186,5 +208,4 @@ export class XSDSymbolTable{
 		}
 	}
 
-	
 }

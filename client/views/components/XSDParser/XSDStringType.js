@@ -1,28 +1,40 @@
+/* 
+Object class for integer Type
+*/
 export class XSDStringType {
+	/*Constructor
+	*/
 	constructor(){
 		this.name='xs:string';
 		
 		this.minLength=0;
 		this.maxLength="unbounded";
-		
-		
+				
 		this.facets=['length', 'maxLength', 'minLength', 'enumeration'];
 		
 	}
 	
-		
+	/* test if the type is enumerated (when restrictions have been applied)
+	@returns : boolean
+	*/
 	isEnumerated(){
 		return (this.enumeration != undefined)
 	}
 	
+	/* Convert an object to number
+	@str : object
+	@return : number
+	*/
 	convert(str){
-		console.log('XSDString - convert', str);
 		return str.toString();
 	}
 	
-	// return true if s is of this type, false otherwise
+	/* tests if s is of the type taking into account the restrictions applied
+	@s : object
+	@returns : boolean
+	*/
+	// TODO : check if s is a string
 	holds(s){
-		console.log('XSDString - holds', s);
 		result=true;
 		if (s.length < this.minLength){
 				result=false;
@@ -41,13 +53,18 @@ export class XSDStringType {
 		return result;
 	}
 	
+	/* Setters for various restrictions
+	enumeration is filtered if necessary
+	@newMin : number
+	@newMax : number
+	@newLength : number
+	*/
 	setMinLength(newMin){
 		this.minLength=max(this.minLength,newMin);
 		if (this.isEnumerated()){
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
-	
 	setMaxLength(newMax){
 		if (this.maxLength!="unbounded"){
 			this.maxLength=max(this.maxLength,newMax);
@@ -58,12 +75,14 @@ export class XSDStringType {
 			this.enumeration=this.enumeration.filter(this.holds);
 		}
 	}
-	
 	setLength(newLength){
 		this.setMinLength(newLength);
 		this.setMaxLength(newLength);
 	}	
 	
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXSDStringType"
+	*/
 	accept(object){
 		object.visitXSDStringType(this);
 	}

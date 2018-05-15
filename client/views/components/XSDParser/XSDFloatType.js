@@ -1,7 +1,11 @@
+/* 
+Object class for float type
+*/
 export class XSDFloatType {
+	/*Constructor
+	*/
 	constructor(){
 		this.name='xs:float';
-		
 		this.minEx='unbounded';
 		this.minIn='unbounded';
 		this.maxEx='unbounded';
@@ -10,16 +14,26 @@ export class XSDFloatType {
 		this.facets=['enumeration', 'minInclusive', 'minExclusive', 'maxInclusive', 'maxExclusive'];
 	}
 	
+	/* test if the type is enumerated (when restrictions have been applied)
+	@returns : boolean
+	*/
 	isEnumerated(){
 		return (this.enumeration != undefined)
 	}
 	
+	/* Convert a string to number
+	@str : string
+	@return : number
+	*/
 	convert(str){
 		return Number(str);
 	}
 
-	
-	// return true if n is of this type, false otherwise
+	/* tests if n is of the type taking into account the restrictions applied
+	@n : object
+	@returns : boolean
+	*/
+	// TODO : check if n is a number
 	holds(n){
 		result=true;
 		if (this.minEx!="unbounded"){
@@ -50,7 +64,12 @@ export class XSDFloatType {
 		return result;
 	}
 	
-	// setting functions for restriction only
+	
+	/* Setters for various restrictions
+	enumeration is filtered if necessary
+	@newMin : number
+	@newMax : number
+	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
 			this.minEx=max(this.minEx,newMin);
@@ -92,8 +111,10 @@ export class XSDFloatType {
 		}
 	}
 	
-		
-	accept(object){
-		object.visitXSDFloatType(this);
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXSDDecimalType"
+	*/
+	accept(visitor){
+		visitor.visitXSDFloatType(this);
 	}
 }

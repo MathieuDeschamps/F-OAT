@@ -1,37 +1,36 @@
+/*
+Object class for xml attributes linked to its xsd dexcription
+*/
+
 export class XMLXSDAttr{
+	/* Constructor
+	@value : object (value of the attribute)
+	@xsdAtt : XSDAttr object²
+	*/
 	constructor(value,xsdAttr){
-		//this.xsdAttr=xsdAttr;
-		console.log('XMLXSDAttr', value, xsdAttr);
-		console.log('XMLXSDAttr',xsdAttr.table.getType(xsdAttr.type));
 		this.type=xsdAttr.table.getType(xsdAttr.type);
 		this.name=xsdAttr.name;
-		console.log('XMLXSDAttr - type',this.type);
 		if (xsdAttr.default!=undefined){
 			this.defaultValue=this.type.convert(xsdAttr.default);
 		}
-		console.log('XMLXSDAttr 1');
+
 		if (xsdAttr.fixed!=undefined){
-			console.log('fixed attribute'); 
 			this.fixedValue=this.type.convert(xsdAttr.fixed);
 		}
-		console.log('XMLXSDAttr 2');
 		this.use=xsdAttr.use;
-		console.log('XMLXSDAttr 4');
 		this.setValue(value);	
-		console.log('XMLXSDAttr',this);
 	}
 
+	/* Setter for the value
+	@value : object
+	*/
 	setValue(value){
 		if (value!=undefined){
-			console.log("XMLXSDAttr - value to convert : ",value);
 			var convertValue=this.type.convert(value);
-			console.log("XMLXSDAttr - convertValue : ",convertValue);
 			switch(this.use){
 				case 'optional' :
-					console.log("Ici");
 					if (this.type.holds(convertValue)){
 						if (this.fixedValue==undefined ||value==this.fixedValue){
-							
 							this.value=convertValue;
 						}
 					}
@@ -69,6 +68,9 @@ export class XMLXSDAttr{
 		}			
 	}
 	
+	/* Visitor pattern : accept function 
+	@ visitor : object with a method "visitXMLXSDAttr"
+	*/
 	accept(visitor){
 		visitor.visitXMLXSDAttr(this);
 	}
