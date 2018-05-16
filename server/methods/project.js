@@ -11,7 +11,7 @@ Meteor.methods({
   @buffer : content of the file
   @nameV : name of file without .mp4
   */
-  createFile: function(id, buffer, nameV){
+  createFile: function(id, project, buffer, nameV){
 
     //Write the file on server
     var fs = Npm.require("fs");
@@ -27,7 +27,7 @@ Meteor.methods({
       fs.mkdirSync(dirSi);
     }
     //By default, write file in .meteor/local/build/programs/server/ but we write in tmp.
-    fs.writeFile(dir+"/"+id, buffer, 'base64', function(err) {
+    fs.writeFile(dir+"/"+project.url, buffer, 'base64', function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
       }
