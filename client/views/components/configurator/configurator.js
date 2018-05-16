@@ -11,17 +11,15 @@ Template.configurator.onRendered(()=>{
 	path='/parameters.xsd';
 	console.log('Path : ',path);*/
 	extractors=Extractors.find();
-	console.log('extractors', extractors)
-	
+
 	new configuratorManager(extractors,"configurator","configuratorForm");
-	
+
 	/*extractors.forEach(function(extractor,i){
 		extractorCheckBox= '<p><input class="filled-in"  id="'+ i + '_config"  type="checkbox" mark="false"/>'
         extractorCheckBox += '<label for="'+ i + '_config">' + extractor.name + '</label></p>'
 		$("#configurator").append(extractorCheckBox);
 	});*/
-	console.log('extractors fin');
-	
+
 	/*Meteor.call("getXml",path, (err,result)=>{
 		if(err){
 			alert(err.reason);
@@ -29,7 +27,7 @@ Template.configurator.onRendered(()=>{
 			console.log('parameters.xsd : ', result.data);
 			var xsd=$.parseXML(result.data);
 			console.log('XSD parsé : ',xsd);
-		
+
 			var xsdObj=new XSDObject(xsd);
 			console.log('xsdObj',xsdObj);
 
@@ -55,10 +53,9 @@ Template.configurator.onRendered(()=>{
 Template.configurator.helpers({
 	parserXSD($xsd){
 		var $schema = $xsd.find("xs\\:schema");
-		schemaObj=new schemaObject($xschema,null,"monExtracteur"); 
+		schemaObj=new schemaObject($xschema,null,"monExtracteur");
 		myForm=formGenerator.construct(schemaObj);
 		$("configurator").html(myForm);
 	},
 });
 */
-

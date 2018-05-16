@@ -23,7 +23,7 @@ Template.options.events({
     var ipExtractor = $('.ip').val();
     var nameExtractor = $('.name').val();
 
-    
+
       var extractor = {name: nameExtractor, ip: ipExtractor};
       Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
         if(err){
@@ -52,9 +52,7 @@ Template.options.events({
   'click #update' (event, instance){
 
     var $elm = $(event.target).closest('tr');
-    console.log($elm);
     var extractor = {_id:$elm.find("#id").val() ,name: $elm.find("#name").val(), ip: $elm.find('#ip').val(), owner: Meteor.user().username};
-    console.log(extractor);
     if(!regex.test(extractor.ip)){
         toastr.warning("The ip typed is invalid");
     }else{

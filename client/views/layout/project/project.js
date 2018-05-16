@@ -84,7 +84,6 @@ Template.project.onRendered(()=>{
     appId: Router.current().params._id,
     _id: Meteor.userId()
   })
-  console.log(em)
 
   Meteor.call("getXml",pathXML,(errXML,result)=>{
     if(errXML){

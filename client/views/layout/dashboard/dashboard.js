@@ -14,7 +14,6 @@ Template.dashboard.helpers({
   isOwner(id){
     var project = Projects.findOne(id);
     if(project){
-      console.log(project);
       if(project.owner == Meteor.user().username){
         return true;
       }

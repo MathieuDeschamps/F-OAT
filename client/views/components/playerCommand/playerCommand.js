@@ -13,11 +13,10 @@ Template.project.onRendered(function(){
 	$( "#seekBar" ).change(function() {console.log("seekbar change");vidCtrl.setCurrentFrame($( "#seekBar" ).val());} );
 	$( "#partialButton" ).click(function() {
 		pp=vidCtrl.getPartialPlaying();
-		console.log(!pp);
 		vidCtrl.setPartialPlaying(!pp);} );
 	$( "#nextAnnotedButton" ).click(function() {vidCtrl.nextAnnotedFrame();} );
 	$( "#prevAnnotedButton" ).click(function() {vidCtrl.prevAnnotedFrame();} );
-	
+
 });
 
 Template.playerCommand.events({
@@ -31,11 +30,11 @@ Template.playerCommand.events({
 			vidCtrl.setEndSelect(value);
 		}
 	},
-	
+
 	/*'submit .#endSelect'(event) {
 		const target = event.target;
 		const value = target.number.value;
 		vidCtrl.setEndSelect(value);
-		
+
 	},*/
 });

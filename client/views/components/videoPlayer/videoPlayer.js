@@ -18,12 +18,11 @@ Template.videoPlayer.onRendered(function () {
       success: function (mediaElement, domObject) {
         Player =mediaElement;
         mediaElement.setSrc((Projects.findOne(Router.current().params._id).url));
-        
+
       }
     });
     vid=$("#videoDisplayId").get(0);
     vidCtrl=new videoControler(vid,30);
-	console.log(vidCtrl);
 	seekBarMng=new seekBarManager(vidCtrl);
 	vidCtrl.attach(seekBarMng,5);
 });
