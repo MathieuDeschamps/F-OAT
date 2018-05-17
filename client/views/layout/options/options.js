@@ -4,7 +4,7 @@ import {Extractors} from '../../../../lib/collections/extractors.js';
 
 import { Template } from 'meteor/templating';
 
-var regex = RegExp('^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$');
+var regex = RegExp('^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):([0-9]{1,5})$');
 
 
 Template.options.helpers({
@@ -25,20 +25,33 @@ Template.options.events({
 
 
       var extractor = {name: nameExtractor, ip: ipExtractor};
-      Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
-        if(err){
-          toastr.warning(err.reason);
-        }
-        else{
 
-          if(result < 0){
-              toastr.warning("Already exist");
-          }else{
-              toastr.success("Extractor added !");
+      if(!extractor.name){
+        toastr.warning("Please enter a name for your extractor.");
+      }
+      if(!extractor.ip){
+        toastr.warning("Please enter an IP for your extractor.");
+      }
+
+      else if(!regex.test(extractor.ip)){
+          toastr.warning("The IP typed is invalid.");
+      }
+      else{
+        Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
+          if(err){
+            toastr.warning(err.reason);
           }
+          else{
 
-        }
-      });
+            if(result < 0){
+                toastr.warning("This extractor already exists.");
+            }else{
+                toastr.success("Extractor added !");
+            }
+
+          }
+        });
+      }
 
   },
 
@@ -56,7 +69,8 @@ Template.options.events({
     if(!regex.test(extractor.ip)){
         toastr.warning("The ip typed is invalid");
     }else{
-      Meteor.call('updateExtractor',extractor)
+      Meteor.call('updateExtractor',extractor);
+      toastr.success("Extractor updated !")
     }
 
 
