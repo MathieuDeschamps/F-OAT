@@ -1,9 +1,8 @@
 export class TimeLine {
-    constructor(name, frameRate, nbFrame, data, divId) {
+    constructor(name, nbFrame, data, divId) {
         this.div_id = divId;
         this.id_time_line = "timeLine" + divId;
         rect_actif = -1;
-        var frame_rate = frameRate;
         this.nb_frame = nbFrame;
         var debut = 0;
         var fin = nbFrame;

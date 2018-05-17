@@ -120,7 +120,7 @@ Template.project.onRendered(()=>{
             // build the timeline
             timelineData = Parser.getTimelineData(XMLDoc,nameExtractor);
             $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
-            timelines[i] = new TimeLine(nameExtractor,$(timelineData).attr('frameRate'),
+            timelines[i] = new TimeLine(nameExtractor,
             $(timelineData).attr('nbFrames'),$(timelineData).attr('data'),
             i);
           }

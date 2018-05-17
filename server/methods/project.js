@@ -116,7 +116,6 @@ generateContent = function(project, id){
         .att('date', date)
         .ele('video')
           .att('id','1')
-          .att('fps','25.0')
           .att('url',project.url)
         .up()
       .up()

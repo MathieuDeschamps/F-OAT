@@ -13,7 +13,6 @@ export class Parser{
 
       // the object returns
       var timeline ={}
-      timeline.frameRate = parseFloat($(XMLObject).find('header').find('video').attr('fps'))
       timeline.nbFrames= Parser.getNbFrames(xml, nameExtractor)
       timeline.data = []
       // add frame to the array
@@ -47,7 +46,6 @@ export class Parser{
   //   var start
   //   var end
   //   var added = false
-  //   var frameRate = parseFloat($(XMLObject).find('header').find('video').attr('fps'))
   //   var nbFrame = Parser.getNbFrames(xml, nameExtractor)
   //
   //
@@ -70,7 +68,7 @@ export class Parser{
   //     }
   //   })
   //
-  //   result.push({'frameRate': frameRate, 'nbFrame' : nbFrame, 'data': data})
+  //   result.push({'nbFrame' : nbFrame, 'data': data})
   //   return result
   // }
 
@@ -100,7 +98,7 @@ export class Parser{
 	  console.log(scenes);
 	  if (scenes.length>0){
 		var firstScene = ($(XMLObject).find('extractors').children(nameExtractor).find('scene'))[0]
-	  
+
 		var startFrame =parseInt($(firstScene).attr('startFrame'))
 		var endFrame = parseInt($(firstScene).attr('endFrame'))
 
