@@ -12,7 +12,7 @@ Template.newproject.helpers({
     return Session.get('postSubmitErrors')[field];
   },
   errorClass: function(field){
-    return !!Session.get('pos tSubmitErrors')[field] ? 'has-error' : '';
+    return !!Session.get('postSubmitErrors')[field] ? 'has-error' : '';
   },
    users(){
       var regexp = new RegExp(Session.get('search/keyword'));
