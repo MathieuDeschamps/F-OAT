@@ -42,13 +42,13 @@ Template.newproject.events({
             }//endfor
 
         var _url = 'error';
-
         //If we give an URL for the project
         if(!_projectFile){
             _url = _projectUrl;
-            if(!_downUrl){//we need a download link for the video
-                toastr.warning("We need a download link!");
-                return;
+            if(_url!='' && !_downUrl){//we need a download link for the video
+                _downUrl = 'error';
+                //toastr.warning("We need a download link!");
+                //return;
             }
         }
 
@@ -58,6 +58,9 @@ Template.newproject.events({
             ext = ['mp4','avi','mkv','wmv','mov'];
             if(!checkExtension(ext,_url)){
                 _url = 'errorExt';
+            }
+            if(_downUrl!=''){
+              _downUrl = 'errorFile'
             }
         }
 
@@ -74,7 +77,7 @@ Template.newproject.events({
         //We verify the name and the url of the project (not null and not already used)
 
         var errors = validateProject(project);
-        if(errors.name || errors.url || errors.file){
+        if(errors.name || errors.url || errors.file || errors.downUrl){
             return Session.set('postSubmitErrors',errors);
         }
 

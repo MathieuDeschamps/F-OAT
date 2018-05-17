@@ -15,15 +15,15 @@
           </div>
 
                 <div class="row">
-                    <div class="input-field col s6 {{errorClass 'name'}}">
+                    <div class="input-field col s6 {{errorClass 'url'}}">
                         <input type="text" id="url" class="validate url"/>
-                        <label for="url">URL of the video...</label>
+                        <label for="url">URL of the video</label>
                         <span  class="red-text">{{errorMessage 'url'}}</span>
                     </div>
                     <div class="input-field col s6 {{errorClass 'url'}}">
                         <input type="text" id="url-down" class="validate downUrl"/>
-                        <label for="url">url download video</label>
-                        <span  class="red-text">{{errorMessage 'url'}}</span>
+                        <label for="url-down">Download URL of the video</label>
+                        <span  class="red-text">{{errorMessage 'downUrl'}}</span>
                     </div>
                 </div>
           <!--<div class="input-field col s6">
