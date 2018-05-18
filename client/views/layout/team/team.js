@@ -64,19 +64,16 @@ Template.team.events({
             var present=false;
             participants.forEach(
               (item)=>{
-                  console.log(item.username);
                   if(item.username === newCoworker_name){
                     present = true;
                     return;
                   }
               }
             );
-            console.log("present? "+present);
             if(!present && newCoworker_name != project.owner){
 
               Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
             }else{
-              console.log(project);
               toastr.warning("The user is already in the project");
             }
           });
