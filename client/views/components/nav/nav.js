@@ -10,10 +10,14 @@ Template.nav.events({
   },
 
   'click #change_fr'(event,instance){
-    TAPi18n.setLanguage("fr");
+    if(Meteor.user()){
+      Meteor.users.update(Meteor.userId(), {$set: {"profile.lang": "fr"}});
+    }
   },
 
   'click #change_en'(event,instance){
-    TAPi18n.setLanguage("en");
+    if(Meteor.user()){
+      Meteor.users.update(Meteor.userId(), {$set: {"profile.lang": "en"}});
+    }
   },
 });

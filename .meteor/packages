@@ -36,7 +36,7 @@ chrismbeckett:toastr
 d3js:d3
 raix:eventddp
 http
-momentjs:moment
 check
 mrt:cheerio
 tap:i18n
+momentjs:moment

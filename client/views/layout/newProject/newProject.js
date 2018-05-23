@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
 import './newProject.html';
 
+
 /*
 * On creation of the template, initialize session vars.
 * postSubmitErrors : errors in the form
@@ -119,7 +120,7 @@ Template.newproject.events({
                 Projects.update({
                   _id: res
                 }, {
-                  $push: {notifications: {date: moment().format('MMMM Do YYYY, h:mm:ss a'), value: "Your file "+project.url+" has been uploaded."}}
+                  $push: {notifications: {date: moment().calendar(), value: "Your file "+project.url+" has been uploaded."}}
                 });
               }
             });

@@ -15,6 +15,7 @@ Template.register.events({
     var _name = $('#userName').val();
     var _mail = $('#mail').val();
     var _password = $('#password').val();
+    var _lang = TAPi18n.getLanguage();
     var _newUsr = {
       username : _name,
       email: _mail,
@@ -22,7 +23,8 @@ Template.register.events({
       test: "test",
       profile: {
         projects:[],
-        extractors:[]
+        extractors:[],
+        lang: _lang
       }
 
     }
