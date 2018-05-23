@@ -54,7 +54,7 @@ Template.team.events({
         if(err){
           alert(err.reason);
         }else if(!result){
-          toastr.warning("This user does not exist.");
+          toastr.warning(TAPi18n.__('errorUserNoExists'));
         }else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
             if(err){
@@ -74,7 +74,7 @@ Template.team.events({
 
               Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
             }else{
-              toastr.warning("The user is already in the project");
+              toastr.warning(TAPi18n.__('errorUserAlready', {user :  newCoworker_name}));
             }
           });
         }

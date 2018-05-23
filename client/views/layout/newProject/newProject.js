@@ -119,7 +119,7 @@ Template.newproject.events({
                 Projects.update({
                   _id: res
                 }, {
-                  $push: {notifications: {date: new Date().toString(), value: "Your file "+project.url+" has been uploaded."}}
+                  $push: {notifications: {date: moment().format('MMMM Do YYYY, h:mm:ss a'), value: "Your file "+project.url+" has been uploaded."}}
                 });
               }
             });
@@ -150,7 +150,7 @@ Template.newproject.events({
     var _newParticipants = $('#participant').val();
     var errors={};
     if(!_newParticipants){
-      errors.participant = "Select a user to add."
+      errors.participant = TAPi18n.__('errorSelectUser');
       return Session.set('postUserErrors',errors);
     }
 
@@ -162,7 +162,7 @@ Template.newproject.events({
           (newOne)=>{
             if(item.username === newOne){
               nbBadUsers++;
-              errors.participant = "User "+newOne+" is already in the project."
+              errors.participant = TAPi18n.__('errorAddUser', {user :  newOne});
             }
           }
         )
@@ -180,7 +180,7 @@ Template.newproject.events({
     }
 
     else if(nbBadUsers>1){
-      errors.participant = "Users selected are already in the project."
+      errors.participant = TAPi18n.__('errorAddUsers');
     }
 
     return Session.set('postUserErrors',errors);

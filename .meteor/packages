@@ -39,3 +39,4 @@ http
 momentjs:moment
 check
 mrt:cheerio
+tap:i18n

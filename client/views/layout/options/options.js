@@ -27,14 +27,14 @@ Template.options.events({
       var extractor = {name: nameExtractor, ip: ipExtractor};
 
       if(!extractor.name){
-        toastr.warning("Please enter a name for your extractor.");
+        toastr.warning(TAPi18n.__('errorExtractorEmpty'));
       }
       if(!extractor.ip){
-        toastr.warning("Please enter an IP for your extractor.");
+        toastr.warning(TAPi18n.__('errorExtractorIPEmpty'));
       }
 
       else if(!regex.test(extractor.ip)){
-          toastr.warning("The IP typed is invalid.");
+          toastr.warning(TAPi18n.__('errorExtractorIPWrong'));
       }
       else{
         Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
@@ -44,9 +44,9 @@ Template.options.events({
           else{
 
             if(result < 0){
-                toastr.warning("This extractor already exists.");
+                toastr.warning(TAPi18n.__('errorExtractorExists'));
             }else{
-                toastr.success("Extractor added !");
+                toastr.success(TAPi18n.__('successExtractor'));
             }
 
           }
@@ -67,10 +67,10 @@ Template.options.events({
     var $elm = $(event.target).closest('tr');
     var extractor = {_id:$elm.find("#id").val() ,name: $elm.find("#name").val(), ip: $elm.find('#ip').val(), owner: Meteor.user().username};
     if(!regex.test(extractor.ip)){
-        toastr.warning("The ip typed is invalid");
+        toastr.warning(TAPi18n.__('errorExtractorIPWrong'));
     }else{
       Meteor.call('updateExtractor',extractor);
-      toastr.success("Extractor updated !")
+      toastr.success(TAPi18n.__('successExtractorUpdate'));
     }
 
 

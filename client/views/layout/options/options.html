@@ -1,18 +1,18 @@
 <template name="options">
   <div class="content">
     <div class="row centered">
-      <h2 class="blue-text text-darken-3">Add an extractor:</h2>
+      <h2 class="blue-text text-darken-3">{{_ 'addExtractor'}}</h2>
       <div class="input-field col s6">
         <input class="name" id="extractorName" type="text"  />
-        <label for="extractorName">Extractor's name</label>
+        <label for="extractorName">{{_ 'extractorName'}}</label>
       </div>
       <div class="input-field col s6">
         <input class="ip" id="extractorIp" type="text" />
-        <label for="extractorIp">Extractor's ip and port (ex:111.222.111.222:8080)</label>
+        <label for="extractorIp">{{_ 'extractorIP'}}</label>
       </div>
       <div class="row">
         <div class=" col s12">
-          <a class="btn waves-effect waves-light blue darken-4" id="submit" name="action">Submit
+          <a class="btn waves-effect waves-light blue darken-4" id="submit" name="action">{{_ 'submitExtractor'}}
             <i class="material-icons right">send</i>
           </a>
         </div>
@@ -20,9 +20,9 @@
       <table class="highlight">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>IP and port</th>
-            <th>Actions</th>
+            <th>{{_ 'name'}}</th>
+            <th>{{_ 'ipport'}}</th>
+            <th>{{_ 'actions'}}</th>
           </tr>
         </thead>
         <tbody>
@@ -36,10 +36,10 @@
               <input id="ip" type="text" value={{ip}} />
             </td>
             <td>
-              <a class=" btn-floating btn-small waves-effect center waves-light remove red darken-4" id="delete" title="Remove extractor">
+              <a class=" btn-floating btn-small waves-effect center waves-light remove red darken-4" id="delete" title="{{_ 'removeExtractor'}}">
                 <i class="material-icons" name="{{name}}">delete</i>
               </a>
-              <a class=" btn-floating btn-small waves-effect center waves-light remove blue darken-4" id="update" title="Submit modifications">
+              <a class=" btn-floating btn-small waves-effect center waves-light remove blue darken-4" id="update" title="{{_ 'submitModif'}}">
                 <i class="material-icons" name="{{name}}">send</i>
               </a>
             </td>

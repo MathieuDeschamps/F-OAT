@@ -1,0 +1,18 @@
+{
+  "listCollaborators" : "List of collaborators",
+  "name" : "Name",
+  "right" : "Right",
+  "changeRight" : "Change right",
+  "actions" : "Actions",
+  "owner" : "Owner",
+  "readRight" : "Read",
+  "writeRight" : "Write",
+  "ownerRight" : "Owner",
+  "submitModifRight" : "Submit modifications",
+  "removeUser" : "Remove user",
+  "fillUsername" : "Fill an username",
+  "errorFillUsername" : "Please fill a name",
+  "add" : "Add",
+  "errorUserNoExists" : "This user doesn't exist",
+  "errorUserAlready" : "__user__ is already in the project"
+}

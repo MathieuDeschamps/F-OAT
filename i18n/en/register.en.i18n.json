@@ -1,0 +1,17 @@
+{
+  "usernameRegister" : "Username",
+  "email" : "Email",
+  "passwordRegister" : "Password",
+  "submitRegister" : "Submit",
+
+  "errorRegisterUsernameEmpty" : "Please fill in an username",
+  "errorRegisterUsernameWrong" : "Invalid Username",
+  "errorRegisterUsernameExists" : "Username already exists",
+  "errorRegisterEmailEmpty" : "Please fill in an email",
+  "errorRegisterEmailWrong" : "Invalid Email",
+  "errorRegisterEmailExists" : "Email already linked to an account",
+  "errorRegisterPassword" : "Please fill in a password",
+  "errorRegisterUsernameEmail" : "Please fill in an username and an email",
+  "Email already exists." : "Email already linked to an account"
+
+}

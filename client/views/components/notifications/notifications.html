@@ -1,14 +1,22 @@
 <template name="notifications">
-  <div class="notifications">
-      {{#each notifications}}
-        {{> notification}}
-      {{/each}}
-  </div>
+  <ul id="dropdown1" class="dropdown-content">
+    {{#if isOnProject}}
+      {{#if thereIsNotifications}}
+        {{#each notifications}}
+          <li style="width: 400px !important">{{> notification}}</li>
+          <li class="divider"></li>
+        {{/each}}
+      {{else}}
+        <li><a href="#!">{{_ 'noNews'}}</a></li>
+      {{/if}}
+    {{/if}}
+  </ul>
+  <li id="lidropdown" style="display:none"><a class="dropdown-button" href="#!" data-activates="dropdown1"><i id="icon_notif" class="material-icons center">notifications</i></a></li>
+  {{renderDropdownButton}}
 </template>
 
 <template name="notification">
-  <div class="notification">
-    {{date}} : {{value}}
-    <button class="waves-effect waves-light btn-small blue darken-4" id="read">Mark as read</button>
-  </div>
+  <a href="#!" class="markNotification" title="Mark as read" name="{{date}},{{value}}" style="white-space:pre-wrap; word-wrap:break-word">{{date}} :
+{{value}}
+  </a>
 </template>

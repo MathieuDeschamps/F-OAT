@@ -27,15 +27,34 @@ Template.register.events({
 
     }
 
-    //User validation is done on server/accounts.js in method Accounts.validateNewUser()
-    Accounts.createUser(_newUsr , (err)=>{
-      if(err){
-        toastr.warning(err.reason);
-      }else{
-        log.info("new user create",_newUsr,_newUsr._Id);
-        Router.go("/");
-      }
-    });
+    if(!_password){
+      toastr.warning(TAPi18n.__('errorRegisterPassword'));
+    }
+    else if(!_mail && !_name){
+      toastr.warning(TAPi18n.__('errorRegisterUsernameEmail'));
+    }
+    else{
+      //User validation is done on server/accounts.js in method Accounts.validateNewUser()
+      Accounts.createUser(_newUsr , (err)=>{
+        if(err){
+          console.log("ERR",err);
+          if(err.error==500){
+            toastr.warning(TAPi18n.__(err.reason));
+          }
+          else{
+            if(err.reason==="Email already exists."){
+              toastr.warning(TAPi18n.__('errorRegisterEmailExists'));
+            }
+            else{
+              toastr.warning(TAPi18n.__('errorRegisterUsernameExists'));
+            }
+          }
+        }else{
+          log.info("new user create",_newUsr,_newUsr._Id);
+          Router.go("/");
+        }
+      });
+    }
   }
 
 });
