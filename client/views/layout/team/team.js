@@ -34,7 +34,10 @@ Template.team.events({
         alert(error.reason);
       }else if(result === 2){
         Router.go("/")
-
+        toastr.success(TAPi18n.__('rightChanged'));
+      }
+      else{
+        toastr.success(TAPi18n.__('rightChanged'));
       }
     })
   },

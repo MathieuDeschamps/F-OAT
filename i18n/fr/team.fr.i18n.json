@@ -4,9 +4,6 @@
   "right" : "Droit",
   "changeRight" : "Changer le droit",
   "actions" : "Actions",
-  "owner" : "Propriétaire",
-  "readRight" : "Lecture",
-  "writeRight" : "Écriture",
   "ownerRight" : "Rendre propriétaire du projet",
   "submitModifRight" : "Valider les modifications",
   "removeUser" : "Retirer l'utilisateur de ce projet",
@@ -14,5 +11,6 @@
   "errorFillUsername" : "Merci de donner un nom d'utilisateur",
   "add" : "Ajouter",
   "errorUserNoExists" : "Cet utilisateur n'existe pas",
-  "errorUserAlready" : "__user__ appartient déjà au projet"
+  "errorUserAlready" : "__user__ appartient déjà au projet",
+  "rightChanged" : "Droit modifié !"
 }
