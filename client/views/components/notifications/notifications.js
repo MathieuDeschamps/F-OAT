@@ -39,7 +39,7 @@ Template.notifications.helpers({
           $("#icon_notif").html("notifications_active");
         }
         else{
-          $("#icon_notif").html("notifications");
+          $("#icon_notif").html("notifications_none");
         }
       }
       else{
