@@ -1,4 +1,4 @@
-/* 
+/*
 Object class for restriction type in a xsd file.
 */
 
@@ -8,14 +8,14 @@ export class XSDRestrictionType{
 	@table : symbol table
 	*/
 	constructor(restr,table){
-		
+
 		this.table=table;
-		
-		this.base=$(restr).attr('base');
-		if (this.base==undefined){
+
+		this.baseType=$(restr).attr('base');
+		if (this.baseType==undefined){
 			alert('Restriction base type name is required');
 		}
-		
+
 		$(restr).children('xs\\:minExclusive').each(function(i,min){
 			this.minExclusive=min.attr('value');
 		})
@@ -28,7 +28,7 @@ export class XSDRestrictionType{
 		$(restr).children('xs\\:maxInclusive').each(function(i,max){
 			this.maxInclusive=max.attr('value');
 		})
-		
+
 		$(restr).children('xs\\:minLength').each(function(i,min){
 			this.minLength=min.attr('value');
 		})
@@ -39,8 +39,8 @@ export class XSDRestrictionType{
 			this.minLength=length.attr('value');
 			this.maxLength=length.attr('value');
 		})
-		
-		
+
+
 		var enumList=$(restr).children('xs\\:enumeration');
 		if (enumList.length>0){
 			this.enumeratedValues=[];
@@ -51,7 +51,7 @@ export class XSDRestrictionType{
 			});
 		}
 	}
-	
+
 	/* Convert a string to the base type of the restriction
 	@str : string
 	@return : number
@@ -59,14 +59,14 @@ export class XSDRestrictionType{
 	convert(str){
 		this.table[this.base].convert(str);
 	}
-	
+
 	/* test if the type is enumerated (when restrictions have been applied)
 	@returns : boolean
 	*/
 	isEnumerated(){
 		return (this.enumeratedValues!=undefined);
 	}
-	
+
 	/* Getting the value of the enumeration (if present)
 	*/
 	getEnumetaredValues(){
@@ -79,7 +79,7 @@ export class XSDRestrictionType{
 		});
 		return list;
 	}
-	
+
 	/* tests if x is an element of the base type
 	@x : object
 	@returns : boolean
@@ -113,11 +113,11 @@ export class XSDRestrictionType{
 		}
 		return result;
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitRestrictionType"
 	*/
 	accept(visitor){
-		visitor.visitRestrictionType(this);
+		visitor.visitXSDRestrictionType(this);
 	}
 }

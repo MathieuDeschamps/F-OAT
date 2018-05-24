@@ -9,15 +9,6 @@ Template.editor.onRendered(()=>{
 })
 
 Template.editor.events({
-  //TODO temporary event which simulate Timeline
-  'change #listFrame'(event,instance){
-    var numFrame = $(event.currentTarget).val()
-    $(forms).each(function(i,form){
-      form.displayFrame(numFrame)
-    })
-  },
-
-
   // move in the children element
     'click .collapsible-header'(event, instance){
       var elm = event.currentTarget
@@ -94,8 +85,8 @@ Template.editor.events({
 Template.editor.helpers({
   test(){
     // N'ayez pas peur de supprimer les lignes suivantes
-    // var timeline = Parser.getTimelineData(Session.get('XMLDoc'),'shot-extract')
-    // console.log('timeline', timeline)
+    var timeLine = Parser.getTimeLineData(Session.get('XMLDoc'),'shot-extract')
+    console.log('timeLine', timeLine)
     // Parser.getFramesActors(Session.get('XMLDoc'))
     // Parser.getFrame(Session.get('XMLDoc'),221)
     // Parser.getShotsActor(Session.get('XMLDoc'),0)

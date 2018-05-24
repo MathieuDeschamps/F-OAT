@@ -3,20 +3,21 @@
   <div id="container">
     <div class="row">
       <div class="col s8">
-        {{> svg}}
+      <!-- <div class="col s8" style="display:none"> -->
+        <!-- {{> svg}} -->
         {{> videoPlayer}}
         {{> playerCommand}}
         {{> timeLineDisplay}}
       </div>
       <div class="col s4">
-        {{#if hasRightToWrite}}
-          <h5 class="blue-text text-darken-3">{{_ 'extraction' }}</h5>
-          {{> configurator}}
+      <!-- <div class="col s12"> -->
+		{{#if hasRightToWrite}}
+			{{> configurator}}
         {{/if}}
 
-        <h5 class="blue-text text-darken-3">{{_ 'annotations'}}</h5>
-        <form id="extractors" class="row" action="#">
-        </form>
+        <h5 class="blue-text text-darken-3">Annotations :</h5>
+        <div id="extractors" class="row" action="#">
+        </div>
 
         {{> editor}}
         {{#if hasRightToWrite}}

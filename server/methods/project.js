@@ -62,7 +62,7 @@ Meteor.methods({
 
   /**
   Create the xml file of a project
-  @project : the project to wich we want to cretae an xml fime
+  @project : the project to wich we want to create an xml file
   */
   createXMLFile: function(id){
       createFileXML(id);

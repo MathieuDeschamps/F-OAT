@@ -18,7 +18,7 @@ export class XMLXSDAttr{
 			this.fixedValue=this.type.convert(xsdAttr.fixed);
 		}
 		this.use=xsdAttr.use;
-		this.setValue(value);	
+		this.setValue(value);
 	}
 
 	/* Setter for the value
@@ -35,7 +35,7 @@ export class XMLXSDAttr{
 						}
 					}
 					break;
-				case 'required' : 
+				case 'required' :
 					if (this.type.holds(convertValue)){
 						if (this.fixedValue==undefined ||value==this.fixedValue){
 							this.value=convertValue;
@@ -52,23 +52,23 @@ export class XMLXSDAttr{
 				case 'optional' :
 					this.value=undefined;
 					break;
-				case 'required' : 
+				case 'required' :
 					if (this.fixedValue!=undefined){
 						this.value=this.fixedValue;
 					}else if (this.defaultValue!=undefined){
 						this.value=this.defaultValue;
 					}
 					if (this.value==undefined){
-						alert(this.name +' should have a value.');
+						console.log(this.name +' should have a value.');
 					}
 					break;
 				case 'prohibited':
 					this.value=undefined;
 			}
-		}			
+		}
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXMLXSDAttr"
 	*/
 	accept(visitor){

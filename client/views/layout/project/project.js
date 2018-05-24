@@ -40,22 +40,30 @@ Template.project.onRendered(()=>{
           // build the extractors
           var extractors = Parser.getListExtractors(XMLDoc)
           var extractor
-          var timelineData
+          var timeLineData
 
           // update the forms of the editor
           $(forms).each(function(i,form){
             form.XMLObject = $($.parseXML(XMLDoc)).find(form.name)
             form.update()
           })
-          // update the timeline
-          $(".timeline").each(function(i,timeline){
-            idTimeline = "#timeLine" + i
-            nameExtractor = $(idTimeline).attr("extractor")
-            timelineData = Parser.getTimelineData(xml,nameExtractor)
-            timeline.items = $(timelineData).attr("data")
-            timeline.nb_frame = $(timelineData).attr("nbFrames")
-            //console.log('timelineData', timelineData)
-            timeline.update()
+          // update the timeLine
+          $(timeLines).each(function(i,timeLine){
+            idTimeLine = "#timeLine" + i
+            nameExtractor = timeLine.nameExtractor
+            console.log("nameExtractor" , nameExtractor)
+            // console.log('xml', xml)
+            timeLineData = Parser.getTimeLineData(xml,nameExtractor)
+            // console.log("data: " , $(timeLineData).attr("data"))
+
+            timeLine.items = []
+            $($(timeLineData).attr("data")).each(function(i,entry){
+              $(entry.intervals).each(function(j,interval){
+                timeLine.items.push(interval)
+              })
+            })
+            // console.log('timeLineData', timeLineData)
+            timeLine.update()
           })
 
 		  //Video controler update :
@@ -96,14 +104,15 @@ Template.project.onRendered(()=>{
       // build the extractors
       var extractors = Parser.getListExtractors(XMLDoc)
       var extractor
-      var timelineData
+      var timeLineData
       // global table which will contains the form objects
       forms = [extractors.lenght]
-      timelines = [extractors.lenght]
+      timeLines = [extractors.lenght]
       // add the extractor list and build the forms
+      console.log('extractors', extractors)
       $(extractors).each(function(i,nameExtractor){
-        extractor = '<p><input class="filled-in"  id="'+ i + '"  type="checkbox" mark="false"/>'
-        extractor += '<label for="'+ i + '">' + nameExtractor + '</label></p>'
+        extractor = '<p><input class="filled-in"  id="annontation_'+ i + '"  type="checkbox" mark="false"/>'
+        extractor += '<label for="annontation_'+ i + '">' + nameExtractor + '</label></p>'
         $('#extractors').append(extractor)
         pathExtractor  = '/tmp/'+ nameExtractor + '/descriptor.xml'
         Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
@@ -118,12 +127,15 @@ Template.project.onRendered(()=>{
               'nav-' + i,'hidden-' + i, 'form-'+ i)
             forms[i].buildForm('forms')
 
-            // build the timeline
-            timelineData = Parser.getTimelineData(XMLDoc,nameExtractor);
-            $("#timeLines").append("<div id = 'timeLine" + i + "' class = 'row' style = 'display:none'></div>");
-            timelines[i] = new TimeLine(nameExtractor,
-            $(timelineData).attr('nbFrames'),$(timelineData).attr('data'),
-            i);
+            // build the timeLine
+            timeLineData = Parser.getTimeLineData(XMLDoc,nameExtractor);
+            $("#timeLines").append("<div id='timeLine" + i + "' class='row' ></div>");
+            timeLines[i] = new TimeLine(nameExtractor,
+              $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
+              i);
+
+            // $("#timeLine" + i).children('svg').css('min-width','70rem')
+            // $('svg').css('margin-bottom', '2.5rem')
           }
         })
       })
@@ -131,7 +143,7 @@ Template.project.onRendered(()=>{
 	  // VideoControler init
 	    var nbFrames=0;
 		extractors.forEach(function(extractor){
-			console.log('nb Frame',extractor);
+			// console.log('nb Frame',extractor);
 			var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
 			console.log(newNbFrames);
 			if (newNbFrames!=undefined){
@@ -170,8 +182,8 @@ Template.project.events({
     var XMLObject = $.parseXML(Session.get('XMLDoc'))
     var xml
     var result
-    var timelineData
-    var idTimeline
+    var timeLineData
+    var idTimeLine
     var nameExtractor
     var idProject = Router.current().params._id
     var project = Projects.findOne(idProject)
@@ -203,22 +215,30 @@ Template.project.events({
               form.update()
             })
             // update the timeLine
-            $(timelines).each(function(i,timeline){
-              idTimeline = "#timeLine" + i
-              nameExtractor = $(idTimeline).attr("extractor")
-              timelineData = Parser.getTimelineData(xml,nameExtractor)
-             // console.log("data: " , $(timelineData).attr("data"))
-              timeline.items = $(timelineData).attr("data");
-              console.log('timelineData', timelineData)
-              timeline.update()
+            $(timeLines).each(function(i,timeLine){
+              idTimeLine = "#timeLine" + i
+              nameExtractor = timeLine.nameExtractor
+              console.log("nameExtractor" , nameExtractor)
+              // console.log('xml', xml)
+              timeLineData = Parser.getTimeLineData(xml,nameExtractor)
+              // console.log("data: " , $(timeLineData).attr("data"))
+
+              timeLine.items = []
+              $($(timeLineData).attr("data")).each(function(i,entry){
+                $(entry.intervals).each(function(j,interval){
+                  timeLine.items.push(interval)
+                })
+              })
+              // console.log('timeLineData', timeLineData)
+              timeLine.update()
             })
             console.log("ok!");
             em.emit('hello');
             // TODO call to update other elements
 
 			// VideoControler update
-			console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
-			vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+			console.log("annotedFrames",Parser.getListTimeId(xml));
+			vidCtrl.setAnnotedFrames(Parser.getListTimeId(xml));
           }
         });
       }
@@ -227,14 +247,15 @@ Template.project.events({
   // check button event display form
   'click .filled-in'(event,instance){
     //toggle
-    var id = $(event.currentTarget).attr('id')
+    var id = $(event.currentTarget).attr('id').substr(12)
+    console.log('id', id);
     if($(event.currentTarget).attr('marked') == 'true'){
       $(event.currentTarget).attr('marked', 'false')
-      $('#extractor' + id).attr('style', 'display:none')
+      $('#extractor' + id).css('display', 'none')
       $('#timeLine' + id).css('display','none')
     }else{
       $(event.currentTarget).attr('marked', 'true')
-      $('#extractor' + id).attr('style', 'display:block')
+      $('#extractor' + id).css('display', 'block')
       $('#timeLine' + id).css('display', 'block');
     }
   },
