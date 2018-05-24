@@ -1,62 +1,102 @@
 <template name="newproject">
-    <div class="centered">
-        <div class="content">
-            <div class="row">
-                <form class="col s12">
-                    <div class="row">
-                        <div class="input-field col s6 {{errorClass 'name'}}">
-                            <input type="text" id="projectName" class="validate projectName" />
-                            <label for="projectName">Name</label>
-                            <span class="red-text">{{errorMessage 'name'}}</span>
-                        </div>
-                        <div class="input-field col s6 {{errorClass 'url'}}">
-                            <input type="text" id="url" class="validate url"/>
-                            <label for="url">URL of the video</label>
-                            <span  class="red-text">{{errorMessage 'url'}}</span>
-                        </div>
-                    </div>
-                    <!--<div class="input-field col s6">
-                        <input type="text" id="search"/>
-                        <label for="search">Search participant</label>
-                    </div>-->
-                    <div class="row">
-                        <div class="input-field col s6 {{errorClass 'url'}}">
-                            <input type="text" id="search">
-                            <label for="search">Search</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <label for="select">Participant</label>
-                        <select multiple="multiple" size="5" class="select" id="participant">
-                            {{#each users}}
-                                <option value="{{username}}">{{username}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="file-field input-field col s6 offset-s6">
-                            <div class="btn col s4 blue darken-4">
-                                <span>File</span>
-                                <input type="file" id="selectedFile">
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="or upload a video">
-                            </div>
-                            <span  class="red-text">{{errorMessage 'file'}}</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s4"></div>
-                        <div class="col s4" >
-                            <a class="btn waves-effect waves-light blue darken-4 " id="newProjectForm" name="action">Create
-                                <i class="material-icons right">send</i>
-                            </a>
-                        </div>
-                        <div class="col s4"></div>
-                    </div>
-                </form>
+  <div class="centered">
+    <h2 class="blue-text text-darken-3">{{_ 'createProject'}}</h2>
+    <div class="content">
+      <div class="row">
+        <form class="col s12">
+          <div class="row">
+            <div class="input-field col s6 {{errorClass 'name'}}">
+              <input type="text" id="projectName" class="validate projectName" />
+              <label for="projectName">{{_ 'nameProject'}}</label>
+              <span class="red-text">{{errorMessage 'name'}}</span>
             </div>
+            <div class="input-field col s6 {{errorClass 'url'}}">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s6 {{errorClass 'url'}}">
+              <input type="text" id="url" class="validate url"/>
+              <label for="url">{{_ 'urlProject'}}</label>
+              <span  class="red-text">{{errorMessage 'url'}}</span>
+            </div>
+            <div class="input-field col s6 {{errorClass 'url'}}">
+              <input type="text" id="url-down" class="validate downUrl"/>
+              <label for="url-down">{{_ 'downUrlProject'}}</label>
+              <span  class="red-text">{{errorMessage 'downUrl'}}</span>
+            </div>
+          </div>
+        <div class="row">
+          <div class="file-field input-field col s6">
+            <div class="btn col s4 blue-grey darken-2">
+              <span>{{_ 'fileProject'}}</span>
+              <input type="file" id="selectedFile">
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text" placeholder="{{_ 'uploadProject'}}">
+            </div>
+            <span  class="red-text">{{errorMessage 'file'}}</span>
+          </div>
         </div>
 
+        <div class="row">
+          <div class="col s6 {{errorUserClass 'participant'}}">
+            <div class="row">
+              <div class="input-field col s12">
+                <input type="text" id="search">
+                <label for="search">{{_ 'searchUsers'}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <select multiple="multiple" size="5" class="select col s12" style="height:100px" id="participant">
+                {{#each users}}
+                <option value="{{username}}">{{username}}</option>
+                {{/each}}
+              </select>
+              <span  class="red-text">{{errorUserMessage 'participant'}}</span>
+            </div>
+            <div class="row">
+              <div class="col s6 offset-s3">
+                <a class="btn waves-effect waves-light blue-grey darken-2 col s12" id="addUser" name="addUser">{{_ 'addUser'}}
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col s6">
+            <table class="highlight">
+              <thead>
+                <tr>
+                  <th>{{_ 'usersProject'}}</th>
+                  <th class="align-right right">{{_ 'actions'}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each coworkers}}
+                <tr>
+                  <td>
+                    {{username}}
+                  </td>
+                  <td>
+                    <a class="remove_circle btn-floating btn-tiny waves-effect waves-light red darken-4 right-align right" title="{{_ 'removeUser'}}">
+                      <i class="material-icons" name="{{username}}">remove</i>
+                    </a>
+                  </td>
+
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s4 offset-s4" >
+            <a class="btn waves-effect waves-light " id="newProjectForm" name="action">{{_ 'createButton'}}
+              <i class="material-icons right">send</i>
+            </a>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
 </template>

@@ -30,12 +30,14 @@ Template.team.events({
     var $buttonEvent = $(event.target);
     var newRight = $buttonEvent.closest('tr').find('select').val();
     Meteor.call('changeRight',Router.current().params._id,this.username,newRight,(error,result)=>{
-      alert(result);
       if(error){
         alert(error.reason);
       }else if(result === 2){
         Router.go("/")
-
+        toastr.success(TAPi18n.__('rightChanged'));
+      }
+      else{
+        toastr.success(TAPi18n.__('rightChanged'));
       }
     })
   },
@@ -54,32 +56,28 @@ Template.team.events({
       Meteor.call("userNameExist",newCoworker_name,(err,result)=>{
         if(err){
           alert(err.reason);
-        }
-        else{
+        }else if(!result){
+          toastr.warning(TAPi18n.__('errorUserNoExists'));
+        }else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
-            console.log(result);
             if(err){
-              console.log(err.reason);
               return;
             }
             var participants = Object.values(result);
             var present=false;
             participants.forEach(
               (item)=>{
-                  console.log(item.username);
                   if(item.username === newCoworker_name){
                     present = true;
                     return;
                   }
               }
             );
-            console.log("present? "+present);
             if(!present && newCoworker_name != project.owner){
 
               Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
             }else{
-              console.log(project);
-              toastr.warning("The user is already in the project");
+              toastr.warning(TAPi18n.__('errorUserAlready', {user :  newCoworker_name}));
             }
           });
         }

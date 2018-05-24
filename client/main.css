@@ -35,13 +35,46 @@ h2{
 }
 
 
+.video {
+  margin: 5% auto;
+  background: white;
+  color: black;
 
+}
+
+#container
+{
+    height:100%;
+    width:90%;
+    margin:auto;
+}
+
+#first
+{
+
+    height:50px;
+
+}
 
 .btn{
   display: block;
   margin: 0 auto;
   margin-bottom: 10px;
   width: 200px;
+}
+
+/* ccs for the element of editor */
+.border{
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: #0d47a1;
+  margin-bottom: 5px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+
 }
 .centered {
   margin: 15% auto;
@@ -64,6 +97,7 @@ body {
 main {
   flex: 1 0 auto;
 }
+
 
 .select{
   display: block;

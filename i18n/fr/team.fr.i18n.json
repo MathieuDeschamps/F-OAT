@@ -1,0 +1,16 @@
+{
+  "listCollaborators" : "Liste des participants",
+  "name" : "Nom",
+  "right" : "Droit",
+  "changeRight" : "Changer le droit",
+  "actions" : "Actions",
+  "ownerRight" : "Rendre propriétaire du projet",
+  "submitModifRight" : "Valider les modifications",
+  "removeUser" : "Retirer l'utilisateur de ce projet",
+  "fillUsername" : "Donnez un nom d'utilisateur",
+  "errorFillUsername" : "Merci de donner un nom d'utilisateur",
+  "add" : "Ajouter",
+  "errorUserNoExists" : "Cet utilisateur n'existe pas",
+  "errorUserAlready" : "__user__ appartient déjà au projet",
+  "rightChanged" : "Droit modifié !"
+}

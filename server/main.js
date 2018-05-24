@@ -1,16 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import {Projects } from "../lib/collections/Project.js";
+import {HTTP} from "meteor/http";
 const fs = require('fs');
 export const xmlPath = "/tmp/";
 
 Meteor.startup(() => {
   // code to run on server at startup
-});
 
+  em = new EventDDP('test');
+  em.addListener('hello',(client)=>{
+    em.matchEmit("hello",{
+        _id: {$ne: client._id},
+        appId: client.appId
+    });
+  });
+
+});
 
 
 Meteor.methods({
 
+/**
+Check if an user exist or not
+**/
   "userNameExist" :function(_userName){
 
     result =  Meteor.users.findOne({username: _userName});
@@ -22,7 +34,7 @@ Meteor.methods({
   },
 
   /**
-    send the string wich represent the xml file name
+    send the string wich represent the xml file path
   */
   "getXml": function(name){
 

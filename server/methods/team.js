@@ -17,7 +17,7 @@ Meteor.methods({
   Remove a participant from  a Project
   @ _projectId the id of the Project
   @ _username the user to remove from the participant list
-  */
+*/
   removeParticipants: (_projectId,_username)=>{
 
     console.log(_projectId);
