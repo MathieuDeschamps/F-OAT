@@ -10,16 +10,15 @@ Template.login.helpers({
 
 Template.login.events({
 
-
   'click #submit'(event, instance) {
     var _usrname = $('#name').val();
     var _psswd = $('#password').val();
 
     if(!_usrname){
-      toastr.warning("Username may not be empty")
+      toastr.warning(TAPi18n.__('errorUsernameEmpty'))
     }
     else if(!_psswd){
-      toastr.warning("Password may not be empty")
+      toastr.warning(TAPi18n.__('errorPasswordEmpty'))
     }
     else{
       Meteor.loginWithPassword({
@@ -27,7 +26,7 @@ Template.login.events({
       }, _psswd, function(err) {
 
         if (err) {
-          toastr.warning(err.reason)
+          toastr.warning(TAPi18n.__('errorLogin'))
         }else{
           Router.go('/');
         }

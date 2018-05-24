@@ -189,7 +189,7 @@ Template.project.events({
     // check if the current user is the owner or a writer to the project
     var hasRight = hasRightToWrite()
     if(!hasRight){
-      alert('Sorry, you does not have the right to modify this project.')
+      toastr.warning(TAPi18n.__('errorProjectRight'));
       $(forms).each(function(i,form){
         form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
         form.update()

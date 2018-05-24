@@ -1,0 +1,12 @@
+{
+  "username" : "Username",
+  "password" : "Password",
+  "register" : "Register",
+  "submit" : "Submit",
+
+
+  "errorUsernameEmpty" : "Username may not be empty",
+  "errorPasswordEmpty" : "Password may not be empty",
+  "errorLogin" : "Wrong username or password"
+
+}

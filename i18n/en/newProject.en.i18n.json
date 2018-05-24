@@ -1,0 +1,27 @@
+{
+  "createProject" : "Create a project",
+  "nameProject" : "Name of the project",
+  "urlProject" : "URL of the video",
+  "downUrlProject" : "Download URL of the video",
+  "fileProject" : "File",
+  "uploadProject" : "...or upload one",
+  "searchUsers" : "Search users for the project",
+  "addUser" : "Add",
+  "usersProject" : "Users in the project",
+  "actions" : "Actions",
+  "removeUser" : "Remove user",
+  "createButton" : "Create",
+
+
+  "errorSelectUser" : "Select a user to add",
+  "errorAddUser" : "User __user__ is already in the project",
+  "errorAddUsers" : "Some users selected are already in the project",
+  "errorProjectNameEmpty" : "Please fill in a name",
+  "errorProjectNameWrong" : "Can't use '/' in your project name",
+  "errorProjectNameExists" : "A project with this name already exists",
+  "errorProjectURLorFile" : "Please fill in a URL or give a file",
+  "errorProjectURLandFile" : "Give an URL or a file, not both",
+  "errorProjectFileExtension" : "Your file should be a video (.mp4, .avi, ...)",
+  "errorProjectDownloadURLwithURL" : "If you give an URL, you need to give a download link too",
+  "errorProjectDownloadURLwithFile" : "If you give a file, dont give a download link"
+}

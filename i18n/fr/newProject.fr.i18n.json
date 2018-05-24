@@ -1,0 +1,26 @@
+{
+  "createProject" : "Créer un nouveau projet",
+  "nameProject" : "Nom du projet",
+  "urlProject" : "URL de la vidéo",
+  "downUrlProject" : "URL de téléchargement de la vidéo",
+  "fileProject" : "Fichier",
+  "uploadProject" : "... ou télécharger votre vidéo",
+  "searchUsers" : "Rechercher des utilisateurs pour le projet",
+  "addUser" : "Ajouter",
+  "usersProject" : "Utilisateurs dans le projet",
+  "actions" : "Actions",
+  "removeUser" : "Retirer l'utilisateur de ce projet",
+  "createButton" : "Créer",
+
+  "errorSelectUser" : "Selectionner un utilisateur à ajouter",
+  "errorAddUser" : "L'utilisateur __user__ appartient déjà au projet",
+  "errorAddUsers" : "Des utilisateurs que vous avez sélectionné appartiennent déjà au projet",
+  "errorProjectNameEmpty" : "Merci de donner un nom à votre projet",
+  "errorProjectNameWrong" : "Nom de projet non valide ('/' interdits)",
+  "errorProjectNameExists" : "Nom de projet déjà utilisé",
+  "errorProjectURLorFile" : "Merci de donner un URL ou un fichier vidéo",
+  "errorProjectURLandFile" : "Ne donnez pas un fichier et un URL, remplir seulement un des champs",
+  "errorProjectFileExtension" : "Votre fichier doit être un fichier vidéo (.mp4, .avi, ...)",
+  "errorProjectDownloadURLwithURL" : "Vous devez donner un URL de téléchargement de votre vidéo",
+  "errorProjectDownloadURLwithFile" : "Ne donnez pas d'URL de téléchargement si vous donnez un fichier"
+}

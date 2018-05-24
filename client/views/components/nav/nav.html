@@ -1,12 +1,26 @@
 <template name="nav">
+
   <nav>
     <div class="nav-wrapper blue darken-4">
       <a href="/" class="brand-logo">F-OAT</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li>
-          <a href="/options">Options</a>
+          <a id="change_fr">
+            <img height="16" width="25" src="/images/flags/fr.png" alt="France" style="margin-top: 0px;margin-bottom: -4px;"/>
+          </a>
         </li>
-        <li><a id="logout">Logout</a></li>
+        <li>
+          <a id="change_en">
+            <img height="16" width="25" src="/images/flags/gb.png" alt="English" style="margin-top: 0px;margin-bottom: -4px;"/>
+          </a>
+        </li>
+        {{#if currentUser}}
+            {{> notifications}}
+        <li>
+          <a href="/options">{{_ 'options'}}</a>
+        </li>
+        <li><a id="logout">{{_ 'logout'}}</a></li>
+        {{/if}}
       </ul>
     </div>
   </nav>

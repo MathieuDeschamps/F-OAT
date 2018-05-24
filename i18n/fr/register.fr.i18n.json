@@ -1,0 +1,16 @@
+{
+  "usernameRegister" : "Nom d'utilisateur",
+  "email" : "Adresse mail",
+  "passwordRegister" : "Mot de passe",
+  "submitRegister" : "Valider",
+
+  "errorRegisterUsernameEmpty" : "Merci de donner un nom d'utilisateur",
+  "errorRegisterUsernameWrong" : "Nom d'utilisateur invalide",
+  "errorRegisterUsernameExists" : "Nom d'utilisateur déjà utilisé",
+  "errorRegisterEmailEmpty" : "Merci de donner une adresse mail",
+  "errorRegisterEmailWrong" : "Adresse mail invalide",
+  "errorRegisterEmailExists" : "Adresse mail déjà liée à un compte",
+  "errorRegisterPassword" : "Merci de donner un mot de passe",
+  "errorRegisterUsernameEmail" : "Merci de donner un nom d'utilisateur et une adresse mail",
+  "Email already exists." : "Email already linked to an account"
+}

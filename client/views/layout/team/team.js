@@ -34,7 +34,10 @@ Template.team.events({
         alert(error.reason);
       }else if(result === 2){
         Router.go("/")
-
+        toastr.success(TAPi18n.__('rightChanged'));
+      }
+      else{
+        toastr.success(TAPi18n.__('rightChanged'));
       }
     })
   },
@@ -54,7 +57,7 @@ Template.team.events({
         if(err){
           alert(err.reason);
         }else if(!result){
-          toastr.warning("This user does not exist.");
+          toastr.warning(TAPi18n.__('errorUserNoExists'));
         }else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
             if(err){
@@ -64,20 +67,17 @@ Template.team.events({
             var present=false;
             participants.forEach(
               (item)=>{
-                  console.log(item.username);
                   if(item.username === newCoworker_name){
                     present = true;
                     return;
                   }
               }
             );
-            console.log("present? "+present);
             if(!present && newCoworker_name != project.owner){
 
               Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
             }else{
-              console.log(project);
-              toastr.warning("The user is already in the project");
+              toastr.warning(TAPi18n.__('errorUserAlready', {user :  newCoworker_name}));
             }
           });
         }
