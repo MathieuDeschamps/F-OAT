@@ -1,0 +1,11 @@
+{
+  "username" : "Nom d'utilisateur",
+  "password" : "Mot de passe",
+  "register" : "Créer un compte",
+  "submit" : "Valider",
+
+  "errorUsernameEmpty" : "Merci de donner un nom d'utilisateur",
+  "errorPasswordEmpty" : "Merci de donner un mot de passe",
+  "errorLogin" : "Nom de compte ou mot de passe incorrect"
+
+}

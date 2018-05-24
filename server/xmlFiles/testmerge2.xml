@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <version>0.1</version>
+  <project path="/tmp/KillianLucio">
+    <icons path="Icons"/>
+    <video id="1" path="Lucio Bukowski - Les faiseurs d'illusions sortent des lapins morts de leurs chapeaux (prod Haymaker).mp4"/>
+  </project>
+  <header>
+    <video fps="25.0" framing="16/9">
+      <file>/tmp/KillianLucio/Lucio Bukowski - Les faiseurs d'illusions sortent des lapins morts de leurs chapeaux (prod Haymaker).mp4</file>
+    </video>
+  </header>
+  <extractors>
+    <extractorx1>
+    	<scenes>
+        <Scene startFrame="4537" endFrame="4726">
+    			<shot startFrame="4537" endFrame="4726">
+    				<frame timeId="4631">
+    					<path>4631.png</path>
+    				</frame>
+    				<frame timeId="4678">
+    					<path>4678.png</path>
+    				</frame>
+    				<frame timeId="4584">
+    					<path>4584.png</path>
+    				</frame>
+    				<frame timeId="4686">
+    					<path>4686.png</path>
+    					<actor refId="0">
+    						<onScreenPart part="Head">
+    							<position x="0.5367647" y="0.36541218"/>
+    							<orientation azimuth="191.99998" elevation="-1.0"/>
+    							<scale relHeight="0.42288148"/>
+    						</onScreenPart>
+    						<onScreenPart part="LeftEye">
+    							<position x="0.5355392" y="0.45340502"/>
+    						</onScreenPart>
+    						<onScreenPart part="RightEye">
+    							<position x="0.4644608" y="0.45519713"/>
+    						</onScreenPart>
+    					</actor>
+    					<Properties>
+    						<property name="distance" type="string">MCU</property>
+    						<property name="angle" type="string">Eye</property>
+    					</Properties>
+    				</frame>
+    			</shot>
+    		</Scene>
+    	</scenes>
+    </extractorx1>
+
+    <extractorx3>
+      <scenes>
+        <Scene startFrame="4537" endFrame="4726">
+          <shot startFrame="4537" endFrame="4726">
+            <frame timeId="4631">
+              <path>4631.png</path>
+            </frame>
+            <frame timeId="4678">
+              <path>4678.png</path>
+            </frame>
+            <frame timeId="4584">
+              <path>4584.png</path>
+            </frame>
+          </shot>
+        </Scene>
+      </scenes>
+    </extractorx3>
+  </extractors>
+</root>

@@ -7,13 +7,15 @@ Method callable from the client for a project
 Meteor.methods({
   /**
   Create the xml file of a project
-  @project : the project to wich we want to cretae an xml fime
+  @id : the id of the project
+  @buffer : content of the file
+  @nameV : name of file without .mp4
   */
-  createFile: function({project, buffer}){
+  createFile: function(id, project, buffer, nameV){
+
     //Write the file on server
     var fs = Npm.require("fs");
-    //var dir = "/tmp/"+project._id;
-    var dir = "/tmp/"+project.owner+project.name;
+    var dir = "/tmp/"+id;
     var dirSi = "/tmp/signature";
 
     //Create a directory for the project if it doesn't exist
@@ -24,7 +26,6 @@ Meteor.methods({
     if (!fs.existsSync(dirSi)){
       fs.mkdirSync(dirSi);
     }
-
     //By default, write file in .meteor/local/build/programs/server/ but we write in tmp.
     fs.writeFile(dir+"/"+project.url, buffer, 'base64', function(err) {
       if(err) {
@@ -38,7 +39,7 @@ Meteor.methods({
     //Création du hacher avec la foction MD5 en utlilisant les données de la vidéo "buffer"
     let si = JSON.stringify({signature: crypto.createHash('sha1').update(buffer).digest("hex")});
     //Creation du fichier pour la signature des videos
-    fs.writeFile(dirSi+"/"+project.name+ ".json", si, function(err) {
+    fs.writeFile(dirSi+"/"+nameV+ ".json", si, function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
       }
@@ -47,16 +48,16 @@ Meteor.methods({
       }
     });
 
-    createFileXML(project);
+    createFileXML(id);
 
   },
 
   /**
   Create the xml file of a project
-  @project : the project to wich we want to cretae an xml fime
+  @project : the project to wich we want to create an xml file
   */
-  createXMLFile: function(project){
-    createFileXML(project);
+  createXMLFile: function(id){
+      createFileXML(id);
   },
 
   //Function that insert a project in db and returns the id of the inserted project
@@ -64,14 +65,14 @@ Meteor.methods({
     return Projects.insert(project);
   },
 
-/**
-  Save the merged xml files of a project
+  /**
+  Save the new xml file of a project
   @project : the project modified
   @buffer : the content of XML that needs to be saved
 */
-  mergeXML: function(project,buffer){
+  updateXML: function(project,buffer){
     var fs = Npm.require("fs");
-    var dir = "/tmp/"+project.owner+project.name;
+    var dir = "/tmp/"+project._id;
 
     fs.writeFile(dir+"/annotation.xml", buffer, function(err) {
       if(err) {
@@ -84,18 +85,15 @@ Meteor.methods({
   }
 });
 
-/**
-  Method used to create the XML file when creating a new project
-*/
-createFileXML = function(project){
+createFileXML = function(id){
   var fs = Npm.require("fs");
   //  var dir = "/tmp/"+project._id;
-  var dir = "/tmp/"+project.owner+project.name;
+  var dir = "/tmp/"+id;
 
   if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
   }
-  var buff = generateContent(project);
+  var buff = generateContent(Projects.findOne({_id: id}), id);
   fs.writeFile(dir+"/"+"annotation.xml",buff,function(err){
     if(err) {
       throw (new Meteor.Error(500, 'Failed to save file.', err));
@@ -107,32 +105,21 @@ createFileXML = function(project){
 }
 
 /**
-  Method used to generate the basic content of a new XML file of a project.
+* Function that create the basic XML file of a project.
 */
-generateContent = function(project){
+generateContent = function(project, id){
     var builder = require('xmlbuilder');
-    var doc = builder.create('root',{version: '1.0', encoding: 'UTF-8'})
-      .ele('version')
-        .txt('0.1')
-      .up()
+    var date = moment().format('MMMM Do YYYY');
+    var doc = builder.create('root',{version: '1.0', encoding: 'UTF-8', standalone:'no'})
       .ele('project')
-        .att('path','/tmp/'+project.owner+project.name)
-        .ele('icons')
-          .att('path', 'Icons')
-        .up()
+        .att('author',project.owner)
+        .att('date', date)
         .ele('video')
           .att('id','1')
-          .att('path',project.url)
+          .att('url',project.url)
         .up()
       .up()
-      .ele('header')
-        .ele('video')
-          .att('fps','25.0')
-          .att('framing','16/9','id=1')
-          .ele('file')
-            .txt('/tmp/'+project.owner+project.name+'/'+project.url)
-          .up()
-        .up()
+      .ele('extractors')
       .up()
     .end({ pretty: true });
     return doc.toString();

@@ -1,0 +1,18 @@
+{
+  "addExtractor" : "Ajouter un extracteur",
+  "extractorName" : "Nom de l'extracteur",
+  "extractorIP" : "IP et port de l'extracteur (ex:111.222.111.222:8080)",
+  "submitExtractor" : "Valider",
+  "name" : "Nom",
+  "ipport" : "IP et port",
+  "actions" : "Actions",
+  "removeExtractor" : "Supprimer l'extracteur",
+  "submitModif" : "Valider les modifications",
+
+  "errorExtractorEmpty" : "Merci de donner un nom pour votre extracteur",
+  "errorExtractorIPEmpty" : "Merci de donner une IP pour votre extracteur",
+  "errorExtractorIPWrong" : "Adresse IP invalide",
+  "errorExtractorExists" : "Extracteur déjà existant",
+  "successExtractor" : "Extracteur ajouté !",
+  "successExtractorUpdate" : "Extracteur mis à jour !"
+}

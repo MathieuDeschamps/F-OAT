@@ -3,10 +3,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <template name="mainLayout">
-  {{#if currentUser}}
     {{> nav}}
-  {{/if}}
-  {{> errors}}
   <div class="entrance">
     {{> yield}}
   </div>

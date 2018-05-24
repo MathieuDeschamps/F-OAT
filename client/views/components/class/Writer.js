@@ -1,4 +1,4 @@
-import { Parser } from '../components/Parser.js'
+import { Parser } from '../class/Parser.js'
 
 export class Writer{
 
@@ -82,6 +82,7 @@ export class Writer{
 
   }
 
+  // TODO update with the new XML format
   // add a frame to the xmlDoc to the right place(timeId) and return the XML into a String
   static addFrame(xml, frame){
 
@@ -132,5 +133,58 @@ export class Writer{
         return xmlDoc
       }
     }
+  }
+
+  // add remove an extrator to the XMLObject
+  static removeExtractor(XMLObject,nameExtractor){
+    $(XMLObject).find('extractors').children(nameExtractor).remove()
+    return XMLObject
+  }
+
+  // add an extractor to the XMLObject
+  static addExtractor(XMLObject,extractor){
+    $(XMLObject).find('extractors').append(extractor)
+    return XMLObject
+  }
+
+  static convertDocumentToString(document, depth){
+    var result =""
+    var nodeName = String(document.nodeName)
+
+    // set the tabulation with the depth
+    var tab = ""
+
+    if(depth!=0){
+      for(i = 1; i < depth; i++ ){
+        tab += "\t"
+      }
+      // add the node and the attributes
+      result += tab +"<" + nodeName
+      $(document.attributes).each(function(i,attr){
+          result += " " + String(attr.name) + "=\"" + String(attr.value) +"\""
+      })
+      if($(document).text() != "" || $(document).children().length > 0){
+        result += ">"
+      }else{
+        result += "/>"
+      }
+    }
+    // add the children to the result
+    if ($(document).children().length > 0){
+      result += "\n"
+      $(document).children().each(function(i,child){
+        result += Writer.convertDocumentToString(child, depth + 1) + "\n"
+      })
+      result += tab
+    }else{
+      result += $(document).text()
+    }
+
+    if(depth!=0){
+      if($(document).text() != "" || $(document).children().length > 0){
+        result += "</" + nodeName + ">"
+      }
+    }
+    return result;
   }
 }

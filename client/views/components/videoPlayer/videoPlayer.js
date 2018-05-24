@@ -1,29 +1,37 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
+import {videoControler} from '../videoControler/videoControler.js';
+import {seekBarManager} from '../playerCommand/seekBarManager.js';
+import  '/public/renderers/vimeo.js';
 import './videoPlayer.html';
-import '/public/renderers/vimeo.js';
-var Player;
-Template.videoPlayer.onRendered(function () {
-   $('video').mediaelementplayer({
+import './videoPlayer.css';
+import { Parser } from '../../components/class/Parser.js'
+
+  var Player;
+  Template.videoPlayer.onRendered(function () {
+    var project = Projects.findOne(Router.current().params._id)
+    var url = project.url;
+
+    $('video').mediaelementplayer({
       pluginPath:'/packages/johndyer_mediaelement/',
+      features: '[]',
+      clickToPlayPause : false,
       success: function (mediaElement, domObject) {
         Player =mediaElement;
         mediaElement.setSrc((Projects.findOne(Router.current().params._id).url));
-        Player.defaultVideoWidth = "800";
-        Player.defaultVideoHeigth = "800";
-        Player.videoWidth = "800";
-        Player.videoHeigth="800";
-      },
-      error : function (media) {
-        alert("Invalide Url");
-      },
-
+      }
     });
-});
+    vid=$("#videoDisplayId").get(0);
+    vidCtrl=new videoControler(vid,30);
+    seekBarMng=new seekBarManager(vidCtrl);
+    vidCtrl.attach(seekBarMng,5);
 
-Template.videoPlayer.onDestroyed(function(){
-  $('.videoContainer').remove();
-  Player.pause();
-  Player.remove();
-});
+  });
+
+  Template.videoPlayer.onDestroyed(function(){
+    $('.videoContainer').remove();
+    Player.pause();
+    Player.remove();
+
+  });

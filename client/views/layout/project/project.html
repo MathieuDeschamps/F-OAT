@@ -1,25 +1,29 @@
 <template name="project">
-  {{> notifications}}
-  <h2>Faites votre boulot içi ;-)</h2>
   {{test}}
-  <div class="row">
-    <div class="col s8">
-    <label>Frames</label>
-    <select id="listFrame" class="browser-default">
-      <option>select a frame</option>
-      <option>544</option>
-      <option >1152</option>
-      <option>1575</option>
-    </select>
+  <div id="container">
+    <div class="row">
+      <!-- <div class="col s8"> -->
+      <div class="col s8" style="display:none">
+        <!-- {{> svg}} -->
+        {{> videoPlayer}}
+        {{> playerCommand}}
+        {{> timeLineDisplay}}
+      </div>
+      <!-- <div class="col s4"> -->
+      <div class="col s12">
+		{{#if hasRightToWrite}}
+			{{> configurator}}
+        {{/if}}
+
+        <h5 class="blue-text text-darken-3">Annotations :</h5>
+        <div id="extractors" class="row" action="#">
+        </div>
+
+        {{> editor}}
+        {{#if hasRightToWrite}}
+          <a class="btn waves-effect waves-light blue darken-4" id="saveForms">{{_ 'save'}}</a>
+        {{/if}}
+      </div>
+    </div>
   </div>
-  <div class="col s4" >
-    <ul class="tabs" id="XMLTab">
-    </ul>
-  </div>
-  <form class="col s4 offset-s8" id="XMLForm">
-  </form>
-</div>
-<a href="/" class="btn waves-effect waves-light blue darken-4">Exit</a>
-<a id="testmerge1" class="btn waves-effect waves-light blue darken-4">Test Merge 1</a>
-<a id="testmerge2" class="btn waves-effect waves-light blue darken-4">Test Merge 2</a>
 </template>
