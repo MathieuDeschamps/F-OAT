@@ -4,7 +4,6 @@ import {Projects} from '../../../../lib/collections/Project.js';
 import './dashboard.html';
 import {Requests} from '../../../utils/requests.js'
 
-
 Template.dashboard.helpers({
 
   //retourne les projets de l'utiliateur courant.

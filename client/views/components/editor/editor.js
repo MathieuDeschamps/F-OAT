@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Form } from '../class/Form.js'
 import { Parser } from '../class/Parser.js'
 import { Writer } from '../class/Writer.js'
-import {Projects} from '../../../../lib/collections/Project.js';
 import './editor.html';
 
 Template.editor.onRendered(()=>{

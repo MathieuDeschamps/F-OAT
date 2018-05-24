@@ -1,18 +1,20 @@
 <template name="notifications">
-  <ul id="dropdown1" class="dropdown-content">
-    {{#if isOnProject}}
-      {{#if thereIsNotifications}}
-        {{#each notifications}}
-          <li style="width: 400px !important">{{> notification}}</li>
-          <li class="divider"></li>
-        {{/each}}
-      {{else}}
-        <li><a href="#!">{{_ 'noNews'}}</a></li>
+  {{#if Template.subscriptionsReady}}
+    <ul id="dropdown1" class="dropdown-content">
+      {{#if isOnProject}}
+        {{#if thereIsNotifications}}
+          {{#each notifications}}
+            <li style="width: 400px !important">{{> notification}}</li>
+            <li class="divider"></li>
+          {{/each}}
+        {{else}}
+          <li><a href="#!">{{_ 'noNews'}}</a></li>
+        {{/if}}
       {{/if}}
-    {{/if}}
-  </ul>
-  <li id="lidropdown" style="display:none"><a class="dropdown-button" href="#!" data-activates="dropdown1"><i id="icon_notif" class="material-icons center">notifications_none</i></a></li>
-  {{renderDropdownButton}}
+    </ul>
+    <li id="lidropdown" style="display:none"><a class="dropdown-button" href="#!" data-activates="dropdown1"><i id="icon_notif" class="material-icons center">notifications_none</i></a></li>
+    {{renderDropdownButton}}
+  {{/if}}
 </template>
 
 <template name="notification">

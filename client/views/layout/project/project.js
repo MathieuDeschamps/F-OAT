@@ -7,6 +7,7 @@ import {TimeLine} from "../../components/class/TimeLine.js"
 
 var em;
 
+
 // function which checked if the current has the right write on the proejct
 hasRightToWrite = function(){
   var idProject = Router.current().params._id
