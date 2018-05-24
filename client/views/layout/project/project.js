@@ -50,11 +50,14 @@ Template.project.onRendered(()=>{
           $(timeLines).each(function(i,timeLine){
             idTimeLine = "#timeLine" + i
             nameExtractor = timeLine.nameExtractor
-            console.log("nameExtractor" , nameExtractor)
             // console.log('xml', xml)
-            timeLineData = Parser.getTimeLineData(xml,nameExtractor)
+            timeLineData = Parser.getTimeLineData(XMLDoc,nameExtractor)
             // console.log("data: " , $(timeLineData).attr("data"))
-
+            timeLine.nb_frame = $(timeLineData).attr('nbFrames');
+            timeLine.entries = []
+            $($(timeLineData).attr("data")).each(function(i,e){
+              timeLine.entries.push(e.name)
+            })
             timeLine.items = []
             $($(timeLineData).attr("data")).each(function(i,entry){
               $(entry.intervals).each(function(j,interval){
@@ -221,7 +224,11 @@ Template.project.events({
               // console.log('xml', xml)
               timeLineData = Parser.getTimeLineData(xml,nameExtractor)
               // console.log("data: " , $(timeLineData).attr("data"))
-
+              timeLine.nb_frame = $(timeLineData).attr('nbFrames');
+              timeLine.entries = []
+              $($(timeLineData).attr("data")).each(function(i,e){
+                timeLine.entries.push(e.name)
+              })
               timeLine.items = []
               $($(timeLineData).attr("data")).each(function(i,entry){
                 $(entry.intervals).each(function(j,interval){
