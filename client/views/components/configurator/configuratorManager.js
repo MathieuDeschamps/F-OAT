@@ -15,10 +15,10 @@ export class configuratorManager{
 
 		var that=this;
 		extractors.forEach(function(extractor,i){
-			var extractorCheckBox= '<p><input class="filled-in"  id="'+ i + '_config"  type="checkbox" mark="false"/>'
-			extractorCheckBox += '<label for="'+ i + '_config">' + extractor.name + '</label></p>'
+			var extractorCheckBox= '<p><input class="filled-in"  id="config_'+ i + '"  type="checkbox" />'
+			extractorCheckBox += '<label for="config_'+ i + '">' + extractor.name + '</label></p>'
 			$(that.JQcheckBoxDiv).append(extractorCheckBox);
-			var labelConfig=i+'_config';
+			var labelConfig='config_' + i;
 			var JQlabelConfig='#'+labelConfig;
 			var idDiv=i+'_formConfig';
 			var JQidDiv='#'+idDiv;
@@ -80,7 +80,7 @@ export class configuratorManager{
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';
-		$(JQidDivButton).append('<div class="row"><a id="'+idButton+'" class="waves-effect waves-light btn col s6 offset-s3">Launch '+'</a></div>');
+		$(JQidDivButton).append('<a class="btn waves-effect waves-light blue darken-4" id="'+idButton+'">Launch '+'</a>');
 
 		var JQidButton='#'+idButton;
 		$(JQidButton).click(function(){

@@ -11,25 +11,25 @@ export class XMLXSDSequence{
 	*/
 	constructor(xmlElt,xsdSeq){
 		this.attrs={};
-		
-		this.name="Sequence";
-				
+
+		this.name="sequence";
+
 		var that=this;
 		Object.keys(xsdSeq.attrs).forEach(function(xsdAttr,i){
 			that.attrs[xsdAttr]=new XMLXSDAttr($(xmlElt).attr(xsdAttr),xsdSeq.attrs[xsdAttr]);
 		});
-		
+
 		this.minO=xsdSeq.minOccurs;
 		this.maxO=xsdSeq.maxOccurs;
-		
+
 		var xmlEltsListJQ=$(xmlElt).children();
 		var xmlEltsList=[];
 		xmlEltsListJQ.each(function(i,elt){
 			xmlEltsList.push(elt);
 		});
-		
+
 		this.seqList=[]; // list of lists of list of list...
-		
+
 		/* The following greedy algorithm doesn't work in every cases.
 		TODO : Handling all cases...
 		*/
@@ -44,8 +44,8 @@ export class XMLXSDSequence{
 			console.log("Too long sequence");
 		}
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXMLXSDSequence"
 	*/
 	accept(visitor){

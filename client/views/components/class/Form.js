@@ -90,19 +90,39 @@ export class Form{
       var XSD = $(this.XSDObject).find('xs\\:schema').children('xs\\:element')
       Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
 
-
       $(document).ready(function(){
-        $('.collapsible').collapsible(
-        {
-        // onOpen: function(elm) {
-        // $($(elm).find('i')[0]).text('keyboard_arrow_down')
-        // }, // Callback for Collapsible open
-        // onClose: function(elm) {   $($(elm).find('i')[0]).text('keyboard_arrow_right') } // Callback for Collapsible close
-        }
-        )
-      })
+        $('.collapsible').collapsible();
+      });
+
     }
   }
+
+  applyEvent(){
+    $(document).ready(function(){
+      $('.collapsible').collapsible({
+        onOpen: function(elm) {
+          elm = $(elm).children('[class~="collapsible-header"]')
+          var id = $(elm).attr('id').substr(6)
+          var idExtractor = id.charAt(0)
+          console.log('idExtractor', idExtractor)
+          console.log('id', id)
+          console.log('open -> elm : ', elm)
+        $($(elm).find('i')[0]).text('keyboard_arrow_down')
+        if($(elm).attr('name') != undefined){
+            forms[idExtractor].assembleForms()
+            forms[idExtractor].buildNav($(elm).parents())
+            console.log('move')
+            forms[idExtractor].moveInForm(id)
+            forms[idExtractor].collapseAll(forms[idExtractor].idHiddenForm)
+          }
+        },
+        onClose: function(elm) {
+          console.log('close -> elm : ', elm)
+             $($(elm).find('i')[0]).text('keyboard_arrow_right') }
+      })
+    })
+  }
+
 
   // recursive funtion which build the form
   // XMLObjectData the data which fill the default value of the form
@@ -284,7 +304,7 @@ export class Form{
         case 'xs:string':
         attrType = 'text'
         break;
-        case 'xs:int':
+        case 'xs:integer':
         attrType = 'number'
         break;
         case 'xs:dateTime':
@@ -529,10 +549,7 @@ export class Form{
           addMenuBody = $(element).parents('div[class~="collapsible-body"]')[0]
           Form.deleteToAddMenu(elementName, addMenuBody)
         }
-        // init the collapsible element
-        // $(document).ready(function(){
-        //   $('.collapsible').collapsible()
-        // })
+
       }
     }
   }
@@ -619,10 +636,7 @@ export class Form{
         $(element).parent().remove()
 
       }
-      // init the collapsible element
-      // $(document).ready(function(){
-      //   $('.collapsible').collapsible()
-      // })
+
     }
   }
 
@@ -728,6 +742,9 @@ export class Form{
         this.moveInForm(id)
       }
     }
+
+
+
   }
 
   // move in the displayedForm
@@ -889,10 +906,8 @@ export class Form{
     parentRec = $('#' + this.idDisplayedForm).children('ul[class~=collapsible]')
     var XSD = $(this.XSDObject).find('xs\\:schema').children('xs\\:element')
     Form.recBuildForm(this.XMLObject, XSD, this.id, parentRec)
-
-    // init the collapsible element
-    // $(document).ready(function(){
-    //   $('.collapsible').collapsible();
-    // });
+    $(document).ready(function(){
+      $('.collapsible').collapsible();
+    });
   }
 }

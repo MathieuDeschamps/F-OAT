@@ -19,38 +19,38 @@ export class XMLXSDElt{
 		this.type=xsdElt.table.getType(xsdElt.type);
 
 		this.eltsList=[];
-		
+
 		if (xsdElt.fixed!=undefined){
 			this.fixed=xsdElt.fixed;
 		}
-		
+
 		if (xmlEltsList!=undefined){
 			this.xmlEltsList=xmlEltsList;
 		}else{
 			this.xmlEltsList=[];
 		}
-		
-		while(this.eltsList.length<this.minOccurs 
-		    || ((this.maxOccurs=="unbounded"|| this.eltsList.length<this.maxOccurs) 
-			&& this.xmlEltsList.length>0 
+
+		while(this.eltsList.length<this.minOccurs
+		    || ((this.maxOccurs=="unbounded"|| this.eltsList.length<this.maxOccurs)
+			&& this.xmlEltsList.length>0
 			&& this.xmlEltsList[0].localName==this.name)){
-	
+				// console.log('this',this)
 				this.type.accept(this);
 		}
 	}
-	
+
 	/* Add an object to EltsList (case of sequenced element)
 	@xsdSeq : XSDSequence object
 	*/
 	visitXSDSequence(xsdSeq){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
-			var temp=new XMLXSDSequence(this.xmlEltsList[0],xsdSeq);	
+			var temp=new XMLXSDSequence(this.xmlEltsList[0],xsdSeq);
 			this.eltsList.push(temp);
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
-			var temp=new XMLXSDSequence(undefined,xsdSeq);	
+			var temp=new XMLXSDSequence(undefined,xsdSeq);
 			this.eltsList.push(temp);
-		}		
+		}
 	}
 
 	/* Add an object to EltsList (case of extension Type object)
@@ -58,16 +58,16 @@ export class XMLXSDElt{
 	*/
 	visitXSDExtensionType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
-			var temp=new XMLXSDExtensionType(this.xmlEltsList[0],type);	
+			var temp=new XMLXSDExtensionType(this.xmlEltsList[0],type);
 			this.eltsList.push(temp);
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
-			var temp=new XMLXSDExtensionType(undefined,type);	
+			var temp=new XMLXSDExtensionType(undefined,type);
 			this.eltsList.push(temp);
 		}
-		
+
 	}
-	
+
 	/* Add an object to EltsList (case of string element)
 	@type : string type xsd object
 	*/
@@ -78,7 +78,7 @@ export class XMLXSDElt{
 			}else{
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
 			}
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
 			if (this.fixed!=undefined){
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
@@ -87,7 +87,7 @@ export class XMLXSDElt{
 			}
 		}
 	}
-	
+
 	/* Add an object to EltsList (case of decimal element)
 	@type : xsd decimal type object
 	*/
@@ -98,7 +98,7 @@ export class XMLXSDElt{
 			}else{
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
 			}
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
 			if (this.fixed!=undefined){
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
@@ -107,7 +107,7 @@ export class XMLXSDElt{
 			}
 		}
 	}
-	
+
 	/* Add an object to EltsList (case of float element)
 	@type : xsd float type object
 	*/
@@ -118,7 +118,7 @@ export class XMLXSDElt{
 			}else{
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
 			}
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
 			if (this.fixed!=undefined){
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
@@ -127,7 +127,7 @@ export class XMLXSDElt{
 			}
 		}
 	}
-	
+
 	/* Add an object to EltsList (case of integer element)
 	@type : xsd integer type object
 	*/
@@ -138,7 +138,7 @@ export class XMLXSDElt{
 			}else{
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
 			}
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
 			if (this.fixed!=undefined){
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
@@ -147,7 +147,7 @@ export class XMLXSDElt{
 			}
 		}
 	}
-	
+
 	/* Add an object to EltsList (case of boolean element)
 	@type : xsd boolean type object
 	*/
@@ -158,7 +158,7 @@ export class XMLXSDElt{
 			}else{
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
 			}
-			this.xmlEltsList.shift(); 
+			this.xmlEltsList.shift();
 		}else{
 			if (this.fixed!=undefined){
 				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
@@ -167,8 +167,8 @@ export class XMLXSDElt{
 			}
 		}
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXMLXSDElt"
 	*/
 	accept(visitor){

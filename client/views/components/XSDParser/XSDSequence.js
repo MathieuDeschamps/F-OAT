@@ -1,6 +1,6 @@
 import {XSDElt} from './XSDElt.js';
 
-/* 
+/*
 Object class for sequence in a xsd file.
 */
 export class XSDSequence{
@@ -12,7 +12,7 @@ export class XSDSequence{
 	constructor(seqDef,attrs,table){
 		this.table=table;
 		this.attrs=attrs;
-		
+
 		this.maxOccurs=$(seqDef).attr('maxOccurs');
 		if (this.maxOccurs== undefined){
 			this.maxOccurs=1;
@@ -24,15 +24,18 @@ export class XSDSequence{
 		if (this.minOccurs>this.maxOccurs){
 			alert("Inconsistent minOccurs and maxOccurs");
 		}
-		
-		this.seqElt=[];
-		that=this;
+
+		// tmp variable beacuse copy this have some trouble
+		//miss some elements in each loop
+		var seqElt = []
+
 		$(seqDef).children('xs\\:element').each(function(i,elt){
-			that.seqElt.push(new XSDElt(elt,table));
+			seqElt.push(new XSDElt(elt,table));
 		});
+		this.seqElt = seqElt
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXSDSequence"
 	*/
 	accept(visitor){
