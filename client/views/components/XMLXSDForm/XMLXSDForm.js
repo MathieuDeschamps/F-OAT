@@ -748,7 +748,7 @@ export class XMLXSDForm{
 		}
 	}
 
-	visitXSDXMLRestrictionType(xsdRestriction){
+	visitXSDRestrictionType(xsdRestriction){
 		console.log("visit restrictionType")
 		console.log('this',this)
 		console.log('xsdRestriction', xsdRestriction)

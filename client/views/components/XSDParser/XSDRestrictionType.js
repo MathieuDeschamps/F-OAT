@@ -54,7 +54,7 @@ export class XSDRestrictionType{
 
 	/* Convert a string to the base type of the restriction
 	@str : string
-	@return : number
+	@return : restriction type
 	*/
 	convert(str){
 		this.table[this.base].convert(str);

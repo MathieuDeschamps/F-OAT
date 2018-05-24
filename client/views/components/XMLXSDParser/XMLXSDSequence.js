@@ -19,8 +19,8 @@ export class XMLXSDSequence{
 			that.attrs[xsdAttr]=new XMLXSDAttr($(xmlElt).attr(xsdAttr),xsdSeq.attrs[xsdAttr]);
 		});
 
-		this.minO=xsdSeq.minOccurs;
-		this.maxO=xsdSeq.maxOccurs;
+		this.minOccurs=xsdSeq.minOccurs;
+		this.maxOccurs=xsdSeq.maxOccurs;
 
 		var xmlEltsListJQ=$(xmlElt).children();
 		var xmlEltsList=[];
@@ -33,7 +33,7 @@ export class XMLXSDSequence{
 		/* The following greedy algorithm doesn't work in every cases.
 		TODO : Handling all cases...
 		*/
-		while (this.seqList.length<this.minO || (xmlEltsList.length>0 && this.seqList.length<this.maxO)){
+		while (this.seqList.length<this.minOccurs || (xmlEltsList.length>0 && this.seqList.length<this.maxOccurs)){
 			var seq=[];
 			xsdSeq.seqElt.forEach(function(xsdElt){
 				seq.push(new XMLXSDElt(xmlEltsList,xsdElt));
