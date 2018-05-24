@@ -13,11 +13,17 @@ Template.nav.events({
     if(Meteor.user()){
       Meteor.users.update(Meteor.userId(), {$set: {"profile.lang": "fr"}});
     }
+    else{
+      TAPi18n.setLanguage('fr');
+    }
   },
 
   'click #change_en'(event,instance){
     if(Meteor.user()){
       Meteor.users.update(Meteor.userId(), {$set: {"profile.lang": "en"}});
+    }
+    else{
+      TAPi18n.setLanguage('en');
     }
   },
 });

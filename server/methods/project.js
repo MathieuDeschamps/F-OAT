@@ -1,6 +1,14 @@
 import {Projects} from '../../lib/collections/Project.js';
 var crypto = require('crypto');
 
+
+if (Meteor.isServer) {
+  // This code only runs on the server
+  Meteor.publish('projects', function projectsPublications() {
+    return Projects.find();
+  });
+}
+
 /**
 Method callable from the client for a project
 */
@@ -84,6 +92,7 @@ Meteor.methods({
     });
   }
 });
+
 
 createFileXML = function(id){
   var fs = Npm.require("fs");

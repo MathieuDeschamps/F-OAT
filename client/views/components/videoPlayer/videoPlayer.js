@@ -8,30 +8,36 @@ import './videoPlayer.html';
 import './videoPlayer.css';
 import { Parser } from '../../components/class/Parser.js'
 
-  var Player;
-  Template.videoPlayer.onRendered(function () {
-    var project = Projects.findOne(Router.current().params._id)
-    var url = project.url;
+Template.videoPlayer.onCreated(function(){
 
-    $('video').mediaelementplayer({
-      pluginPath:'/packages/johndyer_mediaelement/',
-      features: '[]',
-      clickToPlayPause : false,
-      success: function (mediaElement, domObject) {
-        Player =mediaElement;
-        mediaElement.setSrc((Projects.findOne(Router.current().params._id).url));
-      }
-    });
-    vid=$("#videoDisplayId").get(0);
-    vidCtrl=new videoControler(vid,30);
-    seekBarMng=new seekBarManager(vidCtrl);
-    vidCtrl.attach(seekBarMng,5);
+  Meteor.subscribe('projects');
 
+});
+
+var Player;
+Template.videoPlayer.onRendered(function () {
+  var project = Projects.findOne(Router.current().params._id)
+  var url = project.url;
+
+  $('video').mediaelementplayer({
+    pluginPath:'/packages/johndyer_mediaelement/',
+    features: '[]',
+    clickToPlayPause : false,
+    success: function (mediaElement, domObject) {
+      Player =mediaElement;
+      mediaElement.setSrc((Projects.findOne(Router.current().params._id).url));
+    }
   });
+  vid=$("#videoDisplayId").get(0);
+  vidCtrl=new videoControler(vid,30);
+  seekBarMng=new seekBarManager(vidCtrl);
+  vidCtrl.attach(seekBarMng,5);
 
-  Template.videoPlayer.onDestroyed(function(){
-    $('.videoContainer').remove();
-    Player.pause();
-    Player.remove();
+});
 
-  });
+Template.videoPlayer.onDestroyed(function(){
+  $('.videoContainer').remove();
+  Player.pause();
+  Player.remove();
+
+});

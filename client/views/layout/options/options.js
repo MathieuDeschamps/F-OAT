@@ -1,5 +1,4 @@
 import './options.html'
-import {Projects} from '../../../../lib/collections/Project.js';
 import {Extractors} from '../../../../lib/collections/extractors.js';
 
 import { Template } from 'meteor/templating';

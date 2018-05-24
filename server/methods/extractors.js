@@ -1,5 +1,12 @@
 import {Extractors} from '../../lib/collections/extractors.js';
 
+if (Meteor.isServer) {
+  // This code only runs on the server
+  Meteor.publish('extractors', function extractorsPublication() {
+    return Extractors.find();
+  });
+}
+
 Meteor.methods({
 
   addExtractor: (extractor , user)=>{
@@ -20,4 +27,4 @@ Meteor.methods({
   updateExtractor: (extractor)=>{
     return Extractors.update({_id:extractor._id, owner: extractor.owner},{$set:{name: extractor.name, ip: extractor.ip}});
   },
-})
+});

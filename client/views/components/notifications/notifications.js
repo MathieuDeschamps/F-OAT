@@ -9,6 +9,12 @@ isOnProject = function(){
   return (path==="project")
 }
 
+Template.notifications.onCreated(function(){
+
+  this.subscribe('projects');
+
+});
+
 Template.notifications.helpers({
   notifications: function(){
     return Projects.findOne(Router.current().params._id).notifications;
@@ -48,6 +54,12 @@ Template.notifications.helpers({
 
     }, 20);
   }
+
+});
+
+Template.notification.onCreated(function(){
+
+  Meteor.subscribe('projects');
 
 });
 
