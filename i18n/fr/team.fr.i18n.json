@@ -12,5 +12,6 @@
   "add" : "Ajouter",
   "errorUserNoExists" : "Cet utilisateur n'existe pas",
   "errorUserAlready" : "__user__ appartient déjà au projet",
-  "rightChanged" : "Droit modifié !"
+  "rightChanged" : "Droit modifié !",
+  "participantRemoved" : "Utilisateur retiré du projet"
 }

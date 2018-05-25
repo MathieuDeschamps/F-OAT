@@ -7,5 +7,7 @@
   "new_project": "Create a new project",
   "settings" : "Settings",
   "delete_project" : "Delete project",
-  "exit" : "Exit project"
+  "exit" : "Exit project",
+  "project_removed" : "Project removed",
+  "project_leaved" : "You leaved this project"
 }

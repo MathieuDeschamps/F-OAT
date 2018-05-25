@@ -9,6 +9,12 @@ isOnProject = function(){
   return (path==="project")
 }
 
+Template.notifications.onCreated(function(){
+
+  this.subscribe('projects');
+
+});
+
 Template.notifications.helpers({
   notifications: function(){
     return Projects.findOne(Router.current().params._id).notifications;
@@ -51,6 +57,12 @@ Template.notifications.helpers({
 
 });
 
+Template.notification.onCreated(function(){
+
+  Meteor.subscribe('projects');
+
+});
+
 Template.notification.events({
     //Remove the notification from the notification list.
     'click .markNotification'(event,instance){
@@ -60,6 +72,10 @@ Template.notification.events({
       var elmToRemove = $elm.attr('name');
       var dateToRemove = elmToRemove.substring(0,elmToRemove.indexOf(','));
       var valueToRemove = elmToRemove.substring(elmToRemove.indexOf(',')+1,elmToRemove.length);
-      Projects.update({ _id : Router.current().params._id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
+      Meteor.call('removeNotification', Router.current().params._id, dateToRemove, valueToRemove,function(err,res){
+        if(err){
+          toastr.warning(err.reason);
+        }
+      });
     }
 });

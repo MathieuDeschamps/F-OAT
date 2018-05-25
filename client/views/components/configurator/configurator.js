@@ -6,13 +6,24 @@ import {Extractors} from '/lib/collections/extractors.js';
 
 import {configuratorManager} from './configuratorManager.js';
 
+Template.configurator.onCreated(function(){
+
+  this.subscribe('extractors');
+  this.subscribe('projects');
+
+});
+
 Template.configurator.onRendered(()=>{
     /*console.log('Lecture test.xsd');
 	path='/parameters.xsd';
 	console.log('Path : ',path);*/
-	extractors=Extractors.find();
 
-	new configuratorManager(extractors,"configurator","configuratorForm");
+  Meteor.subscribe('extractors', ()=>{
+    extractors=Extractors.find();
+
+  	new configuratorManager(extractors,"configurator","configuratorForm");
+  })
+
 
 	/*extractors.forEach(function(extractor,i){
 		extractorCheckBox= '<p><input class="filled-in"  id="'+ i + '_config"  type="checkbox" mark="false"/>'

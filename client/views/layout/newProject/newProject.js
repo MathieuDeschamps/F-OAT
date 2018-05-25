@@ -96,9 +96,9 @@ Template.newproject.events({
       return Session.set('postSubmitErrors',errors);
     }
 
-    Meteor.call('saveDocument', project, function(err, res){
+    Meteor.call('insertProject', project, function(err, res){
       if(err){
-        alert("error insert");
+        toastr.warning(err.reason);
       }else{
         if(_projectFile){
           //Get the data of the file
@@ -111,16 +111,17 @@ Template.newproject.events({
             var buffer = reader.result;
             //Call a method from project.js on server side
             Meteor.call('createFile', res, project, buffer, nameV , function(error, result){
-
               if(error){
-                alert(error.reason);
+                toastr.warning(error.reason);
               }
               else{
                 //Create a notification if the file has been uploaded
-                Projects.update({
-                  _id: res
-                }, {
-                  $push: {notifications: {date: moment().calendar(), value: "Your file "+project.url+" has been uploaded."}}
+                var date = moment().calendar();
+                var val = "Your file "+project.url+" has been uploaded.";
+                Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
+                  if(err){
+                    toastr.warning(errorNotif.reason);
+                  }
                 });
               }
             });
@@ -131,7 +132,7 @@ Template.newproject.events({
         else{
           Meteor.call('createXMLFile',res,function(error,result){
             if(error){
-              alert(error.reason);
+              toastr.warning(error.reason);
             }
           });
           Router.go("/");

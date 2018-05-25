@@ -7,5 +7,7 @@
   "new_project": "Créer un nouveau projet",
   "settings" : "Options du projet",
   "delete_project" : "Supprimer le projet",
-  "exit" : "Quitter le projet"
+  "exit" : "Quitter le projet",
+  "project_removed" : "Projet supprimé",
+  "project_leaved" : "Vous avez quitté ce projet"
 }

@@ -4,7 +4,6 @@ import {Projects} from '../../../../lib/collections/Project.js';
 import './dashboard.html';
 import {Requests} from '../../../utils/requests.js'
 
-
 Template.dashboard.helpers({
 
   //retourne les projets de l'utiliateur courant.
@@ -29,14 +28,25 @@ Template.dashboard.events({
       var elm = event.target;
       var $elm = $(elm);
 
-    Projects.remove({_id: $elm.attr('name')},(err)=>{
-      if(err){
-        alert(err);
-      }
-    })
+
+      Meteor.call('removeProject',$elm.attr('name'),function(err,res){
+        if(err){
+          toastr.warning(err.reason);
+        }
+        else{
+          toastr.success(TAPi18n.__('project_removed'));
+        }
+      });
   },
   'click .exit' (event, instance){
-    Meteor.call('removeParticipants',event.target.getAttribute('name'),Meteor.user().username);
+    Meteor.call('removeParticipant',event.target.getAttribute('name'),Meteor.user().username,function(err,res){
+      if(err){
+        toastr.warning(err.reason);
+      }
+      else{
+        toastr.success(TAPi18n.__('project_leaved'));
+      }
+    });
 
   },
 })

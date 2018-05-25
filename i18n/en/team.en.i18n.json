@@ -12,5 +12,6 @@
   "add" : "Add",
   "errorUserNoExists" : "This user doesn't exist",
   "errorUserAlready" : "__user__ is already in the project",
-  "rightChanged" : "Right changed !"
+  "rightChanged" : "Right changed !",
+  "participantRemoved" : "User removed from the project"
 }

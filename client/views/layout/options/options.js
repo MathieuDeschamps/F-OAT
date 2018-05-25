@@ -1,5 +1,4 @@
 import './options.html'
-import {Projects} from '../../../../lib/collections/Project.js';
 import {Extractors} from '../../../../lib/collections/extractors.js';
 
 import { Template } from 'meteor/templating';
@@ -58,8 +57,14 @@ Template.options.events({
   'click #delete' (event,instance){
     var elm = event.target;
     var $elm = $(elm);
-    Meteor.call('removeExtractor',$elm.attr('name'),Meteor.user());
-
+    Meteor.call('removeExtractor',$elm.attr('name'),Meteor.user(),function(err,res){
+      if(err){
+        toastr.warning(err.reason);
+      }
+      else{
+        toastr.success(TAPi18n.__('successExtractorRemoved'));
+      }
+    });
   },
 
   'click #update' (event, instance){
@@ -69,8 +74,14 @@ Template.options.events({
     if(!regex.test(extractor.ip)){
         toastr.warning(TAPi18n.__('errorExtractorIPWrong'));
     }else{
-      Meteor.call('updateExtractor',extractor);
-      toastr.success(TAPi18n.__('successExtractorUpdate'));
+      Meteor.call('updateExtractor',extractor,function(err,res){
+        if(err){
+          toastr.warning(err.reason);
+        }
+        else{
+          toastr.success(TAPi18n.__('successExtractorUpdate'));
+        }
+      });
     }
 
 

@@ -14,5 +14,6 @@
   "errorExtractorIPWrong" : "Adresse IP invalide",
   "errorExtractorExists" : "Extracteur déjà existant",
   "successExtractor" : "Extracteur ajouté !",
-  "successExtractorUpdate" : "Extracteur mis à jour !"
+  "successExtractorUpdate" : "Extracteur mis à jour !",
+  "successExtractorRemoved" : "Extracteur supprimé !"
 }

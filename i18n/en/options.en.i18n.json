@@ -14,5 +14,6 @@
   "errorExtractorIPWrong" : "The IP typed is invalid",
   "errorExtractorExists" : "This extractor already exists",
   "successExtractor" : "Extractor added !",
-  "successExtractorUpdate" : "Extractor updated !"
+  "successExtractorUpdate" : "Extractor updated !",
+  "successExtractorRemoved" : "Extractor removed !"
 }
