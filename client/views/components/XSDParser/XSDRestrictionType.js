@@ -8,36 +8,31 @@ export class XSDRestrictionType{
 	@table : symbol table
 	*/
 	constructor(restr,table){
-
+		var that = this
 		this.table=table;
 
-		this.baseType=$(restr).attr('base');
-		if (this.baseType==undefined){
-			alert('Restriction base type name is required');
-		}
-
 		$(restr).children('xs\\:minExclusive').each(function(i,min){
-			this.minExclusive=min.attr('value');
+			that.minEx=$(min).attr('value');
 		})
 		$(restr).children('xs\\:minInclusive').each(function(i,min){
-			this.minInclusive=min.attr('value');
+			that.minIn=$(min).attr('value');
 		})
 		$(restr).children('xs\\:maxExclusive').each(function(i,max){
-			this.maxExclusive=max.attr('value');
+			that.maxEx=$(max).attr('value');
 		})
 		$(restr).children('xs\\:maxInclusive').each(function(i,max){
-			this.maxInclusive=max.attr('value');
+			that.maxIn=$(max).attr('value');
 		})
 
 		$(restr).children('xs\\:minLength').each(function(i,min){
-			this.minLength=min.attr('value');
+			this.minLength=$(min).attr('value');
 		})
 		$(restr).children('xs\\:maxLength').each(function(i,max){
-			this.maxLength=max.attr('value');
+			that.maxLength=$(max).attr('value');
 		})
 		$(restr).children('xs\\:length').each(function(i,length){
-			this.minLength=length.attr('value');
-			this.maxLength=length.attr('value');
+			that.minLength=$(length).attr('value');
+			that.maxLength=$(length).attr('value');
 		})
 
 
@@ -49,6 +44,33 @@ export class XSDRestrictionType{
 				value=$(enumTag).attr('value');
 				that.enumeratedValues.push(value);
 			});
+		}
+		var restrictionType=$(restr)
+		if(restrictionType.length > 0){
+			this.base=this.table.createRestrictionType(restrictionType[0])
+		}
+
+		if(this.minEx !== undefined){
+				this.base.minEx = this.minEx;
+		}
+		if(this.minIn !== undefined){
+				this.base.minIn = this.minIn;
+		}
+		if(this.maxEx !== undefined){
+				this.base.maxEx = this.maxEx;
+		}
+		if(this.maxIn !== undefined){
+				this.base.maxIn = this.maxIn;
+		}
+		if(this.minLength !== undefined){
+				this.base.minLength = this.minLength;
+		}
+		if(this.maxLength !== undefined){
+				this.base.maxLength = this.maxLength;
+		}
+
+		if(this.enumeratedValues !== undefined){
+			this.base.enumeration = this.enumeratedValues
 		}
 	}
 
@@ -72,8 +94,8 @@ export class XSDRestrictionType{
 	getEnumetaredValues(){
 		var list=[];
 		this.enumeratedValues.forEach(function(i,val){
-			val=this.table[this.base].convert(val);
-			if (this.table[this.base].holds(val)){
+			val=this.table[this.base.name].convert(val);
+			if (this.table[this.base.name].holds(val)){
 				list.push(val);
 			}
 		});
@@ -86,17 +108,17 @@ export class XSDRestrictionType{
 	*/
 	holds(x){
 		result=true;
-		if (this.table[this.base].holds(x)){
-			if (this.minExclusive!=undefined && x<=this.minExclusive){
+		if (this.table[this.base.name].holds(x)){
+			if (this.minEx!=undefined && x<=this.minEx){
 				result=false;
 			}
-			if (this.minInclusive!=undefined && x<this.minInclusive){
+			if (this.minIn!=undefined && x<this.minIn){
 				result=false;
 			}
-			if (this.maxExclusive!=undefined && x>=this.maxExclusive){
+			if (this.maxEx!=undefined && x>=this.maxEx){
 				result=false;
 			}
-			if (this.maxInclusive!=undefined && x>this.maxInclusive){
+			if (this.minIn!=undefined && x>this.minIn){
 				result=false;
 			}
 			if (this.minLength!=undefined && x.length<this.minLength){

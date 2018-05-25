@@ -61,8 +61,10 @@ export class configuratorManager{
 		//console.log('XSD parsé : ',xsd);
 
 		var xsdObj=new XSDObject(xsd);
-		//console.log('xsdObj',xsdObj);
+		// console.log('xsdObj',xsdObj);
 
+
+		console.log('xmlxsdObj B',xmlxsdObj);
 		var xmlxsdObj= new XMLXSDObj(undefined,xsdObj);
 
 		var xmlxsdForm=new XMLXSDForm(xmlxsdObj,extractor._id+'_'+i,extractor.name,idDivForm);

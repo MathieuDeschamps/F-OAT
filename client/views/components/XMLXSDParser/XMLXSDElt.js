@@ -168,6 +168,25 @@ export class XMLXSDElt{
 		}
 	}
 
+	/* Add an object to EltsList (case of void element)
+	@type : xsd void type object
+	*/
+	visitXSDVoidType(type){
+		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
+			if (this.fixed==undefined){
+				this.eltsList.push(new XMLXSDNodeValue(type.convert(this.xmlEltsList[0].textContent),type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}
+			this.xmlEltsList.shift();
+		}else{
+			if (this.fixed!=undefined){
+				this.eltsList.push(new XMLXSDNodeValue(this.fixed,type));
+			}else{
+				this.eltsList.push(new XMLXSDNodeValue(this.default,type));
+			}
+		}
+	}
 	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXMLXSDElt"
 	*/
