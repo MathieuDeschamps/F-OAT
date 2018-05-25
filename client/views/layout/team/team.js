@@ -20,7 +20,14 @@ Template.team.events({
   Remove a participants of the team
   */
   'click .delete' (event,instance){
-    Projects.update({_id : Router.current().params._id }, {$pull:{ participants: {username: this.username}}});
+    Meteor.call('removeParticipant',Router.current().params._id,this.username,function(err,res){
+      if(err){
+        toastr.warning(err.reason);
+      }
+      else{
+        toastr.success(TAPi18n.__("participantRemoved"));
+      }
+    })
   },
 
   /**
@@ -74,8 +81,11 @@ Template.team.events({
               }
             );
             if(!present && newCoworker_name != project.owner){
-
-              Projects.update({_id : Router.current().params._id }, {$push:{ participants: {username: newCoworker_name,right: newCoworker_right}}});
+              Meteor.call("addParticipant",Router.current().params._id, newCoworker_name, newCoworker_right, function(error,result){
+                if(error){
+                  toastr.warning(error.reason);
+                }
+              });
             }else{
               toastr.warning(TAPi18n.__('errorUserAlready', {user :  newCoworker_name}));
             }

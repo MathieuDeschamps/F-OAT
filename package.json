@@ -8,7 +8,6 @@
     "@babel/runtime": "^7.0.0-beta.40",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^1.0.3",
-    "meteor-node-stubs": "^0.3.2",
     "cheerio": "^1.0.0-rc.2",
     "child-process-promise": "^2.2.1",
     "jquery": "^3.3.1",

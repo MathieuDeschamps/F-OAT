@@ -20,7 +20,6 @@ Template.configurator.onRendered(()=>{
 
   Meteor.subscribe('extractors', ()=>{
     extractors=Extractors.find();
-    console.log("EXTRACTORS",extractors);
 
   	new configuratorManager(extractors,"configurator","configuratorForm");
   })

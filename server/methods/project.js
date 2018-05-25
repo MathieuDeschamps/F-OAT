@@ -1,9 +1,10 @@
 import {Projects} from '../../lib/collections/Project.js';
 var crypto = require('crypto');
 
-
+/**
+  Publish collection Projects
+*/
 if (Meteor.isServer) {
-  // This code only runs on the server
   Meteor.publish('projects', function projectsPublications() {
     return Projects.find();
   });
@@ -68,9 +69,44 @@ Meteor.methods({
       createFileXML(id);
   },
 
-  //Function that insert a project in db and returns the id of the inserted project
-  saveDocument: function(project){
+  /**Insert a project in db and returns the id of the inserted project
+    @project : project to insert in db
+  */
+  insertProject: function(project){
     return Projects.insert(project);
+  },
+
+  /**Remove a project from db
+  @id : id of the project to remove
+  */
+  removeProject:function(id){
+    check(id,String);
+    return Projects.remove({_id: id});
+  },
+
+
+  /**Add a notification in a project
+  @id : id of the project
+  @newDate : date of the notification
+  @newValue : Text of the notification
+  */
+  addNotifications: function(id,newDate,newValue){
+    check(id,String);
+    check(newDate,String);
+    check(newValue,String);
+    return Projects.update({
+      _id: id
+    }, {
+      $push: {notifications: {date: newDate, value: newValue}}
+    });
+  },
+
+
+  removeNotification: function(id,dateToRemove,valueToRemove){
+    check(id,String);
+    check(dateToRemove,String);
+    check(valueToRemove,String);
+    return Projects.update({ _id : id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
   },
 
   /**
@@ -93,7 +129,9 @@ Meteor.methods({
   }
 });
 
-
+/** Create the XML file linked to a project
+    @id : id of the project
+*/
 createFileXML = function(id){
   var fs = Npm.require("fs");
   //  var dir = "/tmp/"+project._id;

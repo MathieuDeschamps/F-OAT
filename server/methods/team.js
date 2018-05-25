@@ -13,27 +13,39 @@ Meteor.methods({
     return Projects.findOne({_id:_projectId}).participants;
 
   },
+
+  /**
+  Add a participant in a project
+  @id : id of the project
+  @_username : name of the user to add to the project
+  @_right : right of the user in the project
+  */
+  addParticipant : function(_projectId, _username, _right){
+    check(_projectId,String);
+    check(_username,String);
+    check(_right,String);
+    var project = Projects.findOne(_projectId);
+    if(!project){
+      throw Error("Invalid project id");
+    }else{
+      return Projects.update({_id : _projectId}, {$push:{ participants: {username: _username,right: _right}}});
+    }
+  },
+
   /**
   Remove a participant from  a Project
   @ _projectId the id of the Project
   @ _username the user to remove from the participant list
 */
-  removeParticipants: (_projectId,_username)=>{
+  removeParticipant: (_projectId,_username)=>{
 
-    console.log(_projectId);
-    console.log(_username);
+    check(_projectId,String);
+    check(_username,String);
     var project = Projects.findOne(_projectId);
     if(!project){
       throw Error("Invalid project id");
     }else{
-      console.log(project),
-      Projects.update({_id:_projectId}, {$pull:{participants: {username: _username}}},(err,result)=>{
-        if(err){
-          throw Error("impossible to update project");
-        }else{
-
-        }
-      });
+      return Projects.update({_id:_projectId}, {$pull:{participants: {username: _username}}});
     }
 
   },
@@ -41,9 +53,9 @@ Meteor.methods({
   /*
   Change the right of an user for a project
 
-  param _id : the id of the project
-  param username : the user to change right
-  param newRight : the new right for the user
+  @ _projectId : the id of the project
+  @ _username : the user to change right
+  @ _newRight : the new right for the user
   */
   changeRight: (_projectId,_username,_newRight)=>{
 
@@ -56,14 +68,17 @@ Meteor.methods({
       if(_newRight === "Owner"){//change owner the previous owner get write right
         var previousOwner = project.owner;
 
+        //Remove the user from the project
         Projects.update({_id : _projectId, name: project.name }, {$pull:{participants: {username: _username}}},(err,rec,stat)=>{
           if(err){
             throw  (new Meteor.Error(500, 'Failed to update project', err.reason));
           }else{
+            //Set the user to owner of the project
             Projects.update({_id : _projectId },{$set:{owner: _username}},(err1,rec,stat)=>{
               if(err1){
                 throw  (new Meteor.Error(500, 'Failed to update project', err.reason));
               }else{
+                //Set the previous owner in participants with write right
                 Projects.update({_id : _projectId }, {$push:{ participants: {username: previousOwner,right: "Write"}}},(err2,rec,stat)=>{
                   if(err2){
                     throw  (new Meteor.Error(500, 'Failed to update project', err.reason));

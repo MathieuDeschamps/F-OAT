@@ -72,6 +72,10 @@ Template.notification.events({
       var elmToRemove = $elm.attr('name');
       var dateToRemove = elmToRemove.substring(0,elmToRemove.indexOf(','));
       var valueToRemove = elmToRemove.substring(elmToRemove.indexOf(',')+1,elmToRemove.length);
-      Projects.update({ _id : Router.current().params._id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
+      Meteor.call('removeNotification', Router.current().params._id, dateToRemove, valueToRemove,function(err,res){
+        if(err){
+          toastr.warning(err.reason);
+        }
+      });
     }
 });
