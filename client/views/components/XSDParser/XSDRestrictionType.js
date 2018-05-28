@@ -25,14 +25,14 @@ export class XSDRestrictionType{
 		})
 
 		$(restr).children('xs\\:minLength').each(function(i,min){
-			this.minLength=$(min).attr('value');
+			that.minLength=$(min).attr('value');
 		})
 		$(restr).children('xs\\:maxLength').each(function(i,max){
 			that.maxLength=$(max).attr('value');
 		})
 		$(restr).children('xs\\:length').each(function(i,length){
-			that.minLength=$(length).attr('value');
-			that.maxLength=$(length).attr('value');
+			console.log('set with length', this.minLength)
+			that.length=$(length).attr('value');
 		})
 
 
@@ -50,28 +50,34 @@ export class XSDRestrictionType{
 			this.base=this.table.createRestrictionType(restrictionType[0])
 		}
 
-		if(this.minEx !== undefined){
-				this.base.minEx = this.minEx;
-		}
-		if(this.minIn !== undefined){
-				this.base.minIn = this.minIn;
-		}
-		if(this.maxEx !== undefined){
-				this.base.maxEx = this.maxEx;
-		}
-		if(this.maxIn !== undefined){
-				this.base.maxIn = this.maxIn;
-		}
-		if(this.minLength !== undefined){
-				this.base.minLength = this.minLength;
-		}
-		if(this.maxLength !== undefined){
-				this.base.maxLength = this.maxLength;
-		}
-
-		if(this.enumeratedValues !== undefined){
+		if(this.enumeratedValues !== undefined  && this.base.facets.includes('enumeration')){
 			this.base.enumeration = this.enumeratedValues
 		}
+
+		if(this.minEx !== undefined && this.base.facets.includes('minExclusive')){
+				this.base.setMinEx(this.minEx);
+		}
+		if(this.minIn !== undefined && this.base.facets.includes('minInclusive')){
+				this.base.setMinIn(this.minIn);
+		}
+		if(this.maxEx !== undefined && this.base.facets.includes('maxExclusive')){
+				this.base.setMaxEx(this.maxEx);
+		}
+		if(this.maxIn !== undefined && this.base.facets.includes('maxInclusive')){
+				this.base.setMaxIn(this.maxIn);
+		}
+
+		if(this.minLength !== undefined && this.base.facets.includes('minLength')){
+				this.base.setMinLength(this.minLength);
+		}
+		if(this.maxLength !== undefined  && this.base.facets.includes('maxLength')){
+				this.base.setMaxLength(this.maxLength);
+		}
+		if(this.length !== undefined  && this.base.facets.includes('length')){
+				this.base.setLength(this.length);
+		}
+
+		console.log('this.base ', this.base)
 	}
 
 	/* Convert a string to the base type of the restriction

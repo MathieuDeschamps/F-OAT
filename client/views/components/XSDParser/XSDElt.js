@@ -48,8 +48,6 @@ export class XSDElt{
 			switch (simpleType.length+complexType.length){
 				case 0 :
 					this.type="xs:void";
-					console.log('xs:void')
-					console.log('table', this.table)
 					break;
 				case 1 :
 					if (simpleType.length==1){
