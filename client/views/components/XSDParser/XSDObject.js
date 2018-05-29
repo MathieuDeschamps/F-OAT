@@ -18,10 +18,10 @@ export class XSDObject{
 	constructor(XSD){
 		// Getting the schema node
 		schema = $(XSD).find('xs\\:schema');
-		
+
 		// Initialisation of the symbol table
 		this.table=new XSDSymbolTable();
-		
+
 		// basic types
 		this.table.addType(new XSDStringType());
 		this.table.addType(new XSDBooleanType());
@@ -50,8 +50,8 @@ export class XSDObject{
 		rootDescription=$(schema).children('xs\\:element')[0]; // Other elements are ignored if present
 		this.root=new XSDElt(rootDescription,this.table);
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXSDObject"
 	*/
 	accept(visitor){

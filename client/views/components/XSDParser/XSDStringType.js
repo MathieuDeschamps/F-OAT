@@ -1,4 +1,4 @@
-/* 
+/*
 Object class for integer Type
 */
 export class XSDStringType {
@@ -6,21 +6,21 @@ export class XSDStringType {
 	*/
 	constructor(){
 		this.name='xs:string';
-		
+
 		this.minLength=0;
 		this.maxLength="unbounded";
-				
+
 		this.facets=['length', 'maxLength', 'minLength', 'enumeration'];
-		
+
 	}
-	
+
 	/* test if the type is enumerated (when restrictions have been applied)
 	@returns : boolean
 	*/
 	isEnumerated(){
 		return (this.enumeration != undefined)
 	}
-	
+
 	/* Convert an object to number
 	@str : object
 	@return : number
@@ -28,7 +28,7 @@ export class XSDStringType {
 	convert(str){
 		return str.toString();
 	}
-	
+
 	/* tests if s is of the type taking into account the restrictions applied
 	@s : object
 	@returns : boolean
@@ -52,7 +52,7 @@ export class XSDStringType {
 		console.log('XSDString - holds 2', s);
 		return result;
 	}
-	
+
 	/* Setters for various restrictions
 	enumeration is filtered if necessary
 	@newMin : number
@@ -60,27 +60,36 @@ export class XSDStringType {
 	@newLength : number
 	*/
 	setMinLength(newMin){
-		this.minLength=max(this.minLength,newMin);
+		this.minLength=Math.max(this.minLength,newMin);
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			var that = this;
+			this.enumeration=this.enumeration.filter(function(i, enume){
+				that.holds(enume);
+			});
 		}
 	}
 	setMaxLength(newMax){
+
 		if (this.maxLength!="unbounded"){
-			this.maxLength=max(this.maxLength,newMax);
+			this.maxLength=Math.max(this.maxLength,newMax);
 		}else{
-			this.minLength=newMax;
+			if(Number.isInteger(parseInt(newMax))){
+				this.maxLength=parseInt(newMax);
+			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			var that = this;
+			this.enumeration=this.enumeration.filter(function(i, enume){
+				that.holds(enume);
+			});
 		}
 	}
 	setLength(newLength){
 		this.setMinLength(newLength);
 		this.setMaxLength(newLength);
-	}	
-	
-	/* Visitor pattern : accept function 
+	}
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXSDStringType"
 	*/
 	accept(object){

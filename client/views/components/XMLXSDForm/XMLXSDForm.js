@@ -29,7 +29,7 @@ export class XMLXSDForm{
 
 		this.html=   '<div id="extractor' + this.id + 'config" >'
 		this.html +=' <nav id="nav-'+ this.id + 'config">'
-		this.html += '<div class="nav-wrapper white-text blue darken-4 row">'
+		this.html += '<div class="nav-wrapper white-text row">'
 		this.html += '<div class="col s12" id="anchor">'
 		this.html += '<a id="'+this.id+'config" class="breadcrumb">' + this.name +'</a>'
 		this.html += '</div></div></nav>'
@@ -297,7 +297,7 @@ export class XMLXSDForm{
 	generatenav(){
 		this.html +=' <nav id="nav-'+ this.id + 'config">'
 
-		this.html += '<div class="nav-wrapper white-text blue darken-4 row">'
+		this.html += '<div class="nav-wrapper white-text row">'
 		this.html += '<div class="col s12" id="anchor">'
 		// breadcrumb --> problème eventhandler
 		this.html += '<a id="'+this.id+'config"  class="breadcrumb">' + this.name +'</a>';
@@ -337,8 +337,8 @@ export class XMLXSDForm{
 
 		this.html+='<ul id="ext'+xmlxsdExt.name+'config" class="collapsible">'; // class?
 		this.html+='<li>'
-		this.generateHeaderContent("ext'+xmlxsdExt.name+'configTitle",this.stack[this.stack.length-1].name,false)
-		this.html+='<div id="ext'+xmlxsdExt.name+'configContent" class="collaspsible-body">'
+		this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle',this.stack[this.stack.length-1].name,false)
+		this.html+='<div id="ext'+xmlxsdExt.name+'configContent" class="collapsible-body row">'
 
 
 		this.generateAttrsForm(xmlxsdExt);
@@ -368,7 +368,7 @@ export class XMLXSDForm{
 		if(this.html == undefined){
 			this.html = ''
 		}
-		this.html+='<div id="'+id+'" class="collapsible-header white-text blue darken-4 row">'
+		this.html+='<div id="'+id+'" class="collapsible-header white-text row">'
 		this.html+='<div class="col s1">'
 		this.html+= '<i class="material-icons">keyboard_arrow_right</i>'
 		this.html+= '</div>'
@@ -395,7 +395,7 @@ export class XMLXSDForm{
 			var switchName=attr.name+'switch';
 			var jqSwitchName='#'+switchName;
 
-			that.html+='<div class="row">'
+			// that.html+='<div class="row">'
 			console.log('attr', attr)
 			console.log('attr.use', attr.use)
 			switch(attr.use){
@@ -430,8 +430,8 @@ export class XMLXSDForm{
 					break;
 			}
 			if (attr.use!="prohibited"){
-				that.html+='<div class="col s9">'
-				that.html+=attr.name
+				that.html+='<div class="col s10">'
+				that.html+=attr.name + ' '
 				that.html+='<div class="input-field inline">'
 				that.attrManage=true;
 				that.attrFormName=formName;
@@ -446,30 +446,113 @@ export class XMLXSDForm{
 				}
 				//TODO disabled input when jqSwitchName not checked
 			}
-			that.html+='</div>'
+			// that.html+='</div>'
 
 			// that.html+='</li>';
 		})
 		// this.hmlt+='</ul>';
 	}
 
+	visitXSDFloatType(xsdFloat){
+		if (this.attrManage){
+			var attr=this.currentAttr;
+			if (xsdFloat.isEnumerated()){
+				var selectFormName='select'+this.attrFormName;
+				this.generateSelect(selectFormName, xsdFloat.enumeration, attr.value)
+
+				this.eventHandler.push({
+						function:function(){
+							var jqSelectFormName='#'+selectFormName;
+							attr.setValue($(jqSelectFormName).value);
+						},
+						id: selectFormName,
+						eventName:'change'
+					});
+
+			}else{
+				var formName=this.attrFormName;
+				this.generateInput(formName, "number", 0.01, attr.value)
+
+				this.eventHandler.push({
+					function:function(){
+						var jqFormName='#'+formName;
+						attr.setValue($(jqFormName).val());
+						$(jqFormName).val(attr.value);
+					},
+					id:formName,
+					eventName:'change'
+				});
+			}
+		}else{
+			if (!this.htmlUpdate){
+				this.eventHandler=[];
+				this.html= '<div id="extractor' + this.id + 'config" >'
+
+				// generate nav
+				this.generatenav();
+			}
+
+			/* generate the the html to display the text (between tag)
+			this.html+='<div class="row">'
+			this.html+='<div class="col s10">'
+			this.html+='text '
+			this.html+='<div class="input-field inline">'
+			var leaf=this.currentNodeValue;
+			if (xsdFloat.isEnumerated()){
+				this.html+='text';
+				var selectFormName='selectLeaf';
+				this.generateSelect(selectFormName, xsdFloat.enumeration, attr.value)
+				this.eventHandler.push({
+						function:function(){
+							var jqSelectFormName='#'+selectFormName;
+							leaf.setValue($(jqSelectFormName).val());
+						},
+						id: selectFormName,
+						eventName:'change'
+					});
+
+			}else{
+				this.generateInput(formName, "number", 0.01, leaf.value)
+				this.eventHandler.push({
+					function:function(){
+						var jqFormName='#'+formName;
+						leaf.setValue($(jqFormName).val());
+					},
+					id:formName,
+					eventName:'change'
+				});
+			}
+			this.html+='</div>';
+			this.html+='</div>';
+			this.html+='</div>';
+			*/
+
+			if (!this.htmlUpdate){
+				this.html+='</div>';
+			}
+			// displaying GUI
+			var jqDivId='#'+this.divId;
+
+			$(jqDivId).html(this.html);
+
+			console.log(jqDivId);
+
+			this.applyEventHandler();
+		}
+	}
+
 	visitXSDStringType(xsdString){
 		console.log('visit XSDStringType')
 		console.log(xsdString)
 
+		var that = this
 		if (this.attrManage){
 			var attr=this.currentAttr;
 			if (xsdString.isEnumerated()){
+				console.log('Is a enum')
 				var selectFormName=this.attrFormName;
-				this.html+='<select id="'+selectFormName+'">';
-				xsdString.enumeration.forEach(function(value){
-					if (attr.value==value){
-						this.html+='<option value="'+value+'" selected="selected">'+value+'</option>';
-					}else{
-						this.html+='<option value="'+value+'">'+value+'</option>';
-					}
-				});
-				this.html+='</select>';
+				this.generateSelect(selectFormName, xsdString.enumeration, attr.value)
+
 				this.eventHandler.push({
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
@@ -481,13 +564,7 @@ export class XMLXSDForm{
 
 			}else{
 				var formName=this.attrFormName;
-				var attrButtonName='button'+formName;
-				this.html+='<input id="'+formName+'" type="text">'
-				// value by default of the textarea
-				if(attr.value != undefined){
-						this.html+=attr.value
-				}
-				this.html+='</input>';//
+				this.generateInput(formName, "text", undefined, attr.value)
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
@@ -501,26 +578,23 @@ export class XMLXSDForm{
 		}
 		else
 		{
+			/* generate the the html to display the text (between balise)
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
 				this.html= '<div id="extractor' + this.id + 'config" >'
 
 				// generate nav
 				this.generatenav();
+
 			}
+			this.html+='<div class="row">'
+			this.html+='<div class="col s12">'
+			this.html+='text '
+			this.html+='<div class="input-field inline">'
 			var leaf=this.currentNodeValue;
 			if (xsdString.isEnumerated()){
-				this.html+='<div>text</div>';
-				var selectFormName='selectNodeValue';
-				this.html+='<select id="'+selectFormName+'">';
-				xsdString.enumeration.forEach(function(value){
-					if (leaf.value==value){
-						this.html+='<option value="'+value+'" selected="selected">'+value+'</option>';
-					}else{
-						this.html+='<option value="'+value+'">'+value+'</option>';
-					}
-				});
-				this.html+='</select>';
+				var selectFormName='selectLeaf';
+				this.generateSelect(selectFormName, xsdString.enumeration, leaf.value)
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
@@ -531,9 +605,8 @@ export class XMLXSDForm{
 					});
 
 			}else{
-
 				var formName='leafForm';
-				this.generateInput(formName, "text", "text", leaf.value)
+				this.generateInput(formName, "text", undefined, leaf.value)
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
@@ -543,6 +616,10 @@ export class XMLXSDForm{
 					eventName:'change'
 				});
 			}
+			this.html+='</div>';
+			this.html+='</div>';
+			this.html+='</div>';
+			*/
 
 			if (!this.htmlUpdate){
 				this.html+='</div>';
@@ -565,15 +642,8 @@ export class XMLXSDForm{
 			console.log('XSD int', xsdInt)
 			if (xsdInt.isEnumerated()){
 				var selectFormName='select'+this.attrFormName;
-				this.html+='<select id="'+selectFormName+'">';
-				xsdInt.enumeration.forEach(function(value){
-					if (attr.value==value){
-						this.html+='<option value="'+value+'" selected="selected">'+value+'</option>';
-					}else{
-						this.html+='<option value="'+value+'">'+value+'</option>';
-					}
-				});
-				this.html+='</select>';
+				this.generateSelect(selectFormName, xsdInt.enumeration, attr.value)
+
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
@@ -585,9 +655,8 @@ export class XMLXSDForm{
 
 			}else{
 				var formName=this.attrFormName;
-				//var attrButtonName='button'+formName;
-				this.html+='<input id="'+formName+'" type="number" value="'+attr.value+'"/>';
-				//this.html+='<a id="'+attrButtonName+'" class="waves-effect waves-light btn">Apply</a>';
+				this.generateInput(formName, "number", undefined, attr.value)
+
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
@@ -606,20 +675,16 @@ export class XMLXSDForm{
 				// generate nav
 				this.generatenav();
 			}
-
+			/* generate the the html to display the text (between tag)
+			this.html+='<div class="row">'
+			this.html+='<div class="col s12">'
+			this.html+='text'
+			this.html+='<div class="input-field inline">'
 			var leaf=this.currentNodeValue;
 			if (xsdInt.isEnumerated()){
-				this.html+='<div> text </div>';
-				var selectFormName='selectNodeValue';
-				this.html+='<select id="'+selectFormName+'">';
-				xsdInt.enumeration.forEach(function(value){
-					if (leaf.value==value){
-						this.html+='<option value="'+value+'" selected="selected">'+value+'</option>';
-					}else{
-						this.html+='<option value="'+value+'">'+value+'</option>';
-					}
-				});
-				this.html+='</select>';
+				var selectFormName='selectleaf';
+				this.generateSelect(selectFormName, xsdInt.enumeration, leaf.value)
+
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
@@ -632,8 +697,7 @@ export class XMLXSDForm{
 			}else{
 				console.log('leaf');
 				var formName='leafForm';
-				var attrButtonName='button'+formName;
-				this.generateInput(formName, "number", "text", leaf.values)
+				this.generateInput(formName, "number", undefined, leaf.value)
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
@@ -644,6 +708,13 @@ export class XMLXSDForm{
 				});
 			}
 			this.html+='</div>';
+			this.html+='</div>';
+			this.html+='</div>';
+			*/
+
+			if (!this.htmlUpdate){
+				this.html+='</div>';
+			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
 
@@ -655,124 +726,51 @@ export class XMLXSDForm{
 		}
 	}
 
-	visitXSDFloatType(xsdFloat){
-		if (this.attrManage){
-			var attr=this.currentAttr;
-			if (xsdFloat.isEnumerated()){
-				var selectFormName='select'+this.attrFormName;
-				this.html+='<select id="'+selectFormName+'">';
-				xsdFloat.enumeration.forEach(function(value){
-					if (attr.value==value){
-						this.html+='<option value="'+value+'" selected="selected">'+value+'</option>';
-					}else{
-						this.html+='<option value="'+value+'">'+value+'</option>';
-					}
-				});
-				this.html+='</select>';
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							attr.setValue($(jqSelectFormName).value);
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				var formName=this.attrFormName;
-				//var attrButtonName='button'+formName;
-				this.html+='<input id="'+formName+'" type="number"  step="0.01" value="'+attr.value+'"/>';
-				//this.html+='<a id="'+attrButtonName+'" class="waves-effect waves-light btn">Apply</a>';
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						attr.setValue($(jqFormName).val());
-						$(jqFormName).val(attr.value);
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-		}else{
-			if (!this.htmlUpdate){
-				this.eventHandler=[];
-				this.html= '<div id="extractor' + this.id + 'config" >'
-
-				// generate nav
-				this.generatenav();
-			}
-
-			var leaf=this.currentNodeValue;
-			if (xsdFloat.isEnumerated()){
-				this.html+='text';
-				var selectFormName='selectNodeValue';
-				this.html+='<select id="'+selectFormName+'">';
-				xsdFloat.enumeration.forEach(function(value){
-					if (leaf.value==value){
-						this.html+='<option value="'+value+'" selected="selected">'+value+'</option>';
-					}else{
-						this.html+='<option value="'+value+'">'+value+'</option>';
-					}
-				});
-				this.html+='</select>';
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							leaf.setValue($(jqSelectFormName).val());
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				console.log('leaf');
-				this.generateInput(formName, "number", "text", leaf.value)
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						leaf.setValue($(jqFormName).val());
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-			this.html+='</div>';
-			// displaying GUI
-			var jqDivId='#'+this.divId;
-
-			$(jqDivId).html(this.html);
-
-			console.log(jqDivId);
-
-			this.applyEventHandler();
-		}
+	visitXSDVoidType(xsdVoid){
+		//TODO find a best way to deal with voidType
 	}
 
 	visitXSDRestrictionType(xsdRestriction){
-		console.log("visit restrictionType")
-		console.log('this',this)
-		console.log('xsdRestriction', xsdRestriction)
-		xsdRestriction.baseType.accept(this)
-		// this.currentAttr
-		// xsdRestriction.accept(this)
+		var type = xsdRestriction.base;
+		type.accept(this)
 	}
 
 	/* Generate the code for the text input value
 	 @id of the input element
 	 @type of the input element
-	 @name value of the label aside the input element
-	 @value defalut value of the input element
+	 @step of the input element only for the number
+	 @value default value of the input element
 	*/
-	generateInput(id, type, name, value){
-		this.html+='<div class="row"><div class="col s12">'
-		this.html+= name
-		this.html+='<div class="input-field inline">'
-		if(value != undefined){
-			this.html+='<input id="'+ id +'" type="'+ type +'" value="'+ value +'"/>'
-		}else{
-			this.html+='<input id="'+ id +'" type="'+ type +'" />'
+	generateInput(id, type, step, value){
+		this.html+='<input id="'+ id +'" type="'+ type +'" '
+		if(type == "number" && step !=undefined){
+			this.html+='step="'+ step +'" '
 		}
-		this.html+='</div></div>'
+		if(value != undefined){
+			this.html+='value="'+ value +'" '
+		}
+		this.html+='/>'
+	}
+
+	/* Generate the code for the select element
+	@id of the select element
+	@enumeration the list of the option
+	@default the default value of the selected option
+	*/
+	generateSelect(id, enumValues, defaultValue){
+		var that = this
+		this.html+='<select id="'+ id +'" class="default-browser">'
+		if(defaultValue == undefined){
+			this.html+='<option value="" disabled selected>Choose your option</option>'
+		}
+		enumValues.forEach(function(option){
+			if (defaultValue==option){
+				that.html+='<option value="'+option+'" selected="selected">'+option+'</option>';
+			}else{
+				that.html+='<option value="'+option+'">'+option+'</option>';
+			}
+		})
+		this.html+='</select>'
 	}
 
 	applyEventHandler(){
@@ -786,6 +784,10 @@ export class XMLXSDForm{
 			}else{
 				alert('applyEventHandler : Event Handler Error'  )
 			}
+			// init the select elements
+			 $(document).ready(function(){
+				 $('select').material_select()
+			 })
 			// init the event on the collapsible class
 			$('.collapsible').collapsible({
 				 onOpen: function(el){
