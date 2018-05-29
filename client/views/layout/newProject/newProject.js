@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
+import {Videos} from '../../../../lib/collections/videos.js';
 import './newProject.html';
 
 
@@ -55,7 +56,6 @@ Template.newproject.events({
     var _projectName = $('.projectName').val();
     var _projectUrl = $('.url').val();
     var _downUrl = $('.downUrl').val();
-
     var _projectFile = $('#selectedFile')[0].files[0];
 
     var _url = 'error';
@@ -78,6 +78,7 @@ Template.newproject.events({
         _downUrl = 'errorFile'
       }
     }
+
     var _part = Session.get('participants');
     var ownerId = Meteor.user();
     var project = {
@@ -85,6 +86,7 @@ Template.newproject.events({
       owner: ownerId.username,
       url: _url,
       downUrl: (_downUrl ? _downUrl : null),
+      fileId : null,
       participants:_part,
       notifications:[]
     };
@@ -101,8 +103,63 @@ Template.newproject.events({
         toastr.warning(err.reason);
       }else{
         if(_projectFile){
+
+          //Do it firstly to avoid errors with getXML
+          Meteor.call('createXMLFile',res,function(error,result){
+            if(error){
+              toastr.warning(error.reason);
+            }
+          });
+
           //Get the data of the file
-          reader = new FileReader();
+          const upload = Videos.insert({
+            file: _projectFile,
+            streams: 'dynamic',
+            chunkSize: 'dynamic'
+          }, false);
+
+          upload.on('start', function () {
+            var idUpload = "upload_"+res;
+            Session.set(idUpload,upload.progress);
+            var date = moment().calendar();
+            var val = "Your file "+project.url+" is uploading, wait for upload to be done to play video.";
+            Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
+              if(err){
+                toastr.warning(errorNotif.reason);
+              }
+            });
+            toastr.success(TAPi18n.__('fileUploading'));
+          });
+
+          upload.on('progress',function(progress,fileData){
+            var idUpload = "upload_"+res;
+            Session.set(idUpload,progress);
+          });
+
+          upload.on('end', function (error, fileObj) {
+            if (error) {
+              toastr.warning('Error during upload: ' + error);
+            } else {
+              Meteor.call('modifyFileId',res,fileObj._id,function(err1,res1){
+                if(err1){
+                  toastr.warning(err1.reason);
+                }
+              });
+              //Create a notification if the file has been uploaded
+              var date = moment().calendar();
+              var val = "Your file "+project.url+" has been uploaded. You can now play the video";
+              Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
+                if(err){
+                  toastr.warning(errorNotif.reason);
+                }
+              });
+              toastr.success(TAPi18n.__('fileUploaded'));
+            }
+          });
+
+          upload.start();
+
+          /*reader = new FileReader();
 
           //When reading file is done
           reader.onload = function(event){
@@ -126,7 +183,7 @@ Template.newproject.events({
               }
             });
           }
-          reader.readAsDataURL(_projectFile); //read the file as base64 dataURL
+          reader.readAsDataURL(_projectFile); //read the file as base64 dataURL*/
           Router.go("/");
         }
         else{

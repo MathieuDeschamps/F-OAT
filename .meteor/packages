@@ -38,3 +38,4 @@ check
 mrt:cheerio
 tap:i18n
 momentjs:moment
+ostrio:files

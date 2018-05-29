@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
+import {Videos} from '../../../../lib/collections/videos.js';
 import {videoControler} from '../videoControler/videoControler.js';
 import {seekBarManager} from '../playerCommand/seekBarManager.js';
 import  '/public/renderers/vimeo.js';
@@ -11,13 +11,24 @@ import { Parser } from '../../components/class/Parser.js'
 Template.videoPlayer.onCreated(function(){
 
   Meteor.subscribe('projects');
+  Meteor.subscribe('videos');
 
 });
 
 var Player;
 Template.videoPlayer.onRendered(function () {
-  var project = Projects.findOne(Router.current().params._id)
-  var url = project.url;
+  Session.set('videoPlayer', 0);
+  var project = Projects.findOne(Router.current().params._id);
+  var file = Videos.findOne({_id : project.fileId});
+  var url;
+  console.log(Videos.find());
+  console.log("FILE",file);
+  if(!file){
+    url = project.url;
+  }
+  else{
+    url = file.link();
+  }
 
   $('video').mediaelementplayer({
     pluginPath:'/packages/johndyer_mediaelement/',
@@ -25,13 +36,14 @@ Template.videoPlayer.onRendered(function () {
     clickToPlayPause : false,
     success: function (mediaElement, domObject) {
       Player =mediaElement;
-      mediaElement.setSrc((Projects.findOne(Router.current().params._id).url));
+      mediaElement.setSrc(url);
     }
   });
   vid=$("#videoDisplayId").get(0);
   vidCtrl=new videoControler(vid,30);
   seekBarMng=new seekBarManager(vidCtrl);
   vidCtrl.attach(seekBarMng,5);
+  Session.set('videoPlayer', 1);
 
 });
 
@@ -39,5 +51,5 @@ Template.videoPlayer.onDestroyed(function(){
   $('.videoContainer').remove();
   Player.pause();
   Player.remove();
-
+  Session.set('videoPlayer', 0);
 });

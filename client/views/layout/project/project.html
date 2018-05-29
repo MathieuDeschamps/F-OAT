@@ -3,16 +3,24 @@
   <div id="container">
     <div class="row">
       <div class="col s8">
-      <!-- <div class="col s8" style="display:none"> -->
+        <!-- <div class="col s8" style="display:none"> -->
         <!-- {{> svg}} -->
-        {{> videoPlayer}}
-        {{> playerCommand}}
+        {{#if uploadIsDone}}
+
+          {{> videoPlayer}}
+          {{> playerCommand}}
+        {{else}}
+          Uploading <b>{{file}}</b>:
+          <span id="progress">{{uploading}}%</span>
+        {{/if}}
         {{> timeLineDisplay}}
       </div>
       <div class="col s4">
-      <!-- <div class="col s12"> -->
-		{{#if hasRightToWrite}}
-			{{> configurator}}
+        <!-- <div class="col s12"> -->
+        {{#if uploadIsDone}}
+          {{#if hasRightToWrite}}
+            {{> configurator}}
+          {{/if}}
         {{/if}}
 
         <h5 class="blue-text text-darken-3">Annotations :</h5>
@@ -21,7 +29,7 @@
 
         {{> editor}}
         {{#if hasRightToWrite}}
-          <a class="btn waves-effect waves-light blue darken-4" id="saveForms">{{_ 'save'}}</a>
+        <a class="btn waves-effect waves-light blue darken-4" id="saveForms">{{_ 'save'}}</a>
         {{/if}}
       </div>
     </div>
