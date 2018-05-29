@@ -1,4 +1,11 @@
 export class XMLXSDForm{
+
+	/* Constructor
+	@xmlxsdObj : XMLXSDObj object
+	@id : id of the form (id of the extractor in MongoDB)
+	@name : name of the form (name of the extractor)
+	@divId : the id of the div which will contain the code of the form
+	*/
 	constructor(xmlxsdObj,id,name,divId){
 		this.xmlxsdObj=xmlxsdObj;
 		this.id=id;
@@ -9,31 +16,36 @@ export class XMLXSDForm{
 
 		this.eventHandler=[];
 
+		//the stack contains JSON objects {tag:'String', obj:'XMLXSDObject'}
 		this.stack=[];
 
-		// Gestion des attributs
+		// management of the attributs
 		this.attrManage=false;
 		this.attrFormName="";
 
 		this.htmlUpdate=false;
 	}
+
+	/* Generate the code of the form
+	*/
 	generate(){
 		this.xmlxsdObj.accept(this);
-		// var temp='#'+this.displayId;
-		// $(temp).html(this.html);
 	}
 
+	/* Visitor pattern : visit function
+	@xmlxsdObj : XMLXSDObj object
+	*/
 	visitXMLXSDObject(xmlxsdObj){
 		console.log('visitXMLXSDObject',xmlxsdObj);
 
 
-		this.html=   '<div id="extractor' + this.id + 'config" >'
-		this.html +=' <nav id="nav-'+ this.id + 'config">'
-		this.html += '<div class="nav-wrapper white-text row">'
-		this.html += '<div class="col s12" id="anchor">'
-		this.html += '<a id="'+this.id+'config" class="breadcrumb">' + this.name +'</a>'
-		this.html += '</div></div></nav>'
-		this.html += '</div>';
+		// this.html=   '<div id="extractor' + this.id + 'config" >'
+		// this.html +=' <nav id="nav-'+ this.id + 'config">'
+		// this.html += '<div class="nav-wrapper white-text row">'
+		// this.html += '<div class="col s12" id="anchor">'
+		// this.html += '<a id="'+this.id+'config" class="breadcrumb">' + this.name +'</a>'
+		// this.html += '</div></div></nav>'
+		// this.html += '</div>';
 		//this.html+= '<div id="extractor' + this.id + 'configFields" >';
 		//this.html+= '</div>';
 
@@ -48,13 +60,20 @@ export class XMLXSDForm{
 		var that=this;
 		//  Appear at the same time
 		// $(jqIdconfig).click(function(){
-		that.stack.push(xmlxsdObj.content);
+		that.stack.push({
+			tag:that.name,
+			obj:xmlxsdObj.content
+		});
 		xmlxsdObj.content.accept(that);
 		var ul = $("#" + this.divId).find('ul')[0]
 		$(ul).collapsible('open', 0)
+		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 		// });
 	}
 
+	/* Visitor pattern : visit function
+	@xmlxsdExt : XMLXSDExtensionType object
+	*/
 	visitXMLXSDElt(xmlxsdElt){
 		console.log('visitXMLXSDElt',xmlxsdElt);
 		this.html= '<div id="extractor' + this.id + 'config" >'
@@ -69,12 +88,12 @@ export class XMLXSDForm{
 		this.html+='<li>';
 		var headStack=this.stack[this.stack.length-1];
 		if (headStack!=undefined){
-			this.generateHeaderContent('',headStack.name,false)
+			this.generateHeaderContent('',headStack.tag,false)
 		}else{
 			this.generateHeaderContent('',this.name,false)
 		}
 		this.html+='<div class="collapsible-body">'
-		this.html+='<ul id="ulElt'+xmlxsdElt.name+'config" class="collapsible">'; // class?
+		this.html+='<ul id="ulElt'+xmlxsdElt.name+'config" class="collapsible">';
 		var that=this;
 		xmlxsdElt.eltsList.forEach(function(elt,i){
 			var idName='elt'+xmlxsdElt.name+i+'config';
@@ -90,10 +109,14 @@ export class XMLXSDForm{
 
 			that.eventHandler.push({
 				function:function(){
-					that.stack.push(xmlxsdElt);
+					that.stack.push({
+						tag:xmlxsdElt.name,
+						obj:xmlxsdElt.eltsList[0]
+					});
 					elt.accept(that);
 					var ul = $("#" + that.divId).find('ul')[0]
 					$(ul).collapsible('open', 0)
+					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 				},
 				id:idName,
 				eventName:'click'
@@ -107,6 +130,7 @@ export class XMLXSDForm{
 						xmlxsdElt.accept(that);
 						var ul = $("#" + that.divId).find('ul')[0]
 						$(ul).collapsible('open', 0)
+						$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 					},
 					id:idName+'clear',
 					eventName:'click'
@@ -130,6 +154,7 @@ export class XMLXSDForm{
 					xmlxsdElt.accept(that);
 					var ul = $("#" + that.divId).find('ul')[0]
 					$(ul).collapsible('open', 0)
+					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 				},
 				id:idEltAdd,
 				eventName:'click'
@@ -163,6 +188,9 @@ export class XMLXSDForm{
 
 	}
 
+	/* Visitor pattern : visit function
+	@xmlxsdSeq : XMLXSDSequence object
+	*/
 	visitXMLXSDSequence(xmlxsdSeq){
 
 		this.eventHandler=[];
@@ -172,9 +200,9 @@ export class XMLXSDForm{
 		// generate nav
 		this.generatenav();
 
-		this.html+='<ul id="seq'+xmlxsdSeq.name+'config" class="collapsible">'; // class?
+		this.html+='<ul id="seq'+xmlxsdSeq.name+'config" class="collapsible">';
 		this.html+='<li>'
-		this.generateHeaderContent("seq'+xmlxsdSeq.name+'configTitle", this.stack[this.stack.length-1].name, false)
+		this.generateHeaderContent("seq"+xmlxsdSeq.name+"configTitle", this.stack[this.stack.length-1].tag, false)
 		this.html+='<div id="seq'+xmlxsdSeq.name+'configContent" class="collapsible-body">'
 
 		this.generateAttrsForm(xmlxsdSeq);
@@ -182,11 +210,11 @@ export class XMLXSDForm{
 
 		var that=this;
 
-		this.html+='<ul id="ulxmlxsdSeqconfig" class="collaspsible">'; // class?
+		this.html+='<ul id="ulxmlxsdSeqconfig" class="collaspsible">';
 
 		xmlxsdSeq.seqList.forEach(function(seq,k){
 			seq.forEach(function(xmlxsdElt,j){
-				// that.html+='<ul id="ulElt'+xmlxsdElt.name+'config" class="collaspsible">'; // class?
+
 
 				xmlxsdElt.eltsList.forEach(function(elt,i){
 					var idName='elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
@@ -200,12 +228,16 @@ export class XMLXSDForm{
 
 					that.eventHandler.push({
 						function:function(){
-							that.stack.push(xmlxsdSeq);
-							that.stack.push(xmlxsdElt);
+							that.stack.push({
+								tag:xmlxsdElt.name,
+								obj:xmlxsdElt.eltsList[i]
+							});
+							// that.stack.push(xmlxsdElt);
 							// console.log('visit XMLXSDSeq ',elt);
 							elt.accept(that);
 							var ul = $("#" + that.divId).find('ul')[0]
 							$(ul).collapsible('open', 0)
+							$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 						},
 						id:idName,
 						eventName:'click'
@@ -218,11 +250,12 @@ export class XMLXSDForm{
 								xmlxsdSeq.accept(that);
 								var ul = $("#" + that.divId).find('ul')[0]
 								$(ul).collapsible('open', 0)
+								$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 							},
 							id:idName+'clear',
 							eventName:'click'
 						});
-		[]			};
+					};
 
 					that.html+='</li>';
 				});
@@ -242,6 +275,7 @@ export class XMLXSDForm{
 							xmlxsdSeq.accept(that);
 							var ul = $("#" + that.divId).find('ul')[0]
 							$(ul).collapsible('open', 0)
+							$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 						},
 						id:idEltAdd,
 						eventName:'click'});
@@ -294,40 +328,64 @@ export class XMLXSDForm{
 		this.applyEventHandler();
 	}
 
+	/* Generate the code navigation bar for the form
+	*/
 	generatenav(){
-		this.html +=' <nav id="nav-'+ this.id + 'config">'
+		this.html += '<div class="row" id="nav-'+ this.id + 'config">'
+		this.html += '<nav>'
+		this.html += '<div class="nav-wrapper">'
+		this.html += '<div class="col s12">'
 
-		this.html += '<div class="nav-wrapper white-text row">'
-		this.html += '<div class="col s12" id="anchor">'
-		// breadcrumb --> problème eventhandler
-		this.html += '<a id="'+this.id+'config"  class="breadcrumb">' + this.name +'</a>';
 		var that=this;
 
-		//this.html += '<i class="material-icons">keyboard_arrow_right</i>'
-		//this.html += '<a id="'+this.id+'config2" class="breadcrumb">  ' + xmlxsdElt.name +'</a>'
-
-		this.stack.forEach(function(obj,i){
-			console.log(obj);
-			//if (i!=that.stack.length-1){
-				that.html+='<a id="'+that.id+'navConfig'+i+'" class="breadcrumb">' + obj.name +'</a>';
-			/*}else{
-				that.html+='<a id="'+that.id+'navConfig'+i+'">  ' + obj.name +'</a>';
-			}*/
+		this.stack.forEach(function(elm,i){
+			if (i!=that.stack.length-1){
+				if(i%4 === 0 && i !== 0){
+					// add empty breadcrumb for trigger before style in scss
+					that.html += '<a id="'+that.id+'navConfig'+i+'" class="breadcrumb"/>';
+					that.html += '</div>';
+					that.html += '</nav>'
+					that.html += '</div>'
+					that.html += '<div class="row" id="nav-'+ that.id + 'config">'
+					that.html +=' <nav>'
+					that.html +=' <div class="nav-wrapper">'
+					that.html += '<div class="col s12">'
+				}
+				that.html+='<a id="'+that.id+'navConfig'+i+'" class="breadcrumb">' + elm.tag.substr(0,10) +'</a>';
+			}
 			var idName=that.id+'navConfig'+i;
 
-			that.eventHandler.push({function:function(){that.stack=that.stack.slice(0,i); obj.accept(that);},id:idName,eventName:'click'});
+			that.eventHandler.push({
+				function:function(){
+					that.stack=that.stack.slice(0,i + 1);
+					elm.obj.accept(that);
+					var ul = $("#" + that.divId).find('ul')[0]
+					$(ul).collapsible('open', 0)
+					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+				},
+				id:idName,
+				eventName:'click'
+			});
 		});
-
-		this.html += '</div></div></nav>'
+		this.html += '</div>';
+		this.html += '</nav>'
+		this.html += '</div>';
 	}
 
-	visitXMLXSDNodeValue(nodeValue){
-		console.log('visit nodeValue',nodeValue);
-		this.currentNodeValue=nodeValue;
+	/* Visitor pattern : visit function
+	@xmlxsdNodeValue: XMLXSDNodeValue object
+	*/
+	visitXMLXSDNodeValue(xmlxsdNodeValue){
+		console.log('visit nodeValue',xmlxsdNodeValue);
+		this.currentNodeValue=xmlxsdNodeValue;
 		nodeValue.type.accept(this);
 	}
 
+	/* Visitor pattern : visit function
+	@xmlxsdExt : XMLXSDExtensionType object
+	*/
 	visitXMLXSDExtensionType(xmlxsdExt){
+		console.log('visit XSDXMLElt',xmlxsdExt);
 		this.eventHandler=[];
 
 		this.html= '<div id="extractor' + this.id + 'config" >'
@@ -335,21 +393,16 @@ export class XMLXSDForm{
 		// generate nav
 		this.generatenav();
 
-		this.html+='<ul id="ext'+xmlxsdExt.name+'config" class="collapsible">'; // class?
+		this.html+='<ul id="ext'+xmlxsdExt.name+'config" class="collapsible">';
 		this.html+='<li>'
-		this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle',this.stack[this.stack.length-1].name,false)
+		this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle',this.stack[this.stack.length-1].tag,false)
 		this.html+='<div id="ext'+xmlxsdExt.name+'configContent" class="collapsible-body row">'
-
 
 		this.generateAttrsForm(xmlxsdExt);
 
-
 		this.currentNodeValue=xmlxsdExt;
 
-
 		this.htmlUpdate=true;
-		console.log(xmlxsdExt);
-		console.log(xmlxsdExt.baseType);
 		xmlxsdExt.baseType.accept(this);
 		this.htmlUpdate=false;
 
@@ -359,7 +412,7 @@ export class XMLXSDForm{
 		this.html+='</div>';
 	}
 
-	/* Generate the content of the header in this.html
+	/* Generate the code for content of the header in this.html
 	@id identifiant of the hedaer
 	@nameHeader name of the header
 	@deletable boolean to dispaly or not the clear element
@@ -383,11 +436,13 @@ export class XMLXSDForm{
 		this.html+='</div>'
 	}
 
+	/* Generate the code for the attribute of the xmlxsd
+	@obj a xmlxsd complexType or simpleType
+	*/
 	generateAttrsForm(obj){
 		console.log('generateAttrsForm', obj.attrs);
 		var that=this;
 		var used=true;
-		// this.html+='<ul id="ulAttrs'+obj.name+'config" >'; // class?
 		$.each(obj.attrs,function(key,attr){
 			console.log('generateAttrsForm : ',attr.name,attr);
 			var formName=attr.name+'form';
@@ -402,14 +457,14 @@ export class XMLXSDForm{
 				case 'optional' :
 					// that.html+='<li>';
 
-					that.html+='<div class="switch col s2"><label>Off'
+					that.html+='<div class="switch col s2"><label>Off';
 					if (attr.value!=undefined){
-						that.html+='<input id="'+switchName+'" type= "checkbox" checked>'
+						that.html+='<input id="'+switchName+'" type= "checkbox" checked/>';
 					}else{
-						that.html+='<input id="'+switchName+'" type = "checkbox">';
+						that.html+='<input id="'+switchName+'" type = "checkbox"/>';
 						used=false
 					}
-					that.html+='<span class = "lever"></span>On</label></div>'
+					that.html+='<span class = "lever"></span>On</label></div>';
 					that.eventHandler.push({
 						function:function(){
 							if ($(jqSwitchName).prop('checked')){
@@ -440,10 +495,12 @@ export class XMLXSDForm{
 				that.attrManage=false;
 				that.html+='</div>'
 				that.html+='</div>'
-				if(!used){
-					console.log('disabled', jqFormName)
-					$(jqFormName).prop("disabled",true);
-				}
+				// console.log('disabled', $('#'+switchName))
+				// console.log('disabled', $('#'+formName))
+				// if(!used){
+				// 	console.log('disabled', $('#'+formName))
+				// 	$(jqFormName).prop("disabled",true);
+				// }
 				//TODO disabled input when jqSwitchName not checked
 			}
 			// that.html+='</div>'
@@ -453,6 +510,9 @@ export class XMLXSDForm{
 		// this.hmlt+='</ul>';
 	}
 
+	/* Visitor pattern : visit function
+	@xsdFloat : XSDFloatType object
+	*/
 	visitXSDFloatType(xsdFloat){
 		if (this.attrManage){
 			var attr=this.currentAttr;
@@ -541,6 +601,9 @@ export class XMLXSDForm{
 		}
 	}
 
+	/* Visitor pattern : visit function
+	@xsdString : XSDStringType object
+	*/
 	visitXSDStringType(xsdString){
 		console.log('visit XSDStringType')
 		console.log(xsdString)
@@ -636,6 +699,9 @@ export class XMLXSDForm{
 
 	}
 
+	/* Visitor pattern : visit function
+	@xsdInt : XSDIntegerType object
+	*/
 	visitXSDIntegerType(xsdInt){
 		if (this.attrManage){
 			var attr=this.currentAttr;
@@ -726,12 +792,18 @@ export class XMLXSDForm{
 		}
 	}
 
+	/* Visitor pattern : visit function
+	@xsdVoid : XSDVoidType object
+	*/
 	visitXSDVoidType(xsdVoid){
 		//TODO find a best way to deal with voidType
 	}
 
+	/* Visitor pattern : visit function
+	@xsdRestriction XSDRestrictionType object
+	*/
 	visitXSDRestrictionType(xsdRestriction){
-		var type = xsdRestriction.base;
+		var type = xsdRestriction.baseType;
 		type.accept(this)
 	}
 
@@ -773,6 +845,8 @@ export class XMLXSDForm{
 		this.html+='</select>'
 	}
 
+	/* Apply the event of this.eventHandler and	initialize some element
+	*/
 	applyEventHandler(){
 		this.eventHandler.forEach(function(handler){
 			var jqElt
@@ -784,19 +858,18 @@ export class XMLXSDForm{
 			}else{
 				alert('applyEventHandler : Event Handler Error'  )
 			}
-			// init the select elements
-			 $(document).ready(function(){
-				 $('select').material_select()
-			 })
-			// init the event on the collapsible class
-			$('.collapsible').collapsible({
-				 onOpen: function(el){
-					 $($(el).find('i')[0]).text('keyboard_arrow_down')
-				 },
-				 onClose: function(el){
-					 $($(el).find('i')[0]).text('keyboard_arrow_right')
-				 }
-			});
+		});
+		// init the select elements
+		$('select').material_select()
+
+		// init the event on the collapsible class
+		$('.collapsible').collapsible({
+			onOpen: function(el){
+				$($(el).find('i')[0]).text('keyboard_arrow_down')
+			},
+			onClose: function(el){
+				$($(el).find('i')[0]).text('keyboard_arrow_right')
+			}
 		});
 	}
 }

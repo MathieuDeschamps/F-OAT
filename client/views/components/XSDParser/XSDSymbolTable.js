@@ -197,7 +197,7 @@ export class XSDSymbolTable{
 				type = new XSDVoidType();
 		}
 		type.name=typeName;
-		this.addType(type)
+		this.addType(type);
  		return type
 	}
 	/* Determine the kind of a complex type

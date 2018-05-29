@@ -1,19 +1,19 @@
 ﻿import { Template } from 'meteor/templating';
 
-import './configurator.html';
+import './configExtractor.html';
 
 import {Extractors} from '/lib/collections/extractors.js';
 
-import {configuratorManager} from './configuratorManager.js';
+import {configExtractorManager} from './configExtractorManager.js';
 
-Template.configurator.onCreated(function(){
+Template.configExtractor.onCreated(function(){
 
   this.subscribe('extractors');
   this.subscribe('projects');
 
 });
 
-Template.configurator.onRendered(()=>{
+Template.configExtractor.onRendered(()=>{
     /*console.log('Lecture test.xsd');
 	path='/parameters.xsd';
 	console.log('Path : ',path);*/
@@ -21,7 +21,7 @@ Template.configurator.onRendered(()=>{
   Meteor.subscribe('extractors', ()=>{
     extractors=Extractors.find();
 
-  	new configuratorManager(extractors,"configurator","configuratorForm");
+  	new configExtractorManager(extractors,"configurator","configuratorForm");
   })
 
 

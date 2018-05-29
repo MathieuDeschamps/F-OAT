@@ -5,7 +5,7 @@ Object class for xml attributes linked to its xsd dexcription
 export class XMLXSDAttr{
 	/* Constructor
 	@value : object (value of the attribute)
-	@xsdAtt : XSDAttr object²
+	@xsdAtt : XSDAttr object
 	*/
 	constructor(value,xsdAttr){
 		this.type=xsdAttr.table.getType(xsdAttr.type);
