@@ -57,7 +57,6 @@ Meteor.methods({
       }
     });
 
-    createFileXML(id);
 
   },
 
@@ -107,6 +106,12 @@ Meteor.methods({
     check(dateToRemove,String);
     check(valueToRemove,String);
     return Projects.update({ _id : id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
+  },
+
+  modifyFileId:function(projectId,fileId){
+    check(projectId,String);
+    check(fileId,String);
+    return Projects.update({_id : projectId}, {$set: {"fileId": fileId}});
   },
 
   /**

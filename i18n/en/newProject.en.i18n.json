@@ -11,7 +11,8 @@
   "actions" : "Actions",
   "removeUser" : "Remove user",
   "createButton" : "Create",
-
+  "fileUploaded" : "File uploaded",
+  "fileUploading" : "File uploading...",
 
   "errorSelectUser" : "Select a user to add",
   "errorAddUser" : "User __user__ is already in the project",

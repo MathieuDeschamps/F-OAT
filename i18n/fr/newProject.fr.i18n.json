@@ -11,6 +11,8 @@
   "actions" : "Actions",
   "removeUser" : "Retirer l'utilisateur de ce projet",
   "createButton" : "Créer",
+  "fileUploaded" : "Téléchargement du fichier terminé",
+  "fileUploading" : "Téléchargement du fichier en cours...",
 
   "errorSelectUser" : "Selectionner un utilisateur à ajouter",
   "errorAddUser" : "L'utilisateur __user__ appartient déjà au projet",
