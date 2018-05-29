@@ -205,7 +205,8 @@ Template.project.onRendered(()=>{
         var idProject = Router.current().params._id;
         var idUpload = "upload_"+idProject;
         var upload = Session.get(idUpload);
-        console.log("upload",upload);
+        $("#myBar").width(upload+"%");
+
         return upload;
       },
 

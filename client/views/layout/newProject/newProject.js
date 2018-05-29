@@ -70,7 +70,7 @@ Template.newproject.events({
     //Else, if we give a file for the project
     else if(!_projectUrl){
       _url = _projectFile.name;
-      ext = ['mp4','avi','mkv','wmv','mov'];
+      ext = ['mp4'];
       if(!checkExtension(ext,_url)){
         _url = 'errorExt';
       }
@@ -147,7 +147,7 @@ Template.newproject.events({
               });
               //Create a notification if the file has been uploaded
               var date = moment().calendar();
-              var val = "Your file "+project.url+" has been uploaded. You can now play the video";
+              var val = "Your file "+project.url+" has been uploaded. Refresh to play the video";
               Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
                 if(err){
                   toastr.warning(errorNotif.reason);

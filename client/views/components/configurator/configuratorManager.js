@@ -1,4 +1,5 @@
 import {Projects} from '../../../../lib/collections/Project.js';
+import {Videos} from '../../../../lib/collections/videos.js';
 import {XSDObject} from '../XSDParser/XSDObject.js';
 import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
 import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
@@ -100,9 +101,21 @@ export class configuratorManager{
 			var idProject = Router.current().params._id
 			var project = Projects.findOne(idProject)
 			var checksum;
+			var downUrl;
 			toastr.success("Downloading video");
+			if(!project.fileId){
+				downUrl = project.downUrl;
+			}
+			else{
+				var video = Videos.findOne(project.fileId);
+				downUrl = video.path;
+				downUrl = downUrl.replace('.mp4','');
+				console.log("DownUrl",downUrl);
+				downUrl = "file:///home/elliot/Documents/cours_meteor/F-OAT/.meteor/local/build/programs/server/"+downUrl;
+				console.log("DownUrl",downUrl);
+			}
 
-			Meteor.call("initRequest",idProject,extractor.ip,checksum,project.downUrl,(err,result)=>{
+			Meteor.call("initRequest",idProject,extractor.ip,checksum,downUrl,(err,result)=>{
 				console.log("finish initRequest");
 				if (err){
 					alert('Download problem by '+extractor.name + ' : ' +err.reason);
@@ -122,6 +135,13 @@ export class configuratorManager{
 							alert('Download problem by '+extractor.name + ' : ' +err.reason);
 							that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 						}else{
+							var date = moment().calendar();
+              var val = "Extraction "+extractor.name+" done.";
+              Meteor.call('addNotifications',idProject,date,val, function(errorNotif,resultNotif){
+                if(err){
+                  toastr.warning(errorNotif.reason);
+                }
+              });
 							toastr.success("Extraction done");
 						}
 					});

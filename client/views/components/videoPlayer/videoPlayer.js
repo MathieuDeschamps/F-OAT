@@ -21,8 +21,6 @@ Template.videoPlayer.onRendered(function () {
   var project = Projects.findOne(Router.current().params._id);
   var file = Videos.findOne({_id : project.fileId});
   var url;
-  console.log(Videos.find());
-  console.log("FILE",file);
   if(!file){
     url = project.url;
   }
