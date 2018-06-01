@@ -147,13 +147,21 @@ Template.newproject.events({
               });
               //Create a notification if the file has been uploaded
               var date = moment().calendar();
-              var val = "Your file "+project.url+" has been uploaded. Refresh to play the video";
+              var val = "Your file "+project.url+" has been uploaded. You can play the video";
               Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
                 if(err){
                   toastr.warning(errorNotif.reason);
                 }
               });
               toastr.success(TAPi18n.__('fileUploaded'));
+
+              //Do it only if videoPlayer is loaded
+              Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+                if(Session.get('videoPlayer') === 1) {
+                  eventDDPVideo.emit('videoPlayer');
+                  computation.stop();
+                }
+              });
             }
           });
 

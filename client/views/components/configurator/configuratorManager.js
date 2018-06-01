@@ -130,19 +130,11 @@ export class configuratorManager{
 				}else{
 					// Extraction launch
 					toastr.success("Extraction in progress");
-					Meteor.call("putRequest",idProject,params,extractor.ip,(err,result)=>{
+					//Changement ici extractor au lieu de extractor.ip
+					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
 							alert('Download problem by '+extractor.name + ' : ' +err.reason);
 							that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
-						}else{
-							var date = moment().calendar();
-              var val = "Extraction "+extractor.name+" done.";
-              Meteor.call('addNotifications',idProject,date,val, function(errorNotif,resultNotif){
-                if(err){
-                  toastr.warning(errorNotif.reason);
-                }
-              });
-							toastr.success("Extraction done");
 						}
 					});
 				}

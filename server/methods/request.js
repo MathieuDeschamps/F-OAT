@@ -41,9 +41,9 @@ Meteor.methods({
      * @param extractorUrl the url of the extractor
      * @returns {boolean} response's status code is 200
      */
-    putRequest: (_id, params, extractorUrl)=>{
-        var url = "http://"+extractorUrl+"/param/"+_id;
-        const result = HTTP.call("PUT",url,{data:{param: params}});
+    putRequest: (_id, params, extractor)=>{
+        var url = "http://"+extractor.ip+"/param/"+_id;
+        const result = HTTP.call("PUT",url,{data:{param: params , idExtractor: extractor._id}});
         if(result.statusCode == 200){
             return true;
         }else{

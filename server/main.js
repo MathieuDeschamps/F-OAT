@@ -15,6 +15,32 @@ Meteor.startup(() => {
     });
   });
 
+  eventDDPVideo = new EventDDP('videoPlayer');
+  eventDDPVideo.addListener('videoPlayer',(client)=>{
+    eventDDPVideo.matchEmit("videoPlayer",{
+      $and: [
+        {$or: [
+          {_id: client._id},
+          {_id: {$ne : client._id}}
+        ]},
+        {appId: client.appId}
+      ]
+    });
+  });
+
+  eventDDPVideo.addListener('videoCtrl',(client)=>{
+    eventDDPVideo.matchEmit("videoCtrl",{
+      _id: client._id,
+      appId: client.appId
+    });
+  });
+
+  eventDDPVideo.addListener('playerCommand',(client)=>{
+    eventDDPVideo.matchEmit("playerCommand",{
+      _id: client._id,
+      appId: client.appId
+    });
+  });
 });
 
 

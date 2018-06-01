@@ -6,7 +6,7 @@ import { Writer } from '../../components/class/Writer.js'
 import {TimeLine} from "../../components/class/TimeLine.js"
 
 var em;
-
+var vidctrllistener;
 
 // function which checked if the current has the right write on the proejct
 hasRightToWrite = function(){
@@ -28,7 +28,7 @@ Template.project.onRendered(()=>{
   var pathExtractor
 
   if(!em){
-    em = new EventDDP('test',Meteor.collection);
+    em = new EventDDP('test',Meteor.connection);
     em.addListener('hello',()=>{
       Meteor.call("getXml",pathXML,(errXML,result)=>{
         if(errXML){
@@ -129,7 +129,6 @@ Template.project.onRendered(()=>{
               $.parseXML(XSDObject),
               'nav-' + i,'hidden-' + i, 'form-'+ i)
               forms[i].buildForm('forms')
-              console.log("vidctrl",vidCtrl);
 
               // build the timeLine
               timeLineData = Parser.getTimeLineData(XMLDoc,nameExtractor);
@@ -167,6 +166,28 @@ Template.project.onRendered(()=>{
                 console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
                 vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
 
+                if(!vidctrllistener){
+                  vidctrllistener = true;
+                  eventDDPVideo.addListener('videoCtrl',()=>{
+                    var nbFrames=0;
+                    extractors.forEach(function(extractor){
+                      // console.log('nb Frame',extractor);
+                      var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
+                      console.log(newNbFrames);
+                      if (newNbFrames!=undefined){
+                        console.log(newNbFrames);
+                        nbFrames=Math.max(nbFrames,newNbFrames);
+                        console.log(nbFrames);
+                      }
+                    });
+                    if (nbFrames>0){
+                      vidCtrl.setNbFrames(nbFrames);
+                    }
+                    console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
+                    vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+                  });
+                }
+
                 computation.stop();
             }
           });
@@ -196,7 +217,6 @@ Template.project.onRendered(()=>{
         if(!upload){
           return true;
         }
-        console.log("upload",upload);
         return (upload==100);
 
       },
