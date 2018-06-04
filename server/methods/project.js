@@ -84,7 +84,7 @@ Meteor.methods({
   },
 
 
-  /**Add a notification in a project
+  /**Add a notification for all users of a project
   @id : id of the project
   @newDate : date of the notification
   @newValue : Text of the notification
@@ -93,21 +93,37 @@ Meteor.methods({
     check(id,String);
     check(newDate,String);
     check(newValue,String);
-    return Projects.update({
-      _id: id
-    }, {
+    var project = Projects.findOne(id);
+
+    //Add notification to the owner
+    Meteor.users.update({username : project.owner},{
       $push: {notifications: {date: newDate, value: newValue}}
+    });
+
+    //Add notification to every collaborator
+    project.participants.forEach(function(part){
+      Meteor.users.update({username : part.username},{
+        $push: {notifications: {date: newDate, value: newValue}}
+      });
     });
   },
 
-
+  /**Remove a notification of a user
+  @id : id of the user
+  @newDate : date of the notification
+  @newValue : Text of the notification
+  */
   removeNotification: function(id,dateToRemove,valueToRemove){
     check(id,String);
     check(dateToRemove,String);
     check(valueToRemove,String);
-    return Projects.update({ _id : id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
+    return Meteor.users.update({ _id : id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
   },
 
+  /**Update the fileId of a project if it's using a file
+  @projectId : id of the project
+  @fileId : id of the file in Videos collection
+  */
   modifyFileId:function(projectId,fileId){
     check(projectId,String);
     check(fileId,String);
@@ -145,7 +161,7 @@ createFileXML = function(id){
   if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
   }
-  var buff = generateContent(Projects.findOne({_id: id}), id);
+  var buff = generateContent(Projects.findOne({_id: id}));
   fs.writeFile(dir+"/"+"annotation.xml",buff,function(err){
     if(err) {
       throw (new Meteor.Error(500, 'Failed to save file.', err));
@@ -159,7 +175,7 @@ createFileXML = function(id){
 /**
 * Function that create the basic XML file of a project.
 */
-generateContent = function(project, id){
+generateContent = function(project){
     var builder = require('xmlbuilder');
     var date = moment().format('MMMM Do YYYY');
     var doc = builder.create('root',{version: '1.0', encoding: 'UTF-8', standalone:'no'})

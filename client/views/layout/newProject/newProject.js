@@ -87,8 +87,7 @@ Template.newproject.events({
       url: _url,
       downUrl: (_downUrl ? _downUrl : null),
       fileId : null,
-      participants:_part,
-      notifications:[]
+      participants:_part
     };
 
     //We verify the name and the url of the project (not null and not already used)
@@ -122,7 +121,7 @@ Template.newproject.events({
             var idUpload = "upload_"+res;
             Session.set(idUpload,upload.progress);
             var date = moment().calendar();
-            var val = "Your file "+project.url+" is uploading, wait for upload to be done to play video.";
+            var val = "Project "+project.name+" : file "+project.url+" is uploading, wait for upload to be done to play video.";
             Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
               if(err){
                 toastr.warning(errorNotif.reason);
@@ -147,7 +146,7 @@ Template.newproject.events({
               });
               //Create a notification if the file has been uploaded
               var date = moment().calendar();
-              var val = "Your file "+project.url+" has been uploaded. You can play the video";
+              var val = "Project "+project.name+": file "+project.url+" has been uploaded. You can play the video";
               Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
                 if(err){
                   toastr.warning(errorNotif.reason);

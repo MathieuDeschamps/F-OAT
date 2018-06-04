@@ -3,34 +3,55 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
 import './notifications.html';
 
-// function which checked if the current has the right write on the proejct
-isOnProject = function(){
-  var path = Router.current().route.getName();
-  return (path==="project")
-}
-
 Template.notifications.onCreated(function(){
 
   this.subscribe('projects');
+  this.subscribe('users')
 
 });
 
+//Function used to render the dropdown button every time notifications changes
+renderDropdownButton = function(){
+  //Timeout used to wait for html to be loaded
+  setTimeout(function(){
+    $(".dropdown-button").dropdown({
+      belowOrigin: true, // Displays dropdown below the button
+      constrainWidth: false,
+      closeOnClick: false,
+      alignment: 'right'
+    });
+
+    if(Meteor.user()){
+      $("#lidropdown").css("display", "block");
+      console.log(Meteor.user().notifications.length);
+      if(Meteor.user().notifications.length>0){
+        $("#icon_notif").html("notifications_active");
+      }
+      else{
+        $("#icon_notif").html("notifications_none");
+      }
+    }
+    else{
+      $("#lidropdown").css("display", "none");
+    }
+
+  }, 20);
+}
+
 Template.notifications.helpers({
   notifications: function(){
-    return Projects.findOne(Router.current().params._id).notifications;
+    return Meteor.user().notifications;
   },
 
-  // used to display or not the notifications button
-  isOnProject(){
-    return isOnProject()
-  },
 
   thereIsNotifications(){
-    return Projects.findOne(Router.current().params._id).notifications.length>0;
-  },
+    renderDropdownButton();
+    return Meteor.user().notifications.length>0;
+  }
 
-  renderDropdownButton(){
+  /*renderDropdownButton(){
     //Timeout used to wait for html to be loaded
+    console.log("RENDER IT");
     setTimeout(function(){
       $(".dropdown-button").dropdown({
         belowOrigin: true, // Displays dropdown below the button
@@ -39,9 +60,10 @@ Template.notifications.helpers({
         alignment: 'right'
       });
 
-      if(isOnProject()){
+      if(Meteor.user()){
         $("#lidropdown").css("display", "block");
-        if(Projects.findOne(Router.current().params._id).notifications.length>0){
+        console.log(Meteor.user().notifications.length);
+        if(Meteor.user().notifications.length>0){
           $("#icon_notif").html("notifications_active");
         }
         else{
@@ -53,7 +75,7 @@ Template.notifications.helpers({
       }
 
     }, 20);
-  }
+  }*/
 
 });
 
@@ -72,7 +94,7 @@ Template.notification.events({
       var elmToRemove = $elm.attr('name');
       var dateToRemove = elmToRemove.substring(0,elmToRemove.indexOf(','));
       var valueToRemove = elmToRemove.substring(elmToRemove.indexOf(',')+1,elmToRemove.length);
-      Meteor.call('removeNotification', Router.current().params._id, dateToRemove, valueToRemove,function(err,res){
+      Meteor.call('removeNotification', Meteor.userId(), dateToRemove, valueToRemove,function(err,res){
         if(err){
           toastr.warning(err.reason);
         }

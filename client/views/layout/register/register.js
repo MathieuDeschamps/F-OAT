@@ -22,7 +22,7 @@ Template.register.events({
       password: _password,
       test: "test",
       profile: {
-        projects:[],
+        notifications:[],
         extractors:[],
         lang: _lang
       }
