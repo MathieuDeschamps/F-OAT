@@ -22,26 +22,30 @@ var Player;
 Template.videoPlayer.onRendered(function () {
   Session.set('videoPlayer', 0);
 
-
   if(!eventDDPVideo){
     eventDDPVideo = new EventDDP('videoPlayer',Meteor.connection);
   }
 
   if(!vidPlayerListener){
-    
+    vidPlayerListener = true;
+    //Event emitted in newProject.js
     eventDDPVideo.addListener('videoPlayer',()=>{
-      var project = Projects.findOne(Router.current().params._id);
-      var file = Videos.findOne({_id : project.fileId});
-      var url;
-      if(!file){
-        url = project.url;
+      if(Session.get('videoPlayer')===1){
+        var project = Projects.findOne(Router.current().params._id);
+        var file = Videos.findOne({_id : project.fileId});
+        var url;
+        if(!file){
+          url = project.url;
+        }
+        else{
+          url = file.link();
+        }
+        Player.setSrc(url);
+        Player.load();
+        //event listeners in project.js & playerCommand.js
+        eventDDPVideo.emit('videoCtrl');
+        eventDDPVideo.emit('playerCommand');
       }
-      else{
-        url = file.link();
-      }      Player.setSrc(url);
-      Player.load();
-      eventDDPVideo.emit('videoCtrl');
-      eventDDPVideo.emit('playerCommand');
     });
   }
 
@@ -78,6 +82,11 @@ Template.videoPlayer.onRendered(function () {
 
 Template.videoPlayer.onDestroyed(function(){
   $('.videoContainer').remove();
+
+  eventDDPVideo.setClient({
+    appId: -1,
+    _id: -1
+  });
   Player.pause();
   Player.remove();
   Session.set('videoPlayer', 0);

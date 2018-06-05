@@ -3,16 +3,24 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/Project.js';
 import './team.html';
 
+projectExists = function(){
+  var idProject = Router.current().params._id;
+  var project = Projects.findOne(idProject);
+  if(!project){
+    return false
+  }
+  return true;
+}
+
 var project;
 Template.team.onRendered(function(){
-  project = Projects.findOne({_id : Router.current().params._id });
-  if(!project){
-    Router.go('dashboard');//redirect to dashboard if project do not exist
+  if(projectExists()){
+    project = Projects.findOne({_id : Router.current().params._id });
+    if(Meteor.user().username != project.owner){
+      Router.go('noRight');//current user can't access to this page
+    }
+    $('select').material_select();
   }
-  if(Meteor.user().username != project.owner){
-    Router.go('noRight');//current user can't access to this page
-  }
-  $('select').material_select();
 });
 Template.team.events({
 
@@ -104,5 +112,9 @@ Template.team.helpers({
 
   Project: function(){
     return Projects.findOne(Router.current().params._id);
-  }
+  },
+
+  projectExists(){
+    return projectExists();
+  },
 });

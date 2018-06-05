@@ -23,7 +23,6 @@ renderDropdownButton = function(){
 
     if(Meteor.user()){
       $("#lidropdown").css("display", "block");
-      console.log(Meteor.user().notifications.length);
       if(Meteor.user().notifications.length>0){
         $("#icon_notif").html("notifications_active");
       }
@@ -36,6 +35,7 @@ renderDropdownButton = function(){
     }
 
   }, 20);
+
 }
 
 Template.notifications.helpers({
@@ -49,34 +49,6 @@ Template.notifications.helpers({
     return Meteor.user().notifications.length>0;
   }
 
-  /*renderDropdownButton(){
-    //Timeout used to wait for html to be loaded
-    console.log("RENDER IT");
-    setTimeout(function(){
-      $(".dropdown-button").dropdown({
-        belowOrigin: true, // Displays dropdown below the button
-        constrainWidth: false,
-        closeOnClick: false,
-        alignment: 'right'
-      });
-
-      if(Meteor.user()){
-        $("#lidropdown").css("display", "block");
-        console.log(Meteor.user().notifications.length);
-        if(Meteor.user().notifications.length>0){
-          $("#icon_notif").html("notifications_active");
-        }
-        else{
-          $("#icon_notif").html("notifications_none");
-        }
-      }
-      else{
-        $("#lidropdown").css("display", "none");
-      }
-
-    }, 20);
-  }*/
-
 });
 
 Template.notification.onCreated(function(){
@@ -84,6 +56,7 @@ Template.notification.onCreated(function(){
   Meteor.subscribe('projects');
 
 });
+
 
 Template.notification.events({
     //Remove the notification from the notification list.

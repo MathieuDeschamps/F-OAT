@@ -154,9 +154,17 @@ Template.newproject.events({
               });
               toastr.success(TAPi18n.__('fileUploaded'));
 
-              //Do it only if videoPlayer is loaded
+              if(!eventDDPVideo){
+                eventDDPVideo = new EventDDP('videoPlayer',Meteor.connection);
+              }
+              eventDDPVideo.setClient({
+                appId: res,
+                _id: Meteor.userId()
+              });
+
               Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-                if(Session.get('videoPlayer') === 1) {
+                if(Session.get('videoPlayer') === 1 || Session.get('isOnDashboard')===1) {
+                  //Event listened in videoPlayer.js
                   eventDDPVideo.emit('videoPlayer');
                   computation.stop();
                 }
@@ -270,6 +278,17 @@ Template.newproject.events({
 
       Session.set('participants',participants);
   },
+});
+
+Template.newproject.onDestroyed(()=>{
+  //put wrong values for the event => unsuscribe the user for the channel of this project
+
+  if(eventDDPVideo!=null){
+    eventDDPVideo.setClient({
+      appId: -1,
+      _id: -1
+    });
+  }
 });
 
 

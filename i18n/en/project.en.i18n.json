@@ -2,6 +2,7 @@
   "extraction" : "Extraction",
   "annotations" : "Annotations",
   "save" : "Save",
-  "errorProjectRight" : "Sorry, you do not have the right to modify this project."
+  "errorProjectRight" : "Sorry, you do not have the right to modify this project.",
+  "projectDeleted" : "Project has been deleted by owner. Back to dashboard."
 
 }

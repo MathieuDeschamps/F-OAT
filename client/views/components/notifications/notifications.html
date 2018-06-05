@@ -7,7 +7,7 @@
           <li class="divider"></li>
         {{/each}}
       {{else}}
-        <li><a href="#!">{{_ 'noNews'}}</a></li>
+        <li><a>{{_ 'noNews'}}</a></li>
       {{/if}}
     </ul>
     <li id="lidropdown" style="display:none"><a class="dropdown-button" href="#!" data-activates="dropdown1"><i id="icon_notif" class="material-icons center">notifications_none</i></a></li>
@@ -16,7 +16,7 @@
 </template>
 
 <template name="notification">
-  <a href="#!" class="markNotification" title="Mark as read" name="{{date}},{{value}}" style="white-space:pre-wrap; word-wrap:break-word">{{date}} :
+  <a class="markNotification" title="Mark as read" name="{{date}},{{value}}" style="white-space:pre-wrap; word-wrap:break-word">{{date}} :
 {{value}}
   </a>
 </template>
