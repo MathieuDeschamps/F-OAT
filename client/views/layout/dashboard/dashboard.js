@@ -4,6 +4,8 @@ import {Projects} from '../../../../lib/collections/Project.js';
 import './dashboard.html';
 import {Requests} from '../../../utils/requests.js'
 
+eventDeleteProject = null;
+
 Template.dashboard.helpers({
 
   //retourne les projets de l'utiliateur courant.
@@ -22,12 +24,29 @@ Template.dashboard.helpers({
   }
 });
 
+Template.dashboard.onRendered(function (){
+  Session.set('isOnDashboard',1);
+});
+
+Template.dashboard.onDestroyed(function (){
+  Session.set('isOnDashboard',0);
+})
+
 Template.dashboard.events({
 
   'click .remove' (event, instance){
       var elm = event.target;
       var $elm = $(elm);
+      if(!eventDeleteProject){
+        eventDeleteProject = new EventDDP('deleteProject',Meteor.connection);
+      }
+      eventDeleteProject.setClient({
+        appId: $elm.attr('name'),
+        _id: Meteor.userId()
+      });
 
+      //Event listener in project.js
+      eventDeleteProject.emit('deleteProject');
 
       Meteor.call('removeProject',$elm.attr('name'),function(err,res){
         if(err){

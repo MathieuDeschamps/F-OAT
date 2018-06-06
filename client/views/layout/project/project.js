@@ -7,12 +7,16 @@ import {TimeLine} from "../../components/class/TimeLine.js"
 import {XMLGenerator} from '../../components/XMLGenerator/XMLGenerator.js';
 
 var em;
-
+var vidctrllistener;
+var deleteprojectlistener;
 
 // function which checked if the current has the right write on the proejct
 hasRightToWrite = function(){
   var idProject = Router.current().params._id
   var project = Projects.findOne(idProject)
+  if(!project){
+    return false;
+  }
   var username = Meteor.user().username
   var participant = $(project.participants).filter(function(i,p){
     return p.username == username && p.right == "Write"
@@ -24,200 +28,261 @@ hasRightToWrite = function(){
   }
 }
 
-Template.project.onRendered(()=>{
-  var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
-  var pathExtractor
-
-  if(!em){
-    em = new EventDDP('test',Meteor.collection);
-    em.addListener('hello',()=>{
-      Meteor.call("getXml",pathXML,(errXML,result)=>{
-        if(errXML){
-          alert(errXML.reason);
-        }else{
-          Session.set('XMLDoc', result.data)
-          var XMLDoc = result.data
-          // build the extractors
-          var extractors = Parser.getListExtractors(XMLDoc)
-          var extractor
-          var timeLineData
-
-          // update the forms of the editor
-          $(xmlxsdObjAnnotations).each(function(i,form){
-            form.XMLObject = $($.parseXML(XMLDoc)).find(form.name)
-            form.update()
-          })
-          // update the timeLine
-          $(timeLines).each(function(i,timeLine){
-            idTimeLine = "#timeLine" + i
-            nameExtractor = timeLine.nameExtractor
-            // console.log('xml', xml)
-            timeLineData = Parser.getTimeLineData(XMLDoc,nameExtractor)
-            // console.log("data: " , $(timeLineData).attr("data"))
-            timeLine.nb_frame = $(timeLineData).attr('nbFrames');
-            timeLine.entries = []
-            $($(timeLineData).attr("data")).each(function(i,e){
-              timeLine.entries.push(e.name)
-            })
-            timeLine.items = []
-            $($(timeLineData).attr("data")).each(function(i,entry){
-              $(entry.intervals).each(function(j,interval){
-                timeLine.items.push(interval)
-              })
-            })
-            // console.log('timeLineData', timeLineData)
-            timeLine.update()
-          })
-
-          //Video controler update :
-          var nbFrames=0;
-          extractors.forEach(function(extractor){
-            console.log('nb Frame',extractor);
-            var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
-            console.log(newNbFrames);
-            if (newNbFrames!=undefined){
-              console.log(newNbFrames);
-              nbFrames=Math.max(nbFrames,newNbFrames);
-              console.log(nbFrames);
-            }
-          });
-          if (nbFrames>0){
-            vidCtrl.setNbFrames(nbFrames);
-          }
-          console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
-          vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
-
-        }
-      });
-
-    });
+projectExists = function(){
+  var idProject = Router.current().params._id;
+  var project = Projects.findOne(idProject);
+  if(!project){
+    return false
   }
-  em.setClient({
-    appId: Router.current().params._id,
-    _id: Meteor.userId()
-  })
-  Session.set('projectReady', 0)
-  Meteor.call("getXml",pathXML,(errXML,result)=>{
-    if(errXML){
-      alert(errXML.reason);
-    }else{
-      Session.set('XMLDoc', result.data)
-      var XMLDoc = result.data
-      var XMLParsed = $.parseXML(result.data)
-      // build the extractors
-      var extractors = Parser.getListExtractors(XMLDoc)
-      var extractorHtml
-      var timeLineData
-      // global table which will contains the form objects
-      xmlxsdObjAnnotations = [extractors.lenght]
-      xsdArray = [extractors.lenght]
-      xmlArray = [extractors.lenght]
-      timeLines = [extractors.lenght]
-      // console.log('extractors', extractors)
-      // add the extractor list and build the forms
-      $(extractors).each(function(i,extractor){
-        extractorHtml = '<p><input class="filled-in" id="annontation_'+ i + '" index="'+ i+ '"  type="checkbox"/>'
-        extractorHtml += '<label for="annontation_'+ i + '">' + $(extractor).attr('name') + '</label></p>'
-        $('#extractors').append(extractorHtml)
-        // console.log('extractor', extractor)
-        pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xml'
-        Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
-          if(errXSD){
-            // console.log('path', pathExtractor)
-            alert(errXSD.reason);
+  return true;
+}
+
+Template.project.onRendered(()=>{
+  if(projectExists()){
+    var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
+    var pathExtractor
+
+    if(!em){
+      em = new EventDDP('test',Meteor.connection);
+      em.addListener('hello',()=>{
+        Meteor.call("getXml",pathXML,(errXML,result)=>{
+          if(errXML){
+            alert(errXML.reason);
           }else{
-            // build the forms for the editor
-            xmlArray[i] = $(XMLParsed).find('extractors').children(extractor[0].tagName)[0]
-            xsdArray[i] = $.parseXML(resultExtractor.data)
-            // console.log('XMLArray', XMLArray)
-            // console.log('XSDArray', XSDArray)
-            // console.log("vidctrl",vidCtrl);
+            Session.set('XMLDoc', result.data)
+            var XMLDoc = result.data
+            var XSDObject
+            // build the extractors
+            var extractors = Parser.getListExtractors(XMLDoc)
+            var extractor
+            var timeLineData
 
-            if(i+1 === extractors.length){
-              Session.set('projectReady', 1)
-            }
-            // build the timeLine
-            // timeLineData = Parser.getTimeLineData(XMLDoc,extractor[0].tagName);
-            // $("#timeLines").append("<div id='timeLine" + i + "' class='row' ></div>");
-            // timeLines[i] = new TimeLine($(extractor).attr('name'),
-            //   $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
-            //   i);
-            //
-            // $("#timeLine" + i).children('svg').css('min-width','70rem')
-            // $('svg').css('margin-bottom', '2.5rem')
-          }
-        })
-      })
-      // console.log('forms', forms)
-      // Session.set('projectXML', XMLArray)
-      // Session.set('projectXSD', XSDArray)
-      // console.log('XMLArray', XMLArray)
-      // console.log('XSDArray', XSDArray)
-      // console.log('Session', Session)
-      // Session.set('projectReady', 1)
-      //Wait for video player to be rendered before doing that
-      Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-        if(Session.get('videoPlayer') === 1) {
+            // update the forms of the editor
+            $(xmlxsdObjAnnotations).each(function(i,form){
+              form.XMLObject = $($.parseXML(XMLDoc)).find(form.name)
+              form.update()
 
-          // VideoControler init
-          var nbFrames=0;
-          extractors.forEach(function(extractor){
-            // console.log('nb Frame',extractor);
-            var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
-            console.log(newNbFrames);
-            if (newNbFrames!=undefined){
+            })
+            // update the timeLine
+            $(timeLines).each(function(i,timeLine){
+              idTimeLine = "#timeLine" + i
+              nameExtractor = timeLine.nameExtractor
+              // console.log('xml', xml)
+              timeLineData = Parser.getTimeLineData(XMLDoc,nameExtractor)
+              // console.log("data: " , $(timeLineData).attr("data"))
+              timeLine.nb_frame = $(timeLineData).attr('nbFrames');
+              timeLine.entries = []
+              $($(timeLineData).attr("data")).each(function(i,e){
+                timeLine.entries.push(e.name)
+              })
+              timeLine.items = []
+              $($(timeLineData).attr("data")).each(function(i,entry){
+                $(entry.intervals).each(function(j,interval){
+                  timeLine.items.push(interval)
+                })
+              })
+              // console.log('timeLineData', timeLineData)
+              timeLine.update()
+            })
+
+            //Video controler update :
+            var nbFrames=0;
+            extractors.forEach(function(extractor){
+              console.log('nb Frame',extractor);
+              var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
               console.log(newNbFrames);
-              nbFrames=Math.max(nbFrames,newNbFrames);
-              console.log(nbFrames);
+              if (newNbFrames!=undefined){
+                console.log(newNbFrames);
+                nbFrames=Math.max(nbFrames,newNbFrames);
+                console.log(nbFrames);
+              }
+            });
+            if (nbFrames>0){
+              vidCtrl.setNbFrames(nbFrames);
             }
-          });
-          if (nbFrames>0){
-            vidCtrl.setNbFrames(nbFrames);
+            console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
+            vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+
           }
-          console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
-          vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+        });
 
-          computation.stop();
-        }
       });
-
     }
-  });
-})
+    em.setClient({
+      appId: Router.current().params._id,
+      _id: Meteor.userId()
+    });
 
-Template.project.onDestroyed(()=>{
-  //put wrong values for the event => unsuscribe the user for the channel of this project
-  em.setClient({
-    appId: -1,
-    _id: -1
-  });
-});
-
-Template.project.helpers({
-  // used to display or not the save button
-  hasRightToWrite(){
-    return hasRightToWrite()
-  },
-
-  uploadIsDone(){
-    var idProject = Router.current().params._id;
-    var idUpload = "upload_"+idProject;
-    var upload = Session.get(idUpload);
-    if(!upload){
-      return true;
+    if(!eventDeleteProject){
+      eventDeleteProject = new EventDDP('deleteProject',Meteor.connection);
     }
-    console.log("upload",upload);
-    return (upload==100);
+    if(!deleteprojectlistener){
+      deleteprojectlistener = true;
+      //Event emitted in dashboard.js
+      eventDeleteProject.addListener('deleteProject',()=>{
+        toastr.warning(TAPi18n.__('projectDeleted'));
+        Router.go("/");
+      });
+    }
+    eventDeleteProject.setClient({
+      appId: Router.current().params._id,
+      _id: Meteor.userId()
+    });
 
-  },
+Session.set('projectReady', 0)
+Meteor.call("getXml",pathXML,(errXML,result)=>{
+  if(errXML){
+    alert(errXML.reason);
+  }else{
+    Session.set('XMLDoc', result.data)
+    var XMLDoc = result.data
+    var XMLParsed = $.parseXML(result.data)
+    // build the extractors
+    var extractors = Parser.getListExtractors(XMLDoc)
+    var extractorHtml
+    var timeLineData
+    // global table which will contains the form objects
+    xmlxsdObjAnnotations = [extractors.lenght]
+    xsdArray = [extractors.lenght]
+    xmlArray = [extractors.lenght]
+    timeLines = [extractors.lenght]
+    // console.log('extractors', extractors)
+    // add the extractor list and build the forms
+    $(extractors).each(function(i,extractor){
+      extractorHtml = '<p><input class="filled-in" id="annontation_'+ i + '" index="'+ i+ '"  type="checkbox"/>'
+      extractorHtml += '<label for="annontation_'+ i + '">' + $(extractor).attr('name') + '</label></p>'
+      $('#extractors').append(extractorHtml)
+      // console.log('extractor', extractor)
+      pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xml'
+      Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
+        if(errXSD){
+          // console.log('path', pathExtractor)
+          alert(errXSD.reason);
+        }else{
+          // build the forms for the editor
+          xmlArray[i] = $(XMLParsed).find('extractors').children(extractor[0].tagName)[0]
+          xsdArray[i] = $.parseXML(resultExtractor.data)
+          // console.log('XMLArray', XMLArray)
+          // console.log('XSDArray', XSDArray)
+          // console.log("vidctrl",vidCtrl);
 
-  uploading(){
-    var idProject = Router.current().params._id;
-    var idUpload = "upload_"+idProject;
-    var upload = Session.get(idUpload);
-    console.log("upload",upload);
-    return upload;
-  },
+          if(i+1 === extractors.length){
+            Session.set('projectReady', 1)
+          }
+          // build the timeLine
+          // timeLineData = Parser.getTimeLineData(XMLDoc,extractor[0].tagName);
+          // $("#timeLines").append("<div id='timeLine" + i + "' class='row' ></div>");
+          // timeLines[i] = new TimeLine($(extractor).attr('name'),
+          //   $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
+          //   i);
+          //
+          // $("#timeLine" + i).children('svg').css('min-width','70rem')
+          // $('svg').css('margin-bottom', '2.5rem')
+        }
+      })
+    })
+
+
+            //Wait for video player to be rendered before doing that
+            Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+              if(Session.get('videoPlayer') === 1) {
+
+                // VideoControler init
+                var nbFrames=0;
+                extractors.forEach(function(extractor){
+                  // console.log('nb Frame',extractor);
+                  var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
+                  console.log(newNbFrames);
+                  if (newNbFrames!=undefined){
+                    console.log(newNbFrames);
+                    nbFrames=Math.max(nbFrames,newNbFrames);
+                    console.log(nbFrames);
+                  }
+                });
+                if (nbFrames>0){
+                  vidCtrl.setNbFrames(nbFrames);
+                }
+                console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
+                vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+
+                if(!vidctrllistener){
+                  vidctrllistener = true;
+                  //Event emitted in videoPlayer.js
+                  eventDDPVideo.addListener('videoCtrl',()=>{
+                    var nbFrames=0;
+                    extractors.forEach(function(extractor){
+                      // console.log('nb Frame',extractor);
+                      var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
+                      console.log(newNbFrames);
+                      if (newNbFrames!=undefined){
+                        console.log(newNbFrames);
+                        nbFrames=Math.max(nbFrames,newNbFrames);
+                        console.log(nbFrames);
+                      }
+                    });
+                    if (nbFrames>0){
+                      vidCtrl.setNbFrames(nbFrames);
+                    }
+                    console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
+                    vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+                  });
+                }
+
+                computation.stop();
+              }
+            });
+
+          }
+        });
+      }
+    })
+
+    Template.project.onDestroyed(()=>{
+      //put wrong values for the event => unsuscribe the user for the channel of this project
+      if(em!=null){
+        em.setClient({
+          appId: -1,
+          _id: -1
+        });
+      }
+
+      if(eventDeleteProject!=null){
+        eventDeleteProject.setClient({
+          appId: -1,
+          _id: -1
+        });
+      }
+    });
+
+    Template.project.helpers({
+      // used to display or not the save button
+
+      projectExists(){
+        return projectExists();
+      },
+
+      hasRightToWrite(){
+        return hasRightToWrite()
+      },
+
+      uploadIsDone(){
+        var idProject = Router.current().params._id;
+        var idUpload = "upload_"+idProject;
+        var upload = Session.get(idUpload);
+        if(!upload){
+          return true;
+        }
+        return (upload==100);
+      },
+      
+      uploading(){
+        var idProject = Router.current().params._id;
+        var idUpload = "upload_"+idProject;
+        var upload = Session.get(idUpload);
+        $("#myBar").width(upload+"%");
+
+        return upload;
+      },
 
   file(){
     return Projects.findOne(Router.current().params._id).url;

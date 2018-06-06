@@ -4,8 +4,9 @@ import './seekBarManager.js'
 import './playerCommand.html'
 import '../videoPlayer/videoPlayer.js';
 
+var vidPlayerCommandListener;
 
-Template.project.onRendered(function(){
+renderPlayerCommand = function(){
 	$( "#playButton" ).click(function() {vidCtrl.play();} );
 	$( "#pauseButton" ).click(function() {vidCtrl.pause();} );
 	$( "#seekBar" ).mousedown(function() {seekBarMng.mousePressed();} );
@@ -16,7 +17,26 @@ Template.project.onRendered(function(){
 		vidCtrl.setPartialPlaying(!pp);} );
 	$( "#nextAnnotedButton" ).click(function() {vidCtrl.nextAnnotedFrame();} );
 	$( "#prevAnnotedButton" ).click(function() {vidCtrl.prevAnnotedFrame();} );
+}
+Template.project.onRendered(function(){
 
+	Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+		if(Session.get('videoPlayer') === 1) {
+			if(!vidPlayerCommandListener){
+				vidPlayerCommandListener = true;
+				//Event emitted in videoPlayer.js
+				eventDDPVideo.addListener('playerCommand',()=>{
+					setTimeout(function(){
+						renderPlayerCommand();
+
+					},50);
+				});
+				computation.stop();
+			}
+		}
+	});
+	
+	renderPlayerCommand();
 });
 
 Template.playerCommand.events({

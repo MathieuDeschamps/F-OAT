@@ -12,7 +12,7 @@
   "removeUser" : "Remove user",
   "createButton" : "Create",
   "fileUploaded" : "File uploaded",
-  "fileUploading" : "File uploading...",
+  "fileUploading" : "File uploading, don't leave or refresh the application...",
 
   "errorSelectUser" : "Select a user to add",
   "errorAddUser" : "User __user__ is already in the project",
@@ -22,7 +22,7 @@
   "errorProjectNameExists" : "A project with this name already exists",
   "errorProjectURLorFile" : "Please fill in a URL or give a file",
   "errorProjectURLandFile" : "Give an URL or a file, not both",
-  "errorProjectFileExtension" : "Your file should be a video (.mp4, .avi, ...)",
+  "errorProjectFileExtension" : "Your file should be an mp4 video",
   "errorProjectDownloadURLwithURL" : "If you give an URL, you need to give a download link too",
   "errorProjectDownloadURLwithFile" : "If you give a file, dont give a download link"
 }

@@ -70,7 +70,7 @@ Template.newproject.events({
     //Else, if we give a file for the project
     else if(!_projectUrl){
       _url = _projectFile.name;
-      ext = ['mp4','avi','mkv','wmv','mov'];
+      ext = ['mp4'];
       if(!checkExtension(ext,_url)){
         _url = 'errorExt';
       }
@@ -87,8 +87,7 @@ Template.newproject.events({
       url: _url,
       downUrl: (_downUrl ? _downUrl : null),
       fileId : null,
-      participants:_part,
-      notifications:[]
+      participants:_part
     };
 
     //We verify the name and the url of the project (not null and not already used)
@@ -122,7 +121,7 @@ Template.newproject.events({
             var idUpload = "upload_"+res;
             Session.set(idUpload,upload.progress);
             var date = moment().calendar();
-            var val = "Your file "+project.url+" is uploading, wait for upload to be done to play video.";
+            var val = "Project "+project.name+" : file "+project.url+" is uploading, wait for upload to be done to play video.";
             Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
               if(err){
                 toastr.warning(errorNotif.reason);
@@ -147,13 +146,29 @@ Template.newproject.events({
               });
               //Create a notification if the file has been uploaded
               var date = moment().calendar();
-              var val = "Your file "+project.url+" has been uploaded. You can now play the video";
+              var val = "Project "+project.name+": file "+project.url+" has been uploaded. You can play the video";
               Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
                 if(err){
                   toastr.warning(errorNotif.reason);
                 }
               });
               toastr.success(TAPi18n.__('fileUploaded'));
+
+              if(!eventDDPVideo){
+                eventDDPVideo = new EventDDP('videoPlayer',Meteor.connection);
+              }
+              eventDDPVideo.setClient({
+                appId: res,
+                _id: Meteor.userId()
+              });
+
+              Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+                if(Session.get('videoPlayer') === 1 || Session.get('isOnDashboard')===1) {
+                  //Event listened in videoPlayer.js
+                  eventDDPVideo.emit('videoPlayer');
+                  computation.stop();
+                }
+              });
             }
           });
 
@@ -263,6 +278,17 @@ Template.newproject.events({
 
       Session.set('participants',participants);
   },
+});
+
+Template.newproject.onDestroyed(()=>{
+  //put wrong values for the event => unsuscribe the user for the channel of this project
+
+  if(eventDDPVideo!=null){
+    eventDDPVideo.setClient({
+      appId: -1,
+      _id: -1
+    });
+  }
 });
 
 

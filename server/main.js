@@ -7,14 +7,59 @@ export const xmlPath = "/tmp/";
 Meteor.startup(() => {
   // code to run on server at startup
 
+  //Event to refresh editor & timeline in project.js
   em = new EventDDP('test');
   em.addListener('hello',(client)=>{
     em.matchEmit("hello",{
-        _id: {$ne: client._id},
-        appId: client.appId
+      $and: [
+        {_id: {$ne : client._id}},
+        {appId: client.appId}
+      ]
     });
   });
 
+  //Event to refresh videoPlayer in videoPlayer.js in route /project
+  eventDDPVideo = new EventDDP('videoPlayer');
+  eventDDPVideo.addListener('videoPlayer',(client)=>{
+    eventDDPVideo.matchEmit("videoPlayer",{
+      $and: [
+        {$or: [
+          {_id: client._id},
+          {_id: {$ne : client._id}}
+        ]},
+        {appId: client.appId}
+      ]
+    });
+  });
+
+  eventDDPVideo.addListener('videoCtrl',(client)=>{
+    eventDDPVideo.matchEmit("videoCtrl",{
+      $and: [
+        {_id: client._id},
+        {appId: client.appId}
+      ]
+    });
+  });
+
+  eventDDPVideo.addListener('playerCommand',(client)=>{
+    eventDDPVideo.matchEmit("playerCommand",{
+      $and: [
+        {_id: client._id},
+        {appId: client.appId}
+      ]
+    });
+  });
+
+  //Event to warn collaborators of a project on delete of a project
+  eventDeleteProject = new EventDDP('deleteProject');
+  eventDeleteProject.addListener('deleteProject',(client)=>{
+    eventDeleteProject.matchEmit("deleteProject",{
+      $and: [
+        {_id: {$ne : client._id}},
+        {appId: client.appId}
+      ]
+    });
+  });
 });
 
 
