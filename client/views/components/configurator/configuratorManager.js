@@ -102,20 +102,23 @@ export class configuratorManager{
 			var project = Projects.findOne(idProject)
 			var checksum;
 			var downUrl;
+			var isFile;
 			toastr.success("Downloading video");
 			if(!project.fileId){
 				downUrl = project.downUrl;
+				isFile = false;
 			}
 			else{
-				var video = Videos.findOne(project.fileId);
-				downUrl = video.path;
-				downUrl = downUrl.replace('.mp4','');
+				//var video = Videos.findOne(project.fileId);
+				downUrl = project.fileId;
 				console.log("DownUrl",downUrl);
-				downUrl = "file:///home/elliot/Documents/cours_meteor/F-OAT/.meteor/local/build/programs/server/"+downUrl;
+				//downUrl = "file:///home/elliot/Documents/cours_meteor/F-OAT/.meteor/local/build/programs/server/"+downUrl;
+				downUrl+=".mp4";
 				console.log("DownUrl",downUrl);
+				isFile = true;
 			}
 
-			Meteor.call("initRequest",idProject,extractor.ip,checksum,downUrl,(err,result)=>{
+			Meteor.call("initRequest",idProject,extractor.ip,checksum,downUrl,isFile,(err,result)=>{
 				console.log("finish initRequest");
 				if (err){
 					alert('Download problem by '+extractor.name + ' : ' +err.reason);
