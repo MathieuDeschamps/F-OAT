@@ -50,7 +50,7 @@
             <div class="row">
               <select multiple="multiple" size="5" class="select col s12" style="height:100px" id="participant">
                 {{#each users}}
-                <option value="{{username}}">{{username}}</option>
+                <option class="option" value="{{username}}">{{username}}</option>
                 {{/each}}
               </select>
               <span  class="red-text">{{errorUserMessage 'participant'}}</span>

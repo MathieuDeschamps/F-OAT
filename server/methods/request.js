@@ -58,11 +58,11 @@ Meteor.methods({
      * @param extractorUrl the url of the extractor
      * @returns {boolean} the response's status ode is 200
      */
-    initRequest: (_id,extractorUrl,_checksum,_downUrl)=>{
+    initRequest: (_id,extractorUrl,_checksum,_downUrl,_isFile)=>{
 
         var url = "http://"+extractorUrl+"/creation/"+_id;
         console.log(url);
-        const result = HTTP.call("PUT",url,{data:{checksum: _checksum, url:_downUrl}});
+        const result = HTTP.call("PUT",url,{data:{checksum: _checksum, url:_downUrl, isFile : _isFile}});
         if(result.statusCode==200){
             return true;
         }else{

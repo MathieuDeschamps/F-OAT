@@ -221,44 +221,12 @@ Template.newproject.events({
   //On click of add user button
   'click #addUser' (event,instance){
     event.preventDefault();
-    var _newParticipants = $('#participant').val();
-    var errors={};
-    if(!_newParticipants){
-      errors.participant = TAPi18n.__('errorSelectUser');
-      return Session.set('postUserErrors',errors);
-    }
+    addUser();
+  },
 
-    var nbBadUsers = 0;
-    var _oldParticipants = Session.get('participants');
-    _oldParticipants.forEach(
-      (item)=>{
-        _newParticipants.forEach(
-          (newOne)=>{
-            if(item.username === newOne){
-              nbBadUsers++;
-              errors.participant = TAPi18n.__('errorAddUser', {user :  newOne});
-            }
-          }
-        )
-
-      }
-    );
-    if(nbBadUsers==0){
-      _newParticipants.forEach(
-        (newOne)=>{
-          _oldParticipants.push({username: newOne, rigth: 'Read'});
-        }
-      )
-
-      Session.set('participants',_oldParticipants);
-    }
-
-    else if(nbBadUsers>1){
-      errors.participant = TAPi18n.__('errorAddUsers');
-    }
-
-    return Session.set('postUserErrors',errors);
-
+  'dblclick .option' (event){
+    event.preventDefault();
+    addUser();
   },
 
   'click .remove_circle' (event, instance){
@@ -302,4 +270,44 @@ function checkExtension(verifExt, fileValue){
     }
   }
   return false;
+}
+
+function addUser(){
+  var _newParticipants = $('#participant').val();
+  var errors={};
+  if(!_newParticipants){
+    errors.participant = TAPi18n.__('errorSelectUser');
+    return Session.set('postUserErrors',errors);
+  }
+
+  var nbBadUsers = 0;
+  var _oldParticipants = Session.get('participants');
+  _oldParticipants.forEach(
+    (item)=>{
+      _newParticipants.forEach(
+        (newOne)=>{
+          if(item.username === newOne){
+            nbBadUsers++;
+            errors.participant = TAPi18n.__('errorAddUser', {user :  newOne});
+          }
+        }
+      )
+
+    }
+  );
+  if(nbBadUsers==0){
+    _newParticipants.forEach(
+      (newOne)=>{
+        _oldParticipants.push({username: newOne, rigth: 'Read'});
+      }
+    )
+
+    Session.set('participants',_oldParticipants);
+  }
+
+  else if(nbBadUsers>1){
+    errors.participant = TAPi18n.__('errorAddUsers');
+  }
+
+  return Session.set('postUserErrors',errors);
 }

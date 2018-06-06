@@ -26,7 +26,7 @@
               <td>{{right}}</td>
               <td class="RIGHT">
                 <div class="input-field col s2">
-                  <select>
+                  <select class="single-select">
                     <option value="Read" selected>Read</option>
                     <option value="Write">Write</option>
                     <option value="Owner">Owner</option>
@@ -49,15 +49,22 @@
         <br />
         <div class="row">
           <div class="col s6">
-            <div class="file-field input-field">
-              <div class="file-path-wrapper">
-                <input id="name" type="text" class="validate newCoworker_name input-field" placeholder="{{_ 'fillUsername'}}" />
-                <label for="name" data-error="{{_ 'errorFillUsername'}}"> </label>
+            <div class="row">
+              <div class="input-field">
+                  <input id="name" type="text" class="validate newCoworker_name" placeholder="{{_ 'fillUsername'}}" />
+                  <label for="name" data-error="{{_ 'errorFillUsername'}}"> </label>
               </div>
+            </div>
+            <div class="row">
+              <select multiple="multiple" size="5" class="select col s12" style="height:100px" id="participant">
+                {{#each users}}
+                  <option class="option" value="{{username}}">{{username}}</option>
+                {{/each}}
+              </select>
             </div>
           </div>
           <div class="input-field col s4">
-            <select class="newCoworkerRight">
+            <select class="single-select newCoworkerRight">
               <option value="Read" selected>Read</option>
               <option value="Write">Write</option>
             </select>

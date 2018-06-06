@@ -13,13 +13,19 @@ projectExists = function(){
 }
 
 var project;
+
+Template.team.onCreated(function(){
+  Session.set("search/keyword","");
+});
+
+
 Template.team.onRendered(function(){
   if(projectExists()){
     project = Projects.findOne({_id : Router.current().params._id });
     if(Meteor.user().username != project.owner){
       Router.go('noRight');//current user can't access to this page
     }
-    $('select').material_select();
+    $('.single-select').material_select();
   }
 });
 Template.team.events({
@@ -102,6 +108,18 @@ Template.team.events({
       });
     }
   },
+
+  //On typing of search input
+  'keyup #name': function(event) {
+    Session.set('search/keyword', event.target.value);
+  },
+
+  'click .option' : function(event,instance){
+    var _newParticipants = $('#participant').val();
+    if(_newParticipants.length==1){
+      $('.newCoworker_name').val(_newParticipants[0]);
+    }
+  }
 });
 
 
@@ -117,4 +135,16 @@ Template.team.helpers({
   projectExists(){
     return projectExists();
   },
+
+
+  users(){
+    var keyword = Session.get("search/keyword");
+    if(keyword!=null && keyword!=""){
+      var regexp = new RegExp("^"+Session.get('search/keyword'),"i");
+      var owner = Meteor.userId();
+      var users = Meteor.users.find({ $and : [{username: regexp},{_id: {$ne:owner}}]});
+      return users;
+    }
+  },
+
 });
