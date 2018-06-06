@@ -21,7 +21,7 @@ export class configuratorManager{
 			$(that.JQcheckBoxDiv).append(extractorCheckBox);
 			var labelConfig='config_' + i;
 			var JQlabelConfig='#'+labelConfig;
-			var idDiv=i+'_formConfig';
+			var idDiv=i+'_formConfigExtractor';
 			var JQidDiv='#'+idDiv;
 			$(JQlabelConfig).change(function(){that.checkBoxChange(extractor,JQlabelConfig,idDiv,i);});
 			$(that.JQformDiv).append('<div class="row" id="'+idDiv+'"></div>');
@@ -57,15 +57,14 @@ export class configuratorManager{
 	}
 
 	manageParameters(result,extractor,i,idDiv,idDivForm,idDivButton,JQlabelConfig){
-		//console.log('parameters.xsd : ', result);
+		// console.log('parameters.xsd : ', result);
 		var xsd=$.parseXML(result);
-		//console.log('XSD parsé : ',xsd);
+		console.log('XSD parsé : ',xsd);
 
 		var xsdObj=new XSDObject(xsd);
 		// console.log('xsdObj',xsdObj);
 
 
-		console.log('xmlxsdObj B',xmlxsdObj);
 		var xmlxsdObj= new XMLXSDObj(undefined,xsdObj);
 
 		var xmlxsdForm=new XMLXSDForm(xmlxsdObj,extractor._id+'_'+i,extractor.name,idDivForm);
@@ -79,7 +78,7 @@ export class configuratorManager{
 	displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig){
 		//console.log('xmlxsdForm',xmlxsdForm);
 		var that=this;
-		xmlxsdForm.generate();
+		xmlxsdForm.generateForm();
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';

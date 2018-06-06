@@ -11,7 +11,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   line-height: 1.5;
-  padding: 1rem;
+  padding: 0.5rem;
   background-color: $collapsible-header-color;
   border-bottom: 1px solid $collapsible-border-color;
 
@@ -28,7 +28,7 @@
   display: none;
   border-bottom: 1px solid $collapsible-border-color;
   box-sizing: border-box;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 // sideNav collapsible styling

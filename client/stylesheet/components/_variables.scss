@@ -230,7 +230,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
 // ==========================================================================
 
 $num-cols: 12 !default;
-$gutter-width: 1.5rem !default;
+$gutter-width: 1.25rem !default;
 $element-top-margin: $gutter-width/3 !default;
 $element-bottom-margin: ($gutter-width*2)/3 !default;
 
@@ -238,7 +238,7 @@ $element-bottom-margin: ($gutter-width*2)/3 !default;
 // 14. Navigation Bar
 // ==========================================================================
 
-$navbar-height: 64px !default;
+$navbar-height: 48px !default;
 $navbar-line-height: $navbar-height !default;
 $navbar-height-mobile: 56px !default;
 $navbar-line-height-mobile: $navbar-height-mobile !default;

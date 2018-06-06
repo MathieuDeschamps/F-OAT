@@ -7,14 +7,13 @@ export class TimeLine {
     static MY_SELECTED_COLOR(){ return ["#f57f17", '#0d47a1']}
     static TRBL(){return [20, 15, 15, 60] /*top right bottom left*/}
 
-    constructor(name, nbFrame, data, divId){
+    constructor(name, nbFrames, data, divId){
       this.div_id = divId;
-      this.id_time_line = "timeLine" + divId;
-      this.nameExtractor = name
+      this.name_extractor = name
       rect_actif = -1;
-      this.nb_frame = nbFrame;
+      this.nb_frame = nbFrames;
       var debut = 0;
-      var fin = nbFrame;
+      var fin = this.nb_frame;
       this.entries = []
       var that = this
       $(data).each(function(i,e){
@@ -30,32 +29,42 @@ export class TimeLine {
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
-
-      var width_total = this.nb_frame * 0.3;
-      var height_total = TimeLine.LINE_HEIGHT() * this.entries.length ;
-      gen_height = height_total - 2 * TimeLine.EXT_MARGIN();
+      console.log('nbFrame', this.nb_frame)
+      // var width_total = this.nb_frame * 0.3;
+      var width_total = 550
+      var height_total = (TimeLine.LINE_HEIGHT() * this.entries.length ) + 20;
+      gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length ) - (2 * TimeLine.EXT_MARGIN());
       gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trbl[1] - trbl[3];
       used_rect = "";
       used_color = "";
       prec_timeLine = -1; // timeLine de l'ancien rectangle
 
       //donner le div du timeLine la meme taille que le timeLine generer
-      $("#" + this.id_time_line).css('height', height_total + 30);
-      $("#" + this.id_time_line).css('display', 'none')
-      $("#" + this.id_time_line).css('width', '100%')
-      $("#" + this.id_time_line).css('overflow-x', 'scroll')
+      $("#" + this.div_id).css('height', height_total + 10);
+      $("#" + this.div_id).css('display', 'none')
+      $('#' + this.div_id).css('overflow-x', 'scroll')
+      $('#' + this.div_id).css('overflow-y', 'hidden')
+      // $('#' + this.div_id).css('overflow', 'scroll')
+      $("#" + this.div_id).css('width', '100%')
+
 
       //generer la timeLine dans sa div
-      var time_line = d3.select("#" + this.id_time_line)
+      var time_line = d3.select("#" + this.div_id)
               .append("svg")
-              .attr("width", width_total)
-              .attr("height", height_total)
+              // .style('display', 'none')
+              .style("width", "550")
+              .style("height", height_total)
+              // .attr("width", "550")
+              // .attr("height", height_total)
+              // .style('overflow', 'hidden')
+              // .style('overflow-y', 'scroll')
+              // .attr('viewBox','0,0,'+width_total+','+height_total)
               // .attr("class", "chart");
       time_line.append('rect')
               .attr('x', 0)
               .attr('y', 0)
               .attr('width', width_total)
-              .attr('height', height_total + 20)
+              .attr('height', height_total)
               .style('fill', '#f2f2f2');
       var gen = time_line.append("g")
               .attr("transform", "translate(" + (trbl[3] + TimeLine.EXT_MARGIN()) + "," + (trbl[0] + TimeLine.EXT_MARGIN()) + ")")
@@ -161,7 +170,7 @@ export class TimeLine {
               .on("click", blockPlay);
 
       time_line.append("text")
-              .text(name + " timeLine")
+              .text(this.name_extractor + " timeLine")
               .attr("x", 0)
               .attr("y", 15)
               .attr("text-anchor", "start")

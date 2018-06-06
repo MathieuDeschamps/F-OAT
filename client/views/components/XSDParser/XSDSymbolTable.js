@@ -193,11 +193,9 @@ export class XSDSymbolTable{
 			case 'string':
 				type=new XSDStringType();
 				break;
-			default:
-				type = new XSDVoidType();
 		}
 		type.name=typeName;
-		this.addType(type)
+		this.addType(type);
  		return type
 	}
 	/* Determine the kind of a complex type

@@ -1,3 +1,8 @@
+import {XSDFloatType} from '../XSDParser/XSDFloatType.js';
+import {XSDIntegerType} from '../XSDParser/XSDIntegerType.js';
+import {XSDStringType} from '../XSDParser/XSDStringType.js';
+import {XSDVoidType} from '../XSDParser/XSDVoidType.js';
+
 /*
 Object class for xml attributes linked to its xsd dexcription
 */
@@ -5,7 +10,7 @@ Object class for xml attributes linked to its xsd dexcription
 export class XMLXSDAttr{
 	/* Constructor
 	@value : object (value of the attribute)
-	@xsdAtt : XSDAttr object²
+	@xsdAtt : XSDAttr object
 	*/
 	constructor(value,xsdAttr){
 		this.type=xsdAttr.table.getType(xsdAttr.type);
@@ -25,6 +30,7 @@ export class XMLXSDAttr{
 	@value : object
 	*/
 	setValue(value){
+
 		if (value!=undefined){
 			var convertValue=this.type.convert(value);
 			switch(this.use){

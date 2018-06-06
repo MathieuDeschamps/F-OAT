@@ -49,7 +49,7 @@ export class XSDStringType {
 				result=false;
 			}
 		}
-		console.log('XSDString - holds 2', s);
+		// console.log('XSDString - holds 2', s);
 		return result;
 	}
 
