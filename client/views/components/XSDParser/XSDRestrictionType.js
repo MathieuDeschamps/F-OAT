@@ -69,7 +69,8 @@ export class XSDRestrictionType{
 			this.enumeratedValues=[];
 			$(enumList).each(function(i,enumTag){
 				value=$(enumTag).attr('value');
-				if(that.holds(value)){
+				var convertValue = that.convert(value)
+				if(that.holds(convertValue)){
 					that.enumeratedValues.push(value);
 				}
 			});
@@ -86,7 +87,7 @@ export class XSDRestrictionType{
 	@return : restriction type
 	*/
 	convert(str){
-		this.table[this.baseType].convert(str);
+		return this.table.getType(this.baseType.name).convert(str);
 	}
 
 	/* test if the type is enumerated (when restrictions have been applied)
@@ -101,7 +102,7 @@ export class XSDRestrictionType{
 	getEnumetaredValues(){
 		var list=[];
 		var that = this;
-		this.enumeratedValues.forEach(function(i,val){
+		this.enumeratedValues.forEach(function(val,i){
 			val=that.table.getType(that.baseType.name).convert(val);
 			if (that.table.getType(that.baseType.name).holds(val)){
 				list.push(val);
@@ -115,7 +116,7 @@ export class XSDRestrictionType{
 	@returns : boolean
 	*/
 	holds(x){
-		result=true;
+		var result=true;
 		if (this.table.getType(this.baseType.name).holds(x)){
 			if (this.minEx!=undefined && x<=this.minEx){
 				result=false;
@@ -126,7 +127,7 @@ export class XSDRestrictionType{
 			if (this.maxEx!=undefined && x>=this.maxEx){
 				result=false;
 			}
-			if (this.minIn!=undefined && x>this.minIn){
+			if (this.maxIn!=undefined && x>this.maxIn){
 				result=false;
 			}
 			if (this.minLength!=undefined && x.length<this.minLength){

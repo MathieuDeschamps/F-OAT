@@ -30,9 +30,6 @@ export class XSDIntegerType {
 	static isInteger(string){
 		var result = true;
 		var parsedString = parseInt(string, 10)
-		if(parsedString != string){
-			result = false
-		}
 		if(isNaN(parsedString)){
 			result = false;
 		}
@@ -45,7 +42,7 @@ export class XSDIntegerType {
 	@str : string
 	@return : number
 	*/
-	static convert(str){
+	convert(str){
 		return Number(str);
 	}
 
@@ -54,9 +51,9 @@ export class XSDIntegerType {
 	@returns : boolean
 	*/
 	holds(n){
-		result=true;
+		var result=true;
 		if (typeof n == "number"){
-			if (XSDIntegerType.isInteger(n)){
+			if (!XSDIntegerType.isInteger(n)){
 				result=false;
 			}
 			if (this.minEx!="unbounded"){
@@ -125,7 +122,7 @@ export class XSDIntegerType {
 	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
-			this.minEx=max(this.minEx,newMin);
+			this.minEx=max(this.minEx,parseInt(newMin));
 		}else{
 			if(XSDIntegerType.isInteger(newMin)){
 				this.minEx=parseInt(newMin, 10);
@@ -137,9 +134,8 @@ export class XSDIntegerType {
 	}
 
 	setMinIn(newMin){
-		// console.log(newMin,this.hasMinIn());
 		if (this.hasMinIn()){
-			this.minIn=Math.max(this.minIn,newMin);
+			this.minIn=Math.max(this.minIn,parseInt(newMin));
 		}else{
 			if(XSDIntegerType.isInteger(newMin)){
 				this.minIn=parseInt(newMin, 10);
@@ -151,7 +147,7 @@ export class XSDIntegerType {
 	}
 	setMaxEx(newMax){
 		if (this.hasMaxEx()){
-			this.maxEx=Math.min(this.maxEx,newMax);
+			this.maxEx=Math.min(this.maxEx,parseInt(newMax));
 		}else{
 			if(XSDIntegerType.isInteger(newMax)){
 				this.maxEx=newMax;
@@ -163,7 +159,7 @@ export class XSDIntegerType {
 	}
 	setMaxIn(newMax){
 		if (this.hasMaxIn()){
-			this.maxIn=min(this.maxIn,newMax);
+			this.maxIn=min(this.maxIn,parseInt(newMax));
 		}else{
 			if(XSDIntegerType.isInteger(newMax)){
 				this.maxIn=parseInt(newMax, 10);

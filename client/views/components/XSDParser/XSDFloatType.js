@@ -28,9 +28,6 @@ export class XSDFloatType {
 	static isFloat(string){
 		var result = true;
 		var parsedString = parseFloat(string)
-		if(parsedString != string){
-			result = false
-		}
 		if(isNaN(parsedString)){
 			result = false;
 		}
@@ -45,7 +42,7 @@ export class XSDFloatType {
 	@return : number
 	*/
 	convert(str){
-		return Number(str);
+		return parseFloat(str);
 	}
 
 	/* tests if n is of the type taking into account the restrictions applied
@@ -53,7 +50,7 @@ export class XSDFloatType {
 	@returns : boolean
 	*/
 	holds(n){
-		result=true;
+		var result=true;
 		if(!XSDFloatType.isFloat(n)){
 			result=false;
 		}
@@ -62,6 +59,7 @@ export class XSDFloatType {
 				result=false;
 			}
 		}
+
 		if (this.minIn!="unbounded"){
 			if (n < this.minIn){
 				result=false;
@@ -120,7 +118,7 @@ export class XSDFloatType {
 	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
-			this.minEx=max(this.minEx,newMin);
+			this.minEx=max(this.minEx,parseFloat(newMin));
 		}else{
 			if(XSDFloatType.isFloat(newMin)){
 				this.minEx=parseFloat(newMin);
@@ -132,7 +130,7 @@ export class XSDFloatType {
 	}
 	setMinIn(newMin){
 		if (this.hasMinIn()){
-			this.minIn=max(this.minIn,newMin);
+			this.minIn=max(this.minIn,parseFloat(newMin));
 		}else{
 			if(XSDFloatType.isFloat(newMin)){
 				this.minIn=parseFloat(newMin);
@@ -144,7 +142,7 @@ export class XSDFloatType {
 	}
 	setMaxEx(newMax){
 		if (this.hasMaxEx()){
-			this.maxEx=Math.min(this.maxEx,newMax);
+			this.maxEx=Math.min(this.maxEx,parseFloat(newMax));
 		}else{
 			if(XSDFloatType.isFloat(newMax)){
 				this.maxEx=parseFloat(newMax);
@@ -156,7 +154,7 @@ export class XSDFloatType {
 	}
 	setMaxIn(newMax){
 		if (this.hasMaxIn()){
-			this.maxIn=Math.min(this.maxIn,newMax);
+			this.maxIn=Math.min(this.maxIn,parseFloat(newMax));
 		}else{
 			if(XSDFloatType.isFloat(newMax)){
 				this.maxIn=parseFloat(newMax);

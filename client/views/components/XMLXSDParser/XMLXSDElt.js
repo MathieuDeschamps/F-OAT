@@ -19,7 +19,6 @@ export class XMLXSDElt{
 		this.type=xsdElt.table.getType(xsdElt.type);
 
 		this.eltsList=[];
-
 		if (xsdElt.fixed!=undefined){
 			this.fixed=xsdElt.fixed;
 		}
@@ -34,7 +33,7 @@ export class XMLXSDElt{
 		    || ((this.maxOccurs=="unbounded"|| this.eltsList.length<this.maxOccurs)
 			&& this.xmlEltsList.length>0
 			&& this.xmlEltsList[0].localName==this.name)){
-				// console.log('this',this)
+
 				this.type.accept(this);
 		}
 	}

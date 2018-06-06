@@ -1,15 +1,15 @@
-/* 
+/*
 Object class for xsd void type
 */
 
 export class XSDVoidType {
 	constructor(){
 		this.name='xs:void';
-		
+
 		this.facets=[];
 	}
-	
-	
+
+
 	/*
 	restriction(restr,name){
 		// 1) cloner le type
@@ -17,7 +17,7 @@ export class XSDVoidType {
 		type.name=name;
 		return type;
 	}*/
-	
+
 	/* conversion to void type
 	@x : object
 	@returns : undefined
@@ -25,7 +25,7 @@ export class XSDVoidType {
 	convert(x){
 		return undefined;
 	}
-	
+
 	/* test if x is undefined
 	@x : object
 	@returns : boolean
@@ -33,8 +33,8 @@ export class XSDVoidType {
 	holds(x){
 		return (x==undefined);
 	}
-	
-	/* Visitor pattern : accept function 
+
+	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXSDBooleanType"
 	*/
 	accept(object){

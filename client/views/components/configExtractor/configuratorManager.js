@@ -5,7 +5,7 @@ import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
 
 
-export class configExtractorManager{
+export class configuratorManager{
 	constructor(extractors,checkBoxDiv,formDiv){
 		this.extractors=extractors;
 		this.formDiv=formDiv;
@@ -20,7 +20,7 @@ export class configExtractorManager{
 			$(that.JQcheckBoxDiv).append(extractorCheckBox);
 			var labelConfig='config_' + i;
 			var JQlabelConfig='#'+labelConfig;
-			var idDiv=i+'_formConfig';
+			var idDiv=i+'_formConfigExtractor';
 			var JQidDiv='#'+idDiv;
 			$(JQlabelConfig).change(function(){that.checkBoxChange(extractor,JQlabelConfig,idDiv,i);});
 			$(that.JQformDiv).append('<div class="row" id="'+idDiv+'"></div>');
@@ -77,7 +77,7 @@ export class configExtractorManager{
 	displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig){
 		//console.log('xmlxsdForm',xmlxsdForm);
 		var that=this;
-		xmlxsdForm.generate();
+		xmlxsdForm.generateForm();
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';

@@ -193,8 +193,6 @@ export class XSDSymbolTable{
 			case 'string':
 				type=new XSDStringType();
 				break;
-			default:
-				type = new XSDVoidType();
 		}
 		type.name=typeName;
 		this.addType(type);

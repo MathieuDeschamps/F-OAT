@@ -4,7 +4,7 @@ import './configExtractor.html';
 
 import {Extractors} from '/lib/collections/extractors.js';
 
-import {configExtractorManager} from './configExtractorManager.js';
+import {configuratorManager} from './configuratorManager.js';
 
 Template.configExtractor.onCreated(function(){
 
@@ -20,8 +20,7 @@ Template.configExtractor.onRendered(()=>{
 
   Meteor.subscribe('extractors', ()=>{
     extractors=Extractors.find();
-
-  	new configExtractorManager(extractors,"configurator","configuratorForm");
+  	new configuratorManager(extractors,"configExtractor","configExtractorForm");
   })
 
 

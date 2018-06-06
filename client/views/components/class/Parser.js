@@ -4,46 +4,50 @@ export class Parser{
   // TODO improve to deal the element which have the same tag
   // but not the same parents
   // return a JSON object with the start and end
-  static getTimeLineData(xml,nameExtractor){
-    var XMLObject = $.parseXML(xml)
-    var result = []
-    var data =[]
-    var intervals = $(XMLObject).find('extractors').children(nameExtractor)
-    var intervalName
-    var start
-    var end
-    var added = false
-    var nbFrames = Parser.getNbFrames(xml, nameExtractor)
+  static getTimeLineData(xml){
+    if(xml == undefined){
+      console.log('getTimeLineData : Illegal Argument Exception')
+    }else{
+      var XMLObject = xml
+      var result = []
+      var data =[]
+      var intervals = XMLObject
+      var intervalName
+      var start
+      var end
+      var added = false
+      var nbFrames = Parser.getNbFrames(xml)
 
-    intervals = $(intervals).find('[startFrame][endFrame],[timeId]')
+      intervals = $(intervals).find('[startFrame][endFrame],[timeId]')
 
-    $(intervals).each(function(i,interval){
-      intervalName = interval.tagName
-      if($(interval).attr('timeId') != undefined){
-        start = parseInt($(interval).attr('timeId'))
-        end = parseInt($(interval).attr('timeId'))
-      }else{
-        start = parseInt($(interval).attr('startFrame'))
-        end = parseInt($(interval).attr('endFrame'))
-      }
-      $(data).each(function(i,e){
-        if($(e).attr('name') == intervalName){
-          e.intervals.push({'index': i,  'start': start, 'end': end})
-          added = true
+      $(intervals).each(function(i,interval){
+        intervalName = interval.tagName
+        if($(interval).attr('timeId') != undefined){
+          start = parseInt($(interval).attr('timeId'))
+          end = parseInt($(interval).attr('timeId'))
+        }else{
+          start = parseInt($(interval).attr('startFrame'))
+          end = parseInt($(interval).attr('endFrame'))
         }
+        $(data).each(function(i,e){
+          if($(e).attr('name') == intervalName){
+            e.intervals.push({'index': i,  'start': start, 'end': end})
+            added = true
+          }
+        })
+        if(!added){
+          data.push({'name': intervalName, 'intervals' : [
+            {'index': data.length, 'start' : start, 'end' : end}
+          ]})
+        }
+        added = false
       })
-      if(!added){
-        data.push({'name': intervalName, 'intervals' : [
-          {'index': data.length, 'start' : start, 'end' : end}
-        ]})
-      }
-      added = false
-    })
 
-    result.push({'nbFrames' : nbFrames, 'data': data})
+      result.push({'nbFrames' : nbFrames, 'data': data})
 
-    // console.log('getTimelineData', result)
-    return result
+      // console.log('getTimelineData', result)
+      return result
+    }
   }
 
   // return a JSON object with the list of extractors
@@ -54,20 +58,20 @@ export class Parser{
       var XMLDoc = $.parseXML(xml)
       var extractors= []
       $(XMLDoc).find('extractors').children().each(function(i,e){
-        extractors[i] = e.tagName
+        extractors[i] = $(e).clone().empty()
       })
       return extractors
     }
   }
 
   // return int of the number of frames
-  static getNbFrames(xml, nameExtractor){
-    if(xml == undefined || nameExtractor == undefined){
+  static getNbFrames(xml){
+    if(xml == undefined){
       console.log('getNbFrames : Illegal Argument Exception')
     }else{
-      var XMLObject = $.parseXML(xml)
+      var XMLObject = xml
       // init value
-	  var intervals=($(XMLObject).find('extractors').children(nameExtractor).find('[startFrame][endFrame],[timeId]'));
+	  var intervals=$(XMLObject).find('[startFrame][endFrame],[timeId]');
 
     var startFrame
     var endFrame
