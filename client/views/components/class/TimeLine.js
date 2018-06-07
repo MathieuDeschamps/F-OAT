@@ -30,8 +30,8 @@ export class TimeLine {
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
       console.log('nbFrame', this.nb_frame)
-      // var width_total = this.nb_frame * 0.3;
-      var width_total = 550
+       var width_total = this.nb_frame * 0.3;
+      //var width_total = 550
       var height_total = (TimeLine.LINE_HEIGHT() * this.entries.length ) + 20;
       gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length ) - (2 * TimeLine.EXT_MARGIN());
       gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trbl[1] - trbl[3];
@@ -42,24 +42,19 @@ export class TimeLine {
       //donner le div du timeLine la meme taille que le timeLine generer
       $("#" + this.div_id).css('height', height_total + 10);
       $("#" + this.div_id).css('display', 'none')
-      $('#' + this.div_id).css('overflow-x', 'scroll')
+      $('#' + this.div_id).css('overflow-x', 'auto')
       $('#' + this.div_id).css('overflow-y', 'hidden')
-      // $('#' + this.div_id).css('overflow', 'scroll')
-      $("#" + this.div_id).css('width', '100%')
+      $("#" + this.div_id).css('width', '90%')
 
 
       //generer la timeLine dans sa div
       var time_line = d3.select("#" + this.div_id)
               .append("svg")
-              // .style('display', 'none')
-              .style("width", "550")
-              .style("height", height_total)
-              // .attr("width", "550")
-              // .attr("height", height_total)
-              // .style('overflow', 'hidden')
-              // .style('overflow-y', 'scroll')
-              // .attr('viewBox','0,0,'+width_total+','+height_total)
-              // .attr("class", "chart");
+
+      $("#" + this.div_id).find('svg').css('width',width_total)
+              .css('height',height_total)
+              .css('position','relative');
+
       time_line.append('rect')
               .attr('x', 0)
               .attr('y', 0)
@@ -195,8 +190,8 @@ export class TimeLine {
     update() {
 
       $('#' + this.id_time_line).empty()
-      var debut = 0
-      vidCtrl.setPlayingInterval(debut, this.nbFrame);
+      var debut = 0;
+      vidCtrl.setPlayingInterval(debut, this.nb_frame);
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
@@ -213,9 +208,11 @@ export class TimeLine {
       //generer la timeLine dans sa div
       var time_line = d3.select("#" + this.id_time_line)
               .append("svg")
-              .attr("width", width_total)
-              .attr("height", height_total)
-              // .attr("class", "chart");
+
+      $("#" + this.div_id).find('svg').css('width',width_total)
+              .css('height',height_total)
+              .css('position','relative');
+
       time_line.append('rect')
               .attr('x', 0)
               .attr('y', 0)
@@ -326,7 +323,7 @@ export class TimeLine {
               .on("click", blockPlay);
 
       time_line.append("text")
-              .text(name + " timeLine")
+              .text(this.name_extractor + " timeLine")
               .attr("x", 0)
               .attr("y", 15)
               .attr("text-anchor", "start")

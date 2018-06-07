@@ -37,6 +37,10 @@ projectExists = function(){
   return true;
 }
 
+Template.project.onCreated(()=>{
+  Session.set('projectReady',0);
+});
+
 Template.project.onRendered(()=>{
   if(projectExists()){
     var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
@@ -129,7 +133,6 @@ Template.project.onRendered(()=>{
       _id: Meteor.userId()
     });
 
-Session.set('projectReady', 0)
 Meteor.call("getXml",pathXML,(errXML,result)=>{
   if(errXML){
     alert(errXML.reason);
@@ -252,6 +255,9 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
           _id: -1
         });
       }
+
+      Session.set('projectReady', 0);
+
     });
 
     Template.project.helpers({
@@ -274,7 +280,7 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
         }
         return (upload==100);
       },
-      
+
       uploading(){
         var idProject = Router.current().params._id;
         var idUpload = "upload_"+idProject;

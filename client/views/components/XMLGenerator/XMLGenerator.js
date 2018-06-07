@@ -1,6 +1,6 @@
 export class XMLGenerator{
 	constructor(xmlxsdObj){
-		this.xmlxsd=xmlxsdObj;
+		this.xmlxsdObj=xmlxsdObj;
 
 		this.xml=undefined;
 

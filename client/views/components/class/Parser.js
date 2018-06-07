@@ -102,7 +102,7 @@ export class Parser{
     })
 
     // console.log('getNbFrames', endFrame - startFrame)
-		return endFrame - startFrame
+		return endFrame - startFrame + 1
   }
 }
 

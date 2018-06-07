@@ -1,33 +1,37 @@
-svg {
+#overlay {
+  margin : 5% auto;
+}
+
+#overlay svg {
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   background-color: rgba(0,0,0,0);
 }
 
-svg,video{
+#overlay svg,video{
     height : 600px;
     width: 800px;
 }
 
-rect {
+#overlay rect {
   fill: none;
   pointer-events: all;
 }
 
-circle,
+#overlay circle,
 .line {
   fill: none;
   stroke: steelblue;
   stroke-width: 1.5px;
 }
 
-circle {
+#overlay circle {
   fill: #fff;
   fill-opacity: .2;
   cursor: move;
 }
 
-.selected {
+#overlay .selected {
   fill: #ff7f0e;
   stroke: #ff7f0e;
 }
