@@ -13,7 +13,7 @@ import {Extractors} from '/lib/collections/extractors.js';
 import './configAnnotation.html';
 
 Template.configAnnotation.onRendered(()=>{
-  //Wait for video player to be rendered before doing that
+  //Wait for project to be rendered before doing that
   Tracker.autorun(function doWhenProjectRendered(computation) {
     if(Session.get('projectReady') === 1) {
       console.log('XMLArray',xmlArray)

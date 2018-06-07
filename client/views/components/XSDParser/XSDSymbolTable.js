@@ -5,6 +5,7 @@ import {XSDAttr} from './XSDAttr.js';
 import {XSDRestrictionType} from './XSDRestrictionType.js';
 import {XSDExtensionType} from './XSDExtensionType.js';
 import {XSDFloatType} from './XSDFloatType.js';
+import {XSDDecimalType} from './XSDDecimalType.js';
 import {XSDIntegerType} from './XSDIntegerType.js';
 import {XSDStringType} from './XSDStringType.js';
 import {XSDVoidType} from './XSDVoidType.js';
@@ -181,11 +182,13 @@ export class XSDSymbolTable{
 		if(typeName == undefined){
 			typeName=this.newTypeName();
 		}
-
-		//string or float or integer default void
+		//string or float or integer or decimal
 		switch(typeType){
 			case 'float':
 				type=new XSDFloatType();
+				break;
+			case 'decimal':
+				type=new XSDDecimalType();
 				break;
 			case 'integer':
 				type=new XSDIntegerType();

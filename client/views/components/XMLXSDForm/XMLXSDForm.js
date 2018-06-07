@@ -22,7 +22,7 @@ export class XMLXSDForm{
 		// management of the attributs
 		this.attrManage=false;
 		this.attrFormName="";
-		this.inputHTML="";
+		this.inputHtml="";
 
 		this.htmlUpdate=false;
 	}
@@ -91,7 +91,7 @@ export class XMLXSDForm{
 		$divBody.append($ul)
 		var that=this;
 		xmlxsdElt.eltsList.forEach(function(elt,i){
-			var idName='elt'+xmlxsdElt.name+i+'config';
+			var idName=that.id+'_elt'+xmlxsdElt.name+i+'config';
 
 			$li = $('<li/>');
 			$ul.append($li)
@@ -205,7 +205,7 @@ export class XMLXSDForm{
 			seq.forEach(function(xmlxsdElt,j){
 
 				xmlxsdElt.eltsList.forEach(function(elt,i){
-					var idName='elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
+					var idName=that.id+'_elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
 
 					$li = $('<li/>');
 					$ul.append($li)
@@ -303,17 +303,25 @@ export class XMLXSDForm{
 	@return the code for the navigation bar
 	*/
 	generateNav(){
+		var nbElementByNav = 3
 		var result = ''
 		result += '<div class="row" id="nav-'+ this.id + 'config">'
 		result += '<nav>'
 		result += '<div class="nav-wrapper">'
 		result += '<div class="col s12">'
-
+		var nbCharacter = 0
+		var nbCharacterRow = 0
+		var sizeRow = 24
 		var that=this;
 
 		this.stack.forEach(function(elm,i){
 			if (i!=that.stack.length-1){
-				if(i%4 === 0 && i !== 0){
+				if(elm.tag.length > 24){
+					nbCharacter = 24
+				}else{
+					nbCharacter = elm.tag.length
+				}
+				if(nbCharacterRow + nbCharacter > sizeRow){
 					// add empty breadcrumb for trigger before style in scss
 					result += '<a id="'+that.id+'navConfig'+i+'" class="breadcrumb"/>';
 					result += '</div>';
@@ -323,8 +331,10 @@ export class XMLXSDForm{
 					result +=' <nav>'
 					result +=' <div class="nav-wrapper">'
 					result += '<div class="col s12">'
+					nbCharacterRow = 0
 				}
-				result+='<a id="'+that.id+'navConfig'+i+'" class="breadcrumb">' + elm.tag.substr(0,10) +'</a>';
+				nbCharacterRow += nbCharacter
+				result+='<a id="'+that.id+'navConfig'+i+'" class="breadcrumb">' + elm.tag.substr(0,sizeRow) +'</a>';
 			}
 			var idName=that.id+'navConfig'+i;
 
@@ -378,7 +388,7 @@ export class XMLXSDForm{
 		$li.append($divBody);
 
 		$divBody.append(this.generateAttrsForm(xmlxsdExt));
-
+		console.log('divBody', $divBody)
 		this.currentNodeValue=xmlxsdExt;
 
 		this.htmlUpdate=true;
@@ -465,22 +475,28 @@ export class XMLXSDForm{
 			}
 			if (attr.use!="prohibited"){
 				result+='<div class="col s10">'
-				result+=attr.name + ' '
-				result+='<div class="input-field inline">'
+				result+=attr.name + ' : '
 				that.attrManage=true;
 				that.attrFormName=formName;
 				that.currentAttr=attr;
-				attr.type.accept(that);
 
-				// disabled the input
-				var inputHTML = $(that.inputHTML).clone()
-				if(attr.value === undefined && attr.use === "optional"){
-					$(inputHTML).prop("disabled",true);
+				if(attr.fixedValue != undefined){
+					result+=attr.fixedValue
+				}else{
+					result+='<div class="input-field inline">'
+					attr.type.accept(that);
+
+					// disabled the input
+					var inputHtml = $(that.inputHtml).clone()
+					if(attr.value === undefined && attr.use === "optional"){
+						$(inputHtml).prop("disabled",true);
+					}
+					result +=inputHtml[0].outerHTML
+					result+='</div>'
 				}
-				result +=inputHTML[0].outerHTML
+
 
 				that.attrManage=false;
-				result+='</div>'
 				result+='</div>'
 			}
 			result+='</div>'
@@ -489,48 +505,48 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdFloat : XSDFloatType object
+	@xsdBool : XSDBooleanType object
 	*/
-	visitXSDFloatType(xsdFloat){
+	visitXSDBooleanType(xsdBool){
 		if (this.attrManage){
 			var attr=this.currentAttr;
-			if (xsdFloat.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHTML = this.generateSelect(selectFormName, xsdFloat.enumeration, attr.value);
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							attr.setValue($(jqSelectFormName).value);
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				var formName=this.attrFormName;
-				this.inputHTML = this.generateInput(formName, "number", 0.01, attr.value);
-
-				this.eventHandler.push({
+			var value;
+			if(attr.value != undefined){
+				value = attr.value;
+			}else if(attr.defaultValue != undefined){
+				value = attr.defaultValue;
+			}
+			var selectFormName=this.attrFormName;
+			this.inputHtml = this.generateSelect(selectFormName,[true, false], value);
+			this.eventHandler.push({
 					function:function(){
-						var jqFormName='#'+formName;
-						attr.setValue($(jqFormName).val());
-						$(jqFormName).val(attr.value);
+						var jqSelectFormName='#'+selectFormName;
+						attr.setValue($(jqSelectFormName).value);
 					},
-					id:formName,
+					id: selectFormName,
 					eventName:'change'
 				});
-			}
-			return result
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
 				var $div = $('<div id="extractor' + this.id + 'config"/>');
 				this.html = $div
-				// this.html= '<div id="extractor' + this.id + 'config" >'
 
 				// generate nav
 				$div.append(this.generateNav());
-				// this.html+=this.generateNav();
+				var $ul = $('<ul id="typefloatconfig" class="collapsible"/>');
+				$div.append($ul)
+				var $li = $('<li/>')
+				$ul.append($li)
+
+				var headStack=this.stack[this.stack.length-1];
+				if (headStack!=undefined){
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+				}else{
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+				}
+				var $divBody =$('<div class="collapsible-body"/>')
+				$li.append($divBody)
 			}
 
 			/* generate the the html to display the text (between tag)
@@ -569,7 +585,7 @@ export class XMLXSDForm{
 			*/
 
 			if (!this.htmlUpdate){
-				this.html+='</div>';
+				// this.html+='</div>';
 			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
@@ -583,15 +599,14 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdInt : XSDIntegerType object
+	@xsdDeci : XSDDecimalType object
 	*/
-	visitXSDIntegerType(xsdInt){
+	visitXSDDecimalType(xsdDeci){
 		if (this.attrManage){
 			var attr=this.currentAttr;
-			console.log('XSD int', xsdInt)
-			if (xsdInt.isEnumerated()){
+			if (xsdDeci.isEnumerated()){
 				var selectFormName=this.attrFormName;
-				this.inputHTML = this.generateSelect(selectFormName, xsdInt.enumeration, attr.value);
+				this.inputHtml = this.generateSelect(selectFormName, xsdDeci.enumeration, attr.defaultValue);
 
 				this.eventHandler.push({
 						function:function(){
@@ -603,7 +618,7 @@ export class XMLXSDForm{
 					});
 			}else{
 				var formName=this.attrFormName;
-				this.inputHTML = this.generateInput(formName, "number", undefined, attr.value);
+				this.inputHtml = this.generateInput(formName, "number", undefined, attr.defaultValue);
 
 				this.eventHandler.push({
 					function:function(){
@@ -620,11 +635,23 @@ export class XMLXSDForm{
 				this.eventHandler=[];
 				var $div = $('<div id="extractor' + this.id + 'config"/>');
 				this.html = $div
-				// this.html= '<div id="extractor' + this.id + 'config" >'
 
 				// generate nav
 				$div.append(this.generateNav());
-				// this.html+=this.generateNav();
+
+				var $ul = $('<ul id="typeintegerconfig" class="collapsible"/>');
+				$div.append($ul)
+				var $li = $('<li/>')
+				$ul.append($li)
+
+				var headStack=this.stack[this.stack.length-1];
+				if (headStack!=undefined){
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+				}else{
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+				}
+				var $divBody =$('<div class="collapsible-body"/>')
+				$li.append($divBody)
 			}
 			/* generate the the html to display the text (between tag)
 			this.html+='<div class="row">'
@@ -677,6 +704,229 @@ export class XMLXSDForm{
 		}
 	}
 
+	/* Visitor pattern : visit function
+	@xsdFloat : XSDFloatType object
+	*/
+	visitXSDFloatType(xsdFloat){
+		if (this.attrManage){
+			var attr=this.currentAttr;
+			var value;
+			if(attr.value != undefined){
+				value = attr.value;
+			}else if(attr.defaultValue != undefined){
+				value = attr.defaultValue;
+			}
+			if (xsdFloat.isEnumerated()){
+				var selectFormName=this.attrFormName;
+				this.inputHtml = this.generateSelect(selectFormName, xsdFloat.enumeration, value);
+				this.eventHandler.push({
+						function:function(){
+							var jqSelectFormName='#'+selectFormName;
+							attr.setValue($(jqSelectFormName).value);
+						},
+						id: selectFormName,
+						eventName:'change'
+					});
+
+			}else{
+				var formName=this.attrFormName;
+				this.inputHtml = this.generateInput(formName, "number", 0.01, value);
+
+				this.eventHandler.push({
+					function:function(){
+						var jqFormName='#'+formName;
+						attr.setValue($(jqFormName).val());
+						$(jqFormName).val(attr.value);
+					},
+					id:formName,
+					eventName:'change'
+				});
+			}
+			return result
+		}else{
+			if (!this.htmlUpdate){
+				this.eventHandler=[];
+				var $div = $('<div id="extractor' + this.id + 'config"/>');
+				this.html = $div
+
+				// generate nav
+				$div.append(this.generateNav());
+				var $ul = $('<ul id="typefloatconfig" class="collapsible"/>');
+				$div.append($ul)
+				var $li = $('<li/>')
+				$ul.append($li)
+
+				var headStack=this.stack[this.stack.length-1];
+				if (headStack!=undefined){
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+				}else{
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+				}
+				var $divBody =$('<div class="collapsible-body"/>')
+				$li.append($divBody)
+			}
+
+			/* generate the the html to display the text (between tag)
+			this.html+='<div class="row">'
+			this.html+='<div class="col s10">'
+			this.html+='text '
+			this.html+='<div class="input-field inline">'
+			var leaf=this.currentNodeValue;
+			if (xsdFloat.isEnumerated()){
+				this.html+='text';
+				var selectFormName='selectLeaf';
+				this.generateSelect(selectFormName, xsdFloat.enumeration, attr.value)
+				this.eventHandler.push({
+						function:function(){
+							var jqSelectFormName='#'+selectFormName;
+							leaf.setValue($(jqSelectFormName).val());
+						},
+						id: selectFormName,
+						eventName:'change'
+					});
+
+			}else{
+				this.generateInput(formName, "number", 0.01, leaf.value)
+				this.eventHandler.push({
+					function:function(){
+						var jqFormName='#'+formName;
+						leaf.setValue($(jqFormName).val());
+					},
+					id:formName,
+					eventName:'change'
+				});
+			}
+			this.html+='</div>';
+			this.html+='</div>';
+			this.html+='</div>';
+			*/
+
+			if (!this.htmlUpdate){
+				// this.html+='</div>';
+			}
+			// displaying GUI
+			var jqDivId='#'+this.divId;
+
+			$(jqDivId).html(this.html);
+
+			console.log(jqDivId);
+
+			this.applyEventHandler();
+		}
+	}
+
+	/* Visitor pattern : visit function
+	@xsdInt : XSDIntegerType object
+	*/
+	visitXSDIntegerType(xsdInt){
+		if (this.attrManage){
+			var attr=this.currentAttr;
+			var value;
+			if(attr.value != undefined){
+				value = attr.value;
+			}else if(attr.defaultValue != undefined){
+				value = attr.defaultValue;
+			}
+			console.log('XSD int', xsdInt)
+			if (xsdInt.isEnumerated()){
+				var selectFormName=this.attrFormName;
+				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value);
+
+				this.eventHandler.push({
+						function:function(){
+							var jqSelectFormName='#'+selectFormName;
+							attr.setValue($(jqSelectFormName).value);
+						},
+						id: selectFormName,
+						eventName:'change'
+					});
+			}else{
+				var formName=this.attrFormName;
+				this.inputHtml = this.generateInput(formName, "number", undefined, value);
+
+				this.eventHandler.push({
+					function:function(){
+						var jqFormName='#'+formName;
+						attr.setValue($(jqFormName).val());
+						$(jqFormName).val(attr.value);
+					},
+					id:formName,
+					eventName:'change'
+				});
+			}
+		}else{
+			if (!this.htmlUpdate){
+				this.eventHandler=[];
+				var $div = $('<div id="extractor' + this.id + 'config"/>');
+				this.html = $div
+
+				// generate nav
+				$div.append(this.generateNav());
+
+				var $ul = $('<ul id="typeintegerconfig" class="collapsible"/>');
+				$div.append($ul)
+				var $li = $('<li/>')
+				$ul.append($li)
+
+				var headStack=this.stack[this.stack.length-1];
+				if (headStack!=undefined){
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+				}else{
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+				}
+				var $divBody =$('<div class="collapsible-body"/>')
+				$li.append($divBody)
+			}
+			/* generate the the html to display the text (between tag)
+			this.html+='<div class="row">'
+			this.html+='<div class="col s12">'
+			this.html+='text'
+			this.html+='<div class="input-field inline">'
+			var leaf=this.currentNodeValue;
+			if (xsdInt.isEnumerated()){
+				var selectFormName='selectleaf';
+				this.generateSelect(selectFormName, xsdInt.enumeration, leaf.value)
+
+				this.eventHandler.push({
+						function:function(){
+							var jqSelectFormName='#'+selectFormName;
+							leaf.setValue($(jqSelectFormName).val());
+						},
+						id: selectFormName,
+						eventName:'change'
+					});
+
+			}else{
+				console.log('leaf');
+				var formName='leafForm';
+				this.generateInput(formName, "number", undefined, leaf.value)
+				this.eventHandler.push({
+					function:function(){
+						var jqFormName='#'+formName;
+						nodeValue.setValue($(jqFormName).val());
+					},
+					id:formName,
+					eventName:'change'
+				});
+			}
+			this.html+='</div>';
+			this.html+='</div>';
+			this.html+='</div>';
+			*/
+
+			if (!this.htmlUpdate){
+				// this.html+='</div>';
+			}
+			// displaying GUI
+			var jqDivId='#'+this.divId;
+
+			$(jqDivId).html(this.html);
+
+			console.log(jqDivId);
+
+			this.applyEventHandler();
+		}
+	}
 
 	/* Visitor pattern : visit function
 	@xsdString : XSDStringType object
@@ -684,14 +934,19 @@ export class XMLXSDForm{
 	visitXSDStringType(xsdString){
 		console.log('visit XSDStringType')
 		console.log(xsdString)
-
 		var that = this
 		if (this.attrManage){
 			var attr=this.currentAttr;
+			var value;
+			if(attr.value != undefined){
+				value = attr.value;
+			}else if(attr.defaultValue != undefined){
+				value = attr.defaultValue;
+			}
 			if (xsdString.isEnumerated()){
 				console.log('Is a enum')
 				var selectFormName=this.attrFormName;
-				this.inputHTML = this.generateSelect(selectFormName, xsdString.enumeration, attr.value);
+				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value);
 
 				this.eventHandler.push({
 					function:function(){
@@ -704,7 +959,7 @@ export class XMLXSDForm{
 
 			}else{
 				var formName=this.attrFormName;
-				this.inputHTML = this.generateInput(formName, "text", undefined, attr.value);
+				this.inputHtml = this.generateInput(formName, "text", undefined, value);
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
@@ -722,12 +977,23 @@ export class XMLXSDForm{
 				this.eventHandler=[];
 				var $div = $('<div id="extractor' + this.id + 'config"/>');
 				this.html = $div
-				// this.html= '<div id="extractor' + this.id + 'config" >'
 
 				// generate nav
 				$div.append(this.generateNav());
-				// this.html+=this.generateNav();
 
+				var $ul = $('<ul id="typestringconfig" class="collapsible"/>');
+				$div.append($ul)
+				var $li = $('<li/>')
+				$ul.append($li)
+
+				var headStack=this.stack[this.stack.length-1];
+				if (headStack!=undefined){
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+				}else{
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+				}
+				var $divBody =$('<div class="collapsible-body"/>')
+				$li.append($divBody)
 			}
 			/* generate the the html to display the text (between balise)
 			this.html+='<div class="row">'
@@ -780,6 +1046,47 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
+	@xsdVoid : XSDVoidType object
+	*/
+	visitXSDVoidType(xsdVoidType){
+		console.log('htmlUpdate', !this.htmlUpdate)
+		if (!this.htmlUpdate){
+			this.eventHandler=[];
+			var $div = $('<div id="extractor' + this.id + 'config"/>');
+			this.html = $div
+			// this.html= '<div id="extractor' + this.id + 'config" >'
+
+			// generate nav
+			$div.append(this.generateNav());
+			// this.html+=this.generateNav();
+
+			var $ul = $('<ul id="typevoidconfig" class="collapsible"/>');
+			$div.append($ul)
+			var $li = $('<li/>')
+			$ul.append($li)
+
+			var headStack=this.stack[this.stack.length-1];
+			if (headStack!=undefined){
+				$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+			}else{
+				$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+			}
+			var $divBody =$('<div class="collapsible-body"/>')
+			$li.append($divBody)
+		}
+		// displaying GUI
+		var jqDivId='#'+this.divId;
+
+		$(jqDivId).html(this.html);
+
+		console.log(jqDivId);
+
+		this.applyEventHandler();
+
+		console.log('vide:', xsdVoidType)
+	}
+
+	/* Visitor pattern : visit function
 	@xsdRestriction XSDRestrictionType object
 	*/
 	visitXSDRestrictionType(xsdRestriction){
@@ -817,12 +1124,15 @@ export class XMLXSDForm{
 		var result = ''
 		var that = this
 		result+='<select id="'+ id +'" class="default-browser">'
-		// if(defaultValue == undefined){
-		// 	result+='<option value="" disabled selected>Choose your option</option>'
-		// }
+		if(defaultValue != undefined){
+			result+='<option value="" disabled>Choose your option</option>'
+		}else{
+			result+='<option value="" selected="selected" disabled>Choose your option</option>'
+		}
 		enumValues.forEach(function(option){
-			if (defaultValue==option){
+			if (defaultValue === option){
 				result+='<option value="'+option+'" selected="selected">'+option+'</option>';
+				isSelected = true
 			}else{
 				result+='<option value="'+option+'">'+option+'</option>';
 			}

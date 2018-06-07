@@ -118,26 +118,26 @@ export class XSDFloatType {
 	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
-			this.minEx=max(this.minEx,parseFloat(newMin));
+			this.minEx=Math.max(this.minEx,parseFloat(newMin));
 		}else{
 			if(XSDFloatType.isFloat(newMin)){
 				this.minEx=parseFloat(newMin);
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e > this.minEx);
 		}
 	}
 	setMinIn(newMin){
 		if (this.hasMinIn()){
-			this.minIn=max(this.minIn,parseFloat(newMin));
+			this.minIn=Math.max(this.minIn,parseFloat(newMin));
 		}else{
 			if(XSDFloatType.isFloat(newMin)){
 				this.minIn=parseFloat(newMin);
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e >= this.minIn);
 		}
 	}
 	setMaxEx(newMax){
@@ -149,7 +149,7 @@ export class XSDFloatType {
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e < this.maxEx);
 		}
 	}
 	setMaxIn(newMax){
@@ -161,7 +161,7 @@ export class XSDFloatType {
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e <= this.maxIn);
 		}
 	}
 

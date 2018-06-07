@@ -122,14 +122,14 @@ export class XSDIntegerType {
 	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
-			this.minEx=max(this.minEx,parseInt(newMin));
+			this.minEx=Math.max(this.minEx,parseInt(newMin));
 		}else{
 			if(XSDIntegerType.isInteger(newMin)){
 				this.minEx=parseInt(newMin, 10);
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e > this.minEx);
 		}
 	}
 
@@ -142,7 +142,7 @@ export class XSDIntegerType {
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e >= this.minIn);
 		}
 	}
 	setMaxEx(newMax){
@@ -154,19 +154,19 @@ export class XSDIntegerType {
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e < this.maxEx);
 		}
 	}
 	setMaxIn(newMax){
 		if (this.hasMaxIn()){
-			this.maxIn=min(this.maxIn,parseInt(newMax));
+			this.maxIn=Math.min(this.maxIn,parseInt(newMax));
 		}else{
 			if(XSDIntegerType.isInteger(newMax)){
 				this.maxIn=parseInt(newMax, 10);
 			}
 		}
 		if (this.isEnumerated()){
-			this.enumeration=this.enumeration.filter(this.holds);
+			this.enumeration=this.enumeration.filter(e => e <= this.maxIn);
 		}
 	}
 
