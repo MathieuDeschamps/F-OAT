@@ -146,21 +146,38 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
     xsdArray = [extractors.lenght]
     xmlArray = [extractors.lenght]
     timeLines = [extractors.lenght]
-    // console.log('extractors', extractors)
+    console.log('extractors', extractors)
     // add the extractor list and build the forms
     $(extractors).each(function(i,extractor){
       extractorHtml = '<p><input class="filled-in" id="annontation_'+ i + '" index="'+ i+ '"  type="checkbox"/>'
       extractorHtml += '<label for="annontation_'+ i + '">' + $(extractor).attr('name') + '</label></p>'
       $('#extractors').append(extractorHtml)
       // console.log('extractor', extractor)
-      pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xml'
+      pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
       Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
         if(errXSD){
           // console.log('path', pathExtractor)
           alert(errXSD.reason);
         }else{
           // build the forms for the editor
-          xmlArray[i] = $(XMLParsed).find('extractors').children(extractor[0].tagName)[0]
+          var tmpXML = $(XMLParsed).find('extractors').children().filter(function(){
+            return ($(this).prop('tagName') === $(extractor).prop('tagName') &&
+                $(this).attr('version') === $(extractor).attr('version'))
+
+          })
+          console.log('tmpXML', tmpXML)
+          if(tmpXML.length === 1){
+            xmlArray[i] = tmpXML
+          }
+          // console.log('tmpXML',tmpXML[0])
+          // var tmpXml = $(XMLParsed).find('extractors').children(extractor[0].tagName)
+          // console.log('tmpXml', tmpXml)
+          // xmlArray[i]= $(tmpXml).filter(function(){
+          //   if($(this).attr('version') === $(extractor).attr('version')){
+          //     return true
+          //   }
+          // })
+          // console.log('xmlArrayi', xmlArrayi)
           xsdArray[i] = $.parseXML(resultExtractor.data)
           // console.log('XMLArray', XMLArray)
           // console.log('XSDArray', XSDArray)
@@ -274,7 +291,7 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
         }
         return (upload==100);
       },
-      
+
       uploading(){
         var idProject = Router.current().params._id;
         var idUpload = "upload_"+idProject;

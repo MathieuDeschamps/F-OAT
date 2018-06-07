@@ -71,7 +71,7 @@ export class XSDRestrictionType{
 				value=$(enumTag).attr('value');
 				var convertValue = that.convert(value)
 				if(that.holds(convertValue)){
-					that.enumeratedValues.push(value);
+					that.enumeratedValues.push(convertValue);
 				}
 			});
 		}
