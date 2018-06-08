@@ -1,12 +1,15 @@
 export class Visual{
     static draw_circles(){
+      var x1;
+      var y1;
+
         var points = [
-	           [100, 80],
-	           [100, 100],
-               [200, 30],
-               [300, 50],
-               [400, 40],
-               [500, 80]];
+	           [0.100, 0.80],
+	           [0.100, 0.100],
+               [0.200, 0.30],
+               [0.300, 0.50],
+               [0.400, 0.40],
+               [0.500, 0.80]];
 
     var dragged = null,
         selected = points[0];
@@ -14,30 +17,71 @@ export class Visual{
     var line = d3.svg.line();
     line.interpolate("cardinal");
     var svg = d3.select("#overlay").append("svg")
+    Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+      if(Session.get('videoPlayer') === 1) {
+        $('#overlay').find("svg").css({
+          'width': $('#videoContainer').width() + 'px',
+          'height': $('#videoContainer').height() + 'px'
+        })
+        var width = $('#overlay').find('svg').width();
+        var height = $('#overlay').find('svg').height();
 
-    var width = $('svg').width();
-    var height = $('svg').height();
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("tabindex", 3)
+            .on("mousedown", mousedown);
 
-    svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("tabindex", 3)
-        .on("mousedown", mousedown);
+        y1 = d3.scale.linear()
+                .domain([0, 1])
+                .range([0, height]);
 
-    svg.append("path")
-        .datum(points)
-        .attr("class", "line")
-        .attr("tabindex", 3)
-        .call(redraw);
+        x1 = d3.scale.linear()
+                .domain([0, 1])
+                .range([0, width]);
 
-    d3.select(window)
-        .on("mousemove", mousemove)
-        .on("mouseup", mouseup)
-        .on("keydown", keydown);
+        line.x(function(d) {
+      				return x1(d[0]);
+      			})
+      			.y(function(d) {
+      				return y1(d[1]);
+      			});
 
-    svg.node().focus();
+        svg.append("path")
+            .datum(points)
+            .attr("class", "line")
+            .attr("tabindex", 3)
+            .call(redraw);
+
+        d3.select(window)
+            .on("mousemove", mousemove)
+            .on("mouseup", mouseup)
+            .on("keydown", keydown);
+
+        svg.node().focus();
+
+        computation.stop();
+      }
+    });
 
     function redraw() {
+
+      var width = $('#overlay').find('svg').width();
+      var height = $('#overlay').find('svg').height();
+
+      y1 = d3.scale.linear()
+              .domain([0, 1])
+              .range([0, height]);
+
+      x1 = d3.scale.linear()
+              .domain([0, 1])
+              .range([0, width]);
+
+
+      svg.select("rect").attr("width",width)
+                        .attr("height",height);
+
+
       svg.select("path").attr("d", line);
 
       var circle = svg.selectAll("circle")
@@ -51,10 +95,9 @@ export class Visual{
           .ease("elastic")
           .attr("r", 6.5);
 
-      circle
-          .classed("selected", function(d) { return d === selected; })
-          .attr("cx", function(d) { return d[0]; })
-          .attr("cy", function(d) { return d[1]; });
+      circle.classed("selected", function(d) { return d === selected; })
+          .attr("cx", function(d) { return x1(d[0]); })
+          .attr("cy", function(d) { return y1(d[1]); });
 
       circle.exit().remove();
 
@@ -64,16 +107,40 @@ export class Visual{
       }
     }
 
+    $( window ).resize(function() {
+      setTimeout(function(){
+        $('#overlay').find("svg").css({
+          'width': $('#videoContainer').width() + 'px',
+          'height': $('#videoContainer').height() + 'px'
+        });
+        redraw();
+      },20);
+
+    });
+
     function mousedown() {
-      points.push(selected = dragged = d3.mouse(svg.node()));
+      var width = $('#overlay').find('svg').width();
+      var height = $('#overlay').find('svg').height();
+      var m = d3.mouse(svg.node());
+      var x = m[0]/width;
+      var y = m[1]/height;
+      var coordinates = [x,y];
+      points.push(selected = dragged = coordinates);
+
       redraw();
     }
 
     function mousemove() {
       if (!dragged) return;
       var m = d3.mouse(svg.node());
-      dragged[0] = Math.max(0, Math.min(width, m[0]));
-      dragged[1] = Math.max(0, Math.min(height, m[1]));
+      var width = $('#overlay').find('svg').width();
+      var height = $('#overlay').find('svg').height();
+      var x = m[0]/width;
+      var y = m[1]/height;
+      var coordinates = [x,y];
+
+      dragged[0] = Math.max(0, Math.min(1, x));
+      dragged[1] = Math.max(0, Math.min(1, y));
       redraw();
     }
 

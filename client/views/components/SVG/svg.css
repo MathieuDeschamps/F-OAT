@@ -1,5 +1,6 @@
 #overlay {
-  margin : 5% auto;
+  margin : 5%;
+  width: 80%;
 }
 
 #overlay svg {
@@ -8,10 +9,6 @@
   background-color: rgba(0,0,0,0);
 }
 
-#overlay svg,video{
-    height : 600px;
-    width: 800px;
-}
 
 #overlay rect {
   fill: none;
