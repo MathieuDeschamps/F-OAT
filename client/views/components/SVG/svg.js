@@ -7,3 +7,7 @@ import './svg.html';
 Template.svg.onRendered(function () {
     Visual.draw_circles();
 });
+
+Template.svg.onCreated(function (){
+    Session.set('videoPlayer',0);
+})
