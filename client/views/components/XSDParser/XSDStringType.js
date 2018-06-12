@@ -73,8 +73,8 @@ export class XSDStringType {
 		if (this.maxLength!="unbounded"){
 			this.maxLength=Math.max(this.maxLength,newMax);
 		}else{
-			if(Number.isInteger(parseInt(newMax))){
-				this.maxLength=parseInt(newMax);
+			if(Number.isInteger(parseInt(newMax, 10))){
+				this.maxLength=parseInt(newMax, 10);
 			}
 		}
 		if (this.isEnumerated()){

@@ -152,9 +152,9 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
     console.log('extractors', extractors)
     // add the extractor list and build the forms
     $(extractors).each(function(i,extractor){
-      extractorHtml = '<p><input class="filled-in" id="annontation_'+ i + '" index="'+ i+ '"  type="checkbox"/>'
-      extractorHtml += '<label for="annontation_'+ i + '">' + $(extractor).attr('name') + '</label></p>'
-      $('#extractors').append(extractorHtml)
+      // extractorHtml = '<p><input class="filled-in" id="annontation_'+ i + '" index="'+ i+ '"  type="checkbox"/>'
+      // extractorHtml += '<label for="annontation_'+ i + '">' + $(extractor).attr('name') + '</label></p>'
+      // $('#configAnnotation').append(extractorHtml)
       // console.log('extractor', extractor)
       pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
       Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
@@ -168,7 +168,6 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
                 $(this).attr('version') === $(extractor).attr('version'))
 
           })
-          console.log('tmpXML', tmpXML)
           if(tmpXML.length === 1){
             xmlArray[i] = tmpXML
           }
@@ -212,11 +211,11 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
                 extractors.forEach(function(extractor){
                   // console.log('nb Frame',extractor);
                   var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
-                  console.log(newNbFrames);
+                  // console.log(newNbFrames);
                   if (newNbFrames!=undefined){
-                    console.log(newNbFrames);
+                    // console.log(newNbFrames);
                     nbFrames=Math.max(nbFrames,newNbFrames);
-                    console.log(nbFrames);
+                    // console.log(nbFrames);
                   }
                 });
                 if (nbFrames>0){
@@ -387,19 +386,19 @@ Template.project.events({
     }
   },
 
-  // check button event display form
-  'click .filled-in'(event,instance){
-    //toggle
-    var index = $(event.currentTarget).attr('index')
-    // console.log('id', index);
-    if($(event.currentTarget).prop('checked')){
-      $('#' + index + '_formConfigAnnontation').css('display', 'block')
-      $('#time_line_' + index).css('display','block')
-    }else{
-      $('#' + index + '_formConfigAnnontation').css('display', 'none')
-      $('#time_line_' + index).css('display', 'none');
-    }
-  },
+  // // check button event display form
+  // 'click .filled-in'(event,instance){
+  //   //toggle
+  //   var index = $(event.currentTarget).attr('index')
+  //   // console.log('id', index);
+  //   if($(event.currentTarget).prop('checked')){
+  //     $('#' + index + '_formConfigAnnontation').css('display', 'block')
+  //     $('#time_line_' + index).css('display','block')
+  //   }else{
+  //     $('#' + index + '_formConfigAnnontation').css('display', 'none')
+  //     $('#time_line_' + index).css('display', 'none');
+  //   }
+  // },
 
   /*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
   //Test to merge XML file
