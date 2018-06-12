@@ -35,15 +35,16 @@ export class XSDObject{
 		byteType.setMinIn(-128);
 		byteType.setMaxIn(127);
 		this.table.addType(byteType);
+		var that = this;
 
 		// Simple types declarations management
 		$(schema).children('xs\\:simpleType').each(function(i,typeDef){
-			this.table.createSimpleType(typeDef);
+			that.table.createSimpleType(typeDef);
 		});
 
 		// Complex types declarations management
 		$(schema).children('xs\\:complexType').each(function(i,typeDef){
-			this.table.createComplexType(typeDef);
+			that.table.createComplexType(typeDef);
 		});
 
 		// root creation

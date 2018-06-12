@@ -118,11 +118,9 @@ static getOverlayData(xml){
     var y
     var timeId
     var added = false
-
     $(positions).each(function(i,position){
-      timeId = $(position).parents('[timeId]')[0]
+      timeId = $(position).parents('frame')[0]
       timeId = $(timeId).attr('timeId')
-
       x = parseFloat( $(position).attr('x'))
       y = parseFloat( $(position).attr('y'))
       $(result).each(function(i,e){
@@ -137,6 +135,7 @@ static getOverlayData(xml){
           {"x": x, "y": y}
         ]})
       }
+      added = false;
 
     })
 
