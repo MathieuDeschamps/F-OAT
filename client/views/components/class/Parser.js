@@ -129,13 +129,13 @@ export class Parser{
         y = parseFloat( $(position).attr('y'))
         $(result).each(function(i,e){
           if($(e).attr('timeId') == timeId){
-            e.position.push({'x': x, 'y': y})
+            e.positions.push({'x': x, 'y': y})
             added = true
           }
         })
 
         if(!added){
-          result.push({"timeId": timeId, "position":[
+          result.push({"timeId": timeId, "positions":[
             {"x": x, "y": y}
           ]})
         }

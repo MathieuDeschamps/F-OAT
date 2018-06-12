@@ -1,68 +1,100 @@
 export class Visual{
-    static draw_circles(){
-      var x1;
-      var y1;
+  //data is an array of timeId and positions
+  constructor(data){
+    this.points=[];
+    this.data = data;
+    this.firstDraw = true;
+    this.line = null;
+    this.draw_circles();
+  }
 
-        var points = [
-	           [0.100, 0.80],
-	           [0.100, 0.100],
-               [0.200, 0.30],
-               [0.300, 0.50],
-               [0.400, 0.40],
-               [0.500, 0.80]];
+  update(){
+    this.notify(vidCtrl.getCurrentFrame());
+  }
+  
+  notify(currentFrame){
+    this.points = [];
+    var newPoints =this.data.find( d => d.timeId == currentFrame);
+    var that = this;
+    if(newPoints!=null){
+      newPoints.positions.forEach(function(point){
+        var coordinates = [point.x,point.y];
+        if(that.points.find( p => (p[0] == coordinates[0] && p[1] == coordinates[1]))==null){
+          that.points.push(coordinates);
+        }
+      });
+    }
+    this.draw_circles();
+  }
 
-    var dragged = null,
-        selected = points[0];
+  draw_circles(){
+    var x1;
+    var y1;
 
-    var line = d3.svg.line();
-    line.interpolate("cardinal");
-    var svg = d3.select("#overlay").append("svg")
-    Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-      if(Session.get('videoPlayer') === 1) {
-        $('#overlay').find("svg").css({
-          'width': $('#videoContainer').width() + 'px',
-          'height': $('#videoContainer').height() + 'px'
-        })
-        var width = $('#overlay').find('svg').width();
-        var height = $('#overlay').find('svg').height();
+    var dragged = null;
+    var selected = null;
+    if(this.points.length>0){
+      selected = this.points[this.points.length-1];
+    }
+    if(this.firstDraw){
+      this.line = d3.svg.line();
+      this.line.interpolate("cardinal");
 
-        svg.append("rect")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("tabindex", 3)
-            .on("mousedown", mousedown);
+      var svg = d3.select("#overlay").append("svg")
 
-        y1 = d3.scale.linear()
-                .domain([0, 1])
-                .range([0, height]);
+      $('#overlay').find("svg").css({
+        'width': $('#videoContainer').width() + 'px',
+        'height': $('#videoContainer').height() + 'px'
+      })
+      var width = $('#overlay').find('svg').width();
+      var height = $('#overlay').find('svg').height();
 
-        x1 = d3.scale.linear()
-                .domain([0, 1])
-                .range([0, width]);
+      svg.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("tabindex", 3)
+      .on("mousedown", mousedown);
 
-        line.x(function(d) {
-      				return x1(d[0]);
-      			})
-      			.y(function(d) {
-      				return y1(d[1]);
-      			});
+      y1 = d3.scale.linear()
+      .domain([0, 1])
+      .range([0, height]);
 
-        svg.append("path")
-            .datum(points)
-            .attr("class", "line")
-            .attr("tabindex", 3)
-            .call(redraw);
+      x1 = d3.scale.linear()
+      .domain([0, 1])
+      .range([0, width]);
 
-        d3.select(window)
-            .on("mousemove", mousemove)
-            .on("mouseup", mouseup)
-            .on("keydown", keydown);
+      this.line.x(function(d) {
+        return x1(d[0]);
+      })
+      .y(function(d) {
+        return y1(d[1]);
+      });
+      svg.append("path")
+      .attr("class", "line")
+      .attr("tabindex", 3)
 
-        svg.node().focus();
+      d3.select(window)
+      .on("mousemove", mousemove)
+      .on("mouseup", mouseup)
+      .on("keydown", keydown);
 
-        computation.stop();
-      }
-    });
+      svg.node().focus();
+      this.firstDraw = false;
+      that = this;
+    }
+    else{
+      var svg = d3.select("#overlay").select("svg")
+      that = this;
+      svg.select("path")
+      .datum(that.points)
+      .attr("class", "line")
+      .attr("tabindex", 3)
+      .call(redraw);
+
+
+    }
+
+
 
     function redraw() {
 
@@ -70,34 +102,33 @@ export class Visual{
       var height = $('#overlay').find('svg').height();
 
       y1 = d3.scale.linear()
-              .domain([0, 1])
-              .range([0, height]);
+      .domain([0, 1])
+      .range([0, height]);
 
       x1 = d3.scale.linear()
-              .domain([0, 1])
-              .range([0, width]);
+      .domain([0, 1])
+      .range([0, width]);
 
 
       svg.select("rect").attr("width",width)
-                        .attr("height",height);
+      .attr("height",height);
 
-
-      svg.select("path").attr("d", line);
+      svg.select("path").attr("d", that.line);
 
       var circle = svg.selectAll("circle")
-          .data(points, function(d) { return d; });
+      .data(that.points, function(d) { return d; });
 
       circle.enter().append("circle")
-          .attr("r", 1e-6)
-          .on("mousedown", function(d) { selected = dragged = d; redraw(); })
-        .transition()
-          .duration(750)
-          .ease("elastic")
-          .attr("r", 6.5);
+      .attr("r", 1e-6)
+      .on("mousedown", function(d) { selected = dragged = d; redraw(); })
+      .transition()
+      .duration(750)
+      .ease("elastic")
+      .attr("r", 6.5);
 
       circle.classed("selected", function(d) { return d === selected; })
-          .attr("cx", function(d) { return x1(d[0]); })
-          .attr("cy", function(d) { return y1(d[1]); });
+      .attr("cx", function(d) { return x1(d[0]); })
+      .attr("cy", function(d) { return y1(d[1]); });
 
       circle.exit().remove();
 
@@ -107,16 +138,6 @@ export class Visual{
       }
     }
 
-    $( window ).resize(function() {
-      setTimeout(function(){
-        $('#overlay').find("svg").css({
-          'width': $('#videoContainer').width() + 'px',
-          'height': $('#videoContainer').height() + 'px'
-        });
-        redraw();
-      },20);
-
-    });
 
     function mousedown() {
       var width = $('#overlay').find('svg').width();
@@ -125,9 +146,9 @@ export class Visual{
       var x = m[0]/width;
       var y = m[1]/height;
       var coordinates = [x,y];
-      points.push(selected = dragged = coordinates);
+      that.points.push(selected = dragged = coordinates);
 
-      redraw();
+      that.draw_circles();
     }
 
     function mousemove() {
@@ -141,7 +162,7 @@ export class Visual{
 
       dragged[0] = Math.max(0, Math.min(1, x));
       dragged[1] = Math.max(0, Math.min(1, y));
-      redraw();
+      that.draw_circles();
     }
 
     function mouseup() {
@@ -155,13 +176,22 @@ export class Visual{
       switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: { // delete
-          var i = points.indexOf(selected);
-          points.splice(i, 1);
-          selected = points.length ? points[i > 0 ? i - 1 : 0] : null;
-          redraw();
+          var i = that.points.indexOf(selected);
+          that.points.splice(i, 1);
+          selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
+          that.draw_circles();
           break;
         }
       }
     }
-    }
+    $( window ).resize(function() {
+      setTimeout(function(){
+        $('#overlay').find("svg").css({
+          'width': $('#videoContainer').width() + 'px',
+          'height': $('#videoContainer').height() + 'px'
+        });
+        that.draw_circles();
+      },20);
+    });
+  }
 }

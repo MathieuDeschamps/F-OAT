@@ -15,7 +15,7 @@ export class videoControler {
 
 
 		// Récupération du nombre de frame à partir du framerate
-		// On utilise un un intervalle qui vérifie si la vidéo est prête à être lu.
+		// On utilise un intervalle qui vérifie si la vidéo est prête à être lue.
 		var that=this;
 
 		this.settingInterval=setInterval(function(){
@@ -35,24 +35,11 @@ export class videoControler {
 		},50);
 
 
-
-
 		// Mode lecture
 		this.mode="full";
 		this.partialPlaying=false;
 		$("#partialButton").prop('checked',false);
 		this.isPlaying=false;
-
-		$(this.vid).on('timeupdate', function() {
-			if (!that.isPlaying || that.mode=='freeze'){
-				that.pause();
-				that.forcedNotifyAttachedObjects(that.timeToFrame(this.currentTime));
-			}
-			/*if (that.mode=='freeze'){
-				that.vid.currentTime=that.frameToTime(that.beginSelect);
-			}*/
-		});
-
 
 
 		// Pour le pattern observer
@@ -177,7 +164,6 @@ export class videoControler {
 			case 'freeze' :
 				//this.isPlaying=false;
 				this.pause();
-				//console.log("configMode", this.beginSelect);
 				this.setCurrentFrame(this.beginSelect);
 				break;
 		}
@@ -189,9 +175,8 @@ export class videoControler {
 		var that=this;
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
-			if (curFrame % that.attachedObjectFrequency.get(object)==1){
+			if (curFrame % that.attachedObjectFrequency.get(object)==0){
 				object.notify(curFrame);
-				//console.log('notify',object);
 			}
 		});
 	}
