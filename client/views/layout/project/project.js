@@ -38,6 +38,7 @@ projectExists = function(){
 
 Template.project.onCreated(()=>{
   Session.set('projectReady',0);
+    Session.set('videoPlayer',0);
 });
 
 Template.project.onRendered(()=>{

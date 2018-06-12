@@ -21,6 +21,7 @@ export class VisualizerFactory{
     var idTimeLine = 'time_line_' + id + '_' + version;
     var idOverlay = 'overlay_' + id + '_' + version;
     var divTimeLine;
+    var divOverlay;
     var divForm = $('<div/>');
     $(divForm).attr('id', idForm).addClass('row').css('display', 'none');
     $('#' + this.divIdForm).append(divForm);
@@ -29,7 +30,12 @@ export class VisualizerFactory{
         divTimeLine = $('<div/>');
         $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
         $('#' + this.divIdTimeLine).append(divTimeLine);
-        visualizer = new ShotExtractVisualizer(this.xmlxsdObj,id, name, idForm, idTimeLine);
+
+        divOverlay = $('<div/>')
+        $(divOverlay).attr('id', idOverlay).css('display', 'none');
+        $('#' + this.divIdOverlay).append(divOverlay);
+
+        visualizer = new ShotExtractVisualizer(this.xmlxsdObj,id, name, idForm, idTimeLine, idOverlay);
         break;
       default:
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)

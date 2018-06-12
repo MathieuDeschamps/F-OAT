@@ -1202,6 +1202,11 @@ export class XMLXSDForm{
 		return result
 	}
 
+	displayForm(obj, stack){
+		this.stack = stack;
+		obj.accept(this);
+	}
+
 	/* Apply the event of this.eventHandler and	initialize some element
 	*/
 	applyEventHandler(){

@@ -17,7 +17,7 @@ Template.configAnnotation.onRendered(()=>{
   // var visualizers = [];
   //Wait for project to be rendered before doing that
   Tracker.autorun(function doWhenProjectRendered(computation) {
-    if(Session.get('projectReady') === 1) {
+    if(Session.get('projectReady') === 1 && Session.get('videoPlayer') === 1) {
       console.log('XMLArray',xmlArray)
       console.log('XSDArray', xsdArray)
       new configuratorManager(xsdArray, xmlArray,"configAnnotation",

@@ -1,17 +1,21 @@
 export class Visual{
   //data is an array of timeId and positions
-  constructor(data){
+  constructor(data, divId){
     this.points=[];
     this.data = data;
+    this.divId = divId;
     this.firstDraw = true;
     this.line = null;
+    this.dragged = null;
+    this.selected = null;
+
     this.draw_circles();
   }
 
   update(){
     this.notify(vidCtrl.getCurrentFrame());
   }
-  
+
   notify(currentFrame){
     this.points = [];
     var newPoints =this.data.find( d => d.timeId == currentFrame);
@@ -31,23 +35,18 @@ export class Visual{
     var x1;
     var y1;
 
-    var dragged = null;
-    var selected = null;
-    if(this.points.length>0){
-      selected = this.points[this.points.length-1];
-    }
     if(this.firstDraw){
       this.line = d3.svg.line();
       this.line.interpolate("cardinal");
 
-      var svg = d3.select("#overlay").append("svg")
+      var svg = d3.select("#"+this.divId).append("svg")
 
-      $('#overlay').find("svg").css({
+      $('#' + this.divId).find("svg").css({
         'width': $('#videoContainer').width() + 'px',
         'height': $('#videoContainer').height() + 'px'
       })
-      var width = $('#overlay').find('svg').width();
-      var height = $('#overlay').find('svg').height();
+      var width = $('#' + this.divId).find('svg').width();
+      var height = $('#' + this.divId).find('svg').height();
 
       svg.append("rect")
       .attr("width", width)
@@ -98,8 +97,8 @@ export class Visual{
 
     function redraw() {
 
-      var width = $('#overlay').find('svg').width();
-      var height = $('#overlay').find('svg').height();
+      var width = $('#' + that.divId).find('svg').width();
+      var height = $('#' + that.divId).find('svg').height();
 
       y1 = d3.scale.linear()
       .domain([0, 1])
@@ -120,13 +119,13 @@ export class Visual{
 
       circle.enter().append("circle")
       .attr("r", 1e-6)
-      .on("mousedown", function(d) { selected = dragged = d; redraw(); })
+      .on("mousedown", function(d) { that.selected = that.dragged = d; redraw(); })
       .transition()
       .duration(750)
       .ease("elastic")
       .attr("r", 6.5);
 
-      circle.classed("selected", function(d) { return d === selected; })
+      circle.classed("selected", function(d) { return d === that.selected; })
       .attr("cx", function(d) { return x1(d[0]); })
       .attr("cy", function(d) { return y1(d[1]); });
 
@@ -140,45 +139,45 @@ export class Visual{
 
 
     function mousedown() {
-      var width = $('#overlay').find('svg').width();
-      var height = $('#overlay').find('svg').height();
+      var width = $('#' + that.divId).find('svg').width();
+      var height = $('#' + that.divId).find('svg').height();
       var m = d3.mouse(svg.node());
       var x = m[0]/width;
       var y = m[1]/height;
       var coordinates = [x,y];
-      that.points.push(selected = dragged = coordinates);
+      that.points.push(that.selected = that.dragged = coordinates);
 
       that.draw_circles();
     }
 
     function mousemove() {
-      if (!dragged) return;
+      if (!that.dragged) return;
       var m = d3.mouse(svg.node());
-      var width = $('#overlay').find('svg').width();
-      var height = $('#overlay').find('svg').height();
+      var width = $('#' + that.divId).find('svg').width();
+      var height = $('#' + that.divId).find('svg').height();
       var x = m[0]/width;
       var y = m[1]/height;
       var coordinates = [x,y];
 
-      dragged[0] = Math.max(0, Math.min(1, x));
-      dragged[1] = Math.max(0, Math.min(1, y));
+      that.dragged[0] = Math.max(0, Math.min(1, x));
+      that.dragged[1] = Math.max(0, Math.min(1, y));
       that.draw_circles();
     }
 
     function mouseup() {
-      if (!dragged) return;
+      if (!that.dragged) return;
       mousemove();
-      dragged = null;
+      that.dragged = null;
     }
 
     function keydown() {
-      if (!selected) return;
+      if (!that.selected) return;
       switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: { // delete
-          var i = that.points.indexOf(selected);
+          var i = that.points.indexOf(that.selected);
           that.points.splice(i, 1);
-          selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
+          that.selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
           that.draw_circles();
           break;
         }
@@ -186,7 +185,7 @@ export class Visual{
     }
     $( window ).resize(function() {
       setTimeout(function(){
-        $('#overlay').find("svg").css({
+        $('#' + that.divId).find("svg").css({
           'width': $('#videoContainer').width() + 'px',
           'height': $('#videoContainer').height() + 'px'
         });

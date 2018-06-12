@@ -1,16 +1,18 @@
 import { TimeLine } from '../class/TimeLine.js'
+import {Visual} from '../class/Visual.js';
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 
 export class ShotExtractVisualizer{
 
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, divIdForm, divIdTimeLine){
+  constructor(xmlxsdObj,idExtractor, name, divIdForm, divIdTimeLine, divIdOverlay){
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
     this.name = name
     this.divIdForm = divIdForm;
     this.divIdTimeLine = divIdTimeLine;
+    this.divIdOverlay = divIdOverlay;
     this.observers = [];
     this.timeLineData = [];
     this.overlayData = [];
@@ -23,6 +25,7 @@ export class ShotExtractVisualizer{
   init(){
     this.stack = [];
     this.timeLineData = [];
+    this.overlayData = [];
     this.currentTimeId = NaN;
     this.minNumFrame = NaN;
     this.maxFrame = NaN;
@@ -87,7 +90,9 @@ export class ShotExtractVisualizer{
     var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, this.timeLineData, this.divIdTimeLine);
     this.attach(timeLine);
 
-    var overlay = new  
+    var overlay = new Visual(this.overlayData, this.divIdOverlay)
+    this.attach(overlay);
+    vidCtrl.attach(overlay,1);
     console.log('timeLineData', this.timeLineData);
     console.log('overlayData', this.overlayData);
 
@@ -264,7 +269,6 @@ export class ShotExtractVisualizer{
       obj.attrs.x.value <= 1 &&
       obj.attrs.y.value <= 1
       ){
-        console.log('obj',obj)
         this.overlayData.forEach(function(element){
           if(!added && element.timeId === that.currentTimeId){
             element.positions.push({
@@ -319,7 +323,7 @@ export class ShotExtractVisualizer{
     var result = [];
     result.push(this.divIdForm)
     result.push(this.divIdTimeLine);
-
+    result.push(this.divIdOverlay);
     return result;
   }
 }

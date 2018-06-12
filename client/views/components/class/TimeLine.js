@@ -42,7 +42,7 @@ export class TimeLine {
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
       // console.log('nbFrame', this.nb_frames)
-       var width_total = this.nb_frames * (this.frame_rate / 400);
+       var width_total = this.nb_frames * (this.frame_rate / 50);
       //var width_total = 550
       var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
       gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
@@ -114,6 +114,7 @@ export class TimeLine {
               rect_actif = i;
               prec_timeLine = divId;
               // (Number(idTimeLine)+ 1)
+              that.xmlxsdForm.displayForm(d.obj, d.stack)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);
               // console.log("debut = " + d.start + " fin = " + d.end);
