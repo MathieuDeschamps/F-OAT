@@ -122,7 +122,7 @@ export class XSDIntegerType {
 	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
-			this.minEx=Math.max(this.minEx,parseInt(newMin));
+			this.minEx=Math.max(this.minEx,parseInt(newMin, 10));
 		}else{
 			if(XSDIntegerType.isInteger(newMin)){
 				this.minEx=parseInt(newMin, 10);
@@ -135,7 +135,7 @@ export class XSDIntegerType {
 
 	setMinIn(newMin){
 		if (this.hasMinIn()){
-			this.minIn=Math.max(this.minIn,parseInt(newMin));
+			this.minIn=Math.max(this.minIn,parseInt(newMin, 10));
 		}else{
 			if(XSDIntegerType.isInteger(newMin)){
 				this.minIn=parseInt(newMin, 10);
@@ -147,7 +147,7 @@ export class XSDIntegerType {
 	}
 	setMaxEx(newMax){
 		if (this.hasMaxEx()){
-			this.maxEx=Math.min(this.maxEx,parseInt(newMax));
+			this.maxEx=Math.min(this.maxEx,parseInt(newMax, 10));
 		}else{
 			if(XSDIntegerType.isInteger(newMax)){
 				this.maxEx=newMax;
@@ -159,7 +159,7 @@ export class XSDIntegerType {
 	}
 	setMaxIn(newMax){
 		if (this.hasMaxIn()){
-			this.maxIn=Math.min(this.maxIn,parseInt(newMax));
+			this.maxIn=Math.min(this.maxIn,parseInt(newMax, 10));
 		}else{
 			if(XSDIntegerType.isInteger(newMax)){
 				this.maxIn=parseInt(newMax, 10);

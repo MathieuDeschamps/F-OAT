@@ -23,11 +23,11 @@ export class Parser{
       $(intervals).each(function(i,interval){
         intervalName = interval.tagName
         if($(interval).attr('timeId') != undefined){
-          start = parseInt($(interval).attr('timeId'))
-          end = parseInt($(interval).attr('timeId'))
+          start = parseInt($(interval).attr('timeId'), 10)
+          end = parseInt($(interval).attr('timeId'), 10)
         }else{
-          start = parseInt($(interval).attr('startFrame'))
-          end = parseInt($(interval).attr('endFrame'))
+          start = parseInt($(interval).attr('startFrame'), 10)
+          end = parseInt($(interval).attr('endFrame'), 10)
         }
         $(data).each(function(i,e){
           if($(e).attr('name') == intervalName){
@@ -71,38 +71,40 @@ export class Parser{
     }else{
       var XMLObject = xml
       // init value
-	  var intervals=$(XMLObject).find('[startFrame][endFrame],[timeId]');
+  	  var intervals=$(XMLObject).find('[startFrame][endFrame],[timeId]');
+      var startFrame
+      var endFrame
+      var tmpStrat
+      var tmpEnd
+      $(intervals).each(function(i,interval){
 
-    var startFrame
-    var endFrame
-    var tmpStrat
-    var tmpEnd
-    $(intervals).each(function(i,interval){
-
-      if($(interval).attr('timeId') != undefined){
-        tmpStrat = parseInt($(interval).attr('timeId'))
-        tmpEnd = parseInt($(interval).attr('timeId'))
-      }else{
-        tmpStrat = parseInt($(interval).attr('startFrame'))
-        tmpEnd = parseInt($(interval).attr('endFrame'))
-      }
-
-      if(i == 0){
-        startFrame = tmpStrat
-        endFrame = tmpEnd
-      }else{
-        if(tmpStrat < startFrame){
-            startFrame = tmpStrat
+        if($(interval).attr('timeId') != undefined){
+          tmpStrat = parseInt($(interval).attr('timeId'), 10)
+          tmpEnd = parseInt($(interval).attr('timeId'), 10)
+        }else{
+          tmpStrat = parseInt($(interval).attr('startFrame'), 10)
+          tmpEnd = parseInt($(interval).attr('endFrame'), 10)
         }
-        if(tmpEnd > endFrame){
+
+        if(i == 0){
+          startFrame = tmpStrat
           endFrame = tmpEnd
+        }else{
+          if(tmpStrat < startFrame){
+              startFrame = tmpStrat
+          }
+          if(tmpEnd > endFrame){
+            endFrame = tmpEnd
+          }
         }
+
+      })
+      if(isNaN(endFrame - startFrame + 1)){
+        return 0
+      }else{
+        // console.log('getNbFrames', endFrame - startFrame)
+        return endFrame - startFrame + 1
       }
-
-    })
-
-    // console.log('getNbFrames', endFrame - startFrame)
-		return endFrame - startFrame + 1
   }
 }
 
@@ -154,7 +156,7 @@ static getOverlayData(xml){
       var result = []
       $(XMLObject).find('frame').each(function(i,frame){
 
-        timeId = parseInt($(frame).attr('timeId'))
+        timeId = parseInt($(frame).attr('timeId'), 10)
         // add the element once
         if($.inArray(timeId, result) == -1){
           if($(result).find(timeId).length ==  0){

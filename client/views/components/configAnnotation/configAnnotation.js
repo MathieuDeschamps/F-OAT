@@ -7,31 +7,22 @@ import {XSDObject} from '../XSDParser/XSDObject.js';
 import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
 import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
+import {configuratorManager} from './configuratorManager.js';
 
 import {Extractors} from '/lib/collections/extractors.js';
 
 import './configAnnotation.html';
 
 Template.configAnnotation.onRendered(()=>{
+  // var visualizerFactories = [];
+  // var visualizers = [];
   //Wait for project to be rendered before doing that
   Tracker.autorun(function doWhenProjectRendered(computation) {
     if(Session.get('projectReady') === 1) {
       console.log('XMLArray',xmlArray)
       console.log('XSDArray', xsdArray)
-
-      xmlArray.forEach(function(xml, i){
-        var idDiv= i+'_formConfigAnnontation';
-        $('#configAnnotationForm').append('<div id="'+idDiv+'" class="row"/>')
-        var xsdObj=new XSDObject(xsdArray[i]);
-        xmlxsdObjAnnotations[i]= new XMLXSDObj(xml,xsdObj);
-        console.log('xmlxsdObj', xmlxsdObjAnnotations[i])
-        var nameExtractor = $(xml).attr('name')
-        var form =new XMLXSDForm(xmlxsdObjAnnotations[i],'annot_'+i,nameExtractor, idDiv);
-        form.generateForm()
-        $('#'+idDiv).css('display','none');
-
-
-      })
+      new configuratorManager(xsdArray, xmlArray,"configAnnotation",
+        "configAnnotationForm", ["configAnnotationForm","timeLines","overlay"])
       computation.stop();
     }
   });

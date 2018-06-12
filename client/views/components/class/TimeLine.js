@@ -5,20 +5,31 @@ export class TimeLine {
     static EXT_MARGIN(){ return 5}
     static MY_COLOR(){ return ["#f9a825", "#1565c0"]}
     static MY_SELECTED_COLOR(){ return ["#f57f17", '#0d47a1']}
-    static TRBL(){return [20, 15, 15, 60] /*top right bottom left*/}
+    static SCALE_MIN(){return 30}
+    static TRBL(){return [20, 15, 30, 60] /*top right bottom left*/}
 
     constructor(name, nbFrames, data, divId){
       this.div_id = divId;
       this.name_extractor = name
       rect_actif = -1;
-      this.nb_frame = nbFrames;
+      this.nb_frames = nbFrames;
+      this.frame_rate = 30
       var debut = 0;
-      var fin = this.nb_frame;
+      var fin = this.nb_frames;
       this.entries = []
       var that = this
       $(data).each(function(i,e){
         that.entries.push(e.name)
       })
+      this.scaleData = []
+      for(var i = 0; i < this.nb_frames; i++){
+        if((i / this.frame_rate) % TimeLine.SCALE_MIN() == 0){
+          var min = Math.trunc((i / this.frame_rate) / 60)
+          var sec = (i / this.frame_rate) % 60
+          sec = ("0" + sec).slice(-2);
+          this.scaleData.push({'time_id':i,'label':min + ":" + sec})
+        }
+      }
       this.items = []
       $(data).each(function(i,entry){
         $(entry.intervals).each(function(j,interval){
@@ -29,23 +40,22 @@ export class TimeLine {
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
-      console.log('nbFrame', this.nb_frame)
-       var width_total = this.nb_frame * 0.3;
+      // console.log('nbFrame', this.nb_frames)
+       var width_total = this.nb_frames * (this.frame_rate / 400);
       //var width_total = 550
-      var height_total = (TimeLine.LINE_HEIGHT() * this.entries.length ) + 20;
-      gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length ) - (2 * TimeLine.EXT_MARGIN());
+      var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
+      gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
       gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trbl[1] - trbl[3];
       used_rect = "";
       used_color = "";
       prec_timeLine = -1; // timeLine de l'ancien rectangle
 
       //donner le div du timeLine la meme taille que le timeLine generer
-      $("#" + this.div_id).css('height', height_total + 10);
-      $("#" + this.div_id).css('display', 'none')
-      $('#' + this.div_id).css('overflow-x', 'auto')
-      $('#' + this.div_id).css('overflow-y', 'hidden')
-      $("#" + this.div_id).css('width', '90%')
-
+      $("#" + this.div_id).css('height', height_total + 10)
+                          .css('display', 'none')
+                          .css('overflow-x', 'auto')
+                          .css('overflow-y', 'hidden')
+                          .css('width', '90%')
 
       //generer la timeLine dans sa div
       var time_line = d3.select("#" + this.div_id)
@@ -61,17 +71,19 @@ export class TimeLine {
               .attr('width', width_total)
               .attr('height', height_total)
               .style('fill', '#f2f2f2');
+
       var gen = time_line.append("g")
               .attr("transform", "translate(" + (trbl[3] + TimeLine.EXT_MARGIN()) + "," + (trbl[0] + TimeLine.EXT_MARGIN()) + ")")
               .attr("width", gen_width)
               .attr("height", gen_height)
               .attr("class", "general");
+
       var y1 = d3.scale.linear()
               .domain([0, this.entries.length])
               .range([0, gen_height]);
 
       var x1 = d3.scale.linear()
-              .domain([0, this.nb_frame])
+              .domain([0, this.nb_frames])
               .range([0, gen_width]);
 
       blockPlay = function (d, i) {
@@ -114,6 +126,7 @@ export class TimeLine {
               vidCtrl.setPartialPlaying(false);
           }
       };
+
       gen.selectAll(".entryLines")
               .data(this.entries)
               .enter().append("line")
@@ -126,8 +139,10 @@ export class TimeLine {
                   return y1(i + 1);
               })
               .attr("stroke", "lightgray");
+
       var rect = gen.selectAll("rect")
               .data(this.items);
+
       rect.enter().append("rect")
               .attr("x", function (d) {
                   return x1(d.start + 0.1);
@@ -186,17 +201,40 @@ export class TimeLine {
               .attr("dy", ".5ex")
               .attr("text-anchor", "end");
       // console.log("rect1: ", rect)
+
+      gen.selectAll('.scaleText')
+              .data(this.scaleData)
+              .enter().append("text")
+              .text(function(d){
+                return d.label;
+              })
+              .attr("x", function(d){
+                return x1(d.time_id)
+              })
+              .attr("y", height_total - trbl[2]);
     }
+
+    equals(object){
+      var result = false;
+      if(typeof this === typeof object){
+        result = this.div_id === object.div_id &&
+          this.name_extractor === object.name_extractor &&
+          this.nb_frames === object.nb_frames &&
+          this.frame_rate === object.frame_rate;
+      }
+      return result
+    }
+
     update() {
 
       $('#' + this.id_time_line).empty()
       var debut = 0;
-      vidCtrl.setPlayingInterval(debut, this.nb_frame);
+      vidCtrl.setPlayingInterval(debut, this.nb_frames);
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
 
-      var width_total = this.nb_frame * 0.3;
+      var width_total = this.nb_frames * 0.3;
       var height_total = TimeLine.LINE_HEIGHT() * this.entries.length ;
       var that = this
       gen_height = height_total - 2 * TimeLine.EXT_MARGIN();
@@ -204,6 +242,16 @@ export class TimeLine {
       used_rect = "";
       used_color = "";
       prec_timeLine = -1; // timeLine de l'ancien rectangle
+
+      this.scaleData = []
+      for(var i = 0; i < this.nb_frames; i++){
+        if((i / this.frame_rate) % TimeLine.SCALE_MIN() == 0){
+          var min = Math.trunc((i / this.frame_rate) / 60)
+          var sec = (i / this.frame_rate) % 60
+          sec = ("0" + sec).slice(-2);
+          this.scaleData.push({'time_id':i,'label':min + ":" + sec})
+        }
+      }
 
       //generer la timeLine dans sa div
       var time_line = d3.select("#" + this.id_time_line)
@@ -229,7 +277,7 @@ export class TimeLine {
               .range([0, gen_height]);
 
       var x1 = d3.scale.linear()
-              .domain([0, this.nb_frame])
+              .domain([0, this.nb_frames])
               .range([0, gen_width]);
 
       blockPlay = function (d, i) {
@@ -343,6 +391,17 @@ export class TimeLine {
               })
               .attr("dy", ".5ex")
               .attr("text-anchor", "end");
+
+      gen.selectAll('.scaleText')
+              .data(this.scaleData)
+              .enter().append("text")
+              .text(function(d){
+                return d.label;
+              })
+              .attr("x", function(d){
+                return x1(d.time_id)
+              })
+              .attr("y", height_total - trbl[2]);
       // console.log("rect1: ", rect)
 
     }
