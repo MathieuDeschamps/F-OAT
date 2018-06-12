@@ -32,7 +32,6 @@ export class VisualizerFactory{
         visualizer = new ShotExtractVisualizer(this.xmlxsdObj,id, name, idForm, idTimeLine);
         break;
       default:
-      console.log('name', name)
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)
     }
     return visualizer;

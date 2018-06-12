@@ -1,4 +1,3 @@
-import { Extractors } from '/lib/collections/extractors.js';
 
 import { VisualizerFactory } from '../Visualizer/VisualizerFactory.js'
 import { XSDObject } from '../XSDParser/XSDObject.js';
@@ -8,7 +7,7 @@ import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js';
 
 export class configuratorManager{
 
-  constructor(xsds, xmls,checkBoxDiv, formDiv, visualizerDivs){
+  constructor(xsds, xmls, checkBoxDiv, formDiv, visualizerDivs){
     this.xsds = xsds;
     this.xmls = xmls;
     this.checkBoxDiv = checkBoxDiv;
@@ -27,7 +26,7 @@ export class configuratorManager{
       var xsdObj = new XSDObject(xsd);
       var xmlxsdObj = new XMLXSDObj(xmls[i], xsdObj);
 
-      console.log('visualizer', this.visualizerDivs);
+      // console.log('this.visualizerDivs', that.visualizerDivs);
       var visualizerFactory = new VisualizerFactory(xmlxsdObj,that.visualizerDivs )
       var extractor = xmls[i].clone().empty()
       var visualizer = visualizerFactory.getVisualizer(extractor)
@@ -37,7 +36,7 @@ export class configuratorManager{
         divIds.push(idDiv)
       })
       $(JQlabelConfig).change(function(){that.checkBoxChange( JQlabelConfig, divIds)})
-      // console.log('visualizer', visualizer)
+      console.log('visualizer', visualizer)
     })
   }
 
