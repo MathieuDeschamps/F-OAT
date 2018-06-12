@@ -14,6 +14,6 @@ Template.configTimeLine.onRendered(()=>{
       var endFrame = parseInt($(event.currentTarget).attr('endframe'), 10);
       var timeLineId = parseInt($(event.currentTarget).attr('time_line_id'), 10);
       var name = $(event.currentTarget).attr('name')
-      forms[timeLineId].displayFrame(name, startFrame, endFrame)
+      // forms[timeLineId].displayFrame(name, startFrame, endFrame)
     },
 });

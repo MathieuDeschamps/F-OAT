@@ -13,14 +13,17 @@ export class ShotExtractVisualizer{
     this.divIdTimeLine = divIdTimeLine;
     this.observers = [];
     this.timeLineData = [];
+    this.overlayData = [];
     this.stack = [];
-    this.minNumFrame = NaN
-    this.maxNumFrame = NaN
+    this.currentTimeId = NaN;
+    this.minNumFrame = NaN;
+    this.maxNumFrame = NaN;
   }
 
   init(){
     this.stack = [];
     this.timeLineData = [];
+    this.currentTimeId = NaN;
     this.minNumFrame = NaN;
     this.maxFrame = NaN;
   }
@@ -72,16 +75,22 @@ export class ShotExtractVisualizer{
     this.init()
     this.xmlxsdObj.accept(this);
 
+    var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name, this.divIdForm);
+    this.attach(xmlxsdForm)
+    xmlxsdForm.generateForm();
+
     var nbFrames = this.maxNumFrame - this.minNumFrame + 1
     if(isNaN(nbFrames)){
       nbFrames = 0
     }
-    var timeLine = new TimeLine(this.name, nbFrames, this.timeLineData, this.divIdTimeLine);
+
+    var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, this.timeLineData, this.divIdTimeLine);
     this.attach(timeLine);
 
-    var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name, this.divIdForm);
-    this.attach(xmlxsdForm)
-    xmlxsdForm.generateForm();
+    var overlay = new  
+    console.log('timeLineData', this.timeLineData);
+    console.log('overlayData', this.overlayData);
+
   }
 
   /* Visitor pattern : visit function
@@ -102,6 +111,8 @@ export class ShotExtractVisualizer{
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visit Element visualizer :', xmlxsdElt);
     var that = this;
+    var oldCurrentTimeId = this.currentTimeId;
+    // console.log('oldTimeId', oldCurrentTimeId)
     this.stack.push({
       tag:xmlxsdElt.name,
       obj:xmlxsdElt
@@ -110,6 +121,8 @@ export class ShotExtractVisualizer{
       elt.accept(that);
     })
     that.stack.pop()
+    // console.log('restore oldTimeId', oldCurrentTimeId)
+    this.currentTimeId = oldCurrentTimeId;
   }
 
   /* Visitor pattern : visit function
@@ -124,13 +137,14 @@ export class ShotExtractVisualizer{
         xmlxsdElt.accept(that)
       })
     })
+
   }
 
   /* Visitor pattern : visit function
   @xmlxsdExt : XMLXSDExtensionType object
   */
   visitXMLXSDExtensionType(xmlxsdExt){
-    this.visualizeAttrs(xmlxsdExt)
+    this.visualizeAttrs(xmlxsdExt);
   }
 
   /* Visitor pattern : visit function
@@ -157,26 +171,26 @@ export class ShotExtractVisualizer{
       obj.attrs.startFrame.value <= obj.attrs.endFrame.value){
         // retrieve the max and min numFrame
         if(isNaN(this.minNumFrame)){
-          this.minNumFrame = obj.attrs.startFrame.value;
+          this.minNumFrame = parseInt(obj.attrs.startFrame.value, 10);
         }else if(this.minNumFrame > obj.attrs.startFrame.value){
-            this.minNumFrame = obj.attrs.startFrame.value;
+            this.minNumFrame = parseInt(obj.attrs.startFrame.value, 10);
         }
         if(isNaN(this.maxNumFrame)){
-          this.maxNumFrame =  obj.attrs.endFrame.value;
+          this.maxNumFrame =  parseInt(obj.attrs.endFrame.value, 10);
         }else if(this.maxNumFrame < obj.attrs.endFrame.value){
-            this.maxNumFrame = obj.attrs.endFrame.value;
+            this.maxNumFrame = parseInt(obj.attrs.endFrame.value, 10);
         }
 
         // retrieve data for the timeLine
         this.timeLineData.forEach(function(element){
-          if(that.samePlace(element.intervals[0].stack) && !added){
+          if(!added && that.samePlace(element.intervals[0].stack)){
             element.intervals.push({
-              index:element.intervals[0].index,
-              start:obj.attrs.startFrame.value,
-              end:obj.attrs.endFrame.value,
-              obj:obj,
+              index: parseInt(element.intervals[0].index, 10),
+              start: obj.attrs.startFrame.value,
+              end: obj.attrs.endFrame.value,
+              obj: obj,
               // clone the stack
-              stack:that.stack.slice(0),
+              stack: that.stack.slice(0),
             })
             added = true
           }
@@ -185,12 +199,12 @@ export class ShotExtractVisualizer{
           this.timeLineData.push({
             name:this.stack[this.stack.length - 1].tag,
             intervals:[{
-              index:that.timeLineData.length,
-              start:obj.attrs.startFrame.value,
-              end:obj.attrs.endFrame.value,
-              obj:obj,
+              index: parseInt(that.timeLineData.length, 10),
+              start: obj.attrs.startFrame.value,
+              end: obj.attrs.endFrame.value,
+              obj: obj,
               // clone the stack
-              stack:this.stack.slice(0),
+              stack: this.stack.slice(0),
             }]
           })
         }
@@ -199,26 +213,27 @@ export class ShotExtractVisualizer{
 
     // code for the attr timeId
     if(typeof obj.attrs.timeId !== 'undefined'){
+      this.currentTimeId = parseInt(obj.attrs.timeId.value, 10);
       // retrieve the max and min numFrame
       if(isNaN(this.minNumFrame)){
-        this.minNumFrame = obj.attrs.timeId.value;
+        this.minNumFrame = parseInt(obj.attrs.timeId.value, 10);
       }else if(this.minNumFrame > obj.attrs.timeId.value){
-        this.minNumFrame = obj.attrs.timeId.value;
+        this.minNumFrame = parseInt(obj.attrs.timeId.value, 10);
       }
       if(isNaN(this.maxNumFrame)){
-        this.maxNumFrame = obj.attrs.timeId.value;
+        this.maxNumFrame = parseInt(obj.attrs.timeId.value, 10);
 
-      }else if(this.maxNumFrame < obj.attrs.timeId.value){
-        this.maxNumFrame = obj.attrs.timeId.value;
+      }else if(this.maxNumFrame < obj.attrs.timeId.value, 10){
+        this.maxNumFrame = parseInt(obj.attrs.timeId.value, 10);
       }
 
       // retrieve data for the timeLine
       this.timeLineData.forEach(function(element){
-        if(that.samePlace(element.intervals[0].stack) && !added){
+        if(!added && that.samePlace(element.intervals[0].stack)){
           element.intervals.push({
-            index:element.intervals[0].index,
-            start:obj.attrs.timeId.value,
-            end:obj.attrs.timeId.value,
+            index: parseInt(element.intervals[0].index, 10),
+            start: obj.attrs.timeId.value,
+            end: obj.attrs.timeId.value,
             obj:obj,
             // clone the stack
             stack:that.stack.slice(0),
@@ -230,17 +245,53 @@ export class ShotExtractVisualizer{
         this.timeLineData.push({
           name:this.stack[this.stack.length - 1].tag,
           intervals:[{
-            index:that.timeLineData.length,
-            start:obj.attrs.timeId.value,
-            end:obj.attrs.timeId.value,
-            obj:obj,
+            index: parseInt(that.timeLineData.length, 10),
+            start: obj.attrs.timeId.value,
+            end: obj.attrs.timeId.value,
+            obj: obj,
             // clone the stack
-            stack:this.stack.slice(0),
+            stack: this.stack.slice(0),
           }]
         })
       }
       added = false
     }
+    // console.log('ctimeId', this.currentTimeId)
+    // code for x and y attribute
+    if((!isNaN(this.currentTimeId)) &&
+      typeof obj.attrs.x !== 'undefined' &&
+      typeof obj.attrs.y !== 'undefined' &&
+      obj.attrs.x.value <= 1 &&
+      obj.attrs.y.value <= 1
+      ){
+        console.log('obj',obj)
+        this.overlayData.forEach(function(element){
+          if(!added && element.timeId === that.currentTimeId){
+            element.positions.push({
+              x: obj.attrs.x.value,
+              y: obj.attrs.y.value,
+              obj: obj,
+              // clone the stack
+              stack:that.stack.slice(0),
+            })
+            added = true;
+          }
+        })
+        if(!added){
+          this.overlayData.push({
+            timeId: parseInt(this.currentTimeId, 10),
+            positions: [{
+              x: obj.attrs.x.value,
+              y: obj.attrs.y.value,
+              obj: obj,
+              // clone the stack
+              stack: this.stack.slice(0),
+            }]
+          })
+        }
+        added = false;
+     }
+
   }
 
   /* Use to determine if the two XML node have the same parents

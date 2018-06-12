@@ -1,6 +1,5 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Form } from '../class/Form.js'
 import { Parser } from '../class/Parser.js'
 import { Writer } from '../class/Writer.js'
 import {XSDObject} from '../XSDParser/XSDObject.js';
@@ -34,8 +33,8 @@ Template.configAnnotation.events({
 Template.configAnnotation.helpers({
   test(){
     // N'ayez pas peur de supprimer les lignes suivantes
-    var timeLine = Parser.getTimeLineData(Session.get('XMLDoc'),'shot-extract')
-    console.log('timeLine', timeLine)
+    // var timeLine = Parser.getTimeLineData(Session.get('XMLDoc'),'shot-extract')
+    // console.log('timeLine', timeLine)
     // Parser.getFramesActors(Session.get('XMLDoc'))
     // Parser.getFrame(Session.get('XMLDoc'),221)
     // Parser.getShotsActor(Session.get('XMLDoc'),0)

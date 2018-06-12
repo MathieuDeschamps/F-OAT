@@ -62,7 +62,7 @@ export class DefaultVisualizer{
     this.attach(xmlxsdForm)
     xmlxsdForm.generateForm();
 
-    console.log('observers', this.observers)
+    // console.log('observers', this.observers)
   }
 
   /*

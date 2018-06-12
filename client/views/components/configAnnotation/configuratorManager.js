@@ -36,7 +36,7 @@ export class configuratorManager{
         divIds.push(idDiv)
       })
       $(JQlabelConfig).change(function(){that.checkBoxChange( JQlabelConfig, divIds)})
-      console.log('visualizer', visualizer)
+      // console.log('visualizer', visualizer)
     })
   }
 

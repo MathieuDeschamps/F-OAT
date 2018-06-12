@@ -8,9 +8,10 @@ export class TimeLine {
     static SCALE_MIN(){return 30}
     static TRBL(){return [20, 15, 30, 60] /*top right bottom left*/}
 
-    constructor(name, nbFrames, data, divId){
+    constructor(name, xmlxsdForm, nbFrames, data, divId){
       this.div_id = divId;
-      this.name_extractor = name
+      this.xmlxsdForm = xmlxsdForm
+      this.name_extractor = name;
       rect_actif = -1;
       this.nb_frames = nbFrames;
       this.frame_rate = 30

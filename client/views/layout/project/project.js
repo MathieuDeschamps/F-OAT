@@ -1,6 +1,5 @@
 import './project.html';
 import {Projects} from '../../../../lib/collections/Project.js';
-import { Form } from '../../components/class/Form.js'
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
 import {TimeLine} from "../../components/class/TimeLine.js"
