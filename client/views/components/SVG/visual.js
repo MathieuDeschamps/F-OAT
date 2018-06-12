@@ -4,16 +4,20 @@ export class Visual{
     this.points=[];
     this.data = data;
     this.firstDraw = true;
+    this.line = null;
     this.draw_circles();
   }
 
+  update(){
+    this.notify(vidCtrl.getCurrentFrame());
+  }
+  
   notify(currentFrame){
-    console.log("NOTIFIED",currentFrame);
     this.points = [];
     var newPoints =this.data.find( d => d.timeId == currentFrame);
     var that = this;
     if(newPoints!=null){
-      newPoints.position.forEach(function(point){
+      newPoints.positions.forEach(function(point){
         var coordinates = [point.x,point.y];
         if(that.points.find( p => (p[0] == coordinates[0] && p[1] == coordinates[1]))==null){
           that.points.push(coordinates);
@@ -30,11 +34,11 @@ export class Visual{
     var dragged = null;
     var selected = null;
     if(this.points.length>0){
-      selected = this.points[0];
+      selected = this.points[this.points.length-1];
     }
     if(this.firstDraw){
-      var line = d3.svg.line();
-      line.interpolate("cardinal");
+      this.line = d3.svg.line();
+      this.line.interpolate("cardinal");
 
       var svg = d3.select("#overlay").append("svg")
 
@@ -59,7 +63,7 @@ export class Visual{
       .domain([0, 1])
       .range([0, width]);
 
-      line.x(function(d) {
+      this.line.x(function(d) {
         return x1(d[0]);
       })
       .y(function(d) {
@@ -76,10 +80,11 @@ export class Visual{
 
       svg.node().focus();
       this.firstDraw = false;
+      that = this;
     }
     else{
       var svg = d3.select("#overlay").select("svg")
-      var that = this;
+      that = this;
       svg.select("path")
       .datum(that.points)
       .attr("class", "line")
@@ -108,8 +113,8 @@ export class Visual{
       svg.select("rect").attr("width",width)
       .attr("height",height);
 
+      svg.select("path").attr("d", that.line);
 
-      svg.select("path").attr("d", line);
       var circle = svg.selectAll("circle")
       .data(that.points, function(d) { return d; });
 
@@ -143,7 +148,7 @@ export class Visual{
       var coordinates = [x,y];
       that.points.push(selected = dragged = coordinates);
 
-      redraw();
+      that.draw_circles();
     }
 
     function mousemove() {
@@ -157,7 +162,7 @@ export class Visual{
 
       dragged[0] = Math.max(0, Math.min(1, x));
       dragged[1] = Math.max(0, Math.min(1, y));
-      redraw();
+      that.draw_circles();
     }
 
     function mouseup() {
@@ -174,7 +179,7 @@ export class Visual{
           var i = that.points.indexOf(selected);
           that.points.splice(i, 1);
           selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
-          redraw();
+          that.draw_circles();
           break;
         }
       }
@@ -185,7 +190,7 @@ export class Visual{
           'width': $('#videoContainer').width() + 'px',
           'height': $('#videoContainer').height() + 'px'
         });
-        redraw();
+        that.draw_circles();
       },20);
     });
   }
