@@ -40,7 +40,7 @@ export class XSDElt{
 
 		// this.type is only the name of the elemen's type.
 		var typeName=$(elt).attr('type');
-		if (typeName !== undefined){
+		if (typeName !== undefined && typeName.substr(0,3) === 'xs:'){
 			this.type=typeName;
 		}else{
 			var simpleType=$(elt).children('xs\\:simpleType');

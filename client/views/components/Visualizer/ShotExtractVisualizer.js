@@ -117,16 +117,9 @@ export class ShotExtractVisualizer{
     // console.log('visit Element visualizer :', xmlxsdElt);
     var that = this;
     var oldCurrentTimeId = this.currentTimeId;
-    // console.log('oldTimeId', oldCurrentTimeId)
-    this.stack.push({
-      tag:xmlxsdElt.name,
-      obj:xmlxsdElt
-    })
     xmlxsdElt.eltsList.forEach(function(elt,i){
       elt.accept(that);
     })
-    that.stack.pop()
-    // console.log('restore oldTimeId', oldCurrentTimeId)
     this.currentTimeId = oldCurrentTimeId;
   }
 
@@ -137,12 +130,19 @@ export class ShotExtractVisualizer{
     // console.log('visit Sequence visualizer :', xmlxsdSeq);
     var that = this;
     this.visualizeAttrs(xmlxsdSeq)
-    xmlxsdSeq.seqList.forEach(function(seq){
-      seq.forEach(function (xmlxsdElt){
-        xmlxsdElt.accept(that)
+    xmlxsdSeq.seqList.forEach(function(seq, k){
+      // console.log('visit seq visualizer :', seq);
+      seq.forEach(function (xmlxsdElt, j){
+        xmlxsdElt.eltsList.forEach(function(elt, i){
+          that.stack.push({
+            tag: xmlxsdElt.name,
+            obj: xmlxsdElt.eltsList[i]
+          })
+          elt.accept(that);
+          that.stack.pop()
+        })
       })
     })
-
   }
 
   /* Visitor pattern : visit function
@@ -173,7 +173,7 @@ export class ShotExtractVisualizer{
     // code for the attr startFrame and endFrame
     if(typeof obj.attrs.startFrame !== 'undefined' &&
       typeof obj.attrs.endFrame !== 'undefined' &&
-      obj.attrs.startFrame.value <= obj.attrs.endFrame.value){
+      parseInt(obj.attrs.startFrame.value, 10) <= parseInt(obj.attrs.endFrame.value, 10)){
         // retrieve the max and min numFrame
         if(isNaN(this.minNumFrame)){
           this.minNumFrame = parseInt(obj.attrs.startFrame.value, 10);
@@ -217,7 +217,8 @@ export class ShotExtractVisualizer{
     }
 
     // code for the attr timeId
-    if(typeof obj.attrs.timeId !== 'undefined'){
+    if(typeof obj.attrs.timeId !== 'undefined' &&
+      obj.attrs.timeId.value !== undefined){
       this.currentTimeId = parseInt(obj.attrs.timeId.value, 10);
       // retrieve the max and min numFrame
       if(isNaN(this.minNumFrame)){
@@ -261,19 +262,19 @@ export class ShotExtractVisualizer{
       }
       added = false
     }
-    // console.log('ctimeId', this.currentTimeId)
+
     // code for x and y attribute
     if((!isNaN(this.currentTimeId)) &&
       typeof obj.attrs.x !== 'undefined' &&
       typeof obj.attrs.y !== 'undefined' &&
-      obj.attrs.x.value <= 1 &&
-      obj.attrs.y.value <= 1
+      parseFloat(obj.attrs.x.value) <= 1 &&
+      parseFloat(obj.attrs.y.value) <= 1
       ){
         this.overlayData.forEach(function(element){
           if(!added && element.timeId === that.currentTimeId){
             element.positions.push({
-              x: obj.attrs.x.value,
-              y: obj.attrs.y.value,
+              x: parseFloat(obj.attrs.x.value),
+              y: parseFloat(obj.attrs.y.value),
               obj: obj,
               // clone the stack
               stack:that.stack.slice(0),
@@ -285,8 +286,8 @@ export class ShotExtractVisualizer{
           this.overlayData.push({
             timeId: parseInt(this.currentTimeId, 10),
             positions: [{
-              x: obj.attrs.x.value,
-              y: obj.attrs.y.value,
+              x: parseFloat(obj.attrs.x.value),
+              y: parseFloat(obj.attrs.y.value),
               obj: obj,
               // clone the stack
               stack: this.stack.slice(0),
