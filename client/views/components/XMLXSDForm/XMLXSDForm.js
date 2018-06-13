@@ -1234,4 +1234,8 @@ export class XMLXSDForm{
 			}
 		});
 	}
+
+	update(){
+		
+	}
 }

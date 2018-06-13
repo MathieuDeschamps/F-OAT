@@ -42,7 +42,19 @@ export class TimeLine {
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
       // console.log('nbFrame', this.nb_frames)
-       var width_total = this.nb_frames * (this.frame_rate / 50);
+      var width_total;
+      if(this.nb_frames<2000){
+        width_total = Math.max(this.nb_frames,600);
+      }
+      else if(this.nb_frames<10000){
+        width_total = this.nb_frames * (this.frame_rate / 100);
+      }
+      else if(this.nb_frames<20000){
+        width_total = this.nb_frames * (this.frame_rate / 200);
+      }
+      else{
+        width_total = this.nb_frames * (this.frame_rate / 500);
+      }
       //var width_total = 550
       var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
       gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
@@ -231,7 +243,7 @@ export class TimeLine {
 
       $('#' + this.id_time_line).empty()
       var debut = 0;
-      vidCtrl.setPlayingInterval(debut, this.nb_frames);
+      //vidCtrl.setPlayingInterval(debut, this.nb_frames);
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
