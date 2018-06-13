@@ -90,7 +90,7 @@ export class ShotExtractVisualizer{
     var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, this.timeLineData, this.divIdTimeLine);
     this.attach(timeLine);
 
-    var overlay = new Visual(this.overlayData, this.divIdOverlay)
+    var overlay = new Visual(this.overlayData, xmlxsdForm, this.divIdOverlay)
     this.attach(overlay);
     vidCtrl.attach(overlay,1);
     console.log('timeLineData', this.timeLineData);

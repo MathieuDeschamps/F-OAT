@@ -1242,4 +1242,8 @@ export class XMLXSDForm{
 			}
 		});
 	}
+
+	update(){
+		
+	}
 }

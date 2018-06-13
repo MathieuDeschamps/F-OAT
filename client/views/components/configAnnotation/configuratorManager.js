@@ -15,6 +15,7 @@ export class configuratorManager{
     this.visualizerDivs = visualizerDivs;
     this.JQformDiv='#'+formDiv;
     this.JQcheckBoxDiv='#'+checkBoxDiv;
+    this.visualizers = [];
     var that = this;
     this.xsds.forEach(function(xsd, i){
       var labelConfig = "annontation_" + i
@@ -31,21 +32,34 @@ export class configuratorManager{
       var extractor = xmls[i].clone().empty()
       var visualizer = visualizerFactory.getVisualizer(extractor)
       visualizer.visualize()
+      that.visualizers.push(visualizer);
       var divIds = []
       visualizer.getIdsDiv().forEach(function(idDiv){
         divIds.push(idDiv)
       })
       $(JQlabelConfig).change(function(){that.checkBoxChange( JQlabelConfig, divIds)})
       // console.log('visualizer', visualizer)
+
+      $( window ).resize(function() {
+        setTimeout(function(){
+          $('#overlay').find("svg").css({
+            'width': $('#videoContainer').width() + 'px',
+            'height': $('#videoContainer').height() + 'px'
+          });
+          that.visualizers.forEach(function(visualizer){
+            visualizer.notifyAll();
+          });
+        },20);
+      });
     })
   }
+
 
   checkBoxChange(JQlabelConfig,idsDiv){
       var that=this;
       if ($(JQlabelConfig).prop('checked')){
         idsDiv.forEach(function(idDiv){
           var JQidDiv = '#' + idDiv;
-          console.log
           $(JQidDiv).css('display', 'block');
         })
       }else{

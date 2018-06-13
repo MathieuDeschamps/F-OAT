@@ -4,9 +4,10 @@
     {{#if projectExists}}
       <div class="row">
         <div class="col s8">
+          
+          {{#if uploadIsDone}}
           <div id="overlay">
           </div>
-          {{#if uploadIsDone}}
 
             {{> videoPlayer}}
             {{> playerCommand}}
