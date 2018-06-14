@@ -48,6 +48,11 @@ Meteor.methods({
     check(extractor.ip,String);
     check(extractor._id,String);
     check(extractor.owner,String);
-    return Extractors.update({_id:extractor._id, owner: extractor.owner},{$set:{name: extractor.name, ip: extractor.ip}});
+    var old = Extractors.findOne({$and:[{_id: {$ne : extractor._id}}, {$or: [{name: extractor.name}, {ip: extractor.ip}]}]});
+    if(old){
+      return -1;
+    }
+    Extractors.update({_id:extractor._id, owner: extractor.owner},{$set:{name: extractor.name, ip: extractor.ip}});
+    return 1;
   },
 });

@@ -79,7 +79,12 @@ Template.options.events({
           toastr.warning(err.reason);
         }
         else{
-          toastr.success(TAPi18n.__('successExtractorUpdate'));
+          if(res<0){
+            toastr.warning(TAPi18n.__('errorExtractorExists'));
+          }
+          else{
+            toastr.success(TAPi18n.__('successExtractorUpdate'));
+          }
         }
       });
     }

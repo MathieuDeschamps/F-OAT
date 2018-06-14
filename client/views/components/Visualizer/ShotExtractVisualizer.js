@@ -1,5 +1,5 @@
 import { TimeLine } from '../class/TimeLine.js'
-import {Visual} from '../class/Visual.js';
+import {Overlay} from '../class/Overlay.js';
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 
 export class ShotExtractVisualizer{
@@ -74,6 +74,7 @@ export class ShotExtractVisualizer{
   */
   update(){
     this.getDataTimeLine();
+    this.getDataOverlay();
     this.notifyAll()
   }
 
@@ -92,10 +93,10 @@ export class ShotExtractVisualizer{
       nbFrames = 0
     }
 
-    var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, this.timeLineData, this.divIdTimeLine);
+    var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, this.timeLineData, this.divIdTimeLine,this);
     this.attach(timeLine);
 
-    var overlay = new Visual(this.overlayData, xmlxsdForm, this.divIdOverlay)
+    var overlay = new Overlay(this.overlayData, xmlxsdForm, this.divIdOverlay,this)
     this.attach(overlay);
     vidCtrl.attach(overlay,1);
     console.log('timeLineData', this.timeLineData);
@@ -331,5 +332,25 @@ export class ShotExtractVisualizer{
     result.push(this.divIdTimeLine);
     result.push(this.divIdOverlay);
     return result;
+  }
+
+  getDataTimeLine(){
+    this.init()
+    this.xmlxsdObj.accept(this);
+    return this.timeLineData;
+  }
+
+  getDataOverlay(){
+    this.init()
+    this.xmlxsdObj.accept(this);
+    return this.overlayData;
+  }
+
+  getNbFrames(){
+    var nbFrames = this.maxNumFrame - this.minNumFrame + 1
+    if(isNaN(nbFrames)){
+      nbFrames = 0
+    }
+    return nbFrames;
   }
 }

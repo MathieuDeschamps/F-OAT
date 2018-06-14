@@ -751,7 +751,7 @@ export class XMLXSDForm{
 						var jqFormName='#'+formName;
 						attr.setValue($(jqFormName).val());
 						$(jqFormName).val(attr.value);
-						this.visualizer.notifyAll();
+						visualizer.notifyAll();
 					},
 					id:formName,
 					eventName:'change'

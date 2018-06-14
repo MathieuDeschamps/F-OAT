@@ -108,43 +108,6 @@ export class Parser{
   }
 }
 
-  // return the list of position
-  static getOverlayData(xml){
-    if(xml == undefined){
-      console.log('getOverlayData : Illegal Argument Exception')
-    }else{
-      var XMLObject = $.parseXML(xml)
-      var positions = $(XMLObject).find('extractors').find('position')
-      var result = []
-      var x
-      var y
-      var timeId
-      var added = false
-
-      $(positions).each(function(i,position){
-        timeId = $(position).parents('[timeId]')[0]
-        timeId = $(timeId).attr('timeId')
-
-        x = parseFloat( $(position).attr('x'))
-        y = parseFloat( $(position).attr('y'))
-        $(result).each(function(i,e){
-          if($(e).attr('timeId') == timeId){
-            e.positions.push({'x': x, 'y': y})
-            added = true
-          }
-        })
-
-        if(!added){
-          result.push({"timeId": timeId, "positions":[
-            {"x": x, "y": y}
-          ]})
-        }
-
-      })
-
-      return result
-    }
-  }
 
   // return a sort set of int with the list of all the timeId
   static getListTimeId(xml){
