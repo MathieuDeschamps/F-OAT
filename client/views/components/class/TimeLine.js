@@ -105,11 +105,15 @@ export class TimeLine {
       blockPlay = function (d, i,that) {
           var id;
           id = "rect" + i;
-
-          var rect = $("[id=" + id + "][time_line_id='" + that.div_id + "']");
-
+          //console.log("items[rect_actif]: " , items[rect_actif]);
+          //$('#element_id .data[attribute=value]')
+          //var rect = $(id);
+          // var rect = $(id +" [timeLineid='" + idTimeLine + "']");
+          var rect = $("[id=" + that.id + "][time_line_id='" + that.div_id + "']");
+          //console.log("rect: ",rect);
+          //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
           if (that.rect_actif !== -1) {
-            rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
+            rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
               prec_timeLine = that.div_id;

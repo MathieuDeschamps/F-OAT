@@ -5,24 +5,28 @@ import { XMLXSDObj } from '../XMLXSDParser/XMLXSDObj.js';
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js';
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js';
 
-export class configuratorManager{
+export class configAnnotationManager{
 
-  constructor(xsds, xmls, checkBoxDiv, formDiv, visualizerDivs){
+  /* Constructor
+  @xsds : array which contains the XSD files parsed
+  @xmls: array which contains the XML of the extractors parsed
+  @checkBoxDiv: id of the div of the checkBox
+  @visualizerDivs: array which contains the id of div of the visualizer
+  */
+  constructor(xsds, xmls, checkBoxDiv, visualizerDivs){
     this.xsds = xsds;
     this.xmls = xmls;
     this.checkBoxDiv = checkBoxDiv;
-    this.formDiv = formDiv;
     this.visualizerDivs = visualizerDivs;
-    this.JQformDiv='#'+formDiv;
-    this.JQcheckBoxDiv='#'+checkBoxDiv;
     this.visualizers = [];
     var that = this;
+    var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
       var labelConfig = "annontation_" + i
       var JQlabelConfig='#'+labelConfig;
       var extractorCheckBox = '<p><input class="filled-in" id="'+ labelConfig + '" type="checkbox"/>'
       extractorCheckBox += '<label for="'+ labelConfig + '">' + $(xmls[i]).attr('name') + '</label></p>'
-      $(that.JQcheckBoxDiv).append(extractorCheckBox);
+      $(JQcheckBoxDiv).append(extractorCheckBox);
 
       var xsdObj = new XSDObject(xsd);
       var xmlxsdObj = new XMLXSDObj(xmls[i], xsdObj);
@@ -54,7 +58,10 @@ export class configuratorManager{
     })
   }
 
-
+  /* Event trigger when the checkBox change
+  @JQlabelConfig: the label of the check which trigger the event
+  @idsDiv: array which contains the id of div of the visualizer
+  */
   checkBoxChange(JQlabelConfig,idsDiv){
       var that=this;
       if ($(JQlabelConfig).prop('checked')){

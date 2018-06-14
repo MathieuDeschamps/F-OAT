@@ -112,8 +112,8 @@ export class XSDSymbolTable{
 	@returns : XSD type object
 	*/
 	createComplexType(typeDef){
-		var typeName=$(typeDef).attr("name");
-
+		var typeName = $(typeDef).attr('name')
+		
 		if (typeName == undefined){
 			typeName=this.newTypeName();
 		}

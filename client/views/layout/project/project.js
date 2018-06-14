@@ -152,10 +152,7 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
     console.log('extractors', extractors)
     // add the extractor list and build the forms
     $(extractors).each(function(i,extractor){
-      // extractorHtml = '<p><input class="filled-in" id="annontation_'+ i + '" index="'+ i+ '"  type="checkbox"/>'
-      // extractorHtml += '<label for="annontation_'+ i + '">' + $(extractor).attr('name') + '</label></p>'
-      // $('#configAnnotation').append(extractorHtml)
-      // console.log('extractor', extractor)
+
       pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
       Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
         if(errXSD){
@@ -171,15 +168,7 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
           if(tmpXML.length === 1){
             xmlArray[i] = tmpXML
           }
-          // console.log('tmpXML',tmpXML[0])
-          // var tmpXml = $(XMLParsed).find('extractors').children(extractor[0].tagName)
-          // console.log('tmpXml', tmpXml)
-          // xmlArray[i]= $(tmpXml).filter(function(){
-          //   if($(this).attr('version') === $(extractor).attr('version')){
-          //     return true
-          //   }
-          // })
-          // console.log('xmlArrayi', xmlArrayi)
+
           xsdArray[i] = $.parseXML(resultExtractor.data)
           // console.log('XMLArray', XMLArray)
           // console.log('XSDArray', XSDArray)
@@ -188,15 +177,8 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
           if(i+1 === extractors.length){
             Session.set('projectReady', 1)
           }
-          // build the timeLine
-          // timeLineData = Parser.getTimeLineData(XMLDoc,extractor[0].tagName);
-          // $("#timeLines").append("<div id='timeLine" + i + "' class='row' ></div>");
-          // timeLines[i] = new TimeLine($(extractor).attr('name'),
-          //   $(timeLineData).attr('nbFrames'),$(timeLineData).attr('data'),
-          //   i);
-          //
-          // $("#timeLine" + i).children('svg').css('min-width','70rem')
-          // $('svg').css('margin-bottom', '2.5rem')
+
+          // document.getElementById("videoDisplayId").disabled = !supported["frameRate"];
         }
       })
     })

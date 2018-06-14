@@ -6,11 +6,12 @@ export class XMLXSDForm{
 	@name : name of the form (name of the extractor)
 	@divId : the id of the div which will contain the code of the form
 	*/
-	constructor(xmlxsdObj,id,name,divId){
+	constructor(xmlxsdObj,id,name,divId, visualizer){
 		this.xmlxsdObj=xmlxsdObj;
 		this.id=id;
 		this.name=name;
 		this.divId=divId;
+		this.visualizer = visualizer
 
 		this.html="";
 
@@ -23,7 +24,9 @@ export class XMLXSDForm{
 		this.attrManage=false;
 		this.attrFormName="";
 		this.inputHtml="";
+		this.currentNodeValue = undefined
 
+		this.currentNodeValue = undefined
 		this.htmlUpdate=false;
 	}
 
@@ -351,6 +354,7 @@ export class XMLXSDForm{
 	*/
 	visitXSDBooleanType(xsdBool){
 		if (this.attrManage){
+			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -374,6 +378,7 @@ export class XMLXSDForm{
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
 						attr.setValue($(jqSelectFormName).val());
+						visualizer.notifyAll();
 					},
 					id: selectFormName,
 					eventName:'change'
@@ -455,6 +460,7 @@ export class XMLXSDForm{
 	*/
 	visitXSDDecimalType(xsdDeci){
 		if (this.attrManage){
+			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -481,6 +487,7 @@ export class XMLXSDForm{
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
 							attr.setValue($(jqSelectFormName).val());
+							visualizer.notifyAll();
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -494,6 +501,7 @@ export class XMLXSDForm{
 						var jqFormName='#'+formName;
 						attr.setValue($(jqFormName).val());
 						$(jqFormName).val(attr.value);
+						visualizer.notifyAll();
 					},
 					id:formName,
 					eventName:'change'
@@ -578,6 +586,7 @@ export class XMLXSDForm{
 	*/
 	visitXSDFloatType(xsdFloat){
 		if (this.attrManage){
+			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -602,6 +611,7 @@ export class XMLXSDForm{
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
 							attr.setValue($(jqSelectFormName).val());
+							visualizer.notifyAll();
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -616,6 +626,7 @@ export class XMLXSDForm{
 						var jqFormName='#'+formName;
 						attr.setValue($(jqFormName).val());
 						$(jqFormName).val(attr.value);
+						visualizer.notifyAll();
 					},
 					id:formName,
 					eventName:'change'
@@ -699,6 +710,7 @@ export class XMLXSDForm{
 	*/
 	visitXSDIntegerType(xsdInt){
 		if (this.attrManage){
+			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -725,7 +737,7 @@ export class XMLXSDForm{
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
 							attr.setValue($(jqSelectFormName).val());
-							console.log('attr', attr)
+							visualizer.notifyAll();
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -739,6 +751,7 @@ export class XMLXSDForm{
 						var jqFormName='#'+formName;
 						attr.setValue($(jqFormName).val());
 						$(jqFormName).val(attr.value);
+						visualizer.notifyAll();
 					},
 					id:formName,
 					eventName:'change'
@@ -825,6 +838,7 @@ export class XMLXSDForm{
 		// console.log('visit XSDStringType')
 		var that = this
 		if (this.attrManage){
+			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -849,6 +863,7 @@ export class XMLXSDForm{
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
 						attr.setValue($(jqSelectFormName).val());
+						visualizer.notifyAll();
 					},
 					id: selectFormName,
 					eventName:'change'
@@ -861,7 +876,7 @@ export class XMLXSDForm{
 					function:function(){
 						var jqFormName='#'+formName;
 						attr.setValue($(jqFormName).val());
-						console.log(attr,$(jqFormName).val(),formName);
+						visualizer.notifyAll();
 					},
 					id:formName,
 					eventName:'change'
@@ -1079,6 +1094,7 @@ export class XMLXSDForm{
 	generateAttrsForm(obj){
 		var that=this;
 		var result = '';
+		var visualizer = this.visualizer;
 		$.each(obj.attrs,function(key,attr){
 			var formName=attr.name+'form';
 			var jqFormName='#'+formName;
@@ -1107,6 +1123,7 @@ export class XMLXSDForm{
 							$(jqFormName).prop("disabled",true);
 							attr.setValue(undefined);
 							$(jqFormName).val(undefined)
+							visualizer.notifyAll();
 						}
 						if($(jqFormName)[0].localName === "select"){
 							$(jqFormName).material_select()
@@ -1119,7 +1136,9 @@ export class XMLXSDForm{
 						}else if(typeof attr.defaultValue !== 'undefined'){
 							value = attr.defaultValue;
 						}
+						console.log('value', value)
 						$(jqFormName).val(value);
+						console.log('form', $(jqFormName))
 					},
 					id: switchName,
 					eventName:'change'
@@ -1244,6 +1263,6 @@ export class XMLXSDForm{
 	}
 
 	update(){
-		
+
 	}
 }
