@@ -50,11 +50,14 @@ export class TimeLine {
       else if(this.nb_frames<10000){
         width_total = this.nb_frames * (this.frame_rate / 100);
       }
-      else if(this.nb_frames<20000){
+      else if(this.nb_frames<50000){
         width_total = this.nb_frames * (this.frame_rate / 200);
       }
-      else{
+      else if(this.nb_frames<100000){
         width_total = this.nb_frames * (this.frame_rate / 500);
+      }
+      else{
+        width_total = this.nb_frames * (this.frame_rate / 1000);
       }
       var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
       gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
@@ -270,11 +273,14 @@ export class TimeLine {
       else if(this.nb_frames<10000){
         width_total = this.nb_frames * (this.frame_rate / 100);
       }
-      else if(this.nb_frames<20000){
+      else if(this.nb_frames<50000){
         width_total = this.nb_frames * (this.frame_rate / 200);
       }
-      else{
+      else if(this.nb_frames<100000){
         width_total = this.nb_frames * (this.frame_rate / 500);
+      }
+      else{
+        width_total = this.nb_frames * (this.frame_rate / 1000);
       }
       var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
       gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
