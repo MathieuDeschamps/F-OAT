@@ -64,15 +64,13 @@ export class XSDRestrictionType{
 			}
 		})
 
-		var enumList=$(restr).children('xs\\:enumeration');
-		if (enumList.length>0){
+		var enumuratedList=$(restr).children('xs\\:enumeration');
+		if (enumuratedList.length>0){
 			this.enumeratedValues=[];
-			$(enumList).each(function(i,enumTag){
+			$(enumuratedList).each(function(i,enumTag){
 				value=$(enumTag).attr('value');
 				var convertValue = that.convert(value)
-				if(that.holds(convertValue)){
-					that.enumeratedValues.push(convertValue);
-				}
+				that.addEnumeratedValue(convertValue)
 			});
 		}
 
@@ -111,6 +109,43 @@ export class XSDRestrictionType{
 		return list;
 	}
 
+	/* add the x to enumeratedValues is an element of the base type
+	@x : object
+	*/
+	addEnumeratedValue(x){
+		var result=true;
+		if (this.table.getType(this.baseType.name).holds(x)){
+			if (this.minEx!=undefined && x<=this.minEx){
+				result=false;
+			}
+			if (this.minIn!=undefined && x<this.minIn){
+				result=false;
+			}
+			if (this.maxEx!=undefined && x>=this.maxEx){
+				result=false;
+			}
+			if (this.maxIn!=undefined && x>this.maxIn){
+				result=false;
+			}
+			if (this.minLength!=undefined && x.length<this.minLength){
+				result=false;
+			}
+			if (this.maxLength!=undefined && x.length>this.maxLength){
+				result=false;
+			}
+			if((this.isEnumerated()) && (this.getEnumetaredValues().includes(x))){
+				result=false;
+			}
+
+		}else{
+			result=false;
+		}
+		if(result){
+			this.enumeratedValues.push(x)
+		}
+		return result;
+	}
+
 	/* tests if x is an element of the base type
 	@x : object
 	@returns : boolean
@@ -136,7 +171,7 @@ export class XSDRestrictionType{
 			if (this.maxLength!=undefined && x.length>this.maxLength){
 				result=false;
 			}
-			if((this.isEnumerated()) && (this.getEnumetaredValues().includes(x))){
+			if((this.isEnumerated()) && (!this.getEnumetaredValues().includes(x))){
 				result=false;
 			}
 

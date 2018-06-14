@@ -30,7 +30,6 @@ export class XMLXSDAttr{
 	@value : object
 	*/
 	setValue(value){
-
 		if (value!=undefined){
 			var convertValue=this.type.convert(value);
 			switch(this.use){

@@ -47,7 +47,7 @@ export class XMLXSDForm{
 	@xmlxsdObj : XMLXSDObj object
 	*/
 	visitXMLXSDObject(xmlxsdObj){
-		console.log('visitXMLXSDObject',xmlxsdObj);
+		// console.log('visitXMLXSDObject',xmlxsdObj);
 
 		var jqDivId='#'+this.divId;
 
@@ -74,10 +74,9 @@ export class XMLXSDForm{
 	@xmlxsdElt : XMLXSDElt object
 	*/
 	visitXMLXSDElt(xmlxsdElt){
-		console.log('visitXMLXSDElt',xmlxsdElt);
+		// console.log('visitXMLXSDElt',xmlxsdElt);
 		var $div = $('<div id="extractor' + this.id + 'config" />')
 		this.html = $div
-		console.log('$div', $div)
 
 		// generate nav
 		$div.append(this.generateNav())
@@ -187,7 +186,7 @@ export class XMLXSDForm{
 	*/
 	visitXMLXSDSequence(xmlxsdSeq){
 		this.eventHandler=[];
-		console.log('visitXMLXSDSeq',xmlxsdSeq);
+		// console.log('visitXMLXSDSeq',xmlxsdSeq);
 
 		var $div = $('<div id="extractor' + this.id + 'config"/>')
 		this.html = $div
@@ -267,7 +266,6 @@ export class XMLXSDForm{
 						function:function(){
 							console.log(xmlxsdElt.type);
 							xmlxsdElt.type.accept(xmlxsdElt);
-							console.log('parent :', parent)
 							xmlxsdSeq.accept(that);
 							var ul = $("#" + that.divId).find('ul')[0]
 							$(ul).collapsible('open', 0)
@@ -312,9 +310,9 @@ export class XMLXSDForm{
 	@xmlxsdNodeValue: XMLXSDNodeValue object
 	*/
 	visitXMLXSDNodeValue(xmlxsdNodeValue){
-		console.log('visit nodeValue',xmlxsdNodeValue);
+		// console.log('visit nodeValue',xmlxsdNodeValue);
 		this.currentNodeValue=xmlxsdNodeValue;
-		console.log('nodeValue', xmlxsdNodeValue)
+		// console.log('nodeValue', xmlxsdNodeValue)
 		xmlxsdNodeValue.type.accept(this);
 	}
 
@@ -322,7 +320,7 @@ export class XMLXSDForm{
 	@xmlxsdExt : XMLXSDExtensionType object
 	*/
 	visitXMLXSDExtensionType(xmlxsdExt){
-		console.log('visit XSDXMLElt',xmlxsdExt);
+		// console.log('visit XSDXMLElt',xmlxsdExt);
 		this.eventHandler=[];
 
 		var $div = $('<div id="extractor' + this.id + 'config" />');
@@ -340,7 +338,6 @@ export class XMLXSDForm{
 		$li.append($divBody);
 
 		$divBody.append(this.generateAttrsForm(xmlxsdExt));
-		console.log('divBody', $divBody)
 		this.currentNodeValue=xmlxsdExt;
 
 		this.htmlUpdate=true;
@@ -357,7 +354,8 @@ export class XMLXSDForm{
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
-			if(attr.use === "optional" || typeof attr.fixedValue !== 'undefined'){
+			if((attr.use === "optional" && typeof attr.value === 'undefined')
+				||typeof attr.fixedValue !== 'undefined'){
 				disabled = true;
 			}else{
 				disabled = false
@@ -375,7 +373,7 @@ export class XMLXSDForm{
 			this.eventHandler.push({
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
-						attr.setValue($(jqSelectFormName).value);
+						attr.setValue($(jqSelectFormName).val());
 					},
 					id: selectFormName,
 					eventName:'change'
@@ -460,7 +458,8 @@ export class XMLXSDForm{
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
-			if(attr.use === "optional" || typeof attr.fixedValue !== 'undefined'){
+			if((attr.use === "optional" && typeof attr.value === 'undefined')
+				||typeof attr.fixedValue !== 'undefined'){
 				disabled = true;
 			}else{
 				disabled = false
@@ -481,7 +480,7 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
-							attr.setValue($(jqSelectFormName).value);
+							attr.setValue($(jqSelectFormName).val());
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -582,7 +581,8 @@ export class XMLXSDForm{
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
-			if(attr.use === "optional" ||typeof attr.fixedValue !== 'undefined'){
+			if((attr.use === "optional" && typeof attr.value === 'undefined')
+				||typeof attr.fixedValue !== 'undefined'){
 				disabled = true;
 			}else{
 				disabled = false
@@ -601,7 +601,7 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
-							attr.setValue($(jqSelectFormName).value);
+							attr.setValue($(jqSelectFormName).val());
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -702,7 +702,8 @@ export class XMLXSDForm{
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
-			if(attr.use === "optional" ||typeof attr.fixedValue !== 'undefined'){
+			if((attr.use === "optional" && typeof attr.value === 'undefined')
+				||typeof attr.fixedValue !== 'undefined'){
 				disabled = true;
 			}else{
 				disabled = false
@@ -715,7 +716,7 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-			console.log('XSD int', xsdInt)
+			// console.log('XSD int', xsdInt)
 			if (xsdInt.isEnumerated()){
 				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value, disabled);
@@ -723,7 +724,8 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
-							attr.setValue($(jqSelectFormName).value);
+							attr.setValue($(jqSelectFormName).val());
+							console.log('attr', attr)
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -820,14 +822,14 @@ export class XMLXSDForm{
 	@xsdString : XSDStringType object
 	*/
 	visitXSDStringType(xsdString){
-		console.log('visit XSDStringType')
-		console.log(xsdString)
+		// console.log('visit XSDStringType')
 		var that = this
 		if (this.attrManage){
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
-			if(attr.use === "optional" ||typeof attr.fixedValue !== 'undefined'){
+			if((attr.use === "optional" && typeof attr.value === 'undefined')
+				||typeof attr.fixedValue !== 'undefined'){
 				disabled = true;
 			}else{
 				disabled = false
@@ -840,14 +842,13 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdString.isEnumerated()){
-				console.log('Is a enum')
 				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value, disabled);
 
 				this.eventHandler.push({
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
-						attr.setValue($(jqSelectFormName).value);
+						attr.setValue($(jqSelectFormName).val());
 					},
 					id: selectFormName,
 					eventName:'change'
@@ -945,7 +946,7 @@ export class XMLXSDForm{
 	@xsdVoid : XSDVoidType object
 	*/
 	visitXSDVoidType(xsdVoidType){
-		console.log('htmlUpdate', !this.htmlUpdate)
+		// console.log('htmlUpdate', !this.htmlUpdate)
 		if (!this.htmlUpdate){
 			this.eventHandler=[];
 			var $div = $('<div id="extractor' + this.id + 'config"/>');
@@ -979,7 +980,7 @@ export class XMLXSDForm{
 
 		this.applyEventHandler();
 
-		console.log('vide:', xsdVoidType)
+		// console.log('vide:', xsdVoidType)
 	}
 
 	/* Visitor pattern : visit function
@@ -1004,7 +1005,6 @@ export class XMLXSDForm{
 		var nbCharacterRow = 0
 		var sizeRow = 24
 		var that=this;
-
 		this.stack.forEach(function(elm,i){
 			if (i!==that.stack.length-1){
 				if(elm.tag.length > 24){
@@ -1014,7 +1014,7 @@ export class XMLXSDForm{
 				}
 				if(nbCharacterRow + nbCharacter > sizeRow){
 					// add empty breadcrumb for trigger before style in scss
-					result += '<a id="'+that.id+'navConfig'+i+'" class="breadcrumb"/>';
+					// result += '<a id="'+that.id+'navConfig'+i+'" class="breadcrumb"/>';
 					result += '</div>';
 					result += '</nav>'
 					result += '</div>'
@@ -1087,8 +1087,8 @@ export class XMLXSDForm{
 
 			result += '<div class="row">';
 
-			console.log('attr', attr)
-			console.log('attr.use', attr.use)
+			// console.log('attr', attr)
+			// console.log('attr.use', attr.use)
 			switch(attr.use){
 				case 'optional' :
 
@@ -1106,6 +1106,7 @@ export class XMLXSDForm{
 						}else{
 							$(jqFormName).prop("disabled",true);
 							attr.setValue(undefined);
+							$(jqFormName).val(undefined)
 						}
 						if($(jqFormName)[0].localName === "select"){
 							$(jqFormName).material_select()
@@ -1202,9 +1203,16 @@ export class XMLXSDForm{
 		return result
 	}
 
+	/* Display the form
+	@obj a XMLXSD Object
+	@stack Array of JSON Object {tag:String, obj:XMLXSD Object}
+	*/
 	displayForm(obj, stack){
 		this.stack = stack;
 		obj.accept(this);
+		var ul = $("#" + this.divId).find('ul')[0]
+		$(ul).collapsible('open', 0)
+		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 	}
 
 	/* Apply the event of this.eventHandler and	initialize some element

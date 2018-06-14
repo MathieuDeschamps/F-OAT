@@ -12,11 +12,12 @@ export class VisualizerFactory{
   }
 
   getVisualizer(extractor){
-    var id = $(extractor).prop('tagName');
+    var idExtractor = $(extractor).prop('tagName');
     var name = $(extractor).attr('name');
     var version = $(extractor).attr('version').replace('.','-');
     var expression = name;
     var visualizer;
+    var id = idExtractor + '_' + version
     var idForm = 'form_annontation_' + id + '_' + version;
     var idTimeLine = 'time_line_' + id + '_' + version;
     var idOverlay = 'overlay_' + id + '_' + version;
