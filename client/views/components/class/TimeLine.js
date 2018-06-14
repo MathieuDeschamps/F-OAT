@@ -8,13 +8,14 @@ export class TimeLine {
     static SCALE_MIN(){return 30}
     static TRBL(){return [20, 15, 30, 60] /*top right bottom left*/}
 
-    constructor(name, xmlxsdForm, nbFrames, data, divId){
+    constructor(name, xmlxsdForm, nbFrames, data, divId, visualizer){
       this.div_id = divId;
       this.xmlxsdForm = xmlxsdForm
       this.name_extractor = name;
       this.rect_actif = -1;
       this.nb_frames = nbFrames;
       this.frame_rate = 30
+      this.visualizer = visualizer;
       var debut = 0;
       var fin = this.nb_frames;
       this.entries = []
@@ -37,11 +38,11 @@ export class TimeLine {
           that.items.push(interval)
         })
       })
-      vidCtrl.setPlayingInterval(debut, fin);
+
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var trbl = TimeLine.TRBL();
-      // console.log('nbFrame', this.nb_frames)
+
       var width_total;
       if(this.nb_frames<2000){
         width_total = Math.max(this.nb_frames,600);
@@ -55,7 +56,6 @@ export class TimeLine {
       else{
         width_total = this.nb_frames * (this.frame_rate / 500);
       }
-      //var width_total = 550
       var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
       gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
       gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trbl[1] - trbl[3];
@@ -102,24 +102,16 @@ export class TimeLine {
       blockPlay = function (d, i,that) {
           var id;
           id = "rect" + i;
-          console.log("d",d);
-          console.log("i",i);
-          console.log("that",that);
-          //console.log("items[rect_actif]: " , items[rect_actif]);
-          //$('#element_id .data[attribute=value]')
-          //var rect = $(id);
-          // var rect = $(id +" [timeLineid='" + idTimeLine + "']");
+
           var rect = $("[id=" + id + "][time_line_id='" + that.div_id + "']");
-          //console.log("rect: ",rect);
-          //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
+
           if (that.rect_actif !== -1) {
-            console.log("rect",that.rect_actif);
             rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
               prec_timeLine = that.div_id;
           }
-          //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
+
           if ((that.rect_actif !== i) || prec_timeLine !== that.div_id || (!vidCtrl.getPartialPlaying())) {
               if (used_rect !== "") {
                   used_rect.attr("style", "fill:" + used_color);
@@ -129,14 +121,11 @@ export class TimeLine {
               used_rect = rect;
               that.rect_actif = i;
               prec_timeLine = that.div_id;
-              // (Number(idTimeLine)+ 1)
               that.xmlxsdForm.displayForm(d.obj, d.stack)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);
-              // console.log("debut = " + d.start + " fin = " + d.end);
               vidCtrl.play();
           } else {
-              // console.log("debut2 = " + debut + " fin2 = " + fin);
               vidCtrl.setPlayingInterval(debut, fin);
               vidCtrl.play();
               used_rect = "";
@@ -169,12 +158,9 @@ export class TimeLine {
               .attr("y", function (d) {
                   return y1(d.index + 0.1);
               })
-              // .attr("width", 10)
               .attr("width", function (d) {
-                  // return Math.max(0, 10)
                   return Math.max(x1(d.end - 0.1) - x1(d.start), 5);
               })
-              // .attr("height", 0.8)
               .attr("height", function (d) {
                   return y1(0.8);
               })
@@ -219,7 +205,6 @@ export class TimeLine {
               })
               .attr("dy", ".5ex")
               .attr("text-anchor", "end");
-      // console.log("rect1: ", rect)
 
       gen.selectAll('.scaleText')
               .data(this.scaleData)
@@ -246,23 +231,15 @@ export class TimeLine {
 
     update() {
 
-    /*  $('#' + this.id_time_line).empty()
-      var debut = 0;
-      //vidCtrl.setPlayingInterval(debut, this.nb_frames);
-      var my_color = TimeLine.MY_COLOR();
-      var my_selected_color = TimeLine.MY_SELECTED_COLOR();
-      var trbl = TimeLine.TRBL();
-
-      var width_total = this.nb_frames * 0.3;
-      var height_total = TimeLine.LINE_HEIGHT() * this.entries.length ;
+      var data = this.visualizer.getDataTimeLine();
+      this.entries = []
       var that = this
-      gen_height = height_total - 2 * TimeLine.EXT_MARGIN();
-      gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trbl[1] - trbl[3];
-      used_rect = "";
-      used_color = "";
-      prec_timeLine = -1; // timeLine de l'ancien rectangle
+      $(data).each(function(i,e){
+        that.entries.push(e.name)
+      });
 
-      this.scaleData = []
+      this.nb_frames = this.visualizer.getNbFrames();
+      this.scaleData= [];
       for(var i = 0; i < this.nb_frames; i++){
         if((i / this.frame_rate) % TimeLine.SCALE_MIN() == 0){
           var min = Math.trunc((i / this.frame_rate) / 60)
@@ -271,9 +248,43 @@ export class TimeLine {
           this.scaleData.push({'time_id':i,'label':min + ":" + sec})
         }
       }
+      this.items = []
+      $(data).each(function(i,entry){
+        $(entry.intervals).each(function(j,interval){
+          that.items.push(interval)
+        })
+      })
+      $('#' + this.div_id).empty()
+      var my_color = TimeLine.MY_COLOR();
+      var my_selected_color = TimeLine.MY_SELECTED_COLOR();
+      var trbl = TimeLine.TRBL();
+
+      var width_total;
+      if(this.nb_frames<2000){
+        width_total = Math.max(this.nb_frames,600);
+      }
+      else if(this.nb_frames<10000){
+        width_total = this.nb_frames * (this.frame_rate / 100);
+      }
+      else if(this.nb_frames<20000){
+        width_total = this.nb_frames * (this.frame_rate / 200);
+      }
+      else{
+        width_total = this.nb_frames * (this.frame_rate / 500);
+      }
+      var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
+      gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
+      gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trbl[1] - trbl[3];
+      used_rect = "";
+      used_color = "";
+      prec_timeLine = -1; // timeLine de l'ancien rectangle
+
+      var debut = 0;
+      var fin = this.nb_frames;
+      this.rect_actif = -1;
 
       //generer la timeLine dans sa div
-      var time_line = d3.select("#" + this.id_time_line)
+      var time_line = d3.select("#" + this.div_id)
               .append("svg")
 
       $("#" + this.div_id).find('svg').css('width',width_total)
@@ -284,13 +295,15 @@ export class TimeLine {
               .attr('x', 0)
               .attr('y', 0)
               .attr('width', width_total)
-              .attr('height', height_total + 20)
+              .attr('height', height_total)
               .style('fill', '#f2f2f2');
+
       var gen = time_line.append("g")
               .attr("transform", "translate(" + (trbl[3] + TimeLine.EXT_MARGIN()) + "," + (trbl[0] + TimeLine.EXT_MARGIN()) + ")")
               .attr("width", gen_width)
               .attr("height", gen_height)
               .attr("class", "general");
+
       var y1 = d3.scale.linear()
               .domain([0, this.entries.length])
               .range([0, gen_height]);
@@ -299,46 +312,41 @@ export class TimeLine {
               .domain([0, this.nb_frames])
               .range([0, gen_width]);
 
-      blockPlay = function (d, i) {
+      blockPlay = function (d, i,that) {
           var id;
           id = "rect" + i;
-          //console.log("items[rect_actif]: " , items[rect_actif]);
-          //$('#element_id .data[attribute=value]')
-          //var rect = $(id);
-          // var rect = $(id +" [timeLineid='" + idTimeLine + "']");
-          var rect = $("[id=" + id + "][time_line_id='" + divId + "']");
-          //console.log("rect: ",rect);
-          //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
-          if (rect_actif !== -1) {
-              rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
+
+          var rect = $("[id=" + id + "][time_line_id='" + that.div_id + "']");
+          if (that.rect_actif !== -1) {
+            rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
-              prec_timeLine = divId;
+              prec_timeLine = that.div_id;
           }
-          //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
-          if ((rect_actif !== i) | prec_timeLine !== divId | (!vidCtrl.getPartialPlaying())) {
+
+          if ((that.rect_actif !== i) || prec_timeLine !== that.div_id || (!vidCtrl.getPartialPlaying())) {
               if (used_rect !== "") {
                   used_rect.attr("style", "fill:" + used_color);
               }
               used_color = my_color[d.index % my_color.length];
               rect.attr("style", "fill:" + my_selected_color[d.index % my_selected_color.length]);
               used_rect = rect;
-              rect_actif = i;
-              prec_timeLine = divId;
-              // (Number(idTimeLine)+ 1)
+              that.rect_actif = i;
+              prec_timeLine = that.div_id;
+              that.xmlxsdForm.displayForm(d.obj, d.stack)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);
-              // console.log("debut = " + d.start + " fin = " + d.end);
               vidCtrl.play();
           } else {
-              // console.log("debut2 = " + debut + " fin2 = " + fin);
               vidCtrl.setPlayingInterval(debut, fin);
               vidCtrl.play();
               used_rect = "";
-              rect_actif = -1;
+              that.rect_actif = -1;
               vidCtrl.setPartialPlaying(false);
           }
+
       };
+
       gen.selectAll(".entryLines")
               .data(this.entries)
               .enter().append("line")
@@ -351,8 +359,10 @@ export class TimeLine {
                   return y1(i + 1);
               })
               .attr("stroke", "lightgray");
+
       var rect = gen.selectAll("rect")
               .data(this.items);
+      var that = this;
       rect.enter().append("rect")
               .attr("x", function (d) {
                   return x1(d.start + 0.1);
@@ -360,12 +370,9 @@ export class TimeLine {
               .attr("y", function (d) {
                   return y1(d.index + 0.1);
               })
-              // .attr("width", 10)
               .attr("width", function (d) {
-                  // return Math.max(0, 10)
                   return Math.max(x1(d.end - 0.1) - x1(d.start), 5);
               })
-              // .attr("height", 0.8)
               .attr("height", function (d) {
                   return y1(0.8);
               })
@@ -387,7 +394,7 @@ export class TimeLine {
                   return my_color[d.index % my_color.length];
               })
               .attr("stroke", "lightgray")
-              .on("click", blockPlay);
+              .on("click", function(d,i){ blockPlay(d,i,that)});
 
       time_line.append("text")
               .text(this.name_extractor + " timeLine")
@@ -421,7 +428,6 @@ export class TimeLine {
                 return x1(d.time_id)
               })
               .attr("y", height_total - trbl[2]);
-      // console.log("rect1: ", rect)
-*/
+
     }
 }

@@ -1,10 +1,11 @@
 export class Overlay{
   //data is an array of timeId and positions
-  constructor(data, xmlxsdForm, divId){
-    this.points=[];
+  constructor(data, xmlxsdForm, divId, visualizer){
     this.data = data;
     this.xmlxsdForm = xmlxsdForm;
     this.divId = divId;
+    this.visualizer = visualizer;
+    this.points=[];
     this.firstDraw = true;
     this.line = null;
     this.dragged = null;
@@ -13,6 +14,7 @@ export class Overlay{
   }
 
   update(){
+      this.data = this.visualizer.getDataOverlay();
       this.notify(vidCtrl.getCurrentFrame());
   }
 
