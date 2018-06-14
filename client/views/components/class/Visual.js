@@ -1,10 +1,10 @@
 export class Visual{
   //data is an array of timeId and positions
   constructor(data, xmlxsdForm, divId){
-    this.points=[];
     this.data = data;
     this.xmlxsdForm = xmlxsdForm;
     this.divId = divId;
+    this.points=[];
     this.firstDraw = true;
     this.line = null;
     this.dragged = null;

@@ -51,14 +51,14 @@ export class DefaultVisualizer{
   /* Obsever pattern : update function
   */
   update(){
-    this.getDataTimeLine();
+    // this.getDataTimeLine();
     this.notifyAll()
   }
 
   /* Visualize the XMLXSDObject
   */
   visualize(){
-    var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name, this.divIdForm);
+    var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name, this.divIdForm, this);
     this.attach(xmlxsdForm)
     xmlxsdForm.generateForm();
 

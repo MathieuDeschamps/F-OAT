@@ -8,12 +8,12 @@ export class TimeLine {
     static SCALE_MIN(){return 30}
     static TRBL(){return [20, 15, 30, 60] /*top right bottom left*/}
 
-    constructor(name, xmlxsdForm, nbFrames, data, divId){
-      this.div_id = divId;
-      this.xmlxsdForm = xmlxsdForm
+    constructor(name, xml_xsd_form, nb_frames, data, div_id){
       this.name_extractor = name;
+      this.xml_xsd_form = xml_xsd_form
+      this.div_id = div_id;
       rect_actif = -1;
-      this.nb_frames = nbFrames;
+      this.nb_frames = nb_frames;
       this.frame_rate = 30
       var debut = 0;
       var fin = this.nb_frames;
@@ -106,17 +106,17 @@ export class TimeLine {
           //$('#element_id .data[attribute=value]')
           //var rect = $(id);
           // var rect = $(id +" [timeLineid='" + idTimeLine + "']");
-          var rect = $("[id=" + id + "][time_line_id='" + divId + "']");
+          var rect = $("[id=" + that.id + "][time_line_id='" + that.div_id + "']");
           //console.log("rect: ",rect);
           //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
           if (rect_actif !== -1) {
             rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
-              prec_timeLine = divId;
+              prec_timeLine = that.div_id;
           }
           //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
-          if ((rect_actif !== i) | prec_timeLine !== divId | (!vidCtrl.getPartialPlaying())) {
+          if ((rect_actif !== i) | prec_timeLine !== that.div_id | (!vidCtrl.getPartialPlaying())) {
               if (used_rect !== "") {
                   used_rect.attr("style", "fill:" + used_color);
               }
@@ -124,9 +124,9 @@ export class TimeLine {
               rect.attr("style", "fill:" + my_selected_color[d.index % my_selected_color.length]);
               used_rect = rect;
               rect_actif = i;
-              prec_timeLine = divId;
+              prec_timeLine = that.div_id;
               // (Number(idTimeLine)+ 1)
-              that.xmlxsdForm.displayForm(d.obj, d.stack)
+              that.xml_xsd_form.displayForm(d.obj, d.stack)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);
               // console.log("debut = " + d.start + " fin = " + d.end);
@@ -301,17 +301,17 @@ export class TimeLine {
           //$('#element_id .data[attribute=value]')
           //var rect = $(id);
           // var rect = $(id +" [timeLineid='" + idTimeLine + "']");
-          var rect = $("[id=" + id + "][time_line_id='" + divId + "']");
+          var rect = $("[id=" + id + "][time_line_id='" + that.div_id + "']");
           //console.log("rect: ",rect);
           //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
           if (rect_actif !== -1) {
               rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
-              prec_timeLine = divId;
+              prec_timeLine = that.div_id;
           }
           //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
-          if ((rect_actif !== i) | prec_timeLine !== divId | (!vidCtrl.getPartialPlaying())) {
+          if ((rect_actif !== i) | prec_timeLine !== that.div_id | (!vidCtrl.getPartialPlaying())) {
               if (used_rect !== "") {
                   used_rect.attr("style", "fill:" + used_color);
               }
@@ -319,7 +319,7 @@ export class TimeLine {
               rect.attr("style", "fill:" + my_selected_color[d.index % my_selected_color.length]);
               used_rect = rect;
               rect_actif = i;
-              prec_timeLine = divId;
+              prec_timeLine = that.div_id;
               // (Number(idTimeLine)+ 1)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);

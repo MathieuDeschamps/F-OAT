@@ -11,9 +11,9 @@ export class ShotExtractVisualizer{
     this.idExtractor = idExtractor;
     this.name = name
     this.divIdForm = divIdForm;
+    this.observers = [];
     this.divIdTimeLine = divIdTimeLine;
     this.divIdOverlay = divIdOverlay;
-    this.observers = [];
     this.timeLineData = [];
     this.overlayData = [];
     this.stack = [];
@@ -40,6 +40,10 @@ export class ShotExtractVisualizer{
     }
   }
 
+  /* Check if an observer is already attached
+  @returns  true if newOserver is include in this.observers
+  *         false otherwise
+  */
   alreadyAttached(newObserver){
     result = false;
     this.observers.forEach(function(observer){
@@ -49,6 +53,7 @@ export class ShotExtractVisualizer{
     })
     return result;
   }
+
   /* Obsever pattern : dettach function
   @observer : Object
   */
@@ -60,7 +65,7 @@ export class ShotExtractVisualizer{
   /* Obsever pattern : notifyAll function
   */
   notifyAll(){
-    this.observers.forEach(function(observer){
+      this.observers.forEach(function(observer){
       observer.update();
     })
   }
@@ -78,7 +83,7 @@ export class ShotExtractVisualizer{
     this.init()
     this.xmlxsdObj.accept(this);
 
-    var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name, this.divIdForm);
+    var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name, this.divIdForm, this);
     this.attach(xmlxsdForm)
     xmlxsdForm.generateForm();
 

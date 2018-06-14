@@ -6,7 +6,7 @@ import {XSDObject} from '../XSDParser/XSDObject.js';
 import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
 import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
-import {configuratorManager} from './configuratorManager.js';
+import {configAnnotationManager} from './configAnnotationManager.js';
 
 import {Extractors} from '/lib/collections/extractors.js';
 
@@ -20,8 +20,7 @@ Template.configAnnotation.onRendered(()=>{
     if(Session.get('projectReady') === 1 && Session.get('videoPlayer') === 1) {
       console.log('XMLArray',xmlArray)
       console.log('XSDArray', xsdArray)
-      new configuratorManager(xsdArray, xmlArray,"configAnnotation",
-        "configAnnotationForm", ["configAnnotationForm","timeLines","overlay"])
+      new configAnnotationManager(xsdArray, xmlArray,"configAnnotation", ["configAnnotationForm","timeLines","overlay"])
       computation.stop();
     }
   });

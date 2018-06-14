@@ -6,7 +6,7 @@ import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
 
 
-export class configuratorManager{
+export class configExtractorManager{
 	constructor(extractors,checkBoxDiv,formDiv){
 		this.extractors=extractors;
 		this.formDiv=formDiv;
