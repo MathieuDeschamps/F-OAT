@@ -1,17 +1,10 @@
 export class Overlay{
   //data is an array of timeId and positions
-<<<<<<< HEAD:client/views/components/class/Visual.js
-  constructor(data, xmlxsdForm, divId){
-    this.data = data;
-    this.xmlxsdForm = xmlxsdForm;
-    this.divId = divId;
-=======
   constructor(data, xmlxsdForm, divId, visualizer){
     this.data = data;
     this.xmlxsdForm = xmlxsdForm;
     this.divId = divId;
     this.visualizer = visualizer;
->>>>>>> d0a457e65bca7b19aa306ff35132b673adcb7275:client/views/components/class/Overlay.js
     this.points=[];
     this.firstDraw = true;
     this.line = null;
