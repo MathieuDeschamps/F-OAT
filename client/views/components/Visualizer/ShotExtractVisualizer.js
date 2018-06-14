@@ -1,5 +1,5 @@
 import { TimeLine } from '../class/TimeLine.js'
-import {Visual} from '../class/Visual.js';
+import {Overlay} from '../class/Overlay.js';
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 
 export class ShotExtractVisualizer{
@@ -90,7 +90,7 @@ export class ShotExtractVisualizer{
     var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, this.timeLineData, this.divIdTimeLine);
     this.attach(timeLine);
 
-    var overlay = new Visual(this.overlayData, xmlxsdForm, this.divIdOverlay)
+    var overlay = new Overlay(this.overlayData, xmlxsdForm, this.divIdOverlay)
     this.attach(overlay);
     vidCtrl.attach(overlay,1);
     console.log('timeLineData', this.timeLineData);

@@ -12,7 +12,7 @@ export class TimeLine {
       this.div_id = divId;
       this.xmlxsdForm = xmlxsdForm
       this.name_extractor = name;
-      rect_actif = -1;
+      this.rect_actif = -1;
       this.nb_frames = nbFrames;
       this.frame_rate = 30
       var debut = 0;
@@ -99,32 +99,36 @@ export class TimeLine {
               .domain([0, this.nb_frames])
               .range([0, gen_width]);
 
-      blockPlay = function (d, i) {
+      blockPlay = function (d, i,that) {
           var id;
           id = "rect" + i;
+          console.log("d",d);
+          console.log("i",i);
+          console.log("that",that);
           //console.log("items[rect_actif]: " , items[rect_actif]);
           //$('#element_id .data[attribute=value]')
           //var rect = $(id);
           // var rect = $(id +" [timeLineid='" + idTimeLine + "']");
-          var rect = $("[id=" + id + "][time_line_id='" + divId + "']");
+          var rect = $("[id=" + id + "][time_line_id='" + that.div_id + "']");
           //console.log("rect: ",rect);
           //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
-          if (rect_actif !== -1) {
-            rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
+          if (that.rect_actif !== -1) {
+            console.log("rect",that.rect_actif);
+            rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
-              prec_timeLine = divId;
+              prec_timeLine = that.div_id;
           }
           //console.log("ra: ",rect_actif, " i: ", i , " pp: " , vidCtrl.getPartialPlaying());
-          if ((rect_actif !== i) | prec_timeLine !== divId | (!vidCtrl.getPartialPlaying())) {
+          if ((that.rect_actif !== i) || prec_timeLine !== that.div_id || (!vidCtrl.getPartialPlaying())) {
               if (used_rect !== "") {
                   used_rect.attr("style", "fill:" + used_color);
               }
               used_color = my_color[d.index % my_color.length];
               rect.attr("style", "fill:" + my_selected_color[d.index % my_selected_color.length]);
               used_rect = rect;
-              rect_actif = i;
-              prec_timeLine = divId;
+              that.rect_actif = i;
+              prec_timeLine = that.div_id;
               // (Number(idTimeLine)+ 1)
               that.xmlxsdForm.displayForm(d.obj, d.stack)
               vidCtrl.setPartialPlaying(true);
@@ -136,9 +140,10 @@ export class TimeLine {
               vidCtrl.setPlayingInterval(debut, fin);
               vidCtrl.play();
               used_rect = "";
-              rect_actif = -1;
+              that.rect_actif = -1;
               vidCtrl.setPartialPlaying(false);
           }
+
       };
 
       gen.selectAll(".entryLines")
@@ -156,7 +161,7 @@ export class TimeLine {
 
       var rect = gen.selectAll("rect")
               .data(this.items);
-
+      var that = this;
       rect.enter().append("rect")
               .attr("x", function (d) {
                   return x1(d.start + 0.1);
@@ -191,7 +196,7 @@ export class TimeLine {
                   return my_color[d.index % my_color.length];
               })
               .attr("stroke", "lightgray")
-              .on("click", blockPlay);
+              .on("click", function(d,i){ blockPlay(d,i,that)});
 
       time_line.append("text")
               .text(this.name_extractor + " timeLine")
@@ -241,7 +246,7 @@ export class TimeLine {
 
     update() {
 
-      $('#' + this.id_time_line).empty()
+    /*  $('#' + this.id_time_line).empty()
       var debut = 0;
       //vidCtrl.setPlayingInterval(debut, this.nb_frames);
       var my_color = TimeLine.MY_COLOR();
@@ -417,6 +422,6 @@ export class TimeLine {
               })
               .attr("y", height_total - trbl[2]);
       // console.log("rect1: ", rect)
-
+*/
     }
 }

@@ -1,4 +1,4 @@
-export class Visual{
+export class Overlay{
   //data is an array of timeId and positions
   constructor(data, xmlxsdForm, divId){
     this.points=[];
@@ -93,9 +93,9 @@ export class Visual{
 
 
 
-    function redraw(visual) {
-      var width = $('#' + visual.divId).find('svg').width();
-      var height = $('#' + visual.divId).find('svg').height();
+    function redraw(overlay) {
+      var width = $('#' + overlay.divId).find('svg').width();
+      var height = $('#' + overlay.divId).find('svg').height();
 
       y1 = d3.scale.linear()
       .domain([0, 1])
@@ -105,7 +105,7 @@ export class Visual{
       .domain([0, 1])
       .range([0, width]);
 
-      visual.line.x(function(d) {
+      overlay.line.x(function(d) {
         return x1(d.x);
       })
       .y(function(d) {
@@ -115,26 +115,26 @@ export class Visual{
       svg.select("rect").attr("width",width)
       .attr("height",height);
 
-      svg.select("path").attr("d", visual.line);
+      svg.select("path").attr("d", overlay.line);
 
       var circle = svg.selectAll("circle")
-      .data(visual.points);
+      .data(overlay.points);
 
       circle.enter().append("circle")
       .attr("r", 1e-6)
       .on("mousedown", function(d) {
-        visual.selected = visual.dragged = d;
+        overlay.selected = overlay.dragged = d;
         if(d.obj!=null && d.stack!=null){
-          visual.xmlxsdForm.displayForm(d.obj,d.stack);
+          overlay.xmlxsdForm.displayForm(d.obj,d.stack);
         }
-        redraw(visual);
+        redraw(overlay);
        })
       .transition()
       .duration(750)
       .ease("elastic")
       .attr("r", 6.5);
 
-      circle.classed("selected", function(d) { return d === visual.selected; })
+      circle.classed("selected", function(d) { return d === overlay.selected; })
       .attr("cx", function(d) { return x1(d.x); })
       .attr("cy", function(d) { return y1(d.y); });
 
@@ -147,47 +147,47 @@ export class Visual{
     }
 
 
-    function mousedown(visual) {
-      var width = $('#' + visual.divId).find('svg').width();
-      var height = $('#' + visual.divId).find('svg').height();
+    function mousedown(overlay) {
+      var width = $('#' + overlay.divId).find('svg').width();
+      var height = $('#' + overlay.divId).find('svg').height();
       var m = d3.mouse(svg.node());
       var x = m[0]/width;
       var y = m[1]/height;
       var coordinates = {};
       coordinates.x = x;
       coordinates.y = y;
-      visual.points.push(visual.selected = visual.dragged = coordinates);
+      overlay.points.push(overlay.selected = overlay.dragged = coordinates);
 
-      visual.draw_circles();
+      overlay.draw_circles();
     }
 
-    function mousemove(visual) {
-      if (!visual.dragged) return;
+    function mousemove(overlay) {
+      if (!overlay.dragged) return;
       var m = d3.mouse(svg.node());
-      var width = $('#' + visual.divId).find('svg').width();
-      var height = $('#' + visual.divId).find('svg').height();
+      var width = $('#' + overlay.divId).find('svg').width();
+      var height = $('#' + overlay.divId).find('svg').height();
       var x = m[0]/width;
       var y = m[1]/height;
-      visual.dragged.x = Math.max(0, Math.min(1, x));
-      visual.dragged.y = Math.max(0, Math.min(1, y));
-      visual.draw_circles();
+      overlay.dragged.x = Math.max(0, Math.min(1, x));
+      overlay.dragged.y = Math.max(0, Math.min(1, y));
+      overlay.draw_circles();
     }
 
-    function mouseup(visual) {
-      if (!visual.dragged) return;
-      mousemove(visual);
-      visual.dragged = null;
+    function mouseup(overlay) {
+      if (!overlay.dragged) return;
+      mousemove(overlay);
+      overlay.dragged = null;
     }
 
-    function keydown(visual) {
-      if (!visual.selected) return;
+    function keydown(overlay) {
+      if (!overlay.selected) return;
       switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: { // delete
-          var i = visual.points.indexOf(visual.selected);
-          visual.points.splice(i, 1);
-          visual.selected = visual.points.length ? visual.points[i > 0 ? i - 1 : 0] : null;
-          visual.draw_circles();
+          var i = overlay.points.indexOf(overlay.selected);
+          overlay.points.splice(i, 1);
+          overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
+          overlay.draw_circles();
           break;
         }
       }
