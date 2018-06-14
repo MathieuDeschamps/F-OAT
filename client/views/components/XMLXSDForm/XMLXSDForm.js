@@ -79,6 +79,7 @@ export class XMLXSDForm{
 	visitXMLXSDElt(xmlxsdElt){
 		// console.log('visitXMLXSDElt',xmlxsdElt);
 		var $div = $('<div id="extractor' + this.id + 'config" />')
+		var visualizer = this.visualizer
 		this.html = $div
 
 		// generate nav
@@ -138,6 +139,7 @@ export class XMLXSDForm{
 						var ul = $("#" + that.divId).find('ul')[0]
 						$(ul).collapsible('open', 0)
 						$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+						visulaizer.notifyAll();
 					},
 					id:idName+'clear',
 					eventName:'click'
@@ -160,6 +162,7 @@ export class XMLXSDForm{
 					var ul = $("#" + that.divId).find('ul')[0]
 					$(ul).collapsible('open', 0)
 					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+					visualizer.notifyAll();
 				},
 				id:idEltAdd,
 				eventName:'click'
@@ -193,7 +196,7 @@ export class XMLXSDForm{
 
 		var $div = $('<div id="extractor' + this.id + 'config"/>')
 		this.html = $div
-
+		var visualizer = this.visualizer
 		// generate nav
 		$div.append(this.generateNav());
 
@@ -249,6 +252,7 @@ export class XMLXSDForm{
 								var ul = $("#" + that.divId).find('ul')[0]
 								$(ul).collapsible('open', 0)
 								$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+								visualizer.notifyAll();
 							},
 							id:idName+'clear',
 							eventName:'click'
@@ -267,12 +271,12 @@ export class XMLXSDForm{
 
 					that.eventHandler.push({
 						function:function(){
-							console.log(xmlxsdElt.type);
 							xmlxsdElt.type.accept(xmlxsdElt);
 							xmlxsdSeq.accept(that);
 							var ul = $("#" + that.divId).find('ul')[0]
 							$(ul).collapsible('open', 0)
 							$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+							visualizer.notifyAll()
 						},
 						id:idEltAdd,
 						eventName:'click'});
