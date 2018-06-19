@@ -113,7 +113,7 @@ export class TimeLine {
           //console.log("rect: ",rect);
           //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
           if (that.rect_actif !== -1) {
-            rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
+            rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
               prec_timeLine = that.div_id;

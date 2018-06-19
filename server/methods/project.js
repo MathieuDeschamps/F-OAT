@@ -131,6 +131,32 @@ Meteor.methods({
   },
 
   /**
+  Increase the count of the number of users on the project page
+  @projectId : id of the project concerned
+  */
+  increaseCount:function(projectId,username){
+    check(projectId,String);
+    var usersOnPage = Projects.findOne(projectId).usersOnPage;
+    if(usersOnPage.indexOf(username)==-1){
+      return Projects.update({_id : projectId}, {$push: {"usersOnPage" : username}});
+    }
+    return;
+  },
+
+  /**
+  Decrease the count of the number of users on the project page
+  @projectId : id of the project concerned
+  */
+  decreaseCount:function(projectId,username){
+    check(projectId,String);
+    var usersOnPage = Projects.findOne(projectId).usersOnPage;
+    if(usersOnPage.indexOf(username)!=-1){
+      return Projects.update({_id : projectId}, {$pull: {"usersOnPage" : username}});
+    }
+    return;
+  },
+
+  /**
   Save the new xml file of a project
   @project : the project modified
   @buffer : the content of XML that needs to be saved

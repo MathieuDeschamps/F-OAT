@@ -3,5 +3,12 @@
   "annotations" : "Annotations",
   "save" : "Enregistrer",
   "errorProjectRight" : "Désolé, vous n'avez pas le droit de modifier ce projet",
-  "projectDeleted" : "Le projet a été supprimé par le propriétaire, retour au menu."
+  "projectDeleted" : "Le projet a été supprimé par le propriétaire, retour au menu.",
+  "uploadProject" : "Télécharger votre fichier vidéo",
+  "fileProject" : "Fichier",
+  "addFileButton" : "Télécharger",
+
+  "errorExtensionFile" : "Le fichier doit être un fichier .mp4",
+  "errorFile" : "Donnez un fichier à télécharger"
+
 }

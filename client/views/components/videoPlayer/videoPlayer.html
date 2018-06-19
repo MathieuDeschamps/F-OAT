@@ -1,5 +1,44 @@
 <template name="videoPlayer">
-  <div id="videoContainer" class="video" style="width:80%">
-    <video preload id="videoDisplayId" style="width:100%; height:100%;"></video>
-  </div>
+  {{#if isFile}}
+    {{#if fileIsGiven}}
+      {{#if uploadIsDone}}
+        <div id="videoContainer" class="video" style="width:80%">
+          <video preload id="videoDisplayId" style="width:100%; height:100%;"></video>
+        </div>
+      {{else}}
+        Uploading <b>{{file}}</b>:
+        <div id="myProgress">
+          <div id="myBar">{{uploading}}%</div>
+        </div>
+      {{/if}}
+    {{else}}
+      <div class="row centered">
+        <p class="flow-text">{{_ 'uploadProject'}}</p>
+        <div class="file-field input-field col s12">
+          <div class="btn col s4 blue-grey darken-2">
+            <span>{{_ 'fileProject'}}</span>
+            <input type="file" id="selectedFile">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text" placeholder="{{_ 'uploadProject'}}">
+          </div>
+          <span  class="red-text">{{errorMessageFile}}</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s4 offset-s4" >
+          <a class="btn waves-effect waves-light " id="addFile" name="action">{{_ 'addFileButton'}}
+            <i class="material-icons right">send</i>
+          </a>
+        </div>
+      </div>
+      <div id="videoContainer" class="video" style="width:80%; display:none;">
+        <video preload id="videoDisplayId" style="width:100%; height:100%;"></video>
+      </div>
+    {{/if}}
+  {{else}}
+    <div id="videoContainer" class="video" style="width:80%">
+      <video preload id="videoDisplayId" style="width:100%; height:100%;"></video>
+    </div>
+  {{/if}}
 </template>

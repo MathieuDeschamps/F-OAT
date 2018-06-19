@@ -1,5 +1,6 @@
 import './project.html';
 import {Projects} from '../../../../lib/collections/Project.js';
+import {Videos} from '../../../../lib/collections/videos.js';
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
 import {TimeLine} from "../../components/class/TimeLine.js"
@@ -8,6 +9,8 @@ import {XMLGenerator} from '../../components/XMLGenerator/XMLGenerator.js';
 var em;
 var vidctrllistener;
 var deleteprojectlistener;
+var id;
+var username;
 
 // function which checked if the current has the right write on the proejct
 hasRightToWrite = function(){
@@ -37,8 +40,17 @@ projectExists = function(){
 }
 
 Template.project.onCreated(()=>{
+  Session.set('errorMessageFile','');
   Session.set('projectReady',0);
-    Session.set('videoPlayer',0);
+  id = Router.current().params._id;
+  username = Meteor.user().username;
+  var idUpload = "upload_"+Router.current().params._id;
+  var upload = Session.set(idUpload,-1);
+  Meteor.call('increaseCount',id,username,function(err,res){
+    if(err){
+      toastr.warning(err.reason);
+    }
+  });
 });
 
 Template.project.onRendered(()=>{
@@ -175,7 +187,19 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
           // console.log("vidctrl",vidCtrl);
 
           if(i+1 === extractors.length){
-            Session.set('projectReady', 1)
+            var idProject = Router.current().params._id;
+            if(Projects.findOne(idProject).isFile){
+              var idUpload = "upload_"+Router.current().params._id;
+              var upload = Session.get(idUpload);
+              if(upload!=null){
+                if(upload==100){
+                  Session.set('projectReady', 1)
+                }
+              }
+            }
+            else{
+              Session.set('projectReady', 1)
+            }
           }
 
           // document.getElementById("videoDisplayId").disabled = !supported["frameRate"];
@@ -254,6 +278,23 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
         });
       }
 
+      Meteor.call('decreaseCount',id,username,function(err,res){
+        if(err){
+          toastr.warning(err.reason);
+        }
+        else{
+          //If no one is on this page anymore, remove the video from database
+          if(Projects.findOne(id).usersOnPage==0){
+            Meteor.call('removeVideo',id,function(error,result){
+              if(error){
+                toastr.warning(error.reason);
+              }
+            });
+          }
+        }
+      });
+
+
       Session.set('projectReady', 0);
 
     });
@@ -269,28 +310,26 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
         return hasRightToWrite()
       },
 
-      uploadIsDone(){
+      isFile(){
         var idProject = Router.current().params._id;
+        return Projects.findOne(idProject).isFile;
+      },
+
+      uploadIsDone(){
+        var idProject = Router.current().params._id
+        if(Projects.findOne(idProject).fileId!=null){
+          return true;
+        }
         var idUpload = "upload_"+idProject;
         var upload = Session.get(idUpload);
-        if(!upload){
+        if(!upload && Projects.findOne(idProject).isFile){
+          return false;
+        }
+        else if(!upload){
           return true;
         }
         return (upload==100);
-      },
-
-      uploading(){
-        var idProject = Router.current().params._id;
-        var idUpload = "upload_"+idProject;
-        var upload = Session.get(idUpload);
-        $("#myBar").width(upload+"%");
-
-        return upload;
-      },
-
-  file(){
-    return Projects.findOne(Router.current().params._id).url;
-  }
+      }
 });
 
 Template.project.events({
@@ -367,6 +406,8 @@ Template.project.events({
       // });
     }
   },
+
+
 
   // // check button event display form
   // 'click .filled-in'(event,instance){
@@ -478,4 +519,40 @@ alert(err.reason);
 }
 }});
 }*/
+});
+
+Meteor.startup(function(){
+
+    $(window).bind('beforeunload', function() {
+      if(em!=null){
+        em.setClient({
+          appId: -1,
+          _id: -1
+        });
+      }
+
+      if(eventDeleteProject!=null){
+        eventDeleteProject.setClient({
+          appId: -1,
+          _id: -1
+        });
+      }
+
+      Session.set('projectReady', 0);
+
+      Meteor.call('decreaseCount',id,username,function(err,res){
+        if(err){
+
+        }
+        else{
+          //If no one is on this page anymore, remove the video from database
+          if(Projects.findOne(id).usersOnPage==0){
+            Meteor.call('removeVideo',id);
+          }
+        }
+      });
+      // have to return null, unless you want a chrome popup alert
+      return undefined;
+
+    });
 });

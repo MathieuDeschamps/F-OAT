@@ -24,14 +24,6 @@ Template.dashboard.helpers({
   }
 });
 
-Template.dashboard.onRendered(function (){
-  Session.set('isOnDashboard',1);
-});
-
-Template.dashboard.onDestroyed(function (){
-  Session.set('isOnDashboard',0);
-})
-
 Template.dashboard.events({
 
   'click .remove' (event, instance){
