@@ -12,7 +12,7 @@ export class XMLXSDForm{
 		this.name=name;
 		this.divId=divId;
 		this.visualizer = visualizer
-
+		this.displayedElement = xmlxsdObj;
 		this.html="";
 
 		this.eventHandler=[];
@@ -28,6 +28,10 @@ export class XMLXSDForm{
 
 		this.currentNodeValue = undefined
 		this.htmlUpdate=false;
+	}
+
+	setVisualizer(visualizer){
+		this.visualizer = visualizer
 	}
 
 	equals(object){
@@ -122,6 +126,7 @@ export class XMLXSDForm{
 						tag:xmlxsdElt.name,
 						obj:xmlxsdElt.eltsList[0]
 					});
+					that.displayedElement = elt
 					elt.accept(that);
 					var ul = $("#" + that.divId).find('ul')[0]
 					$(ul).collapsible('open', 0)
@@ -134,12 +139,16 @@ export class XMLXSDForm{
 			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
 				that.eventHandler.push({
 					function:function(){
-						xmlxsdElt.eltsList.splice(i,1);
+						var deleted = xmlxsdElt.deleteElement(i);
+						that.displayedElement = xmlxsdElt
 						xmlxsdElt.accept(that);
 						var ul = $("#" + that.divId).find('ul')[0]
 						$(ul).collapsible('open', 0)
 						$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-						visulaizer.notifyAll();
+						if(typeof visualizer !== 'undefined' &&
+							deleted ){
+							visualizer.notifyAll();
+						}
 					},
 					id:idName+'clear',
 					eventName:'click'
@@ -158,11 +167,14 @@ export class XMLXSDForm{
 			this.eventHandler.push({
 				function:function(){
 					xmlxsdElt.type.accept(xmlxsdElt);
+					that.displayedElement = xmlxsdElt;
 					xmlxsdElt.accept(that);
 					var ul = $("#" + that.divId).find('ul')[0]
 					$(ul).collapsible('open', 0)
 					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-					visualizer.notifyAll();
+					if(typeof visualizer !== 'undefined'){
+						visualizer.notifyAll();
+					}
 				},
 				id:idEltAdd,
 				eventName:'click'
@@ -235,6 +247,7 @@ export class XMLXSDForm{
 								tag:xmlxsdElt.name,
 								obj:xmlxsdElt.eltsList[i]
 							});
+							that.displayedElement = elt
 							elt.accept(that);
 							var ul = $("#" + that.divId).find('ul')[0]
 							$(ul).collapsible('open', 0)
@@ -247,12 +260,17 @@ export class XMLXSDForm{
 					if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
 						that.eventHandler.push({
 							function:function(){
-								xmlxsdElt.eltsList.splice(i,1);
+								var deleted = xmlxsdElt.deleteElement(i);
+								that.displayedElement = xmlxsdSeq;
 								xmlxsdSeq.accept(that);
 								var ul = $("#" + that.divId).find('ul')[0]
 								$(ul).collapsible('open', 0)
 								$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-								visualizer.notifyAll();
+								if(typeof visualizer !== 'undefined' &&
+									deleted ){
+									visualizer.notifyAll();
+								}
+
 							},
 							id:idName+'clear',
 							eventName:'click'
@@ -272,11 +290,15 @@ export class XMLXSDForm{
 					that.eventHandler.push({
 						function:function(){
 							xmlxsdElt.type.accept(xmlxsdElt);
+							that.displayedElement = xmlxsdSeq;
 							xmlxsdSeq.accept(that);
 							var ul = $("#" + that.divId).find('ul')[0]
 							$(ul).collapsible('open', 0)
 							$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-							visualizer.notifyAll()
+							if(typeof visualizer !== 'undefined'){
+								visualizer.notifyAll();
+							}
+
 						},
 						id:idEltAdd,
 						eventName:'click'});
@@ -308,7 +330,6 @@ export class XMLXSDForm{
 
 		$(jqDivId).html(this.html);
 
-		// console.log(jqDivId);
 
 		this.applyEventHandler();
 	}
@@ -381,8 +402,14 @@ export class XMLXSDForm{
 			this.eventHandler.push({
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
+						var oldValue = attr.value;
 						attr.setValue($(jqSelectFormName).val());
-						visualizer.notifyAll();
+						newValue = attr.value;
+						$(jqSelectFormName).val(newValue);
+						if(typeof visualizer !== 'undefined' &&
+							oldValue !== newValue){
+							visualizer.notifyAll();
+						}
 					},
 					id: selectFormName,
 					eventName:'change'
@@ -410,50 +437,10 @@ export class XMLXSDForm{
 				$li.append($divBody)
 			}
 
-			/* generate the the html to display the text (between tag)
-			this.html+='<div class="row">'
-			this.html+='<div class="col s10">'
-			this.html+='text '
-			this.html+='<div class="input-field inline">'
-			var leaf=this.currentNodeValue;
-			if (xsdFloat.isEnumerated()){
-				this.html+='text';
-				var selectFormName='selectLeaf';
-				this.generateSelect(selectFormName, xsdFloat.enumeration, attr.value)
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							leaf.setValue($(jqSelectFormName).val());
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				this.generateInput(formName, "number", 0.01, leaf.value)
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						leaf.setValue($(jqFormName).val());
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-			this.html+='</div>';
-			this.html+='</div>';
-			this.html+='</div>';
-			*/
-
-			if (!this.htmlUpdate){
-				// this.html+='</div>';
-			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
 
 			$(jqDivId).html(this.html);
-
-			console.log(jqDivId);
 
 			this.applyEventHandler();
 		}
@@ -490,8 +477,14 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
+							var oldValue = attr.value;
 							attr.setValue($(jqSelectFormName).val());
-							visualizer.notifyAll();
+							newValue = attr.value;
+							$(jqSelectFormName).val(newValue);
+							if(typeof visualizer !== 'undefined' &&
+								oldValue !== newValue){
+								visualizer.notifyAll();
+							}
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -503,12 +496,17 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
+						var oldValue = attr.value;
 						attr.setValue($(jqFormName).val());
-						$(jqFormName).val(attr.value);
-						visualizer.notifyAll();
+						newValue = attr.value;
+						$(jqFormName).val(newValue);
+						if(typeof visualizer !== 'undefined' &&
+							oldValue !== newValue){
+							visualizer.notifyAll();
+						}
 					},
 					id:formName,
-					eventName:'change'
+					eventName:'focusout'
 				});
 			}
 		}else{
@@ -534,52 +532,13 @@ export class XMLXSDForm{
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
 			}
-			/* generate the the html to display the text (between tag)
-			this.html+='<div class="row">'
-			this.html+='<div class="col s12">'
-			this.html+='text'
-			this.html+='<div class="input-field inline">'
-			var leaf=this.currentNodeValue;
-			if (xsdInt.isEnumerated()){
-				var selectFormName='selectleaf';
-				this.generateSelect(selectFormName, xsdInt.enumeration, leaf.value)
 
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							leaf.setValue($(jqSelectFormName).val());
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				console.log('leaf');
-				var formName='leafForm';
-				this.generateInput(formName, "number", undefined, leaf.value)
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						nodeValue.setValue($(jqFormName).val());
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-			this.html+='</div>';
-			this.html+='</div>';
-			this.html+='</div>';
-			*/
-
-			if (!this.htmlUpdate){
-				// this.html+='</div>';
-			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
 
 			$(jqDivId).html(this.html);
 
-			console.log(jqDivId);
+			// console.log(jqDivId);
 
 			this.applyEventHandler();
 		}
@@ -614,8 +573,14 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
+							var oldValue = attr.value;
 							attr.setValue($(jqSelectFormName).val());
-							visualizer.notifyAll();
+							newValue = attr.value;
+							$(jqSelectFormName).val(newValue);
+							if(typeof visualizer !== 'undefined' &&
+								oldValue !== newValue){
+								visualizer.notifyAll();
+							}
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -628,12 +593,17 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
+						var oldValue = attr.value;
 						attr.setValue($(jqFormName).val());
-						$(jqFormName).val(attr.value);
-						visualizer.notifyAll();
+						newValue = attr.value;
+						$(jqFormName).val(newValue);
+						if(typeof visualizer !== 'undefined' &&
+							oldValue !== newValue){
+							visualizer.notifyAll();
+						}
 					},
 					id:formName,
-					eventName:'change'
+					eventName:'focusout'
 				});
 			}
 			return result
@@ -660,50 +630,10 @@ export class XMLXSDForm{
 				$li.append($divBody)
 			}
 
-			/* generate the the html to display the text (between tag)
-			this.html+='<div class="row">'
-			this.html+='<div class="col s10">'
-			this.html+='text '
-			this.html+='<div class="input-field inline">'
-			var leaf=this.currentNodeValue;
-			if (xsdFloat.isEnumerated()){
-				this.html+='text';
-				var selectFormName='selectLeaf';
-				this.generateSelect(selectFormName, xsdFloat.enumeration, attr.value)
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							leaf.setValue($(jqSelectFormName).val());
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				this.generateInput(formName, "number", 0.01, leaf.value)
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						leaf.setValue($(jqFormName).val());
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-			this.html+='</div>';
-			this.html+='</div>';
-			this.html+='</div>';
-			*/
-
-			if (!this.htmlUpdate){
-				// this.html+='</div>';
-			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
 
 			$(jqDivId).html(this.html);
-
-			console.log(jqDivId);
 
 			this.applyEventHandler();
 		}
@@ -740,8 +670,14 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 						function:function(){
 							var jqSelectFormName='#'+selectFormName;
+							var oldValue = attr.value;
 							attr.setValue($(jqSelectFormName).val());
-							visualizer.notifyAll();
+							newValue = attr.value;
+							$(jqSelectFormName).val(newValue);
+							if(typeof visualizer !== 'undefined' &&
+								oldValue !== newValue){
+								visualizer.notifyAll();
+							}
 						},
 						id: selectFormName,
 						eventName:'change'
@@ -753,12 +689,17 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
+						var oldValue = attr.value;
 						attr.setValue($(jqFormName).val());
-						$(jqFormName).val(attr.value);
-						visualizer.notifyAll();
+						newValue = attr.value;
+						$(jqFormName).val(newValue);
+						if(typeof visualizer !== 'undefined' &&
+							oldValue !== newValue){
+							visualizer.notifyAll();
+						}
 					},
 					id:formName,
-					eventName:'change'
+					eventName:'focusout'
 				});
 			}
 		}else{
@@ -784,52 +725,12 @@ export class XMLXSDForm{
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
 			}
-			/* generate the the html to display the text (between tag)
-			this.html+='<div class="row">'
-			this.html+='<div class="col s12">'
-			this.html+='text'
-			this.html+='<div class="input-field inline">'
-			var leaf=this.currentNodeValue;
-			if (xsdInt.isEnumerated()){
-				var selectFormName='selectleaf';
-				this.generateSelect(selectFormName, xsdInt.enumeration, leaf.value)
 
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							leaf.setValue($(jqSelectFormName).val());
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
-			}else{
-				console.log('leaf');
-				var formName='leafForm';
-				this.generateInput(formName, "number", undefined, leaf.value)
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						nodeValue.setValue($(jqFormName).val());
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-			this.html+='</div>';
-			this.html+='</div>';
-			this.html+='</div>';
-			*/
-
-			if (!this.htmlUpdate){
-				// this.html+='</div>';
-			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
 
 			$(jqDivId).html(this.html);
 
-			console.log(jqDivId);
 
 			this.applyEventHandler();
 		}
@@ -866,8 +767,14 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 					function:function(){
 						var jqSelectFormName='#'+selectFormName;
+						var oldValue = attr.value;
 						attr.setValue($(jqSelectFormName).val());
-						visualizer.notifyAll();
+						newValue = attr.value;
+						$(jqSelectFormName).val(newValue);
+						if(typeof visualizer !== 'undefined' &&
+							oldValue !== newValue){
+							visualizer.notifyAll();
+						}
 					},
 					id: selectFormName,
 					eventName:'change'
@@ -879,11 +786,16 @@ export class XMLXSDForm{
 				this.eventHandler.push({
 					function:function(){
 						var jqFormName='#'+formName;
+						var oldValue = attr.value;
 						attr.setValue($(jqFormName).val());
-						visualizer.notifyAll();
+						newValue = attr.value;
+						if(typeof visualizer !== 'undefined' &&
+							oldValue !== newValue){
+							visualizer.notifyAll();
+						}
 					},
 					id:formName,
-					eventName:'change'
+					eventName:'focusout'
 				});
 			}
 		}
@@ -911,50 +823,11 @@ export class XMLXSDForm{
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
 			}
-			/* generate the the html to display the text (between balise)
-			this.html+='<div class="row">'
-			this.html+='<div class="col s12">'
-			this.html+='text '
-			this.html+='<div class="input-field inline">'
-			var leaf=this.currentNodeValue;
-			if (xsdString.isEnumerated()){
-				var selectFormName='selectLeaf';
-				this.generateSelect(selectFormName, xsdString.enumeration, leaf.value)
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							nodeValue.setValue($(jqSelectFormName).val());
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
 
-			}else{
-				var formName='leafForm';
-				this.generateInput(formName, "text", undefined, leaf.value)
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						leaf.setValue($(jqFormName).val());
-					},
-					id:formName,
-					eventName:'change'
-				});
-			}
-			this.html+='</div>';
-			this.html+='</div>';
-			this.html+='</div>';
-			*/
-
-			if (!this.htmlUpdate){
-				// this.html+='</div>';
-			}
 			// displaying GUI
 			var jqDivId='#'+this.divId;
 
 			$(jqDivId).html(this.html);
-
-			console.log(jqDivId);
 
 			this.applyEventHandler();
 		}
@@ -995,8 +868,6 @@ export class XMLXSDForm{
 
 		$(jqDivId).html(this.html);
 
-		console.log(jqDivId);
-
 		this.applyEventHandler();
 
 		// console.log('vide:', xsdVoidType)
@@ -1016,7 +887,7 @@ export class XMLXSDForm{
 	generateNav(){
 		var nbElementByNav = 3
 		var result = ''
-		result += '<div class="row" id="nav-'+ this.id + 'config">'
+		result += '<div class="row nav-line" id="nav-'+ this.id + '_config">'
 		result += '<nav>'
 		result += '<div class="nav-wrapper">'
 		result += '<div class="col s12">'
@@ -1025,6 +896,7 @@ export class XMLXSDForm{
 		var sizeRow = 24
 		var that=this;
 		this.stack.forEach(function(elm,i){
+			var idName=that.id+'navConfig'+i;
 			if (i!==that.stack.length-1){
 				if(elm.tag.length > 24){
 					nbCharacter = 24
@@ -1037,20 +909,20 @@ export class XMLXSDForm{
 					result += '</div>';
 					result += '</nav>'
 					result += '</div>'
-					result += '<div class="row" id="nav-'+ that.id + 'config">'
+					result += '<div class="row nav-line" id="nav-'+ that.id + '_config">'
 					result +=' <nav>'
 					result +=' <div class="nav-wrapper">'
 					result += '<div class="col s12">'
 					nbCharacterRow = 0
 				}
 				nbCharacterRow += nbCharacter
-				result+='<a id="'+that.id+'navConfig'+i+'" class="breadcrumb">' + elm.tag.substr(0,sizeRow) +'</a>';
+				result+='<a id="'+idName+'" class="breadcrumb">' + elm.tag.substr(0,sizeRow) +'</a>';
 			}
-			var idName=that.id+'navConfig'+i;
 
 			that.eventHandler.push({
 				function:function(){
 					that.stack=that.stack.slice(0,i + 1);
+					that.displayedElement = elm.obj
 					elm.obj.accept(that);
 					var ul = $("#" + that.divId).find('ul')[0]
 					$(ul).collapsible('open', 0)
@@ -1070,12 +942,12 @@ export class XMLXSDForm{
 	@id identifiant of the hedaer
 	@icon icon place before the nameHeader can be none
 	@nameHeader name of the header
-	@deletable boolean to dispaly or not the clear element
+	@deletable boolean to display or not the clear element
 	@return the code for the header element
 	*/
 	generateHeaderContent(id, icon, nameHeader,deletable){
 		var result = ''
-		result+='<div id="'+id+'" class="collapsible-header white-text row">'
+		result+='<div id="'+id+'" class="collapsible-header white-text">'
 		result+='<div class="col s2">'
 		result+= '<i class="material-icons">'+icon+'</i>'
 		result+= '</div>'
@@ -1104,15 +976,15 @@ export class XMLXSDForm{
 			var jqFormName='#'+formName;
 			var switchName=attr.name+'switch';
 			var jqSwitchName='#'+switchName;
-
+			var sizeInput = 12
 			result += '<div class="row">';
 
 			// console.log('attr', attr)
 			// console.log('attr.use', attr.use)
 			switch(attr.use){
 				case 'optional' :
-
-				result +='<div class="switch col s2"><label>Off';
+				sizeInput = 9
+				result +='<div class="switch col s3"><label>Off';
 				if (typeof attr.value !== 'undefined'){
 					result+='<input id="'+switchName+'" type= "checkbox" checked/>';
 				}else{
@@ -1121,17 +993,6 @@ export class XMLXSDForm{
 				result+='<span class = "lever"></span>On</label></div>';
 				that.eventHandler.push({
 					function:function(){
-						if ($(jqSwitchName).prop('checked') && typeof attr.fixedValue === 'undefined'){
-							$(jqFormName).prop("disabled",false);
-						}else{
-							$(jqFormName).prop("disabled",true);
-							attr.setValue(undefined);
-							$(jqFormName).val(undefined)
-							visualizer.notifyAll();
-						}
-						if($(jqFormName)[0].localName === "select"){
-							$(jqFormName).material_select()
-						}
 						var value;
 						if(typeof attr.fixedValue !== 'undefined'){
 							value = attr.fixedValue
@@ -1140,9 +1001,40 @@ export class XMLXSDForm{
 						}else if(typeof attr.defaultValue !== 'undefined'){
 							value = attr.defaultValue;
 						}
-						console.log('value', value)
-						$(jqFormName).val(value);
-						console.log('form', $(jqFormName))
+
+						if($(jqSwitchName).prop('checked') &&
+							typeof attr.fixedValue === 'undefined'){
+							$(jqFormName).prop("disabled", false)
+							attr.setValue(value);
+							$(jqFormName).val(value)
+							if(typeof visualizer !== 'undefined' &&
+							 typeof value !== 'undefined'){
+								 visualizer.notifyAll();
+							 }
+						} else if($(jqSwitchName).prop('checked') &&
+						 	typeof attr.fixedValue !== 'undefined'){
+							$(jqFormName).prop("disabled", true)
+							attr.setValue(value);
+							$(jqFormName).val(value)
+							if(typeof value !== 'undefined'){
+								 visualizer.notifyAll();
+							 }
+
+						}else{
+							// when switch not checked
+							$(jqFormName).prop("disabled", true);
+							attr.setValue(undefined);
+							$(jqFormName).val(undefined)
+							if(typeof visualizer !== 'undefined'){
+								visualizer.notifyAll();
+							}
+						}
+
+						// reinitialize the material select with the new propertie
+						if($(jqFormName)[0].localName === "select"){
+							$(jqFormName).material_select()
+						}
+
 					},
 					id: switchName,
 					eventName:'change'
@@ -1153,7 +1045,7 @@ export class XMLXSDForm{
 				break;
 			}
 			if (attr.use!=="prohibited"){
-				result+='<div class="col s10">'
+				result+='<div class="col s'+ sizeInput +'">'
 				result+=attr.name + ' : '
 				that.attrManage=true;
 				that.attrFormName=formName;
@@ -1226,18 +1118,6 @@ export class XMLXSDForm{
 		return result
 	}
 
-	/* Display the form
-	@obj a XMLXSD Object
-	@stack Array of JSON Object {tag:String, obj:XMLXSD Object}
-	*/
-	displayForm(obj, stack){
-		this.stack = stack;
-		obj.accept(this);
-		var ul = $("#" + this.divId).find('ul')[0]
-		$(ul).collapsible('open', 0)
-		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-	}
-
 	/* Apply the event of this.eventHandler and	initialize some element
 	*/
 	applyEventHandler(){
@@ -1266,7 +1146,43 @@ export class XMLXSDForm{
 		});
 	}
 
-	update(){
+	/* Display the form
+	* call by the tool of visualisation (time line, overlay)
+	@stack Array of JSON Object {tag:String, obj:XMLXSDElment}
+	*/
+	displayForm(stack){
+		this.stack = stack;
+		this.eventHandler = []
+		if(stack.length > 0){
+			this.displayedElement =	stack[stack.length - 1].obj
+		}else{
+			this.displayedElement = this.xmlxsdObj
+		}
+		this.displayedElement.accept(this)
+		var ul = $("#" + this.divId).find('ul')[0]
+		$(ul).collapsible('open', 0)
+		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+	}
 
+	update(){
+			var saveStack = this.stack.slice(0)
+			this.eventHandler = []
+			this.displayedElement.accept(this)
+			var saveEventHandler = this.eventHandler.slice(0);
+
+			// restore the save stack before accept
+			this.stack = saveStack;
+			var parentNav = $('#' + this.divId).children(':first');
+			$(parentNav).children('div[class~="nav-line"]').remove();
+			$(parentNav).prepend(this.generateNav());
+
+			// restore the save eventHandler before the generateNav
+			this.eventHandler = saveEventHandler;
+
+			if($('#'+ this.divId).css('display') !== 'none'){
+				var ul = $("#" + this.divId).find('ul')[0]
+				$(ul).collapsible('open', 0)
+				$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
+			}
 	}
 }

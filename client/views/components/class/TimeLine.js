@@ -113,7 +113,7 @@ export class TimeLine {
           //console.log("rect: ",rect);
           //console.log("timeLineIdR = " , rectTimeId , " timeLineIdA = " , (Number(idTimeLine)) , " " , rectTimeId !== (Number(idTimeLine)));
           if (that.rect_actif !== -1) {
-            rect.attr("style", "fill:" + my_color[that.items[rect_actif].index % my_color.length]);
+            rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
           }
           if (prec_timeLine === -1) {
               prec_timeLine = that.div_id;
@@ -128,7 +128,7 @@ export class TimeLine {
               used_rect = rect;
               that.rect_actif = i;
               prec_timeLine = that.div_id;
-              that.xmlxsdForm.displayForm(d.obj, d.stack)
+              that.xmlxsdForm.displayForm(d.stack)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);
               vidCtrl.play();
@@ -237,8 +237,7 @@ export class TimeLine {
     }
 
     update() {
-
-      var data = this.visualizer.getDataTimeLine();
+      var data = this.visualizer.getTimeLineData();
       this.entries = []
       var that = this
       $(data).each(function(i,e){
@@ -343,7 +342,7 @@ export class TimeLine {
               used_rect = rect;
               that.rect_actif = i;
               prec_timeLine = that.div_id;
-              that.xmlxsdForm.displayForm(d.obj, d.stack)
+              that.xmlxsdForm.displayForm(d.stack)
               vidCtrl.setPartialPlaying(true);
               vidCtrl.setPlayingInterval(d.start, d.end);
               vidCtrl.play();

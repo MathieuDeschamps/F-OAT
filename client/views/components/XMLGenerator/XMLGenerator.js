@@ -1,5 +1,6 @@
 export class XMLGenerator{
 	constructor(xmlxsdObj){
+		console.log('xmlxsdObj', xmlxsdObj)
 		this.xmlxsdObj=xmlxsdObj;
 
 		this.xml=undefined;
@@ -64,7 +65,7 @@ export class XMLGenerator{
 			var that=this;
 			$.each(xmlxsdSeq.attrs,function(key,xmlxsdAttr){
 				if (that.xml!=undefined){
-					console.log(xmlxsdAttr);
+					// console.log(xmlxsdAttr);
 					xmlxsdAttr.accept(that);
 				};
 			});
@@ -96,12 +97,12 @@ export class XMLGenerator{
 	@xmlxsdAttr: XMLXSDAttr objects
 	*/
 	visitXMLXSDAttr(xmlxsdAttr){
-		console.log('XMLGenerator Attr :',xmlxsdAttr.name,xmlxsdAttr.use,xmlxsdAttr.value);
+		// console.log('XMLGenerator Attr :',xmlxsdAttr.name,xmlxsdAttr.use,xmlxsdAttr.value);
 		if (this.xml!=undefined){
 			if (xmlxsdAttr.value!=undefined && (xmlxsdAttr.type.holds(xmlxsdAttr.value)) && xmlxsdAttr.use!="prohibited"){
 				this.xml+=' '+xmlxsdAttr.name+'="'+xmlxsdAttr.value+'"';
 			} else {
-				console.log('XMLGenerator Attr 1');
+				// console.log('XMLGenerator Attr 1');
 				if (xmlxsdAttr.value!=undefined){
 					if (xmlxsdAttr.use=="prohibited"){
 						this.alertMessage+=xmlxsdAttr.name + " is prohibited.\n";
@@ -121,7 +122,7 @@ export class XMLGenerator{
 				}
 			}
 		}
-		console.log('XMLGenerator Attr 2');
+		// console.log('XMLGenerator Attr 2');
 	}
 
 	/* Visitor pattern : visit function
@@ -130,10 +131,7 @@ export class XMLGenerator{
 	visitXMLXSDNodeValue(xmlxsdNodeValue){
 		if (this.xml!=undefined){
 			if (xmlxsdNodeValue.type.holds(xmlxsdNodeValue.value)){
-			//TODO if (noxmlxsdNodeValuede.value && nxmlxsdNodeValueode.type.holds(nodxmlxsdNodeValuee.value)){
-			if(!xmlxsdNodeValue.value == undefined){
 				this.xml+=xmlxsdNodeValue.value
-			}
 			} else {
 				this.alertMessage+=xmlxsdNodeValue.value + 'does not fit node type.\n';
 				this.alertDone=false;
@@ -156,10 +154,12 @@ export class XMLGenerator{
 			});
 			if (this.xml!=undefined){
 				this.xml+='>';
-				if (xmlxsdElt.value!=undefined && xmlxsdElt.baseType.holds(xmlxsdElt.value)){
-					this.xml+=xmlxsdElt.value;
+				if (xmlxsdElt.baseType.holds(xmlxsdElt.value)){
+					if(typeof xmlxsdElt.value !== 'undefined'){
+						this.xml+=xmlxsdElt.value;
+					}
 				} else {
-					this.alertMessage+=xmlxsdElt.value + 'does not fit node type.\n';
+					this.alertMessage+=xmlxsdElt.value + 'does not fit base type.\n';
 					this.alertDone=false;
 					this.xml=undefined;
 				}

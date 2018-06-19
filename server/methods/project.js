@@ -138,7 +138,6 @@ Meteor.methods({
   updateXML: function(project,buffer){
     var fs = Npm.require("fs");
     var dir = "/tmp/"+project._id;
-
     fs.writeFile(dir+"/annotation.xml", buffer, function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));

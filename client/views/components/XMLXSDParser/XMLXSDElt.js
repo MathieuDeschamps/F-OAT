@@ -38,6 +38,21 @@ export class XMLXSDElt{
 		}
 	}
 
+	/* Delete a element in the eltsList
+	@index: index of the element in the EltsList
+	@return: true if the element has been deleted
+					 false otherwise
+	*/
+	deleteElement(index){
+		var result = false;
+		if(this.eltsList.length != this.minOccurs &&
+			typeof index === 'number' &&
+			index < this.eltsList.length){
+			this.eltsList.splice(index, 1);
+			result = true;
+		}
+		return result
+	}
 	/* Add an object to EltsList (case of sequenced element)
 	@xsdSeq : XSDSequence object
 	*/
@@ -186,6 +201,7 @@ export class XMLXSDElt{
 			}
 		}
 	}
+
 	/* Visitor pattern : accept function
 	@ visitor : object with a method "visitXMLXSDElt"
 	*/

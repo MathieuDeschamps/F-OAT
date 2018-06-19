@@ -1,27 +1,34 @@
-
+import { Parser } from '../class/Parser.js'
+import { Projects } from '../../../../lib/collections/Project.js';
 import { VisualizerFactory } from '../Visualizer/VisualizerFactory.js'
 import { XSDObject } from '../XSDParser/XSDObject.js';
 import { XMLXSDObj } from '../XMLXSDParser/XMLXSDObj.js';
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js';
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js';
+import { Writer } from '../class/Writer.js'
 
 export class configAnnotationManager{
 
   /* Constructor
+  @xml : xml of the project with the annotations and the header parsed
   @xsds : array which contains the XSD files parsed
   @xmls: array which contains the XML of the extractors parsed
   @checkBoxDiv: id of the div of the checkBox
   @visualizerDivs: array which contains the id of div of the visualizer
+  @saveButtonDiv
   */
-  constructor(xsds, xmls, checkBoxDiv, visualizerDivs){
-    this.xsds = xsds;
-    this.xmls = xmls;
+  constructor(xsds, xmls, checkBoxDiv, visualizerDivs, saveButtonDiv){
+    this.xsds = xsds.slice(0);
+    this.xmls = xmls.slice(0)
+
     this.checkBoxDiv = checkBoxDiv;
     this.visualizerDivs = visualizerDivs;
+    this.saveButtonDiv = saveButtonDiv;
     this.visualizers = [];
     var that = this;
     var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
+      console.log(' constructor that.xmls[i]', that.xmls[i])
       var labelConfig = "annontation_" + i
       var JQlabelConfig='#'+labelConfig;
       var extractorCheckBox = '<p><input class="filled-in" id="'+ labelConfig + '" type="checkbox"/>'
@@ -56,6 +63,9 @@ export class configAnnotationManager{
         },20);
       });
     })
+
+    var JQSaveButtonDiv = '#'+saveButtonDiv;
+    $(JQSaveButtonDiv).click(function(){that.saveAnnotations()})
   }
 
   /* Event trigger when the checkBox change
@@ -75,5 +85,59 @@ export class configAnnotationManager{
           $(JQidDiv).css('display', 'none');
         })
       }
+  }
+
+  /*Event trigger when click on the save button
+  */
+  saveAnnotations(){
+    if(!configAnnotationManager.hasRightToWrite()){
+       toastr.warning(TAPi18n.__('errorProjectRight'));
+    }else{
+      var that = this;
+      var xmlDoc = $.parseXML(Session.get('xml'))
+      var modif = 0
+
+      this.visualizers.forEach(function(visualizer, i){
+        var xmlGenerator = new XMLGenerator(visualizer.xmlxsdObj)
+        var xmlAnnotation = xmlGenerator.generateXML()
+        if(typeof xmlAnnotation !== 'undefined'){
+          var extractor = that.xmls[i].clone().empty();
+          xmlDoc = Writer.replaceAnnotation(xmlDoc, extractor, xmlAnnotation)
+          modif++
+        }
+      })
+      if(modif > 0){
+        var xml = Writer.convertDocumentToString(xmlDoc, 0)
+        var project=Projects.findOne(Router.current().params._id)
+
+        Meteor.call("updateXML",project,xml,(err,result)=>{
+          if(err){
+            alert(err.reason);
+          }else{
+            // VideoControler update
+            vidCtrl.setAnnotedFrames(Parser.getListTimeId(xml));
+          }
+        })
+      }
+    }
+  }
+
+  /*function which checked if the current user has the right write on the proejct
+  */
+  static hasRightToWrite(){
+    var idProject = Router.current().params._id
+    var project = Projects.findOne(idProject)
+    if(!project){
+      return false;
+    }
+    var username = Meteor.user().username
+    var participant = $(project.participants).filter(function(i,p){
+      return p.username == username && p.right == "Write"
+    })
+    if(project.owner == username || participant.length > 0){
+      return true
+    }else{
+      return false
+    }
   }
 }

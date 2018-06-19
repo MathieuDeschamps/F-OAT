@@ -67,7 +67,8 @@ export class configExtractorManager{
 
 		var xmlxsdObj= new XMLXSDObj(undefined,xsdObj);
 
-		var xmlxsdForm=new XMLXSDForm(xmlxsdObj,extractor._id+'_'+i,extractor.name,idDivForm);
+		var xmlxsdForm=new XMLXSDForm(xmlxsdObj,extractor._id+'_'+i,extractor.name,
+			idDivForm, undefined);
 
 		//console.log('xmlxsdForm',xmlxsdForm);
 
@@ -92,7 +93,8 @@ export class configExtractorManager{
 
 			var params={"param" : paramsXML};
 			console.log('param en JSON',params);
-			$(JQidDivButton).html('');
+			// TODO uncomment before commit
+			// $(JQidDivButton).html('');
 
 
 			// Initialisation
