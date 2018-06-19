@@ -3,8 +3,8 @@
   "nameProject" : "Nom du projet",
   "urlProject" : "URL de la vidéo",
   "downUrlProject" : "URL de téléchargement de la vidéo",
-  "fileProject" : "Fichier",
-  "uploadProject" : "... ou télécharger votre vidéo",
+  "useFile" : "Utiliser un fichier",
+  "useUrl" : "Utiliser un URL",
   "searchUsers" : "Rechercher des utilisateurs pour le projet",
   "addUser" : "Ajouter",
   "usersProject" : "Utilisateurs dans le projet",
@@ -20,9 +20,6 @@
   "errorProjectNameEmpty" : "Merci de donner un nom à votre projet",
   "errorProjectNameWrong" : "Nom de projet non valide ('/' interdits)",
   "errorProjectNameExists" : "Nom de projet déjà utilisé",
-  "errorProjectURLorFile" : "Merci de donner un URL ou un fichier vidéo",
-  "errorProjectURLandFile" : "Ne donnez pas un fichier et un URL, remplir seulement un des champs",
-  "errorProjectFileExtension" : "Votre fichier doit être un fichier vidéo mp4",
-  "errorProjectDownloadURLwithURL" : "Vous devez donner un URL de téléchargement de votre vidéo",
-  "errorProjectDownloadURLwithFile" : "Ne donnez pas d'URL de téléchargement si vous donnez un fichier"
+  "errorProjectURL" : "Merci de donner un URL",
+  "errorProjectDownloadURLwithURL" : "Vous devez donner un URL de téléchargement de votre vidéo"
 }

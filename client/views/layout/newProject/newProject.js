@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import {Projects} from '../../../../lib/collections/Project.js';
-import {Videos} from '../../../../lib/collections/videos.js';
+import {Projects} from '../../../../lib/collections/projects.js';
 import './newProject.html';
 
 
@@ -56,27 +55,22 @@ Template.newproject.events({
     var _projectName = $('.projectName').val();
     var _projectUrl = $('.url').val();
     var _downUrl = $('.downUrl').val();
-    var _projectFile = $('#selectedFile')[0].files[0];
 
     var _url = 'error';
+    var _isFile = false;
     //If we give an URL for the project
-    if(!_projectFile){
+    if(_projectUrl!=''){
       _url = _projectUrl;
-      if(_url!='' && !_downUrl){//we need a download link for the video
+      _isFile = false;
+      if(_url!='' && _downUrl==''){//we need a download link for the video
         _downUrl = 'error';
       }
     }
 
     //Else, if we give a file for the project
-    else if(!_projectUrl){
-      _url = _projectFile.name;
-      ext = ['mp4'];
-      if(!checkExtension(ext,_url)){
-        _url = 'errorExt';
-      }
-      if(_downUrl!=''){
-        _downUrl = 'errorFile'
-      }
+    else if($('#radioButtonFile').is(':checked')){
+      _url = '';
+      _isFile = true;
     }
 
     var _part = Session.get('participants');
@@ -86,8 +80,10 @@ Template.newproject.events({
       owner: ownerId.username,
       url: _url,
       downUrl: (_downUrl ? _downUrl : null),
+      isFile : _isFile,
       fileId : null,
-      participants:_part
+      participants:_part,
+      usersOnPage : []
     };
 
     //We verify the name and the url of the project (not null and not already used)
@@ -101,114 +97,13 @@ Template.newproject.events({
       if(err){
         toastr.warning(err.reason);
       }else{
-        if(_projectFile){
-
-          //Do it firstly to avoid errors with getXML
-          Meteor.call('createXMLFile',res,function(error,result){
-            if(error){
-              toastr.warning(error.reason);
-            }
-          });
-
-          //Get the data of the file
-          const upload = Videos.insert({
-            file: _projectFile,
-            streams: 'dynamic',
-            chunkSize: 'dynamic'
-          }, false);
-
-          upload.on('start', function () {
-            var idUpload = "upload_"+res;
-            Session.set(idUpload,upload.progress);
-            var date = moment().calendar();
-            var val = "Project "+project.name+" : file "+project.url+" is uploading, wait for upload to be done to play video.";
-            Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
-              if(err){
-                toastr.warning(errorNotif.reason);
-              }
-            });
-            toastr.success(TAPi18n.__('fileUploading'));
-          });
-
-          upload.on('progress',function(progress,fileData){
-            var idUpload = "upload_"+res;
-            Session.set(idUpload,progress);
-          });
-
-          upload.on('end', function (error, fileObj) {
-            if (error) {
-              toastr.warning('Error during upload: ' + error);
-            } else {
-              Meteor.call('modifyFileId',res,fileObj._id,function(err1,res1){
-                if(err1){
-                  toastr.warning(err1.reason);
-                }
-              });
-              //Create a notification if the file has been uploaded
-              var date = moment().calendar();
-              var val = "Project "+project.name+": file "+project.url+" has been uploaded. You can play the video";
-              Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
-                if(err){
-                  toastr.warning(errorNotif.reason);
-                }
-              });
-              toastr.success(TAPi18n.__('fileUploaded'));
-
-              if(!eventDDPVideo){
-                eventDDPVideo = new EventDDP('videoPlayer',Meteor.connection);
-              }
-              eventDDPVideo.setClient({
-                appId: res,
-                _id: Meteor.userId()
-              });
-
-              Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-                if(Session.get('videoPlayer') === 1 || Session.get('isOnDashboard')===1) {
-                  //Event listened in videoPlayer.js
-                  eventDDPVideo.emit('videoPlayer');
-                  computation.stop();
-                }
-              });
-            }
-          });
-
-          upload.start();
-
-          /*reader = new FileReader();
-
-          //When reading file is done
-          reader.onload = function(event){
-            var nameV = project.url;
-            nameV = nameV.replace('.mp4', '');
-            var buffer = reader.result;
-            //Call a method from project.js on server side
-            Meteor.call('createFile', res, project, buffer, nameV , function(error, result){
-              if(error){
-                toastr.warning(error.reason);
-              }
-              else{
-                //Create a notification if the file has been uploaded
-                var date = moment().calendar();
-                var val = "Your file "+project.url+" has been uploaded.";
-                Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
-                  if(err){
-                    toastr.warning(errorNotif.reason);
-                  }
-                });
-              }
-            });
-          }
-          reader.readAsDataURL(_projectFile); //read the file as base64 dataURL*/
-          Router.go("/");
-        }
-        else{
           Meteor.call('createXMLFile',res,function(error,result){
             if(error){
               toastr.warning(error.reason);
             }
           });
           Router.go("/");
-        }
+      //  }
       }
     });
   },
@@ -246,6 +141,20 @@ Template.newproject.events({
 
       Session.set('participants',participants);
   },
+
+  'change #radioButtonUrl' (event,instance){
+      if($('#radioButtonUrl').is(':checked')){
+        $('#urlForm').css('display','block');
+      }
+  },
+
+  'change #radioButtonFile' (event,instance){
+      if($('#radioButtonFile').is(':checked')){
+        $('#urlForm').css('display','none');
+        $('#url').val('');
+        $('#url-down').val('');
+      }
+  }
 });
 
 Template.newproject.onDestroyed(()=>{
@@ -259,18 +168,6 @@ Template.newproject.onDestroyed(()=>{
   }
 });
 
-
-// This function is used to check that the file is a video
-function checkExtension(verifExt, fileValue){
-  var fileExtension = fileValue.substring(fileValue.lastIndexOf(".")+1, fileValue.lenght);
-  fileExtension = fileExtension.toLowerCase();
-  for (var ext of verifExt){
-    if(fileExtension==ext){
-      return true;
-    }
-  }
-  return false;
-}
 
 function addUser(){
   var _newParticipants = $('#participant').val();

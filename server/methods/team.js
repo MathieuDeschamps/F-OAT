@@ -1,4 +1,4 @@
-import {Projects} from '../../lib/collections/Project.js';
+import {Projects} from '../../lib/collections/projects.js';
 
 /**
 methods callable from the client relative to the team of a project

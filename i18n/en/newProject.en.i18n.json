@@ -3,8 +3,8 @@
   "nameProject" : "Name of the project",
   "urlProject" : "URL of the video",
   "downUrlProject" : "Download URL of the video",
-  "fileProject" : "File",
-  "uploadProject" : "...or upload one",
+  "useFile" : "Use a file",
+  "useUrl" : "Use an URL",
   "searchUsers" : "Search users for the project",
   "addUser" : "Add",
   "usersProject" : "Users in the project",
@@ -20,9 +20,6 @@
   "errorProjectNameEmpty" : "Please fill in a name",
   "errorProjectNameWrong" : "Can't use '/' in your project name",
   "errorProjectNameExists" : "A project with this name already exists",
-  "errorProjectURLorFile" : "Please fill in a URL or give a file",
-  "errorProjectURLandFile" : "Give an URL or a file, not both",
-  "errorProjectFileExtension" : "Your file should be an mp4 video",
-  "errorProjectDownloadURLwithURL" : "If you give an URL, you need to give a download link too",
-  "errorProjectDownloadURLwithFile" : "If you give a file, dont give a download link"
+  "errorProjectURL" : "Please give an URL",
+  "errorProjectDownloadURLwithURL" : "If you give an URL, you need to give a download link too"
 }

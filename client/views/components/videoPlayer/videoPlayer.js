@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import {Projects} from '../../../../lib/collections/Project.js';
+import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import {videoControler} from '../videoControler/videoControler.js';
 import {seekBarManager} from '../playerCommand/seekBarManager.js';
@@ -15,7 +15,6 @@ Template.videoPlayer.onCreated(function(){
 
   Meteor.subscribe('projects');
   Meteor.subscribe('videos');
-
 });
 
 var Player;
@@ -31,8 +30,12 @@ Template.videoPlayer.onRendered(function () {
     //Event emitted in newProject.js
     eventDDPVideo.addListener('videoPlayer',()=>{
       if(Session.get('videoPlayer')===1){
-        var project = Projects.findOne(Router.current().params._id);
-        var file = Videos.findOne({_id : project.fileId});
+        var idProject = Router.current().params._id
+        var project = Projects.findOne(idProject);
+        var file;
+        if(project.fileId!=null){
+          file = Videos.findOne(project.fileId);
+        }
         var url;
         if(!file){
           url = project.url;
@@ -54,8 +57,12 @@ Template.videoPlayer.onRendered(function () {
     _id: Meteor.userId()
   });
 
-  var project = Projects.findOne(Router.current().params._id);
-  var file = Videos.findOne({_id : project.fileId});
+  var idProject = Router.current().params._id
+  var project = Projects.findOne(idProject);
+  var file;
+  if(project.fileId!=null){
+    file = Videos.findOne(project.fileId);
+  }
   var url;
   if(!file){
     url = project.url;
@@ -80,6 +87,143 @@ Template.videoPlayer.onRendered(function () {
   Session.set('videoPlayer', 1);
 });
 
+Template.videoPlayer.helpers({
+  isFile(){
+    var idProject = Router.current().params._id;
+    return Projects.findOne(idProject).isFile;
+  },
+
+  fileIsGiven(){
+    var idProject = Router.current().params._id;
+    if(Projects.findOne(idProject).fileId!=null){
+      return true;
+    }
+    var idUpload = "upload_"+idProject;
+    var upload = Session.get(idUpload);
+    if(!upload || upload==-1){
+      return false
+    }
+    return true;
+  },
+
+  uploadIsDone(){
+    var idProject = Router.current().params._id;
+    if(Projects.findOne(idProject).fileId!=null){
+      return true;
+    }
+    var idUpload = "upload_"+idProject;
+    var upload = Session.get(idUpload);
+    if(!upload && Projects.findOne(idProject).isFile){
+      return false;
+    }
+    else if(!upload){
+      return true;
+    }
+    return (upload==100);
+  },
+
+  errorMessageFile: function(field){
+    return Session.get('errorMessageFile');
+  },
+
+  uploading(){
+    var idProject = Router.current().params._id;
+    var idUpload = "upload_"+idProject;
+    var upload = Session.get(idUpload);
+    $("#myBar").width(upload+"%");
+
+    return upload;
+  },
+
+
+  file(){
+    //A CHANGER
+    return "YOUR FILE IS UPLOADING";
+    //return Projects.findOne(Router.current().params._id).url;
+  }
+})
+
+Template.videoPlayer.events({
+  'click #addFile'(event,instance){
+    var _projectFile = $('#selectedFile')[0].files[0];
+    Session.set('errorMessageFile','');
+
+    ext = ['mp4'];
+    //Check if file given is an mp4 file
+    if(!_projectFile){
+      return Session.set('errorMessageFile',TAPi18n.__('errorFile'));
+    }
+    if(!checkExtension(ext,_projectFile.name)){
+      return Session.set('errorMessageFile',TAPi18n.__('errorExtensionFile'));
+    }
+
+    var idProject = Router.current().params._id
+
+    const upload = Videos.insert({
+      file: _projectFile,
+      streams: 'dynamic',
+      chunkSize: 'dynamic'
+    }, false);
+
+    upload.on('start', function () {
+      var idUpload = "upload_"+idProject;
+      Session.set(idUpload,upload.progress);
+      // var date = moment().calendar();
+      // var val = "Project "+project.name+" : file "+project.url+" is uploading, wait for upload to be done to play video.";
+      // Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
+      //   if(err){
+      //     toastr.warning(errorNotif.reason);
+      //   }
+      // });
+      toastr.success(TAPi18n.__('fileUploading'));
+    });
+
+    upload.on('progress',function(progress,fileData){
+      var idUpload = "upload_"+idProject;
+      Session.set(idUpload,progress);
+    });
+
+    upload.on('end', function (error, fileObj) {
+      if (error) {
+        toastr.warning('Error during upload: ' + error);
+      } else {
+        Meteor.call('modifyFileId',idProject,fileObj._id,function(err1,res1){
+          if(err1){
+            toastr.warning(err1.reason);
+          }
+        });
+        // //Create a notification if the file has been uploaded
+        // var date = moment().calendar();
+        // var val = "Project "+project.name+": file "+project.url+" has been uploaded. You can play the video";
+        // Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
+        //   if(err){
+        //     toastr.warning(errorNotif.reason);
+        //   }
+        // });
+        toastr.success(TAPi18n.__('fileUploaded'));
+
+        if(!eventDDPVideo){
+          eventDDPVideo = new EventDDP('videoPlayer',Meteor.connection);
+        }
+        eventDDPVideo.setClient({
+          appId: idProject,
+          _id: Meteor.userId()
+        });
+
+        Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+          if(Session.get('videoPlayer') === 1 || Session.get('isOnDashboard')===1) {
+            //Event listened in videoPlayer.js
+            eventDDPVideo.emit('videoPlayer');
+            computation.stop();
+          }
+        });
+      }
+    });
+
+    upload.start();
+}
+});
+
 Template.videoPlayer.onDestroyed(function(){
   $('.videoContainer').remove();
 
@@ -90,4 +234,17 @@ Template.videoPlayer.onDestroyed(function(){
   Player.pause();
   Player.remove();
   Session.set('videoPlayer', 0);
+  Session.set('errorMessageFile','');
 });
+
+// This function is used to check that the file is a video
+function checkExtension(verifExt, fileValue){
+  var fileExtension = fileValue.substring(fileValue.lastIndexOf(".")+1, fileValue.lenght);
+  fileExtension = fileExtension.toLowerCase();
+  for (var ext of verifExt){
+    if(fileExtension==ext){
+      return true;
+    }
+  }
+  return false;
+}

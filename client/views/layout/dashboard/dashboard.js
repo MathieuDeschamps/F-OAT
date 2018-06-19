@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import {Projects} from '../../../../lib/collections/Project.js';
+import {Projects} from '../../../../lib/collections/projects.js';
 import './dashboard.html';
 import {Requests} from '../../../utils/requests.js'
 
@@ -23,14 +23,6 @@ Template.dashboard.helpers({
 
   }
 });
-
-Template.dashboard.onRendered(function (){
-  Session.set('isOnDashboard',1);
-});
-
-Template.dashboard.onDestroyed(function (){
-  Session.set('isOnDashboard',0);
-})
 
 Template.dashboard.events({
 

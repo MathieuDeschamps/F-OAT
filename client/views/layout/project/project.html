@@ -4,23 +4,31 @@
     {{#if projectExists}}
       <div class="row">
         <div class="col s8">
-          
-          {{#if uploadIsDone}}
-          <div id="overlay">
-          </div>
-
+          {{#if isFile}}
+            {{#if uploadIsDone}}
+              <div id="overlay">
+              </div>
+              {{> videoPlayer}}
+              {{> playerCommand}}
+            {{else}}
+              {{> videoPlayer}}
+            {{/if}}
+          {{else}}
+            <div id="overlay">
+            </div>
             {{> videoPlayer}}
             {{> playerCommand}}
-          {{else}}
-            Uploading <b>{{file}}</b>:
-            <div id="myProgress">
-              <div id="myBar">{{uploading}}%</div>
-            </div>
           {{/if}}
           {{> configTimeLine}}
         </div>
         <div class="col s4">
-          {{#if uploadIsDone}}
+          {{#if isFile}}
+            {{#if uploadIsDone}}
+              {{#if hasRightToWrite}}
+                {{> configExtractor}}
+              {{/if}}
+            {{/if}}
+          {{else}}
             {{#if hasRightToWrite}}
               {{> configExtractor}}
             {{/if}}

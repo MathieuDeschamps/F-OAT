@@ -1,4 +1,4 @@
-import {Projects} from '../../../../lib/collections/Project.js';
+import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import {XSDObject} from '../XSDParser/XSDObject.js';
 import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';

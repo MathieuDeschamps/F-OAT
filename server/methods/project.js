@@ -1,4 +1,4 @@
-import {Projects} from '../../lib/collections/Project.js';
+import {Projects} from '../../lib/collections/projects.js';
 var crypto = require('crypto');
 
 /**
@@ -128,6 +128,32 @@ Meteor.methods({
     check(projectId,String);
     check(fileId,String);
     return Projects.update({_id : projectId}, {$set: {"fileId": fileId}});
+  },
+
+  /**
+  Increase the count of the number of users on the project page
+  @projectId : id of the project concerned
+  */
+  increaseCount:function(projectId,username){
+    check(projectId,String);
+    var usersOnPage = Projects.findOne(projectId).usersOnPage;
+    if(usersOnPage.indexOf(username)==-1){
+      return Projects.update({_id : projectId}, {$push: {"usersOnPage" : username}});
+    }
+    return;
+  },
+
+  /**
+  Decrease the count of the number of users on the project page
+  @projectId : id of the project concerned
+  */
+  decreaseCount:function(projectId,username){
+    check(projectId,String);
+    var usersOnPage = Projects.findOne(projectId).usersOnPage;
+    if(usersOnPage.indexOf(username)!=-1){
+      return Projects.update({_id : projectId}, {$pull: {"usersOnPage" : username}});
+    }
+    return;
   },
 
   /**

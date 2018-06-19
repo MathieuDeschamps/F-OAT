@@ -1,5 +1,5 @@
 import { Parser } from '../class/Parser.js'
-import { Projects } from '../../../../lib/collections/Project.js';
+import { Projects } from '../../../../lib/collections/projects.js';
 import { VisualizerFactory } from '../Visualizer/VisualizerFactory.js'
 import { XSDObject } from '../XSDParser/XSDObject.js';
 import { XMLXSDObj } from '../XMLXSDParser/XMLXSDObj.js';

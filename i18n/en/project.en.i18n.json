@@ -3,6 +3,12 @@
   "annotations" : "Annotations",
   "save" : "Save",
   "errorProjectRight" : "Sorry, you do not have the right to modify this project.",
-  "projectDeleted" : "Project has been deleted by owner. Back to dashboard."
+  "projectDeleted" : "Project has been deleted by owner. Back to dashboard.",
+  "uploadProject" : "Upload your video file",
+  "fileProject" : "File",
+  "addFileButton" : "Upload",
+
+  "errorExtensionFile" : "File must be a .mp4 file",
+  "errorFile" : "Give a file to upload"
 
 }

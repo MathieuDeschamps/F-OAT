@@ -1,11 +1,14 @@
 import './project.html';
-import {Projects} from '../../../../lib/collections/Project.js';
+import {Projects} from '../../../../lib/collections/projects.js';
+import {Videos} from '../../../../lib/collections/videos.js';
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
 
 var em;
 var vidctrllistener;
 var deleteprojectlistener;
+var id;
+var username;
 
 // function which checked if the current user has the right write on the proejct
 hasRightToWrite = function(){
@@ -35,8 +38,17 @@ projectExists = function(){
 }
 
 Template.project.onCreated(()=>{
+  Session.set('errorMessageFile','');
   Session.set('projectReady',0);
-  Session.set('videoPlayer',0);
+  id = Router.current().params._id;
+  username = Meteor.user().username;
+  var idUpload = "upload_"+Router.current().params._id;
+  var upload = Session.set(idUpload,-1);
+  Meteor.call('increaseCount',id,username,function(err,res){
+    if(err){
+      toastr.warning(err.reason);
+    }
+  });
 });
 
 Template.project.onRendered(()=>{
@@ -58,34 +70,6 @@ Template.project.onRendered(()=>{
             var extractors = Parser.getListExtractors(xmlDoc)
             var extractor
             var timeLineData
-
-            // update the forms of the editor
-            $(xmlxsdObjAnnotations).each(function(i,form){
-              form.XMLObject = $($.parseXML(xmlDoc)).find(form.name)
-              form.update()
-
-            })
-            // update the timeLine
-            $(timeLines).each(function(i,timeLine){
-              idTimeLine = "#timeLine" + i
-              nameExtractor = timeLine.nameExtractor
-              // console.log('xml', xml)
-              timeLineData = Parser.getTimeLineData(xmlDoc,nameExtractor)
-              // console.log("data: " , $(timeLineData).attr("data"))
-              timeLine.nb_frame = $(timeLineData).attr('nbFrames');
-              timeLine.entries = []
-              $($(timeLineData).attr("data")).each(function(i,e){
-                timeLine.entries.push(e.name)
-              })
-              timeLine.items = []
-              $($(timeLineData).attr("data")).each(function(i,entry){
-                $(entry.intervals).each(function(j,interval){
-                  timeLine.items.push(interval)
-                })
-              })
-              // console.log('timeLineData', timeLineData)
-              timeLine.update()
-            })
 
             //Video controler update :
             var nbFrames=0;
@@ -153,8 +137,8 @@ Template.project.onRendered(()=>{
           extractorPath  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
           Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
             if(xsdErr){
-              // console.log('path', pathExtractor)
-              alert(xsdErr.reason);
+              console.log('path', pathExtractor)
+              // alert(xsdErr.reason);
             }else{
               // build the forms for the editor
               var xmlTmp = $(xmlParsed).find('extractors').children().filter(function(){
@@ -167,21 +151,27 @@ Template.project.onRendered(()=>{
               }
 
               xsdArray[i] = $.parseXML(resultExtractor.data)
-              // console.log('XMLArray', XMLArray)
-              // console.log('XSDArray', XSDArray)
+              // console.log('XMLArray', xmlArray)
+              // console.log('XSDArray', xsdArray)
               // console.log("vidctrl",vidCtrl);
 
               if(i+1 === extractors.length){
-                console.log('set project Ready')
-                Session.set('projectReady', 1)
+                var idProject = Router.current().params._id;
+                if(Projects.findOne(idProject).isFile){
+                  var idUpload = "upload_"+Router.current().params._id;
+                  var upload = Session.get(idUpload);
+                  if(upload!=null){
+                    if(upload==100){
+                      Session.set('projectReady', 1)
+                    }
+                  }
+                }else{
+                  Session.set('projectReady', 1)
+                }
               }
-
-              // document.getElementById("videoDisplayId").disabled = !supported["frameRate"];
             }
           })
         })
-
-
         //Wait for video player to be rendered before doing that
         Tracker.autorun(function doWhenVideoPlayerRendered(computation){
           if(Session.get('videoPlayer') === 1) {
@@ -232,7 +222,7 @@ Template.project.onRendered(()=>{
       }
     });
   }
-})
+});
 
 Template.project.onDestroyed(()=>{
   //put wrong values for the event => unsuscribe the user for the channel of this project
@@ -250,6 +240,23 @@ Template.project.onDestroyed(()=>{
     });
   }
 
+  Meteor.call('decreaseCount',id,username,function(err,res){
+    if(err){
+      toastr.warning(err.reason);
+    }
+    else{
+      //If no one is on this page anymore, remove the video from database
+      if(Projects.findOne(id).usersOnPage==0){
+        Meteor.call('removeVideo',id,function(error,result){
+          if(error){
+            toastr.warning(error.reason);
+          }
+        });
+      }
+    }
+  });
+
+
   Session.set('projectReady', 0);
 
 });
@@ -265,28 +272,26 @@ Template.project.helpers({
         return hasRightToWrite()
       },
 
-      uploadIsDone(){
+      isFile(){
         var idProject = Router.current().params._id;
+        return Projects.findOne(idProject).isFile;
+      },
+
+      uploadIsDone(){
+        var idProject = Router.current().params._id
+        if(Projects.findOne(idProject).fileId!=null){
+          return true;
+        }
         var idUpload = "upload_"+idProject;
         var upload = Session.get(idUpload);
-        if(!upload){
+        if(!upload && Projects.findOne(idProject).isFile){
+          return false;
+        }
+        else if(!upload){
           return true;
         }
         return (upload==100);
-      },
-
-      uploading(){
-        var idProject = Router.current().params._id;
-        var idUpload = "upload_"+idProject;
-        var upload = Session.get(idUpload);
-        $("#myBar").width(upload+"%");
-
-        return upload;
-      },
-
-  file(){
-    return Projects.findOne(Router.current().params._id).url;
-  }
+      }
 });
 
 Template.project.events({
@@ -386,4 +391,40 @@ alert(err.reason);
 }
 }});
 }*/
+});
+
+Meteor.startup(function(){
+
+    $(window).bind('beforeunload', function() {
+      if(em!=null){
+        em.setClient({
+          appId: -1,
+          _id: -1
+        });
+      }
+
+      if(eventDeleteProject!=null){
+        eventDeleteProject.setClient({
+          appId: -1,
+          _id: -1
+        });
+      }
+
+      Session.set('projectReady', 0);
+
+      Meteor.call('decreaseCount',id,username,function(err,res){
+        if(err){
+
+        }
+        else{
+          //If no one is on this page anymore, remove the video from database
+          if(Projects.findOne(id).usersOnPage==0){
+            Meteor.call('removeVideo',id);
+          }
+        }
+      });
+      // have to return null, unless you want a chrome popup alert
+      return undefined;
+
+    });
 });
