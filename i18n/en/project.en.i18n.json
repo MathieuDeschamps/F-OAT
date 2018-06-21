@@ -3,6 +3,8 @@
   "annotations" : "Annotations",
   "save" : "Save",
   "errorProjectRight" : "Sorry, you do not have the right to modify this project.",
+  "errorSaveProject" : "Sorry, the annotations cannot be saved.",
+  "errorSendParms" : "Sorry, an error has occurs during the sending of the parameters.",
   "projectDeleted" : "Project has been deleted by owner. Back to dashboard.",
   "uploadProject" : "Upload your video file",
   "fileProject" : "File",

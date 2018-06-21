@@ -1,10 +1,8 @@
 import './project.html';
-import {Projects} from '../../../../lib/collections/Project.js';
+import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
-import {TimeLine} from "../../components/class/TimeLine.js"
-import {XMLGenerator} from '../../components/XMLGenerator/XMLGenerator.js';
 
 var em;
 var vidctrllistener;
@@ -12,7 +10,7 @@ var deleteprojectlistener;
 var id;
 var username;
 
-// function which checked if the current has the right write on the proejct
+// function which checked if the current user has the right write on the proejct
 hasRightToWrite = function(){
   var idProject = Router.current().params._id
   var project = Projects.findOne(idProject)
@@ -55,57 +53,29 @@ Template.project.onCreated(()=>{
 
 Template.project.onRendered(()=>{
   if(projectExists()){
-    var pathXML = '/tmp/' + Router.current().params._id + '/annotation.xml'
-    var pathExtractor
+    var xmlPath = '/tmp/' + Router.current().params._id + '/annotation.xml'
+    var extractorPath
 
     if(!em){
       em = new EventDDP('test',Meteor.connection);
-      em.addListener('hello',()=>{
-        Meteor.call("getXml",pathXML,(errXML,result)=>{
-          if(errXML){
-            alert(errXML.reason);
+      em.addListener('update',()=>{
+        Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
+          if(xmlErr){
+            alert(xmlErr.reason);
           }else{
-            Session.set('XMLDoc', result.data)
-            var XMLDoc = result.data
-            var XSDObject
+            Session.set('xmlDoc', result.data)
+            var xmlDoc = result.data
+
             // build the extractors
-            var extractors = Parser.getListExtractors(XMLDoc)
+            var extractors = Parser.getListExtractors(xmlDoc)
             var extractor
             var timeLineData
-
-            // update the forms of the editor
-            $(xmlxsdObjAnnotations).each(function(i,form){
-              form.XMLObject = $($.parseXML(XMLDoc)).find(form.name)
-              form.update()
-
-            })
-            // update the timeLine
-            $(timeLines).each(function(i,timeLine){
-              idTimeLine = "#timeLine" + i
-              nameExtractor = timeLine.nameExtractor
-              // console.log('xml', xml)
-              timeLineData = Parser.getTimeLineData(XMLDoc,nameExtractor)
-              // console.log("data: " , $(timeLineData).attr("data"))
-              timeLine.nb_frame = $(timeLineData).attr('nbFrames');
-              timeLine.entries = []
-              $($(timeLineData).attr("data")).each(function(i,e){
-                timeLine.entries.push(e.name)
-              })
-              timeLine.items = []
-              $($(timeLineData).attr("data")).each(function(i,entry){
-                $(entry.intervals).each(function(j,interval){
-                  timeLine.items.push(interval)
-                })
-              })
-              // console.log('timeLineData', timeLineData)
-              timeLine.update()
-            })
 
             //Video controler update :
             var nbFrames=0;
             extractors.forEach(function(extractor){
               console.log('nb Frame',extractor);
-              var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
+              var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
               console.log(newNbFrames);
               if (newNbFrames!=undefined){
                 console.log(newNbFrames);
@@ -116,8 +86,8 @@ Template.project.onRendered(()=>{
             if (nbFrames>0){
               vidCtrl.setNbFrames(nbFrames);
             }
-            console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
-            vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+            console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
+            vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
 
           }
         });
@@ -145,41 +115,40 @@ Template.project.onRendered(()=>{
       _id: Meteor.userId()
     });
 
-Meteor.call("getXml",pathXML,(errXML,result)=>{
-  if(errXML){
-    alert(errXML.reason);
-  }else{
-    Session.set('XMLDoc', result.data)
-    var XMLDoc = result.data
-    var XMLParsed = $.parseXML(result.data)
-    // build the extractors
-    var extractors = Parser.getListExtractors(XMLDoc)
-    var extractorHtml
-    var timeLineData
-    // global table which will contains the form objects
-    xmlxsdObjAnnotations = [extractors.lenght]
-    xsdArray = [extractors.lenght]
-    xmlArray = [extractors.lenght]
-    timeLines = [extractors.lenght]
-    console.log('extractors', extractors)
-    // add the extractor list and build the forms
-    $(extractors).each(function(i,extractor){
+    Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
+      if(xmlErr){
+        alert(xmlErr.reason);
+      }else{
+        // Session.set('XMLDoc', result.data)
+        var xmlDoc = result.data
+        var xmlParsed = $.parseXML(result.data)
+        Session.set('xml', xmlDoc)
+        // build the extractors
+        var extractors = Parser.getListExtractors(xmlDoc)
 
-      pathExtractor  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
-      Meteor.call("getXml",pathExtractor,(errXSD,resultExtractor)=>{
-        if(errXSD){
-          // console.log('path', pathExtractor)
-          alert(errXSD.reason);
-        }else{
-          // build the forms for the editor
-          var tmpXML = $(XMLParsed).find('extractors').children().filter(function(){
-            return ($(this).prop('tagName') === $(extractor).prop('tagName') &&
-                $(this).attr('version') === $(extractor).attr('version'))
+        // global table which will contains the form objects
+        xsdArray = [extractors.lenght]
+        xmlArray = [extractors.lenght]
+        console.log('extractors', extractors)
 
-          })
-          if(tmpXML.length === 1){
-            xmlArray[i] = tmpXML
-          }
+        // add the extractor list and build the forms
+        $(extractors).each(function(i,extractor){
+
+          extractorPath  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
+          Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
+            if(xsdErr){
+              console.log('path', pathExtractor)
+              // alert(xsdErr.reason);
+            }else{
+              // build the forms for the editor
+              var xmlTmp = $(xmlParsed).find('extractors').children().filter(function(){
+                return ($(this).prop('tagName') === $(extractor).prop('tagName') &&
+                    $(this).attr('version') === $(extractor).attr('version'))
+
+              })
+              if(xmlTmp.length === 1){
+                xmlArray[i] = xmlTmp
+              }
 
           xsdArray[i] = $.parseXML(resultExtractor.data)
           // console.log('XMLArray', XMLArray)
@@ -204,111 +173,103 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
               Session.set('projectReady', 1)
             }
           }
-
-          // document.getElementById("videoDisplayId").disabled = !supported["frameRate"];
         }
       })
     })
+        //Wait for video player to be rendered before doing that
+        Tracker.autorun(function doWhenVideoPlayerRendered(computation){
+          if(Session.get('videoPlayer') === 1) {
 
+            // VideoControler init
+            var nbFrames=0;
+            extractors.forEach(function(extractor){
+              // console.log('nb Frame',extractor);
+              var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
+              // console.log(newNbFrames);
+              if (newNbFrames!=undefined){
+                // console.log(newNbFrames);
+                nbFrames=Math.max(nbFrames,newNbFrames);
+                // console.log(nbFrames);
+              }
+            });
+            if (nbFrames>0){
+              vidCtrl.setNbFrames(nbFrames);
+            }
+            console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
+            vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
 
-            //Wait for video player to be rendered before doing that
-            Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-              if(Session.get('videoPlayer') === 1) {
-
-                // VideoControler init
+            if(!vidctrllistener){
+              vidctrllistener = true;
+              //Event emitted in videoPlayer.js
+              eventDDPVideo.addListener('videoCtrl',()=>{
                 var nbFrames=0;
                 extractors.forEach(function(extractor){
                   // console.log('nb Frame',extractor);
-                  var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
-                  // console.log(newNbFrames);
+                  var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
+                  console.log(newNbFrames);
                   if (newNbFrames!=undefined){
-                    // console.log(newNbFrames);
+                    console.log(newNbFrames);
                     nbFrames=Math.max(nbFrames,newNbFrames);
-                    // console.log(nbFrames);
+                    console.log(nbFrames);
                   }
                 });
                 if (nbFrames>0){
                   vidCtrl.setNbFrames(nbFrames);
                 }
-                console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
-                vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
-
-                if(!vidctrllistener){
-                  vidctrllistener = true;
-                  //Event emitted in videoPlayer.js
-                  eventDDPVideo.addListener('videoCtrl',()=>{
-                    var nbFrames=0;
-                    extractors.forEach(function(extractor){
-                      // console.log('nb Frame',extractor);
-                      var newNbFrames=Parser.getNbFrames(XMLDoc,extractor);
-                      console.log(newNbFrames);
-                      if (newNbFrames!=undefined){
-                        console.log(newNbFrames);
-                        nbFrames=Math.max(nbFrames,newNbFrames);
-                        console.log(nbFrames);
-                      }
-                    });
-                    if (nbFrames>0){
-                      vidCtrl.setNbFrames(nbFrames);
-                    }
-                    console.log("annotedFrames",Parser.getListTimeId(XMLDoc));
-                    vidCtrl.setAnnotedFrames(Parser.getListTimeId(XMLDoc));
+                    console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
+                    vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
                   });
                 }
-
-                computation.stop();
-              }
-            });
-
-          }
+              computation.stop();
+            }
         });
       }
-    })
-
-    Template.project.onDestroyed(()=>{
-      //put wrong values for the event => unsuscribe the user for the channel of this project
-      if(em!=null){
-        em.setClient({
-          appId: -1,
-          _id: -1
-        });
-      }
-
-      if(eventDeleteProject!=null){
-        eventDeleteProject.setClient({
-          appId: -1,
-          _id: -1
-        });
-      }
-
-      Meteor.call('decreaseCount',id,username,function(err,res){
-        if(err){
-          toastr.warning(err.reason);
-        }
-        else{
-          //If no one is on this page anymore, remove the video from database
-          if(Projects.findOne(id).usersOnPage==0){
-            Meteor.call('removeVideo',id,function(error,result){
-              if(error){
-                toastr.warning(error.reason);
-              }
-            });
-          }
-        }
-      });
-
-
-      Session.set('projectReady', 0);
-
     });
+  }
+});
 
-    Template.project.helpers({
-      // used to display or not the save button
+Template.project.onDestroyed(()=>{
+  //put wrong values for the event => unsuscribe the user for the channel of this project
+  if(em!=null){
+    em.setClient({
+      appId: -1,
+      _id: -1
+    });
+  }
+
+  if(eventDeleteProject!=null){
+    eventDeleteProject.setClient({
+      appId: -1,
+      _id: -1
+    });
+  }
+
+  Meteor.call('decreaseCount',id,username,function(err,res){
+    if(err){
+      toastr.warning(err.reason);
+    }
+    else{
+      //If no one is on this page anymore, remove the video from database
+      if(Projects.findOne(id).usersOnPage==0){
+        Meteor.call('removeVideo',id,function(error,result){
+          if(error){
+            toastr.warning(error.reason);
+          }
+        });
+      }
+    }
+  });
+  Session.set('projectReady', 0);
+
+});
+
+Template.project.helpers({
 
       projectExists(){
         return projectExists();
       },
 
+      // used to display or not the save button
       hasRightToWrite(){
         return hasRightToWrite()
       },
@@ -336,96 +297,6 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
 });
 
 Template.project.events({
-  'click #saveForms'(event,instance){
-    var XMLObject = $.parseXML(Session.get('XMLDoc'))
-    var xml
-    var result
-    var timeLineData
-    var idTimeLine
-    var nameExtractor
-    var idProject = Router.current().params._id
-    var project = Projects.findOne(idProject)
-    // check if the current user is the owner or a writer to the project
-    var hasRight = hasRightToWrite()
-    if(!hasRight){
-      toastr.warning(TAPi18n.__('errorProjectRight'));
-      $(xmlxsdObjAnnotations).each(function(i,form){
-        form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
-        // form.update()
-      })
-    }else{
-      $(xmlxsdObjAnnotations).each(function(i,xmlxsdObjAnnotation){
-        var gen=new XMLGenerator(xmlxsdObjAnnotation);
-  			console.log(gen.generateXML());
-  			var annotationXML=gen.generateXML();
-        console.log('xml',xmlArray[i])
-        // result = form.getXML()
-        // if(result !=  undefined){
-        //   XMLObject = Writer.removeExtractor(XMLObject, form.name)
-        //   XMLObject = Writer.addExtractor(XMLObject, result)
-        // }
-      })
-      // xml = Writer.convertDocumentToString(XMLObject,0);
-      // Meteor.call("updateXML",project,xml,(err,result)=>{
-      //   if(err){
-      //     alert(err.reason);
-      //   }else{
-      //     // update the forms
-      //     $(xmlxsdObjAnnotations).each(function(i,form){
-      //       // TODO maybe return the XML in result
-      //       form.XMLObject = $(XMLObject).find('extractors').children(form.name)[0]
-      //       form.update()
-      //     })
-      //     // update the timeLine
-      //     $(timeLines).each(function(i,timeLine){
-      //       idTimeLine = "#timeLine" + i
-      //       nameExtractor = timeLine.nameExtractor
-      //       console.log("nameExtractor" , nameExtractor)
-      //       // console.log('xml', xml)
-      //       timeLineData = Parser.getTimeLineData(xml,nameExtractor)
-      //       // console.log("data: " , $(timeLineData).attr("data"))
-      //       timeLine.nb_frame = $(timeLineData).attr('nbFrames');
-      //       timeLine.entries = []
-      //       $($(timeLineData).attr("data")).each(function(i,e){
-      //         timeLine.entries.push(e.name)
-      //       })
-      //       timeLine.items = []
-      //       $($(timeLineData).attr("data")).each(function(i,entry){
-      //         $(entry.intervals).each(function(j,interval){
-      //           timeLine.items.push(interval)
-      //         })
-      //       })
-      //       // console.log('timeLineData', timeLineData)
-      //       timeLine.update()
-      //     })
-      //     console.log("ok!");
-      //     em.emit('hello');
-      //     // TODO call to update other elements
-      //
-      //     // VideoControler update
-      //     console.log("annotedFrames",Parser.getListTimeId(xml));
-      //     vidCtrl.setAnnotedFrames(Parser.getListTimeId(xml));
-      //   }
-      // });
-    }
-  },
-
-
-
-  // // check button event display form
-  // 'click .filled-in'(event,instance){
-  //   //toggle
-  //   var index = $(event.currentTarget).attr('index')
-  //   // console.log('id', index);
-  //   if($(event.currentTarget).prop('checked')){
-  //     $('#' + index + '_formConfigAnnontation').css('display', 'block')
-  //     $('#time_line_' + index).css('display','block')
-  //   }else{
-  //     $('#' + index + '_formConfigAnnontation').css('display', 'none')
-  //     $('#time_line_' + index).css('display', 'none');
-  //   }
-  // },
-
   /*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
   //Test to merge XML file
   'click #testmerge1'(event,instance){

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import {Projects } from "../lib/collections/Project.js";
+import {Projects } from "../lib/collections/projects.js";
 import {HTTP} from "meteor/http";
 const fs = require('fs');
 export const xmlPath = "/tmp/";

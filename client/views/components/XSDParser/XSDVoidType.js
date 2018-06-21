@@ -31,7 +31,7 @@ export class XSDVoidType {
 	@returns : boolean
 	*/
 	holds(x){
-		return (x==undefined);
+		return (x === undefined || x === "");
 	}
 
 	/* Visitor pattern : accept function

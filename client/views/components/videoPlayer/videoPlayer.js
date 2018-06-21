@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import {Projects} from '../../../../lib/collections/Project.js';
+import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import {videoControler} from '../videoControler/videoControler.js';
 import {seekBarManager} from '../playerCommand/seekBarManager.js';

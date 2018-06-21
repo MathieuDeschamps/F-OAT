@@ -14,7 +14,8 @@ export class Overlay{
   }
 
   update(){
-      this.data = this.visualizer.getDataOverlay();
+      this.data = this.visualizer.getOverlayData();
+      // console.log('selected', this.selected);
       this.notify(vidCtrl.getCurrentFrame());
   }
 
@@ -129,10 +130,25 @@ export class Overlay{
       .attr("r", 1e-6)
       .on("mousedown", function(d) {
         overlay.selected = overlay.dragged = d;
-        if(d.obj!=null && d.stack!=null){
-          overlay.xmlxsdForm.displayForm(d.obj,d.stack);
+        if(d.stack!=null){
+          overlay.xmlxsdForm.displayForm(d.stack);
         }
         redraw(overlay);
+       })
+       .on('mouseup', function(d){
+           if(typeof d.stack !== 'undefined'){
+             var newX = d.x
+             var newY = d.y
+             if(typeof d.stack[d.stack.length - 1].obj.attrs.x &&
+               typeof d.stack[d.stack.length - 1].obj.attrs.y){
+                 var oldX = d.stack[d.stack.length - 1].obj.attrs.x.value
+                 var oldY = d.stack[d.stack.length - 1].obj.attrs.y.value
+                 if(oldX !== newX || oldY !== newY)
+                 d.stack[d.stack.length - 1].obj.attrs.x.setValue(newX);
+                 d.stack[d.stack.length - 1].obj.attrs.y.setValue(newY);
+               }
+             overlay.visualizer.notifyAll()
+           }
        })
       .transition()
       .duration(750)
@@ -189,9 +205,43 @@ export class Overlay{
         case 8: // backspace
         case 46: { // delete
           var i = overlay.points.indexOf(overlay.selected);
-          overlay.points.splice(i, 1);
-          overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
-          overlay.draw_circles();
+          var stack = overlay.selected.stack
+          if(typeof stack === 'undefined'){
+            overlay.points.splice(i, 1);
+            overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
+            overlay.draw_circles();
+          }else if(stack.length > 1){
+            var element = stack[stack.length - 1];
+            var parent = stack[stack.length - 2].obj
+            var xmlxsdElt
+            // case of parent is of type XSDElt we get the first sequence
+            if(typeof parent.eltsList !== 'undefined' &&
+            parent.eltsList.length > 0){
+              parent =  parent.eltsList[0]
+            }
+
+            // case parent is of type XSDSequence
+            if(typeof parent.seqList !== 'undefined'){
+              parent.seqList[0].forEach(function(elt){
+                if(elt.name === element.tag){
+                  xmlxsdElt = elt
+                }
+              })
+            }
+
+            if(typeof xmlxsdElt !== 'undefined'){
+              var index = xmlxsdElt.eltsList.indexOf(element.obj)
+              var deleted = xmlxsdElt.deleteElement(index)
+              if(deleted){
+                overlay.points.splice(i, 1);
+                overlay.xmlxsdForm.displayForm(stack.splice(0, stack.length-1))
+                overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
+                overlay.draw_circles();
+                overlay.visualizer.notifyAll();
+              }
+            }
+          }
+
           break;
         }
       }

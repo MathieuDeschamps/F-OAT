@@ -1,5 +1,5 @@
 import {Videos} from '../../lib/collections/videos.js';
-import {Projects} from '../../lib/collections/Project.js'
+import {Projects} from '../../lib/collections/projects.js';
 /**
   Publish collection Videos
 */
