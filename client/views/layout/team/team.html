@@ -1,80 +1,112 @@
 <template name="team">
   {{#if projectExists}}
-    <div class="content">
-      <div class="table-container">
-        <h2 class="blue-text text-darken-3">{{_ 'listCollaborators'}}</h2>
-        <table class="highlight responsive-table">
-          <thead>
-            <tr>
-              <td>{{_ 'name'}}</td>
-              <td>{{_ 'right'}}</td>
-              <td>{{_ 'changeRight'}}</td>
-              <td>{{_ 'actions'}}</td>
-            </tr>
-          </thead>
-          {{#with Project}}
-          <tbody>
-            <tr>
-              <td><b>{{Project.owner}}</b></td>
-              <td><b>{{_ 'owner'}}</b></td>
-              <td></td>
-              <td></td>
-            </tr>
-            {{#each Project.participants}}
-            <tr>
-              <td>{{username}}</td>
-              <td>{{right}}</td>
-              <td class="RIGHT">
-                <div class="input-field col s2">
-                  <select class="single-select">
-                    <option value="Read" selected>Read</option>
-                    <option value="Write">Write</option>
-                    <option value="Owner">Owner</option>
-                  </select>
-                </div>
-              </td>
-              <td>
-                <a class="rightChange btn-floating btn-small waves-effect center waves-light remove blue darken-4" title="{{_ 'submitModifRight'}}">
-                  <i class="material-icons">send</i>
-                </a>
-                <a class="delete btn-floating btn-small waves-effect center waves-light remove red darken-4" title="{{_ 'removeUser'}}">
-                  <i class="material-icons">delete</i>
-                </a>
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-          {{/with}}
-        </table>
-        <br />
-        <div class="row">
-          <div class="col s6">
-            <div class="row">
-              <div class="input-field">
-                  <input id="name" type="text" class="validate newCoworker_name" placeholder="{{_ 'fillUsername'}}" />
-                  <label for="name" data-error="{{_ 'errorFillUsername'}}"> </label>
+  <div class="content">
+    <div class="table-container">
+      <h2 class="blue-text text-darken-3">{{_ 'listCollaborators'}}</h2>
+      <table class="highlight responsive-table">
+        <thead>
+          <tr>
+            <td>{{_ 'name'}}</td>
+            <td>{{_ 'right'}}</td>
+            <td>{{_ 'changeRight'}}</td>
+            <td>{{_ 'actions'}}</td>
+          </tr>
+        </thead>
+        {{#with Project}}
+        <tbody>
+          <tr>
+            <td><b>{{Project.owner}}</b></td>
+            <td><b>{{_ 'owner'}}</b></td>
+            <td></td>
+            <td></td>
+          </tr>
+          {{#each Project.participants}}
+          <tr>
+            <td>{{username}}</td>
+            <td>{{right}}</td>
+            <td class="RIGHT">
+              <div class="input-field col s2">
+                <select class="single-select">
+                  <option value="Read" selected>Read</option>
+                  <option value="Write">Write</option>
+                  <option value="Owner">Owner</option>
+                </select>
               </div>
-            </div>
-            <div class="row">
-              <select multiple="multiple" size="5" class="select col s12" style="height:100px" id="participant">
-                {{#each users}}
-                  <option class="option" value="{{username}}">{{username}}</option>
-                {{/each}}
-              </select>
+            </td>
+            <td>
+              <a class="rightChange btn-floating btn-small waves-effect center waves-light remove blue darken-4" title="{{_ 'submitModifRight'}}">
+                <i class="material-icons">send</i>
+              </a>
+              <a class="delete btn-floating btn-small waves-effect center waves-light remove red darken-4" title="{{_ 'removeUser'}}">
+                <i class="material-icons">delete</i>
+              </a>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+        {{/with}}
+      </table>
+      <br />
+      <div class="row">
+        <div class="col s6">
+          <div class="row">
+            <div class="input-field">
+              <input id="name" type="text" class="validate newCoworker_name" placeholder="{{_ 'fillUsername'}}" />
+              <label for="name" data-error="{{_ 'errorFillUsername'}}"> </label>
             </div>
           </div>
-          <div class="input-field col s4">
-            <select class="single-select newCoworkerRight">
-              <option value="Read" selected>Read</option>
-              <option value="Write">Write</option>
+          <div class="row">
+            <select multiple="multiple" size="5" class="select col s12" style="height:100px" id="participant">
+              {{#each users}}
+              <option class="option" value="{{username}}">{{username}}</option>
+              {{/each}}
             </select>
           </div>
-          <button class="newCoworker waves-effect waves-light btn-large blue darken-4" name="add">{{_ 'add'}}
-          </button>
+        </div>
+        <div class="input-field col s4">
+          <select class="single-select newCoworkerRight">
+            <option value="Read" selected>Read</option>
+            <option value="Write">Write</option>
+          </select>
+        </div>
+        <button class="newCoworker waves-effect waves-light btn-large blue darken-4" name="add">{{_ 'add'}}
+        </button>
+      </div>
+
+      <h2 class="blue-text text-darken-3">{{_ 'projectSettings'}}</h2>
+      <p class="flow-text">{{_ 'changeMovieTitle'}}</p>
+      <div class="row">
+        <div class="input-field col s6 {{errorSearchClass 'search'}}">
+          <input type="text" id="filmTitle"/>
+          <label for="movieTitle">{{_ 'titleProject'}}</label>
+          <span  class="red-text">{{errorSearchMessage 'search'}}</span>
+        </div>
+        <div class="col s4" >
+          <a class="btn waves-effect waves-light blue-grey darken-2 truncate" id="searchMovie" name="action" style="margin-top:20px;">{{_ 'searchTitle'}}
+          </a>
+        </div>
+        <div class="col s2">
+          <a class="btn waves-effect waves-light blue darken-4 truncate" disabled id="modifyMovie" name="action" style="margin-top:20px;">{{_ 'modifyMovie'}}
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s6">
+          <table>
+            {{#each searchTitles}}
+            <tr>
+              <td>{{title}}, {{date}}</td>
+              <td><a class="select_title btn-tiny btn-floating green right-align right" title="{{_ 'selectTitle'}}">
+                <i class="material-icons" name="{{title}},{{date}}">check</i>
+              </a></td>
+            </tr>
+            {{/each}}
+          </table>
         </div>
       </div>
     </div>
+  </div>
   {{else}}
-    {{> notFound}}
+  {{> notFound}}
   {{/if}}
 </template>

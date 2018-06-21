@@ -13,6 +13,11 @@
   "createButton" : "Créer",
   "fileUploaded" : "Téléchargement du fichier terminé",
   "fileUploading" : "Téléchargement du fichier en cours, ne pas quitter ou rafraîchir la page...",
+  "titleProject" : "Rechercher le titre du film de ce projet",
+  "searchTitle" : "Rechercher",
+  "selectTitle" : "Selectionner ce film",
+  "movieDuration" : "Durée du film",
+  "frameRate" : "Frames par secondes",
 
   "errorSelectUser" : "Selectionner un utilisateur à ajouter",
   "errorAddUser" : "L'utilisateur __user__ appartient déjà au projet",
@@ -21,5 +26,11 @@
   "errorProjectNameWrong" : "Nom de projet non valide ('/' interdits)",
   "errorProjectNameExists" : "Nom de projet déjà utilisé",
   "errorProjectURL" : "Merci de donner un URL",
-  "errorProjectDownloadURLwithURL" : "Vous devez donner un URL de téléchargement de votre vidéo"
+  "errorProjectDownloadURLwithURL" : "Vous devez donner un URL de téléchargement de votre vidéo",
+  "errorSearch" : "Aucun résultat pour votre recherche",
+  "errorSearchNull" : "Merci de donner un nom de film à rechercher",
+  "errorSearchInvalid" : "Nom de film invalide, merci de rechercher et de sélectionner un film",
+  "errorProjectFrameRate" : "Merci d'indiquer les FPS de la vidéo",
+  "errorProjectDuration" : "Merci d'indiquer la durée de votre vidéo(HH:mm:ss)"
+
 }

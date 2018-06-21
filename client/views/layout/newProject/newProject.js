@@ -1,9 +1,10 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import {Projects} from '../../../../lib/collections/projects.js';
+import {Writer} from '../../components/class/Writer.js'
 import './newProject.html';
 
-
+var API_KEY = 'ef18ae37';
 /*
 * On creation of the template, initialize session vars.
 * postSubmitErrors : errors in the form
@@ -14,10 +15,11 @@ import './newProject.html';
 Template.newproject.onCreated(function(){
   Session.set('postSubmitErrors',{});
   Session.set('postUserErrors',{});
+  Session.set('postSearchErrors',{});
   Session.set('participants',[]);
+  Session.set('searchTitles',[]);
   Session.set("search/keyword","");
 });
-
 
 Template.newproject.helpers({
   errorMessage: function(field){
@@ -33,6 +35,14 @@ Template.newproject.helpers({
     return !!Session.get('postUserErrors')[field] ? 'has-error' : '';
   },
 
+  errorSearchMessage : function(field){
+    return Session.get('postSearchErrors')[field];
+  },
+
+  errorSearchClass : function(field){
+    return !!Session.get('postSearchErrors')[field] ? 'has-error' : '';
+  },
+
   users(){
     var keyword = Session.get("search/keyword");
     if(keyword!=null && keyword!=""){
@@ -45,7 +55,16 @@ Template.newproject.helpers({
 
   coworkers: function(){
     return Session.get('participants');
+  },
+
+  searchTitles: function(){
+    return Session.get('searchTitles');
   }
+
+});
+
+Template.newproject.onRendered(function(){
+  $('select').material_select();
 });
 
 Template.newproject.events({
@@ -55,6 +74,30 @@ Template.newproject.events({
     var _projectName = $('.projectName').val();
     var _projectUrl = $('.url').val();
     var _downUrl = $('.downUrl').val();
+    var _hours = $('#hours').val();
+    var _minutes = $('#minutes').val();
+    var _seconds = $('#seconds').val();
+    var _frameRate = $('#frameRate').val();
+    var _duration;
+    if(_hours=='' || _minutes=='' || _seconds=='' || 
+        isNaN(_hours) || isNaN(_minutes) || isNaN(_seconds) || 
+        _hours < 0 || _minutes > 60 || _minutes < 0 || _seconds < 0 || _seconds > 60)
+        {
+          _duration = "error";
+    }
+    else{
+      _duration = parseInt(_seconds) + parseInt(_minutes) * 60 + parseInt(_hours) * 3600;
+    }
+
+    var movieTitle = $('#movieTitle').val();
+    var errorsSearch = {}
+    if(movieTitle!=null && movieTitle!=''){
+      if(!$('#movieTitle').prop('disabled')){
+        errorsSearch.search = TAPi18n.__('errorSearchInvalid');
+        return Session.set('postSearchErrors',errorsSearch);
+      }
+    }
+    Session.set('postSearchErrors',errorsSearch);
 
     var _url = 'error';
     var _isFile = false;
@@ -83,13 +126,15 @@ Template.newproject.events({
       isFile : _isFile,
       fileId : null,
       participants:_part,
-      usersOnPage : []
+      usersOnPage : [],
+      frameRate : _frameRate,
+      duration : _duration
     };
 
     //We verify the name and the url of the project (not null and not already used)
 
     var errors = validateProject(project);
-    if(errors.name || errors.url || errors.file || errors.downUrl){
+    if(errors.name || errors.url || errors.file || errors.downUrl || errors.frameRate || errors.duration){
       return Session.set('postSubmitErrors',errors);
     }
 
@@ -101,9 +146,36 @@ Template.newproject.events({
             if(error){
               toastr.warning(error.reason);
             }
+            else{
+
+              //We use odmb api if a movie title is given
+              var movieTitle = $('#movieTitle').val();
+              if(movieTitle!=null && movieTitle!=''){
+                var movie = movieTitle.split(',');
+                $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
+                  var result = $(data).find('root').find('movie');
+                  result.removeAttr('poster')
+                        .removeAttr('metascore')
+                        .removeAttr('imdbRating')
+                        .removeAttr('imdbVotes')
+                        .removeAttr('imdbID');
+
+                  var xmltostring = Writer.convertDocumentToString(result[0],1);
+                  Meteor.call('addDefaultExtractor',res,xmltostring,function(errorAdd,resultAdd){
+                    if(errorAdd){
+                      toastr.warning(errorAdd.reason);
+                    }
+                    else{
+                      Router.go("/");
+                    }
+                  });
+                });
+              }
+              else{
+                Router.go("/");
+              }
+            }
           });
-          Router.go("/");
-      //  }
       }
     });
   },
@@ -154,6 +226,42 @@ Template.newproject.events({
         $('#url').val('');
         $('#url-down').val('');
       }
+  },
+
+  'click #searchTitle' (event,instance){
+      var movie = $('#movieTitle').val();
+      var errors = {}
+      if(movie!='' && movie!=null){
+        $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&s='+encodeURI(movie)+'&r=xml',function(data){
+          var results = $(data).find('root').children('result[title]');
+          var titles = [];
+          if(results.length==0){
+            errors.search = TAPi18n.__('errorSearch');
+            return Session.set('postSearchErrors',errors);
+          }
+          else{
+            $(results).each(function(i,result){
+              titles.push({title: $(result).attr('title'), date: $(result).attr('year')});
+            });
+          }
+          Session.set('searchTitles',titles);
+        });
+      }
+      else{
+        errors.search = TAPi18n.__('errorSearchNull');
+      }
+
+      return Session.set('postSearchErrors',errors);
+
+  },
+
+  'click .select_title'(event,instance){
+    var elm = event.target;
+    var $elm = $(elm);
+    $('#movieTitle').val($elm.attr('name'));
+    $('#movieTitle').prop('disabled',true);
+    Session.set('searchTitles',[]);
+
   }
 });
 

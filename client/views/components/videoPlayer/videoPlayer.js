@@ -187,19 +187,12 @@ Template.videoPlayer.events({
       if (error) {
         toastr.warning('Error during upload: ' + error);
       } else {
+        var idUpload = "upload_"+idProject;
         Meteor.call('modifyFileId',idProject,fileObj._id,function(err1,res1){
           if(err1){
             toastr.warning(err1.reason);
           }
         });
-        // //Create a notification if the file has been uploaded
-        // var date = moment().calendar();
-        // var val = "Project "+project.name+": file "+project.url+" has been uploaded. You can play the video";
-        // Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
-        //   if(err){
-        //     toastr.warning(errorNotif.reason);
-        //   }
-        // });
         toastr.success(TAPi18n.__('fileUploaded'));
 
         if(!eventDDPVideo){

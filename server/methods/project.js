@@ -172,6 +172,69 @@ Meteor.methods({
         console.log("File saved successfully!")
       }
     });
+  },
+
+  /**
+  Add the xml of the default omdb extractor to the annotation file of the project
+  @idProject : id of the project
+  @newXml : string of the xml given by omdb api extraction
+  */
+  addDefaultExtractor : function(idProject,newXml){
+    var fs = Npm.require("fs");
+
+    var old_xml_string = fs.readFileSync("/tmp/"+idProject+"/annotation.xml","utf8");
+    var old_xml = cheerio.load(old_xml_string,{
+      xml:{
+        normalizeWhitespace :false,
+      }
+    });
+    var idExtractor = "omdb_api_id";
+    var new_data = '\n\t\t<'+idExtractor+' name="omdbapi" version="1.0">\n\t\t</'+idExtractor+'>\n';
+    old_xml(new_data).appendTo('extractors');
+    new_data = '\n\t\t<omdbapi>\n\t\t</omdbapi>\n';
+    old_xml(new_data).appendTo(idExtractor);
+    old_xml(newXml).appendTo('omdbapi');
+    var dir = "/tmp/"+idProject;
+
+    fs.writeFile(dir+"/annotation.xml",old_xml.html(),function (err) {
+      if(err) {
+        console.log("Failed to save ressource for project: "+idProject);
+      }
+      else{
+        console.log("File saved successfully! id: "+idProject);
+      }
+    });
+  },
+
+  /**
+  Modify xml data of the default omdb extractor in the annotation file of the project
+  @idProject : id of the project
+  @newXml : string of the xml given by omdb api extraction
+  */
+  modifyDefaultExtractor : function(idProject,newXml){
+    var fs = Npm.require("fs");
+
+    var old_xml_string = fs.readFileSync("/tmp/"+idProject+"/annotation.xml","utf8");
+    var old_xml = cheerio.load(old_xml_string,{
+      xml:{
+        normalizeWhitespace :false,
+      }
+    });
+    var idExtractor = "omdb_api_id";
+    old_xml('omdbapi').remove();
+    var new_data = '\n\t\t<omdbapi>\n\t\t</omdbapi>\n';
+    old_xml(new_data).appendTo(idExtractor);
+    old_xml(newXml).appendTo('omdbapi');
+    var dir = "/tmp/"+idProject;
+
+    fs.writeFile(dir+"/annotation.xml",old_xml.html(),function (err) {
+      if(err) {
+        console.log("Failed to save ressource for project: "+idProject);
+      }
+      else{
+        console.log("File saved successfully! id: "+idProject);
+      }
+    });
   }
 });
 

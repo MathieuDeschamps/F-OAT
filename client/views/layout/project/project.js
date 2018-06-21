@@ -150,28 +150,32 @@ Template.project.onRendered(()=>{
                 xmlArray[i] = xmlTmp
               }
 
-              xsdArray[i] = $.parseXML(resultExtractor.data)
-              // console.log('XMLArray', xmlArray)
-              // console.log('XSDArray', xsdArray)
-              // console.log("vidctrl",vidCtrl);
+          xsdArray[i] = $.parseXML(resultExtractor.data)
+          // console.log('XMLArray', XMLArray)
+          // console.log('XSDArray', XSDArray)
+          // console.log("vidctrl",vidCtrl);
 
-              if(i+1 === extractors.length){
-                var idProject = Router.current().params._id;
-                if(Projects.findOne(idProject).isFile){
-                  var idUpload = "upload_"+Router.current().params._id;
-                  var upload = Session.get(idUpload);
-                  if(upload!=null){
-                    if(upload==100){
-                      Session.set('projectReady', 1)
-                    }
+          if(i+1 === extractors.length){
+            var idProject = Router.current().params._id;
+            if(Projects.findOne(idProject).isFile){
+              var idUpload = "upload_"+Router.current().params._id;
+              var upload = Session.get(idUpload);
+              if(upload!=null){
+                Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+                  if(Session.get(idUpload)==100){
+                    Session.set('projectReady', 1)
+                    computation.stop();
                   }
-                }else{
-                  Session.set('projectReady', 1)
-                }
+                });
               }
             }
-          })
-        })
+            else{
+              Session.set('projectReady', 1)
+            }
+          }
+        }
+      })
+    })
         //Wait for video player to be rendered before doing that
         Tracker.autorun(function doWhenVideoPlayerRendered(computation){
           if(Session.get('videoPlayer') === 1) {
@@ -409,18 +413,19 @@ Meteor.startup(function(){
       }
 
       Session.set('projectReady', 0);
+      if(id!=null && username!=null){
+        Meteor.call('decreaseCount',id,username,function(err,res){
+          if(err){
 
-      Meteor.call('decreaseCount',id,username,function(err,res){
-        if(err){
-
-        }
-        else{
-          //If no one is on this page anymore, remove the video from database
-          if(Projects.findOne(id).usersOnPage==0){
-            Meteor.call('removeVideo',id);
           }
-        }
-      });
+          else{
+            //If no one is on this page anymore, remove the video from database
+            if(Projects.findOne(id).usersOnPage==0){
+              Meteor.call('removeVideo',id);
+            }
+          }
+        });
+      }
       // have to return null, unless you want a chrome popup alert
       return undefined;
 
