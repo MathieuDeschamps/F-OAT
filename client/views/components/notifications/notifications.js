@@ -23,7 +23,7 @@ renderDropdownButton = function(){
 
     if(Meteor.user()){
       $("#lidropdown").css("display", "block");
-      if(Meteor.user().notifications.length>0){
+      if(Meteor.user().profile.notifications.length>0){
         $("#icon_notif").html("notifications_active");
       }
       else{
@@ -40,13 +40,13 @@ renderDropdownButton = function(){
 
 Template.notifications.helpers({
   notifications: function(){
-    return Meteor.user().notifications;
+    return Meteor.user().profile.notifications;
   },
 
 
   thereIsNotifications(){
     renderDropdownButton();
-    return Meteor.user().notifications.length>0;
+    return Meteor.user().profile.notifications.length>0;
   }
 
 });

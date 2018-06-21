@@ -168,13 +168,6 @@ Template.videoPlayer.events({
     upload.on('start', function () {
       var idUpload = "upload_"+idProject;
       Session.set(idUpload,upload.progress);
-      // var date = moment().calendar();
-      // var val = "Project "+project.name+" : file "+project.url+" is uploading, wait for upload to be done to play video.";
-      // Meteor.call('addNotifications',res,date,val, function(errorNotif,resultNotif){
-      //   if(err){
-      //     toastr.warning(errorNotif.reason);
-      //   }
-      // });
       toastr.success(TAPi18n.__('fileUploading'));
     });
 

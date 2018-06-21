@@ -97,13 +97,13 @@ Meteor.methods({
 
     //Add notification to the owner
     Meteor.users.update({username : project.owner},{
-      $push: {notifications: {date: newDate, value: newValue}}
+      $push: {"profile.notifications": {date: newDate, value: newValue}}
     });
 
     //Add notification to every collaborator
     project.participants.forEach(function(part){
       Meteor.users.update({username : part.username},{
-        $push: {notifications: {date: newDate, value: newValue}}
+        $push: {"profile.notifications": {date: newDate, value: newValue}}
       });
     });
   },
@@ -117,7 +117,7 @@ Meteor.methods({
     check(id,String);
     check(dateToRemove,String);
     check(valueToRemove,String);
-    return Meteor.users.update({ _id : id}, {$pull: {notifications: {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
+    return Meteor.users.update({ _id : id}, {$pull: {"profile.notifications": {$and : [{date: dateToRemove},{value : valueToRemove}]}}});
   },
 
   /**Update the fileId of a project if it's using a file
