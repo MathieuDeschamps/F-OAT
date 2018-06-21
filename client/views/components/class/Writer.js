@@ -1,9 +1,11 @@
-import { Parser } from '../class/Parser.js'
-
 export class Writer{
 
 
-  /* add remove an extrator to the XMLObject
+  /* Replace the annotation of the extractor by the new annotation
+  @xmlObject the XMLDocument of the project
+  @extractor the extractor which will be replace
+  @newAnnotation the xml which contains the annotation
+  @returns the xmlObject
   */
   static replaceAnnotation(xmlObject, extractor, newAnnotation){
     if(typeof xmlObject === 'undefined' &&
@@ -23,25 +25,13 @@ export class Writer{
     }
   }
 
-
-  // add remove an extrator to the XMLObject
-  static removeExtractor(xmlObject, extractor){
-    var selector = $(extrator).prop('tagName')
-    selector += '[name="' + $(extractor).attr('name') + '"]'
-    selector += '[version="' + $(extractor).attr('version') + '"]'
-    $(xmlObject).find('extractors').children(selector)
-
-  }
-
-  // add an extractor to the XMLObject
-  static addExtractor(xmlObject, extractor, annotation){
-    $(xmlObject).find('extractors').append(extractor)
-    return xmlObject
-  }
-
-  static convertDocumentToString(document, depth){
+  /* convert a XMLDocument into a String
+  @xmlDocument the XMLDocumet to convert
+  @depth is the number of tabulation at the beginning
+  */
+  static convertDocumentToString(xmlDocument, depth){
     var result =""
-    var nodeName = String(document.nodeName)
+    var nodeName = String(xmlDocument.nodeName)
 
     // set the tabulation with the depth
     var tab = ""
@@ -52,28 +42,28 @@ export class Writer{
       }
       // add the node and the attributes
       result += tab +"<" + nodeName
-      $(document.attributes).each(function(i,attr){
+      $(xmlDocument.attributes).each(function(i,attr){
           result += " " + String(attr.name) + "=\"" + String(attr.value) +"\""
       })
-      if($(document).text() != "" || $(document).children().length > 0){
+      if($(xmlDocument).text() != "" || $(xmlDocument).children().length > 0){
         result += ">"
       }else{
         result += "/>"
       }
     }
     // add the children to the result
-    if ($(document).children().length > 0){
+    if ($(xmlDocument).children().length > 0){
       result += "\n"
-      $(document).children().each(function(i,child){
+      $(xmlDocument).children().each(function(i,child){
         result += Writer.convertDocumentToString(child, depth + 1) + "\n"
       })
       result += tab
     }else{
-      result += $(document).text()
+      result += $(xmlDocument).text()
     }
 
     if(depth!=0){
-      if($(document).text() != "" || $(document).children().length > 0){
+      if($(xmlDocument).text() != "" || $(xmlDocument).children().length > 0){
         result += "</" + nodeName + ">"
       }
     }

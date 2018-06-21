@@ -11,7 +11,44 @@ renderPlayerCommand = function(){
 	$( "#pauseButton" ).click(function() {vidCtrl.pause();} );
 	$( "#seekBar" ).mousedown(function() {seekBarMng.mousePressed();} );
 	$( "#seekBar" ).mouseup(function() {seekBarMng.mouseReleased();} );
-	$( "#seekBar" ).change(function() {console.log("seekbar change");vidCtrl.setCurrentFrame($( "#seekBar" ).val());} );
+	$( "#seekBar" ).mouseenter(function(){
+		// console.log('enter');
+		$(this).parent().children('span').first()
+			.css('border-top-left-radius', 50)
+			.css('border-top-right-radius', 50)
+			.css('border-bottom-right-radius', 50)
+			.css('border-bottom-left-radius', 0)
+			.css('height', 30)
+			.css('width', 30)
+			.css('top', -30)
+			.css('margin-left', 2);
+		$(this).parent().children('span').first().children('span').first()
+			.css('font-size', 10)
+			.css('color', '#fff')
+			.css('margin-left', -1)
+			.css('margin-top', 8);
+	})
+	$( "#seekBar" ).mouseout(function(){
+		// console.log('out');
+		$(this).parent().children('span').first()
+			.css('height', 0)
+			.css('width', 0)
+			.css('top', 10)
+			.css('margin-left', 7);
+		$(this).parent().children('span').first().children('span').first()
+			.css('font-size', 0)
+			.css('margin-left', 7);
+	})
+	$( "#seekBar" ).change(function() {
+		console.log("seekbar change");
+		// var currentFrame = $( "#seekBar" ).parent();
+		// currentFrame = $(currentFrame).children('span').first();
+		// currentFrame = $(currentFrame).children('span').first().text();
+		// $( "#seekBar" ).attr('value', currentFrame);
+		// currentFrame = $( "#seekBar").val()
+		// console.log("new value", currentFrame)
+		vidCtrl.setCurrentFrame($( "#seekBar" ).val());
+	});
 	$( "#partialButton" ).click(function() {
 		pp=vidCtrl.getPartialPlaying();
 		vidCtrl.setPartialPlaying(!pp);} );
@@ -35,7 +72,7 @@ Template.project.onRendered(function(){
 			}
 		}
 	});
-	
+
 	renderPlayerCommand();
 });
 

@@ -50,10 +50,9 @@ export class DefaultVisualizer{
 
   /* Obsever pattern : update function
   */
-  update(){
-    // this.getDataTimeLine();
-    this.notifyAll()
-  }
+  // update(){
+  //   this.notifyAll()
+  // }
 
   /* Visualize the XMLXSDObject
   */

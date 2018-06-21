@@ -1,4 +1,4 @@
-export class TimeLineShot{
+export class TimeLineCharacter{
 
   /* Constructor
   */
@@ -7,6 +7,7 @@ export class TimeLineShot{
     this.name = name
     this.stack = [];
     this.timeLineData = [];
+    this.currentCharacter = undefined;
     this.minNumFrame = NaN;
     this.maxNumFrame = NaN;
   }
@@ -14,6 +15,8 @@ export class TimeLineShot{
   initialize(){
     this.stack = [];
     this.timeLineData = [];
+    this.isCharacter = false;
+    this.currentCharacter = undefined;
     this.minNumFrame = NaN;
     this.maxFrame = NaN;
   }
@@ -27,7 +30,6 @@ export class TimeLineShot{
     return this.timeLineData;
   }
 
-
   getNbFrames(){
     this.initialize();
     this.xmlxsdObj.accept(this);
@@ -37,7 +39,6 @@ export class TimeLineShot{
     }
     return nbFrames;
   }
-
   /* Visitor pattern : visit function
   @xmlxsdObj : XMLXSDObj object
   */
@@ -56,6 +57,7 @@ export class TimeLineShot{
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visit Element visualizer :', xmlxsdElt);
     var that = this;
+    var oldCurrentCharacter = this.currentCharacter;
     xmlxsdElt.eltsList.forEach(function(elt,i){
       that.stack.push({
         tag:xmlxsdElt.name,
@@ -63,6 +65,7 @@ export class TimeLineShot{
       });
       elt.accept(that);
     })
+    this.currentCharacter = oldCurrentCharacter;
   }
 
   /* Visitor pattern : visit function
@@ -106,11 +109,22 @@ export class TimeLineShot{
   visitXMLXSDAttr(xmlxsdAttr){
   }
 
+
+
+
   /* Retrieve the data at attributs level to visualize
   */
   buildAttrs(obj){
       var that = this
       var added = false;
+
+      // code for the attributs firstName lastName
+      if(typeof obj.attrs.firstName !== 'undefined' &&
+        typeof obj.attrs.lastName !== 'undefined'){
+          var firstName = obj.attrs.firstName.value;
+          var lastName = obj.attrs.lastName.value;
+          this.currentCharacter = firstName + " " + lastName;
+        }
 
       // code for the attributs startFrame and endFrame
       if(typeof obj.attrs.startFrame !== 'undefined' &&
@@ -130,7 +144,8 @@ export class TimeLineShot{
 
           // retrieve data for the timeLine
           this.timeLineData.forEach(function(element){
-            if(!added && that.samePlace(element.intervals[0].stack)){
+            if(!added && element.name === that.currentCharacter &&
+              that.samePlace(element.intervals[0].stack)){
               element.intervals.push({
                 index: parseInt(element.intervals[0].index, 10),
                 start: obj.attrs.startFrame.value,
@@ -143,7 +158,7 @@ export class TimeLineShot{
           })
           if(!added){
             this.timeLineData.push({
-              name:this.stack[this.stack.length - 1].tag,
+              name:this.currentCharacter,
               intervals:[{
                 index: parseInt(that.timeLineData.length, 10),
                 start: obj.attrs.startFrame.value,
@@ -171,36 +186,8 @@ export class TimeLineShot{
         }else if(this.maxNumFrame < obj.attrs.timeId.value, 10){
           this.maxNumFrame = parseInt(obj.attrs.timeId.value, 10);
         }
-
-        // retrieve data for the timeLine
-        this.timeLineData.forEach(function(element){
-          if(!added && that.samePlace(element.intervals[0].stack)){
-            element.intervals.push({
-              index: parseInt(element.intervals[0].index, 10),
-              start: obj.attrs.timeId.value,
-              end: obj.attrs.timeId.value,
-              // clone the stack
-              stack:that.stack.slice(0),
-            })
-            added = true
-          }
-        })
-        if(!added){
-          this.timeLineData.push({
-            name:this.stack[this.stack.length - 1].tag,
-            intervals:[{
-              index: parseInt(that.timeLineData.length, 10),
-              start: obj.attrs.timeId.value,
-              end: obj.attrs.timeId.value,
-              // clone the stack
-              stack: this.stack.slice(0),
-            }]
-          })
-        }
-        added = false
       }
     }
-
 
   /* Use to determine if the two XML node have the same parents
   @return true if this.stack and stack have the same tags

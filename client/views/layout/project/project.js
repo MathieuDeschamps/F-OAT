@@ -255,8 +255,6 @@ Template.project.onDestroyed(()=>{
       }
     }
   });
-
-
   Session.set('projectReady', 0);
 
 });

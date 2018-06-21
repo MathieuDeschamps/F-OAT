@@ -1,23 +1,18 @@
 import { TimeLine } from '../class/TimeLine.js'
-import { TimeLineShot } from '../VisualizerBuilder/TimeLineShot.js'
-import { Overlay } from '../class/Overlay.js';
-import { OverlayPositon} from '../VisualizerBuilder/OverlayPosition.js'
+import { TimeLineCharacter } from '../VisualizerBuilder/TimeLineCharacter.js'
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 
-export class ShotExtractVisualizer{
-
+export class CharacterExtractVisualizer{
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, divIdForm, divIdTimeLine, divIdOverlay){
+  constructor(xmlxsdObj,idExtractor, name, divIdForm, divIdTimeLine){
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
     this.name = name
     this.divIdForm = divIdForm;
     this.observers = [];
     this.divIdTimeLine = divIdTimeLine;
-    this.divIdOverlay = divIdOverlay;
     this.timeLineBuilder = undefined;
-    this.overlayBuilder = undefined;
   }
 
   /* Obsever pattern : attach function
@@ -61,12 +56,11 @@ export class ShotExtractVisualizer{
 
   /* Obsever pattern : update function
   */
-  // update(){
-  //   this.getDataTimeLine();
-  //   this.getNbFrames();
-  //   this.getDataOverlay();
-  //   this.notifyAll()
-  // }
+  update(){
+    this.getDataTimeLine();
+    this.getNbFrames();
+    this.notifyAll()
+  }
 
   /* Visualize the XMLXSDObject
   */
@@ -79,22 +73,14 @@ export class ShotExtractVisualizer{
     this.attach(xmlxsdForm)
     xmlxsdForm.generateForm();
 
-    this.timeLineBuilder = new TimeLineShot(this.xmlxsdObj, this.name);
+    this.timeLineBuilder = new TimeLineCharacter(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
     var nbFrames = this.timeLineBuilder.getNbFrames();
     var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, timeLineData,
     this.divIdTimeLine,this);
     this.attach(timeLine);
 
-    this.overlayBuilder = new OverlayPositon(this.xmlxsdObj, this.name)
-    var overlayData = this.overlayBuilder.getOverlayData();
-    var overlay = new Overlay(overlayData, xmlxsdForm, this.divIdOverlay,this)
-    this.attach(overlay);
-    vidCtrl.attach(overlay,1);
-
-    // console.log('timeLineData', timeLineData);
-    // console.log('overlayData', overlayData);
-
+    console.log('timeLineData', timeLineData);
   }
 
   /*
@@ -104,16 +90,11 @@ export class ShotExtractVisualizer{
     var result = [];
     result.push(this.divIdForm)
     result.push(this.divIdTimeLine);
-    result.push(this.divIdOverlay);
     return result;
   }
 
   getTimeLineData(){
     return this.timeLineBuilder.getTimeLineData();
-  }
-
-  getOverlayData(){
-    return this.overlayBuilder.getOverlayData();
   }
 
   getNbFrames(){

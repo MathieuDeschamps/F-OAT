@@ -28,7 +28,6 @@ export class configAnnotationManager{
     var that = this;
     var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
-      console.log(' constructor that.xmls[i]', that.xmls[i])
       var labelConfig = "annontation_" + i
       var JQlabelConfig='#'+labelConfig;
       var extractorCheckBox = '<p><input class="filled-in" id="'+ labelConfig + '" type="checkbox"/>'
@@ -93,20 +92,23 @@ export class configAnnotationManager{
     if(!configAnnotationManager.hasRightToWrite()){
        toastr.warning(TAPi18n.__('errorProjectRight'));
     }else{
+      var errorMessages = [];
       var that = this;
       var xmlDoc = $.parseXML(Session.get('xml'))
-      var modif = 0
-
+      var correct = true;
       this.visualizers.forEach(function(visualizer, i){
         var xmlGenerator = new XMLGenerator(visualizer.xmlxsdObj)
         var xmlAnnotation = xmlGenerator.generateXML()
         if(typeof xmlAnnotation !== 'undefined'){
           var extractor = that.xmls[i].clone().empty();
           xmlDoc = Writer.replaceAnnotation(xmlDoc, extractor, xmlAnnotation)
-          modif++
+
+        }else{
+          errorMessages.push(visualizer.name +": " + xmlGenerator.getErrorMessage());
+          correct = false
         }
       })
-      if(modif > 0){
+      if(correct){
         var xml = Writer.convertDocumentToString(xmlDoc, 0)
         var project=Projects.findOne(Router.current().params._id)
 
@@ -114,9 +116,15 @@ export class configAnnotationManager{
           if(err){
             alert(err.reason);
           }else{
+            toastr.success(TAPi18n.__('save'));
             // VideoControler update
             vidCtrl.setAnnotedFrames(Parser.getListTimeId(xml));
           }
+        })
+      }else{
+        toastr.warning(TAPi18n.__('errorSaveProject'));
+        errorMessages.forEach(function(errorMessage){
+          toastr.warning(errorMessage)
         })
       }
     }

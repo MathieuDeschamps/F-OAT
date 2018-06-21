@@ -76,6 +76,7 @@ export class configExtractorManager{
 		this.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 	}
 
+
 	displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig){
 		//console.log('xmlxsdForm',xmlxsdForm);
 		var that=this;
@@ -90,11 +91,14 @@ export class configExtractorManager{
 			var gen=new XMLGenerator(xmlxsdObj);
 			console.log(gen.generateXML());
 			var paramsXML=gen.generateXML();
+			if(typeof paramsXML === 'undefined'){
+				toastr.warning(TAPi18n.__('errorSendParms')+ gen.getErrorMessage())
+			}else{
 
 			var params={"param" : paramsXML};
-			console.log('param en JSON',params);
+			// console.log('param en JSON',params);
 			// TODO uncomment before commit
-			// $(JQidDivButton).html('');
+			$(JQidDivButton).html('');
 
 
 			// Initialisation
@@ -122,7 +126,7 @@ export class configExtractorManager{
 			Meteor.call("initRequest",idProject,extractor.ip,checksum,downUrl,isFile,(err,result)=>{
 				console.log("finish initRequest");
 				if (err){
-					alert('Download problem by '+extractor.name + ' : ' +err.reason);
+					toastr.warning('Download problem by '+extractor.name + ' : ' +err.reason);
 					console.log("initRequest that : ",that);
 					console.log("form :", xmlxsdForm);
 					console.log("extractor",extractor);
@@ -137,12 +141,13 @@ export class configExtractorManager{
 					//Changement ici extractor au lieu de extractor.ip
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
-							alert('Download problem by '+extractor.name + ' : ' +err.reason);
+							toastr.warning('Download problem by '+extractor.name + ' : ' +err.reason);
 							that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 						}
 					});
 				}
 			});
+			}
 		});
 	}
 

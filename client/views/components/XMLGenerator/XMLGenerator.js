@@ -5,21 +5,27 @@ export class XMLGenerator{
 
 		this.xml=undefined;
 
-		this.alertDone=true;
-		this.alertMessage="";
+		this.errorDone=true;
+		this.errorMessage="";
 	}
 
 	/* Generate the XML
 	@return: the xml generate of the XMLXSDObject
 	*/
 	generateXML(){
-		this.alertMessage="";
+		this.errorMessage="";
 		this.xml="";
 		this.xmlxsdObj.content.accept(this);
 		if (this.xml==undefined){
-			alert(this.alertMessage);
+			this.errorMessage
+			return undefined;
 		}
 		return this.xml;
+	}
+
+
+	getErrorMessage(){
+			return this.errorMessage;
 	}
 
 	/* Visitor pattern : visit function
@@ -27,13 +33,13 @@ export class XMLGenerator{
 	*/
 	visitXMLXSDElt(xmlxsdElt){
 		if (xmlxsdElt.eltsList.length<xmlxsdElt.minOccurs){
-			this.alertMessage+="Too few elements "+xmlxsdElt.name+'.\n';
+			this.errorMessage+="Too few elements "+xmlxsdElt.name+'.\n';
 
 			this.xml=undefined;
 		} else {
 			if (xmlxsdElt.eltsList.length>xmlxsdElt.maxOccurs){
-				this.alertMessage+="Too much elements "+xmlxsdElt.name+'.\n';
-				this.alertDone=true;
+				this.errorMessage+="Too much elements "+xmlxsdElt.name+'.\n';
+				this.errorDone=true;
 				this.xml=undefined;
 			} else {
 				var that=this;
@@ -44,9 +50,9 @@ export class XMLGenerator{
 						if (that.xml!=undefined){
 							that.xml+="</"+xmlxsdElt.name+">";
 						} else {
-							if (!that.alertDone){
-								that.alertMessage+=xmlxsdElt.name+" is incorrect.\n";
-								that.alertDone=true;
+							if (!that.errorDone){
+								that.errorMessage+=xmlxsdElt.name+" is incorrect.\n";
+								that.errorDone=true;
 							}
 						}
 					}
@@ -71,12 +77,12 @@ export class XMLGenerator{
 			});
 
 			if (xmlxsdSeq.seqList.length<xmlxsdSeq.minO){
-				this.alertDone=false;
-				this.alertMessage+='Sequence incomplete.\n';
+				this.errorDone=false;
+				this.errorMessage+='Sequence incomplete.\n';
 				this.xml=undefined;
 			} else if (xmlxsdSeq.seqList.length>xmlxsdSeq.maxO){
-				this.alertDone=false;
-				this.alertMessage+='Sequence too long.\n';
+				this.errorDone=false;
+				this.errorMessage+='Sequence too long.\n';
 				this.xml=undefined;
 			}
 			if (this.xml!=undefined){
@@ -105,18 +111,18 @@ export class XMLGenerator{
 				// console.log('XMLGenerator Attr 1');
 				if (xmlxsdAttr.value!=undefined){
 					if (xmlxsdAttr.use=="prohibited"){
-						this.alertMessage+=xmlxsdAttr.name + " is prohibited.\n";
+						this.errorMessage+=xmlxsdAttr.name + " is prohibited.\n";
 						this.xml=undefined;
 					} else {
 						if (!xmlxsdAttr.type.holds(xmlxsdAttr.value)){
-							this.alertMessage+=xmlxsdAttr.value+ "does not follow the type of "+xmlxsdAttr.name+".\n";
+							this.errorMessage+=xmlxsdAttr.value+ "does not follow the type of "+xmlxsdAttr.name+".\n";
 							this.xml=undefined;
 						}
 					}
 				} else {
 					if (xmlxsdAttr.use=="required"){
-						this.alertMessage+=xmlxsdAttr.name + " is required.\n";
-						this.alertDone=false;
+						this.errorMessage+=xmlxsdAttr.name + " is required.\n";
+						this.errorDone=false;
 						this.xml=undefined;
 					}
 				}
@@ -133,8 +139,8 @@ export class XMLGenerator{
 			if (xmlxsdNodeValue.type.holds(xmlxsdNodeValue.value)){
 				this.xml+=xmlxsdNodeValue.value
 			} else {
-				this.alertMessage+=xmlxsdNodeValue.value + 'does not fit node type.\n';
-				this.alertDone=false;
+				this.errorMessage+=xmlxsdNodeValue.value + 'does not fit node type.\n';
+				this.errorDone=false;
 				this.xml=undefined;
 			}
 		}
@@ -159,8 +165,8 @@ export class XMLGenerator{
 						this.xml+=xmlxsdElt.value;
 					}
 				} else {
-					this.alertMessage+=xmlxsdElt.value + 'does not fit base type.\n';
-					this.alertDone=false;
+					this.errorMessage+=xmlxsdElt.value + 'does not fit base type.\n';
+					this.errorDone=false;
 					this.xml=undefined;
 				}
 			}

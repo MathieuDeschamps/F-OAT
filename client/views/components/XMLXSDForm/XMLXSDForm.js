@@ -262,6 +262,7 @@ export class XMLXSDForm{
 							function:function(){
 								var deleted = xmlxsdElt.deleteElement(i);
 								that.displayedElement = xmlxsdSeq;
+								console.log('delete sequence')
 								xmlxsdSeq.accept(that);
 								var ul = $("#" + that.divId).find('ul')[0]
 								$(ul).collapsible('open', 0)
@@ -270,7 +271,6 @@ export class XMLXSDForm{
 									deleted ){
 									visualizer.notifyAll();
 								}
-
 							},
 							id:idName+'clear',
 							eventName:'click'
@@ -348,7 +348,7 @@ export class XMLXSDForm{
 	@xmlxsdExt : XMLXSDExtensionType object
 	*/
 	visitXMLXSDExtensionType(xmlxsdExt){
-		// console.log('visit XSDXMLElt',xmlxsdExt);
+		// console.log('visit XMLXSDExt',xmlxsdExt);
 		this.eventHandler=[];
 
 		var $div = $('<div id="extractor' + this.id + 'config" />');
@@ -1164,17 +1164,24 @@ export class XMLXSDForm{
 		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 	}
 
+	/* Observer pattern : update function
+	*/
 	update(){
 			var saveStack = this.stack.slice(0)
-			this.eventHandler = []
+			this.eventHandler = [];
 			this.displayedElement.accept(this)
 			var saveEventHandler = this.eventHandler.slice(0);
 
 			// restore the save stack before accept
 			this.stack = saveStack;
+
+			this.eventHandler = [];
 			var parentNav = $('#' + this.divId).children(':first');
 			$(parentNav).children('div[class~="nav-line"]').remove();
 			$(parentNav).prepend(this.generateNav());
+
+			// apply the event of the generate stack
+			this.applyEventHandler();
 
 			// restore the save eventHandler before the generateNav
 			this.eventHandler = saveEventHandler;
