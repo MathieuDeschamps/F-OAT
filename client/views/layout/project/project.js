@@ -192,9 +192,12 @@ Meteor.call("getXml",pathXML,(errXML,result)=>{
               var idUpload = "upload_"+Router.current().params._id;
               var upload = Session.get(idUpload);
               if(upload!=null){
-                if(upload==100){
-                  Session.set('projectReady', 1)
-                }
+                Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+                  if(Session.get(idUpload)==100){
+                    Session.set('projectReady', 1)
+                    computation.stop();
+                  }
+                });
               }
             }
             else{
@@ -539,18 +542,19 @@ Meteor.startup(function(){
       }
 
       Session.set('projectReady', 0);
+      if(id!=null && username!=null){
+        Meteor.call('decreaseCount',id,username,function(err,res){
+          if(err){
 
-      Meteor.call('decreaseCount',id,username,function(err,res){
-        if(err){
-
-        }
-        else{
-          //If no one is on this page anymore, remove the video from database
-          if(Projects.findOne(id).usersOnPage==0){
-            Meteor.call('removeVideo',id);
           }
-        }
-      });
+          else{
+            //If no one is on this page anymore, remove the video from database
+            if(Projects.findOne(id).usersOnPage==0){
+              Meteor.call('removeVideo',id);
+            }
+          }
+        });
+      }
       // have to return null, unless you want a chrome popup alert
       return undefined;
 

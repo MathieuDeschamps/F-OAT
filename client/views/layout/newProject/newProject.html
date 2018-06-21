@@ -28,32 +28,18 @@
           </form>
           </div>
 
-
           <div class="row" id="urlForm">
             <div class="input-field col s6 {{errorClass 'url'}}">
               <input type="text" id="url" class="validate url"/>
               <label for="url">{{_ 'urlProject'}}</label>
               <span  class="red-text">{{errorMessage 'url'}}</span>
             </div>
-            <div class="input-field col s6 {{errorClass 'url'}}">
+            <div class="input-field col s6 {{errorClass 'downUrl'}}">
               <input type="text" id="url-down" class="validate downUrl"/>
               <label for="url-down">{{_ 'downUrlProject'}}</label>
               <span  class="red-text">{{errorMessage 'downUrl'}}</span>
             </div>
           </div>
-
-        <!-- <div class="row">
-          <div class="file-field input-field col s6">
-            <div class="btn col s4 blue-grey darken-2">
-              <span>{{_ 'fileProject'}}</span>
-              <input type="file" id="selectedFile">
-            </div>
-            <div class="file-path-wrapper">
-              <input class="file-path validate" type="text" placeholder="{{_ 'uploadProject'}}">
-            </div>
-            <span  class="red-text">{{errorMessage 'file'}}</span>
-          </div>
-        </div> -->
 
         <div class="row">
           <div class="col s6 {{errorUserClass 'participant'}}">
@@ -102,6 +88,58 @@
                 {{/each}}
               </tbody>
             </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6 {{errorSearchClass 'search'}}">
+            <input type="text" id="movieTitle"/>
+            <label for="movieTitle">{{_ 'titleProject'}}</label>
+            <span  class="red-text">{{errorSearchMessage 'search'}}</span>
+          </div>
+          <div class="col s4" >
+            <a class="btn waves-effect waves-light blue-grey darken-2 truncate" id="searchTitle" name="action" style="margin-top:20px;">{{_ 'searchTitle'}}
+            </a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s6">
+            <table>
+              {{#each searchTitles}}
+                <tr>
+                  <td>{{title}}, {{date}}</td>
+                  <td><a class="select_title btn-tiny btn-floating green right-align right" title="{{_ 'selectTitle'}}">
+                    <i class="material-icons" name="{{title}},{{date}}">check</i>
+                  </a></td>
+                </tr>
+              {{/each}}
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s6">
+            <p class="flow-text">{{_ 'movieDuration'}}</p>
+            <div class="input-field inline col s12 {{errorClass 'duration'}}">
+              <input class="col s3" type="number" max="99" min="0" id="hours" placeholder="HH"/>
+              <input class="col s3" type="number" max="99" min="0" id="minutes" placeholder="mm"/>
+              <input class="col s3" type="number" max="99" min="0" id="seconds" placeholder="ss"/>
+            </div>
+            <span class="red-text">{{errorMessage 'duration'}}</span>
+          </div>
+          <div class="col s6">
+            <div class="input-field col s12 {{errorClass 'frameRate'}}">
+              <select id="frameRate">
+                <option value="" disabled selected>{{_ 'frameRate'}}</option>
+                <option value="23.98">23.98</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="29.97">29.97</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="59.94">59.94</option>
+                <option value="60">60</option>
+              </select>
+              <span class="red-text">{{errorMessage 'frameRate'}}</span>
+            </div>
           </div>
         </div>
         <div class="row">

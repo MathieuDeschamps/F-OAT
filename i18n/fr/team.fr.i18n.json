@@ -1,5 +1,6 @@
 {
   "listCollaborators" : "Liste des participants",
+  "projectSettings" : "Options du projet",
   "name" : "Nom",
   "right" : "Droit",
   "changeRight" : "Changer le droit",
@@ -13,5 +14,12 @@
   "errorUserNoExists" : "Cet utilisateur n'existe pas",
   "errorUserAlready" : "__user__ appartient déjà au projet",
   "rightChanged" : "Droit modifié !",
-  "participantRemoved" : "Utilisateur retiré du projet"
+  "participantRemoved" : "Utilisateur retiré du projet",
+  "titleProject" : "Rechercher le titre du film de ce projet",
+  "searchTitle" : "Rechercher",
+  "selectTitle" : "Selectionner ce film",
+  "modifyMovie" : "Valider",
+  "changeMovieTitle" : "Modifier le titre du film du projet",
+  "titleChanged" : "Titre modifié!"
+
 }

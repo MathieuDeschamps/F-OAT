@@ -1,5 +1,6 @@
 {
   "listCollaborators" : "List of collaborators",
+  "projectSettings" : "Project settings",
   "name" : "Name",
   "right" : "Right",
   "changeRight" : "Change right",
@@ -13,5 +14,12 @@
   "errorUserNoExists" : "This user doesn't exist",
   "errorUserAlready" : "__user__ is already in the project",
   "rightChanged" : "Right changed !",
-  "participantRemoved" : "User removed from the project"
+  "participantRemoved" : "User removed from the project",
+  "titleProject" : "Search title of the movie of this project",
+  "searchTitle" : "Search",
+  "selectTitle" : "Select this movie",
+  "modifyMovie" : "Validate",
+  "changeMovieTitle" : "Change the movie's title in the project",
+  "titleChanged" : "Title changed !"
+
 }

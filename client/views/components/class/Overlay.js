@@ -99,6 +99,9 @@ export class Overlay{
       var width = $('#' + overlay.divId).find('svg').width();
       var height = $('#' + overlay.divId).find('svg').height();
 
+      if(overlay.points.length>0){
+        overlay.selected = overlay.points[overlay.points.length-1];
+      }
       y1 = d3.scale.linear()
       .domain([0, 1])
       .range([0, height]);
@@ -135,7 +138,6 @@ export class Overlay{
       .duration(750)
       .ease("elastic")
       .attr("r", 6.5);
-
       circle.classed("selected", function(d) { return d === overlay.selected; })
       .attr("cx", function(d) { return x1(d.x); })
       .attr("cy", function(d) { return y1(d.y); });

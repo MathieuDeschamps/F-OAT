@@ -150,7 +150,6 @@ export class Writer{
   static convertDocumentToString(document, depth){
     var result =""
     var nodeName = String(document.nodeName)
-
     // set the tabulation with the depth
     var tab = ""
 

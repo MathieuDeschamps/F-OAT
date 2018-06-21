@@ -13,6 +13,11 @@
   "createButton" : "Create",
   "fileUploaded" : "File uploaded",
   "fileUploading" : "File uploading, don't leave or refresh the application...",
+  "titleProject" : "Search title of the movie of this project",
+  "searchTitle" : "Search",
+  "selectTitle" : "Select this movie",
+  "movieDuration" : "Video duration",
+  "frameRate" : "Frame rate",
 
   "errorSelectUser" : "Select a user to add",
   "errorAddUser" : "User __user__ is already in the project",
@@ -21,5 +26,11 @@
   "errorProjectNameWrong" : "Can't use '/' in your project name",
   "errorProjectNameExists" : "A project with this name already exists",
   "errorProjectURL" : "Please give an URL",
-  "errorProjectDownloadURLwithURL" : "If you give an URL, you need to give a download link too"
+  "errorProjectDownloadURLwithURL" : "If you give an URL, you need to give a download link too",
+  "errorSearch" : "No results found",
+  "errorSearchNull" : "Please give a movie title to search",
+  "errorSearchInvalid" : "Invalid movie title, please search and chose a movie",
+  "errorProjectFrameRate" : "Please give the frame rate of the video",
+  "errorProjectDuration" : "Please give your video duration(HH:mm:ss)"
+
 }
