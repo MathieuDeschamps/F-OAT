@@ -176,7 +176,7 @@ export class videoControler {
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
 			if (curFrame % that.attachedObjectFrequency.get(object)==0){
-				object.notify(curFrame);
+				object.update(curFrame);
 			}
 		});
 	}
@@ -186,9 +186,9 @@ export class videoControler {
 	*/
 	forcedNotifyAttachedObjects(numFrame){
 		var that=this;
-		// On notifie les objets qui sont abonnés au contrôleur vidéo.
+		// On met à jour les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
-			object.notify(numFrame);
+			object.update(numFrame);
 		});
 	}
 
@@ -295,7 +295,6 @@ export class videoControler {
 			this.attachedObjectFrequency.delete(object);
 		}
 	}
-
 
 	// Passer à la prochaine frame annotée
 	nextAnnotedFrame(){

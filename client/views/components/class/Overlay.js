@@ -13,13 +13,8 @@ export class Overlay{
     this.draw_circles();
   }
 
-  update(){
-      this.data = this.visualizer.getOverlayData();
-      // console.log('selected', this.selected);
-      this.notify(vidCtrl.getCurrentFrame());
-  }
-
-  notify(currentFrame){
+  update(currentFrame){
+    this.data = this.visualizer.getOverlayData();
     this.points = [];
     var newPoints =this.data.find( d => d.timeId == currentFrame);
     var that = this;

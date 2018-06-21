@@ -25,6 +25,9 @@ export class configAnnotationManager{
     this.visualizerDivs = visualizerDivs;
     this.saveButtonDiv = saveButtonDiv;
     this.visualizers = [];
+    var idProject = Router.current().params._id
+    var project = Projects.findOne(idProject)
+    console.log('project', project);
     var that = this;
     var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
