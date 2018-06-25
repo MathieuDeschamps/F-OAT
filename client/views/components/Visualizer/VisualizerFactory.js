@@ -5,8 +5,9 @@ import { DefaultVisualizer } from './DefaultVisualizer.js';
 export class VisualizerFactory{
   /* Constructor
   */
-  constructor(xmlxsdObj, divIds){
+  constructor(xmlxsdObj, nbFrames, divIds){
     this.xmlxsdObj = xmlxsdObj;
+    this.nbFrames = nbFrames;
     this.divIdForm = divIds[0]
     this.divIdTimeLine = divIds[1];
     this.divIdOverlay = divIds[2];
@@ -37,14 +38,14 @@ export class VisualizerFactory{
         $(divOverlay).attr('id', idOverlay).css('display', 'none');
         $('#' + this.divIdOverlay).append(divOverlay);
 
-        visualizer = new ShotExtractVisualizer(this.xmlxsdObj,id, name, idForm, idTimeLine, idOverlay);
+        visualizer = new ShotExtractVisualizer(this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
         break;
       case "character-extract":
         divTimeLine = $('<div/>');
         $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
         $('#' + this.divIdTimeLine).append(divTimeLine);
 
-        visualizer = new CharacterExtractVisualizer(this.xmlxsdObj,id, name, idForm, idTimeLine);
+        visualizer = new CharacterExtractVisualizer(this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
         break;
       default:
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)

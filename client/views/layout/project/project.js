@@ -3,6 +3,7 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
+// import { PlayerCommand} from '../../components/playerCommand/PlayerCommand.js'
 
 var em;
 var vidctrllistener;
@@ -75,7 +76,7 @@ Template.project.onRendered(()=>{
             var nbFrames=0;
             extractors.forEach(function(extractor){
               console.log('nb Frame',extractor);
-              var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
+              // var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
               console.log(newNbFrames);
               if (newNbFrames!=undefined){
                 console.log(newNbFrames);
@@ -182,45 +183,18 @@ Template.project.onRendered(()=>{
 
             // VideoControler init
             var nbFrames=0;
-            extractors.forEach(function(extractor){
-              // console.log('nb Frame',extractor);
-              var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
-              // console.log(newNbFrames);
-              if (newNbFrames!=undefined){
-                // console.log(newNbFrames);
-                nbFrames=Math.max(nbFrames,newNbFrames);
-                // console.log(nbFrames);
-              }
-            });
+            var idProject = Router.current().params._id;
+            var project = Projects.findOne(idProject)
+            var nbFrames = -1
+            if(typeof project !== 'undefined'){
+              nbFrames = parseInt(project.duration * project.frameRate)
+            }
             if (nbFrames>0){
               vidCtrl.setNbFrames(nbFrames);
             }
             console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
             vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
-
-            if(!vidctrllistener){
-              vidctrllistener = true;
-              //Event emitted in videoPlayer.js
-              eventDDPVideo.addListener('videoCtrl',()=>{
-                var nbFrames=0;
-                extractors.forEach(function(extractor){
-                  // console.log('nb Frame',extractor);
-                  var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
-                  console.log(newNbFrames);
-                  if (newNbFrames!=undefined){
-                    console.log(newNbFrames);
-                    nbFrames=Math.max(nbFrames,newNbFrames);
-                    console.log(nbFrames);
-                  }
-                });
-                if (nbFrames>0){
-                  vidCtrl.setNbFrames(nbFrames);
-                }
-                    console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
-                    vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
-                  });
-                }
-              computation.stop();
+            computation.stop();
             }
         });
       }

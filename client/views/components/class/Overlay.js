@@ -13,7 +13,10 @@ export class Overlay{
     this.draw_circles();
   }
 
-  update(currentFrame){
+
+
+  update(){
+    var currentFrame = vidCtrl.getCurrentFrame();
     this.data = this.visualizer.getOverlayData();
     this.points = [];
     var newPoints =this.data.find( d => d.timeId == currentFrame);

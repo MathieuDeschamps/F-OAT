@@ -1,5 +1,5 @@
-export class videoControler {
-	constructor(vid,defaultFrameRate){
+export class VideoControler {
+	constructor(vid,frameRate){
 
 		// Balise vidéo
 		this.vid=vid;
@@ -8,11 +8,12 @@ export class videoControler {
 		this.nbFramesSetted=false;
 
 		// Framerate
-		this.frameRate=defaultFrameRate;
-
+		this.frameRate=frameRate;
 		// Plage de lecture (pour le mode partialPlaying)
 		this.beginVid=1;
 
+		// Commande du lecteur
+		this.playerCommand=undefined;
 
 		// Récupération du nombre de frame à partir du framerate
 		// On utilise un intervalle qui vérifie si la vidéo est prête à être lue.
@@ -24,7 +25,6 @@ export class videoControler {
 				if (!that.nbFramesSetted && that.endVid==undefined){
 					that.setEndVid(that.timeToFrame(that.vid.duration));
 				}
-				that.setFrameRate();
 				that.beginSelect=1;
 				if (that.endSelect==undefined){
 					that.setEndSelect(that.endVid);
@@ -34,11 +34,12 @@ export class videoControler {
 			}
 		},50);
 
-
 		// Mode lecture
 		this.mode="full";
 		this.partialPlaying=false;
-		$("#partialButton").prop('checked',false);
+		if(typeof this.playerCommand !=='undefined'){
+			$("#"+this.playerCommand.idPartialButton).prop('checked',false);
+		}
 		this.isPlaying=false;
 
 
@@ -51,11 +52,13 @@ export class videoControler {
 		// Frame annotée
 		this.annotedFrame=[];
 
+		// TimeLine qui a le focus du vidéo controleur
+		this.focusTimeLine = undefined;
 	}
 
 	setEndVid(end){
 		this.endVid=end;
-		$( "#seekBar" ).prop('max', end);
+		$( "#"+this.playerCommand.idSeekBar ).prop('max', end);
 	}
 
 	setNbFrames(nbFrame){
@@ -81,6 +84,9 @@ export class videoControler {
 		//console.log('annotedFrame',this.annotedFrame);
 	}
 
+	setPlayerCommand(playerCommand){
+		this.playerCommand = playerCommand;
+	}
 	// Frame-Time management
 
 	// Conversion
@@ -114,7 +120,7 @@ export class videoControler {
 		this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
 		if (!this.isPlaying){
 			var that=this;
-			this.vid.addEventListener('playing',function(){that.pause(); });
+			this.vid.addEventListener('playing',function(){that.pause();});
 			//that.forcedNotifyAttachedObjects(newCurrentFrame);
 		}
 		//console.log('setCurrentFrame',newCurrentFrame,this.frameToTime(newCurrentFrame),typeof this.frameToTime(newCurrentFrame));
@@ -176,7 +182,7 @@ export class videoControler {
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
 			if (curFrame % that.attachedObjectFrequency.get(object)==0){
-				object.update(curFrame);
+				object.update();
 			}
 		});
 	}
@@ -186,9 +192,9 @@ export class videoControler {
 	*/
 	forcedNotifyAttachedObjects(numFrame){
 		var that=this;
-		// On met à jour les objets qui sont abonnés au contrôleur vidéo.
+		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
-			object.update(numFrame);
+			object.update();
 		});
 	}
 
@@ -210,10 +216,16 @@ export class videoControler {
 
 	// Lecture de la vidéo
 	play(){
+		if(this.mode==="freeze"){
+			this.setPartialPlaying(false);
+		}
 		//console.log('play',this.mode);
-		if (this.mode!="freeze"){
-			this.isPlaying=true;
+		// if (this.mode!=="freeze"){
 			this.vid.play();
+			this.isPlaying=true;
+		// }
+		if(typeof this.playerCommand!=='undefined'){
+			this.playerCommand.play();
 		}
 		this.configMode();
 	}
@@ -222,6 +234,9 @@ export class videoControler {
 	pause(){
 		this.vid.pause();
 		this.isPlaying=false;
+		if(typeof this.playerCommand!=='undefined'){
+			this.playerCommand.pause();
+		}
 		clearInterval(this.updateInterval);
 		this.vid.removeEventListener('playing');
 		this.notifyAttachedObjects();
@@ -234,8 +249,11 @@ export class videoControler {
 		if (begin>=1 &&  begin <= end && (this.endVid==undefined || end<=this.endVid)){
 			this.beginSelect=begin;
 			this.endSelect=end;
-			$("#beginSelect").val(begin);
-			$("#endSelect").val(end);
+			if(typeof this.playerCommand!=='undefined'){
+				$("#"+this.playerCommand.idBeginSelect).val(begin);
+				$("#"+this.playerCommand.idEndSelect).val(end);
+
+			}
 		}
 		this.setMode();
 	}
@@ -244,10 +262,14 @@ export class videoControler {
 		begin=Number(begin);
 		if (begin>=1 && (this.endVid==undefined || begin<=this.endVid )){
 			this.beginSelect=begin;
-			$("#beginSelect").val(begin);
+			if(typeof this.playerCommand!=='undefined'){
+			$("#"+this.playerCommand.idBeginSelect).val(begin);
+		}
 			if (this.endSelect==undefined || this.endSelect<this.beginSelect){
 				this.endSelect=this.beginSelect;
-				$("#endSelect").val(this.beginSelect);
+				if(typeof this.playerCommand!=='undefined'){
+					$("#"+this.playerCommand.idEndSelect).val(this.beginSelect);
+				}
 			}
 		}
 
@@ -258,10 +280,14 @@ export class videoControler {
 		end=Number(end);
 		if (end>=1 && (this.endVid==undefined || end<=this.endVid )){
 			this.endSelect=end;
-			$("#endSelect").val(end);
+			if(typeof this.playerCommand!=='undefined'){
+				$("#"+this.playerCommand.idEndSelect).val(end);
+			}
 			if (this.beginSelect==undefined || this.beginSelect>this.endSelect){
 				this.beginSelect=this.endSelect;
-				$("#beginSelect").val(this.endSelect);
+				if(typeof this.playerCommand!=='undefined'){
+					$("#"+this.playerCommand.idBeginSelect).val(this.endSelect);
+				}
 			}
 		}
 		//console.log('setEndSelect',end,this.endVid,this.endSelect);
@@ -271,7 +297,9 @@ export class videoControler {
 	// Mode de lecture partielle
 	setPartialPlaying(pp){
 		this.partialPlaying=pp;
-		$("#partialButton").prop('checked',pp);
+		if(typeof this.playerCommand!=='undefined'){
+			$("#"+this.playerCommand.idPartialButton).prop('checked',pp);
+		}
 		this.setMode();
 	}
 
@@ -295,6 +323,7 @@ export class videoControler {
 			this.attachedObjectFrequency.delete(object);
 		}
 	}
+
 
 	// Passer à la prochaine frame annotée
 	nextAnnotedFrame(){
@@ -386,5 +415,4 @@ export class videoControler {
 			return this.annotedFrame[i];
 		}
 	}
-
 }

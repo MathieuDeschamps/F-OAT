@@ -17,17 +17,15 @@ export class configAnnotationManager{
   @visualizerDivs: array which contains the id of div of the visualizer
   @saveButtonDiv
   */
-  constructor(xsds, xmls, checkBoxDiv, visualizerDivs, saveButtonDiv){
+  constructor(xsds, xmls, nbFrames, checkBoxDiv, visualizerDivs, saveButtonDiv){
     this.xsds = xsds.slice(0);
-    this.xmls = xmls.slice(0)
-
+    this.xmls = xmls.slice(0);
+    this.nbFrames = nbFrames;
     this.checkBoxDiv = checkBoxDiv;
     this.visualizerDivs = visualizerDivs;
     this.saveButtonDiv = saveButtonDiv;
     this.visualizers = [];
-    var idProject = Router.current().params._id
-    var project = Projects.findOne(idProject)
-    console.log('project', project);
+
     var that = this;
     var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
@@ -41,7 +39,7 @@ export class configAnnotationManager{
       var xmlxsdObj = new XMLXSDObj(xmls[i], xsdObj);
 
       // console.log('this.visualizerDivs', that.visualizerDivs);
-      var visualizerFactory = new VisualizerFactory(xmlxsdObj,that.visualizerDivs )
+      var visualizerFactory = new VisualizerFactory(xmlxsdObj, that.nbFrames, that.visualizerDivs )
       var extractor = xmls[i].clone().empty()
       var visualizer = visualizerFactory.getVisualizer(extractor)
       visualizer.visualize()
@@ -50,7 +48,7 @@ export class configAnnotationManager{
       visualizer.getIdsDiv().forEach(function(idDiv){
         divIds.push(idDiv)
       })
-      $(JQlabelConfig).change(function(){that.checkBoxChange( JQlabelConfig, divIds)})
+      $(JQlabelConfig).change(function(){that.checkBoxChange(JQlabelConfig, divIds)})
       // console.log('visualizer', visualizer)
 
       $( window ).resize(function() {
@@ -105,7 +103,6 @@ export class configAnnotationManager{
         if(typeof xmlAnnotation !== 'undefined'){
           var extractor = that.xmls[i].clone().empty();
           xmlDoc = Writer.replaceAnnotation(xmlDoc, extractor, xmlAnnotation)
-
         }else{
           errorMessages.push(visualizer.name +": " + xmlGenerator.getErrorMessage());
           correct = false
@@ -151,4 +148,5 @@ export class configAnnotationManager{
       return false
     }
   }
+
 }

@@ -1,6 +1,7 @@
-export class seekBarManager {
-	constructor(videoControler){
+export class SeekBar {
+	constructor(videoControler, idCurrentFrame){
 		this.videoCtrl=videoControler;
+		this.idCurrentFrame = idCurrentFrame
 		this.follow=1;
 	}
 
@@ -13,8 +14,10 @@ export class seekBarManager {
 		this.refresh();
 	}
 
-	update(currentFrame){
-		//console.log("seekBar");
+	update(){
+		var currentFrame = vidCtrl.getCurrentFrame();
+		console.log("seekBar update", currentFrame);
+		$( "#"+this.idCurrentFrame ).text(currentFrame);
 		if (this.follow == 1){
 			$( "#seekBar" ).val(currentFrame);
 		}

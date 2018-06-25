@@ -2,29 +2,26 @@
 
 <div id='playerCommand' class="row center-align" >
 
-<div class="col s6 valign-wrapper" style="margin-top: 12px; margin-left: 10px;">
+<div class="valign-wrapper col s8">
  <button id='playButton' class="col s1  btn waves-effect waves-light" type="button" ><i class="material-icons">play_arrow</i></button>
  <button id='pauseButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">pause</i></button>
 
- <p class="col s6 range-field">
- <!-- <div class="col s6"> -->
+ <p class="col s5 range-field">
 	<input type="range" id="seekBar" value="0" min="0" max="10"/>
- <!-- </div> -->
  </p>
+ <button class="col s2 btn" id="currentFrame">1</button>
  <button id='prevAnnotedButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">skip_previous</i></button>
  <button id='nextAnnotedButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">skip_next</i></button>
- </div>
-
- <form class="selection" >
-<div class="col s3" style="margin-left: 12px;">
- <span class="col s6"> <label>{{_ 'begin'}}</label> <input id="beginSelect"  type="number"> </span>
-<span class="col s6"> <label>{{_ 'end'}}</label><input id="endSelect"  type="number"> </span>
 </div>
-<div class = "col s1" style="margin-left: 12px;">
+
+ <form class="selection  valign-wrapper col s3" >
+ <span class="col s6"> <label>{{_ 'begin'}}</label> <input id="beginSelect"  type="number"> </span>
+ <span class="col s5"> <label>{{_ 'end'}}</label><input id="endSelect"  type="number"> </span>
+<div class = "col s1" style="margin-left: 0px;">
     <label>{{_ 'partialPlay'}}</label>
         <div class = "switch">
 			<label>
-				<input id='partialButton' type = "checkbox" checked>
+				<input id='partialButton' type = "checkbox">
                 <span class = "lever"></span>
 			</label>
 		</div>

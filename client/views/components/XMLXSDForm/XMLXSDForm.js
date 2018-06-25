@@ -150,7 +150,7 @@ export class XMLXSDForm{
 							visualizer.notifyAll();
 						}
 					},
-					id:idName+'clear',
+					id:that.id+'_'+idName+'_clear',
 					eventName:'click'
 				});
 			};
@@ -158,7 +158,7 @@ export class XMLXSDForm{
 		});
 		//Bouton d'ajout d'elt si nécessaire
 		if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
-			var idEltAdd='elt'+xmlxsdElt.name +'add';
+			var idEltAdd=that.id+'_'+xmlxsdElt.name +'_add';
 
 			$li = $('<li>');
 			$ul.append($li)
@@ -272,7 +272,7 @@ export class XMLXSDForm{
 									visualizer.notifyAll();
 								}
 							},
-							id:idName+'clear',
+							id:that.id+'_'+idName+'_clear',
 							eventName:'click'
 						});
 					};
@@ -281,7 +281,7 @@ export class XMLXSDForm{
 
 				//Bouton d'ajout d'elt si nécessaire
 				if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
-					var idEltAdd='elt'+xmlxsdElt.name +'add'+k+'_'+j;
+					var idEltAdd=that.id+'_'+xmlxsdElt.name +'add'+k+'_'+j;
 
 					$li =$('<li/>');
 					$ul.append($li)
@@ -397,7 +397,7 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-			var selectFormName=this.attrFormName;
+			var selectFormName=this.id+'_'+this.attrFormName;
 			this.inputHtml = this.generateSelect(selectFormName,[true, false], value, disabled);
 			this.eventHandler.push({
 					function:function(){
@@ -471,7 +471,7 @@ export class XMLXSDForm{
 			}
 
 			if (xsdDeci.isEnumerated()){
-				var selectFormName=this.attrFormName;
+				var selectFormName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdDeci.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -490,7 +490,7 @@ export class XMLXSDForm{
 						eventName:'change'
 					});
 			}else{
-				var formName=this.attrFormName;
+				var formName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
 
 				this.eventHandler.push({
@@ -568,7 +568,7 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdFloat.isEnumerated()){
-				var selectFormName=this.attrFormName;
+				var selectFormName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdFloat.enumeration, value, disabled);
 				this.eventHandler.push({
 						function:function(){
@@ -587,7 +587,7 @@ export class XMLXSDForm{
 					});
 
 			}else{
-				var formName=this.attrFormName;
+				var formName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", 0.01, value, disabled);
 
 				this.eventHandler.push({
@@ -664,7 +664,7 @@ export class XMLXSDForm{
 			}
 			// console.log('XSD int', xsdInt)
 			if (xsdInt.isEnumerated()){
-				var selectFormName=this.attrFormName;
+				var selectFormName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -683,7 +683,7 @@ export class XMLXSDForm{
 						eventName:'change'
 					});
 			}else{
-				var formName=this.attrFormName;
+				var formName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
 
 				this.eventHandler.push({
@@ -761,7 +761,7 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdString.isEnumerated()){
-				var selectFormName=this.attrFormName;
+				var selectFormName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -781,7 +781,7 @@ export class XMLXSDForm{
 				});
 
 			}else{
-				var formName=this.attrFormName;
+				var formName=this.id+'_'+this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
 				this.eventHandler.push({
 					function:function(){
