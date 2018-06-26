@@ -1,3 +1,4 @@
+import { Projects } from '../../../../lib/collections/projects.js';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import {configAnnotationManager} from './configAnnotationManager.js';
@@ -30,10 +31,17 @@ Template.configAnnotation.onRendered(()=>{
 
   Tracker.autorun(function doWhenProjectRendered(computation) {
     if(Session.get('projectReady') === 1 && Session.get('videoPlayer') === 1) {
-      //console.log('config XMLArray',xmlArray)
-      //console.log('config XSDArray', xsdArray)
-      manager = new configAnnotationManager(xsdArray, xmlArray,"configAnnotation", ["configAnnotationForm","timeLines","overlay"],"saveButtonAnnotations")
+      // console.log('config XMLArray',xmlArray)
+      // console.log('config XSDArray', xsdArray)
+      var idProject = Router.current().params._id;
+      var project = Projects.findOne(idProject);
+      var nbFrames = 0
+      if(typeof project !== 'undefined'){
+        nbFrames = parseInt(project.duration * project.frameRate)
+      }
+      console.log("nbframes",nbFrames);
 
+      manager = new configAnnotationManager(xsdArray, xmlArray, nbFrames, "configAnnotation", ["configAnnotationForm","timeLines","overlay"],"saveButtonAnnotations")
       Session.set('projectReady', 0)
       computation.stop();
     }

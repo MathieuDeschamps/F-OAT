@@ -5,10 +5,11 @@ import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 export class CharacterExtractVisualizer{
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, divIdForm, divIdTimeLine){
+  constructor(xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine){
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
-    this.name = name
+    this.name = name;
+    this.nbFrames = nbFrames;
     this.divIdForm = divIdForm;
     this.observers = [];
     this.divIdTimeLine = divIdTimeLine;
@@ -58,7 +59,6 @@ export class CharacterExtractVisualizer{
   */
   update(){
     this.getDataTimeLine();
-    this.getNbFrames();
     this.notifyAll()
   }
 
@@ -75,8 +75,7 @@ export class CharacterExtractVisualizer{
 
     this.timeLineBuilder = new TimeLineCharacter(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var nbFrames = this.timeLineBuilder.getNbFrames();
-    var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, timeLineData,
+    var timeLine = new TimeLine(this.name, xmlxsdForm, this.nbFrames, timeLineData,
     this.divIdTimeLine,this);
     this.attach(timeLine);
 
@@ -95,10 +94,6 @@ export class CharacterExtractVisualizer{
 
   getTimeLineData(){
     return this.timeLineBuilder.getTimeLineData();
-  }
-
-  getNbFrames(){
-    return this.timeLineBuilder.getNbFrames();
   }
 
 }

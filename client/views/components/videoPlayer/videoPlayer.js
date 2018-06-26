@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
-import {Projects} from '../../../../lib/collections/projects.js';
-import {Videos} from '../../../../lib/collections/videos.js';
-import {videoControler} from '../videoControler/videoControler.js';
-import {seekBarManager} from '../playerCommand/seekBarManager.js';
+import { Projects } from '../../../../lib/collections/projects.js';
+import { Videos } from '../../../../lib/collections/videos.js';
+import { VideoControler } from '../VideoControler/VideoControler.js';
+import { SeekBar } from '../playerCommand/SeekBar.js';
 import  '/public/renderers/vimeo.js';
 import './videoPlayer.html';
 import './videoPlayer.css';
@@ -81,9 +81,9 @@ Template.videoPlayer.onRendered(function () {
     }
   });
   vid=$("#videoDisplayId").get(0);
-  vidCtrl=new videoControler(vid,30);
-  seekBarMng=new seekBarManager(vidCtrl);
-  vidCtrl.attach(seekBarMng,5);
+  vidCtrl=new VideoControler(vid, project.frameRate);
+  seekBarMng=new SeekBar(vidCtrl, "currentFrame");
+  vidCtrl.attach(seekBarMng,1);
   Session.set('videoPlayer', 1);
 });
 
@@ -219,6 +219,7 @@ Template.videoPlayer.onDestroyed(function(){
   });
   Player.pause();
   Player.remove();
+  vidCtrl.pause();
   Session.set('videoPlayer', 0);
   Session.set('errorMessageFile','');
 });

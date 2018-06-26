@@ -8,10 +8,11 @@ export class ShotExtractVisualizer{
 
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, divIdForm, divIdTimeLine, divIdOverlay){
+  constructor(xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdOverlay){
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
-    this.name = name
+    this.name = name;
+    this.nbFrames = nbFrames;
     this.divIdForm = divIdForm;
     this.observers = [];
     this.divIdTimeLine = divIdTimeLine;
@@ -63,7 +64,6 @@ export class ShotExtractVisualizer{
   */
   // update(){
   //   this.getDataTimeLine();
-  //   this.getNbFrames();
   //   this.getDataOverlay();
   //   this.notifyAll()
   // }
@@ -81,8 +81,7 @@ export class ShotExtractVisualizer{
 
     this.timeLineBuilder = new TimeLineShot(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var nbFrames = this.timeLineBuilder.getNbFrames();
-    var timeLine = new TimeLine(this.name, xmlxsdForm, nbFrames, timeLineData,
+    var timeLine = new TimeLine(this.name, xmlxsdForm, this.nbFrames, timeLineData,
     this.divIdTimeLine,this);
     this.attach(timeLine);
 
@@ -114,10 +113,6 @@ export class ShotExtractVisualizer{
 
   getOverlayData(){
     return this.overlayBuilder.getOverlayData();
-  }
-
-  getNbFrames(){
-    return this.timeLineBuilder.getNbFrames();
   }
 
 }

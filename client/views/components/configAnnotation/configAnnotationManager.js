@@ -17,14 +17,15 @@ export class configAnnotationManager{
   @visualizerDivs: array which contains the id of div of the visualizer
   @saveButtonDiv
   */
-  constructor(xsds, xmls, checkBoxDiv, visualizerDivs, saveButtonDiv){
+  constructor(xsds, xmls, nbFrames, checkBoxDiv, visualizerDivs, saveButtonDiv){
     this.xsds = xsds.slice(0);
-    this.xmls = xmls.slice(0)
-
+    this.xmls = xmls.slice(0);
+    this.nbFrames = nbFrames;
     this.checkBoxDiv = checkBoxDiv;
     this.visualizerDivs = visualizerDivs;
     this.saveButtonDiv = saveButtonDiv;
     this.visualizers = [];
+
     var that = this;
     var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
@@ -37,7 +38,8 @@ export class configAnnotationManager{
       var xsdObj = new XSDObject(xsd);
       var xmlxsdObj = new XMLXSDObj(xmls[i], xsdObj);
 
-      var visualizerFactory = new VisualizerFactory(xmlxsdObj,that.visualizerDivs )
+      // console.log('this.visualizerDivs', that.visualizerDivs);
+      var visualizerFactory = new VisualizerFactory(xmlxsdObj, that.nbFrames, that.visualizerDivs )
       var extractor = xmls[i].clone().empty()
       var visualizer = visualizerFactory.getVisualizer(extractor)
       visualizer.visualize()
@@ -100,7 +102,6 @@ export class configAnnotationManager{
         if(typeof xmlAnnotation !== 'undefined'){
           var extractor = that.xmls[i].clone().empty();
           xmlDoc = Writer.replaceAnnotation(xmlDoc, extractor, xmlAnnotation)
-
         }else{
           errorMessages.push(visualizer.name +": " + xmlGenerator.getErrorMessage());
           correct = false
@@ -178,8 +179,9 @@ export class configAnnotationManager{
 
               var xsdObj = new XSDObject(xsd);
               var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
-
-              var visualizerFactory = new VisualizerFactory(xmlxsdObj,this.visualizerDivs )
+              console.log("this",this);
+              console.log("nbframes",this.nbFrames);
+              var visualizerFactory = new VisualizerFactory(xmlxsdObj, this.nbFrames, this.visualizerDivs )
               var extractor = xmlExtractor.clone().empty()
               var visualizer = visualizerFactory.getVisualizer(extractor)
               visualizer.visualize()
@@ -206,7 +208,7 @@ export class configAnnotationManager{
 
               var xsdObj = new XSDObject(xsd);
               var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
-              var visualizerFactory = new VisualizerFactory(xmlxsdObj,this.visualizerDivs )
+              var visualizerFactory = new VisualizerFactory(xmlxsdObj,this.nbFrames,this.visualizerDivs )
               var extractor = xmlExtractor.clone().empty()
               var visualizer = visualizerFactory.getVisualizer(extractor)
               visualizer.visualize()
@@ -237,4 +239,5 @@ export class configAnnotationManager{
       return false
     }
   }
+
 }

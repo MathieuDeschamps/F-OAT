@@ -104,12 +104,12 @@ export class XMLGenerator{
 	*/
 	visitXMLXSDAttr(xmlxsdAttr){
 		// console.log('XMLGenerator Attr :',xmlxsdAttr.name,xmlxsdAttr.use,xmlxsdAttr.value);
-		if (this.xml!=undefined){
-			if (xmlxsdAttr.value!=undefined && (xmlxsdAttr.type.holds(xmlxsdAttr.value)) && xmlxsdAttr.use!="prohibited"){
+		if (typeof this.xml !== 'undefined'){
+			if (typeof xmlxsdAttr.value !== 'undefined' && (xmlxsdAttr.type.holds(xmlxsdAttr.value)) && xmlxsdAttr.use!="prohibited"){
 				this.xml+=' '+xmlxsdAttr.name+'="'+xmlxsdAttr.value+'"';
-			} else {
+			}else {
 				// console.log('XMLGenerator Attr 1');
-				if (xmlxsdAttr.value!=undefined){
+				if (typeof xmlxsdAttr.value !== 'undefined'){
 					if (xmlxsdAttr.use=="prohibited"){
 						this.errorMessage+=xmlxsdAttr.name + " is prohibited.\n";
 						this.xml=undefined;
@@ -137,7 +137,7 @@ export class XMLGenerator{
 	visitXMLXSDNodeValue(xmlxsdNodeValue){
 		if (this.xml!=undefined){
 			if (xmlxsdNodeValue.type.holds(xmlxsdNodeValue.value)){
-				this.xml+=xmlxsdNodeValue.value
+				this.xml+=xmlxsdNodeValue.value;
 			} else {
 				this.errorMessage+=xmlxsdNodeValue.value + 'does not fit node type.\n';
 				this.errorDone=false;

@@ -4,6 +4,7 @@ export class TimeLine {
     static LINE_HEIGHT(){ return 30}
     static EXT_MARGIN(){ return 5}
     static MY_COLOR(){ return ["#f9a825", "#1565c0"]}
+    // static MY_SELECTED_COLOR(){ return ["#f0f", '#ff0']}
     static MY_SELECTED_COLOR(){ return ["#f57f17", '#0d47a1']}
     static SCALE_MIN(){return 30}
     static TRB(){
@@ -21,6 +22,8 @@ export class TimeLine {
       this.frame_rate = 30
       this.visualizer = visualizer;
       this.entries = []
+      this.index_used_rect = -1;
+      this.used_color = "";
       var that = this
       $(data).each(function(i,e){
         that.entries.push(e.name)
@@ -84,15 +87,12 @@ export class TimeLine {
         }
       }
       var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
-      gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
-      gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trb[1] - leftSpace;
-      used_rect = "";
-      used_color = "";
-      prec_timeLine = -1; // timeLine de l'ancien rectangle
+      var gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
+      var gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - trb[1] - leftSpace;
+      var prec_timeLine = -1; // timeLine de l'ancien rectangle
 
       var debut = 0;
       var fin = this.nb_frames;
-      this.rect_actif = -1;
 
       $("#" + this.div_id).css('height', height_total + 10)
                           .css('overflow-x', 'auto')
@@ -128,41 +128,6 @@ export class TimeLine {
               .domain([0, this.nb_frames])
               .range([0, gen_width]);
 
-      blockPlay = function (d, i,that) {
-          var id;
-          id = "rect" + i;
-
-          var rect = $("[id=" + id + "][time_line_id='" + that.div_id + "']");
-          if (that.rect_actif !== -1) {
-            rect.attr("style", "fill:" + my_color[that.items[that.rect_actif].index % my_color.length]);
-          }
-          if (prec_timeLine === -1) {
-              prec_timeLine = that.div_id;
-          }
-
-          if ((that.rect_actif !== i) || prec_timeLine !== that.div_id || (!vidCtrl.getPartialPlaying())) {
-              if (used_rect !== "") {
-                  used_rect.attr("style", "fill:" + used_color);
-              }
-              used_color = my_color[d.index % my_color.length];
-              rect.attr("style", "fill:" + my_selected_color[d.index % my_selected_color.length]);
-              used_rect = rect;
-              that.rect_actif = i;
-              prec_timeLine = that.div_id;
-              that.xmlxsdForm.displayForm(d.stack)
-              vidCtrl.setPartialPlaying(true);
-              vidCtrl.setPlayingInterval(d.start, d.end);
-              vidCtrl.play();
-          } else {
-              vidCtrl.setPlayingInterval(debut, fin);
-              vidCtrl.play();
-              used_rect = "";
-              that.rect_actif = -1;
-              vidCtrl.setPartialPlaying(false);
-          }
-
-      };
-
       gen.selectAll(".entryLines")
               .data(this.entries)
               .enter().append("line")
@@ -192,14 +157,18 @@ export class TimeLine {
               .attr("height", function (d) {
                   return y1(0.8);
               })
-              .attr("id", function (d, i) {
-                  return "rect" + i;
+              .attr("index", function (d, i) {
+                  return i;
               })
-              .style("fill", function (d) {
+              .style("fill", function (d, i) {
+                if(that.index_used_rect === i){
+                  return my_selected_color[d.index % my_selected_color.length];
+                }else{
                   return my_color[d.index % my_color.length];
+                }
               })
               .attr("stroke", "lightgray")
-              .on("click", function(d,i){ blockPlay(d,i,that)});
+              .on("click", function(d, i){ that.blockPlay(d, this)});
 
       time_line.append("text")
               .text(this.name_extractor + " timeLine")
@@ -236,17 +205,56 @@ export class TimeLine {
 
     }
 
+    /* Event trigger when click on a rect of the time line
+    @item contains the data of the xml to the rectangle
+    @target is the html of the rectangle
+    */
+    blockPlay(item, target){
+      var my_color = TimeLine.MY_COLOR();
+      var my_selected_color =  TimeLine.MY_SELECTED_COLOR();
+
+      if(typeof vidCtrl.focusTimeLine !== 'undefined'){
+
+        vidCtrl.focusTimeLine.lostFocus();
+      }
+
+      if (this.index_used_rect !== parseInt($(target).attr('index')) || (!vidCtrl.getPartialPlaying())) {
+        $(target).css("fill", my_selected_color[item.index % my_selected_color.length]);
+        this.used_color = my_color[item.index % my_color.length];
+        this.index_used_rect = parseInt($(target).attr('index'));
+        this.xmlxsdForm.displayForm(item.stack)
+        vidCtrl.setPlayingInterval(item.start, item.end);
+        vidCtrl.setPartialPlaying(true);
+        vidCtrl.focusTimeLine = this;
+        // vidCtrl.play();
+      } else {
+        vidCtrl.setPlayingInterval(1, this.nb_frames);
+        vidCtrl.setPartialPlaying(false);
+      }
+
+    };
+
+    /* Called when this time line lost the focus of the video controleur
+    for an another time line
+    */
+    lostFocus(){
+      if (this.index_used_rect !== -1) {
+        var used_rect = $('#'+this.div_id).find('rect[index="'+this.index_used_rect+'"]')
+        if(used_rect.length > 0){
+          $(used_rect).css("fill", this.used_color);
+        }
+      }
+    }
+
+    /* Observer pattern : update function
+    */
     update() {
       var data = this.visualizer.getTimeLineData();
       this.entries = []
-
       var that = this
       $(data).each(function(i,e){
         that.entries.push(e.name)
       });
-
-      this.nb_frames = this.visualizer.getNbFrames();
-      // console.log('nb frames', this.nb_frames)
       this.items = []
       $(data).each(function(i,entry){
         $(entry.intervals).each(function(j,interval){
@@ -254,11 +262,13 @@ export class TimeLine {
         })
       })
       $('#' + this.div_id).empty()
-      if(this.rect_actif >= 0) {
-        var currentItem = this.items[this.rect_actif];
+      this.draw();
+      if(this.index_used_rect !== -1) {
+        var currentItem = this.items[this.index_used_rect];
+        $(this.index_used_rect).css('fill', this.used_color)
         vidCtrl.setPartialPlaying(true);
+        console.log('currentItem', currentItem);
         vidCtrl.setPlayingInterval(currentItem.start, currentItem.end);
       }
-      this.draw();
     }
 }

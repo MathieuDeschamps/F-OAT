@@ -8,8 +8,6 @@ export class TimeLineCharacter{
     this.stack = [];
     this.timeLineData = [];
     this.currentCharacter = undefined;
-    this.minNumFrame = NaN;
-    this.maxNumFrame = NaN;
   }
 
   initialize(){
@@ -17,8 +15,6 @@ export class TimeLineCharacter{
     this.timeLineData = [];
     this.isCharacter = false;
     this.currentCharacter = undefined;
-    this.minNumFrame = NaN;
-    this.maxFrame = NaN;
   }
 
   /*
@@ -28,16 +24,6 @@ export class TimeLineCharacter{
     this.initialize();
     this.xmlxsdObj.accept(this)
     return this.timeLineData;
-  }
-
-  getNbFrames(){
-    this.initialize();
-    this.xmlxsdObj.accept(this);
-    var nbFrames = this.maxNumFrame - this.minNumFrame + 1
-    if(isNaN(nbFrames)){
-      nbFrames = 0
-    }
-    return nbFrames;
   }
   /* Visitor pattern : visit function
   @xmlxsdObj : XMLXSDObj object
@@ -130,18 +116,6 @@ export class TimeLineCharacter{
       if(typeof obj.attrs.startFrame !== 'undefined' &&
         typeof obj.attrs.endFrame !== 'undefined' &&
         parseInt(obj.attrs.startFrame.value, 10) <= parseInt(obj.attrs.endFrame.value, 10)){
-          // retrieve the max and min numFrame
-          if(isNaN(this.minNumFrame)){
-            this.minNumFrame = parseInt(obj.attrs.startFrame.value, 10);
-          }else if(this.minNumFrame > obj.attrs.startFrame.value){
-              this.minNumFrame = parseInt(obj.attrs.startFrame.value, 10);
-          }
-          if(isNaN(this.maxNumFrame)){
-            this.maxNumFrame =  parseInt(obj.attrs.endFrame.value, 10);
-          }else if(this.maxNumFrame < obj.attrs.endFrame.value){
-              this.maxNumFrame = parseInt(obj.attrs.endFrame.value, 10);
-          }
-
           // retrieve data for the timeLine
           this.timeLineData.forEach(function(element){
             if(!added && element.name === that.currentCharacter &&
@@ -169,23 +143,6 @@ export class TimeLineCharacter{
             })
           }
           added = false
-      }
-
-      // code for the attribut timeId
-      if(typeof obj.attrs.timeId !== 'undefined' &&
-          (!isNaN(parseInt(obj.attrs.timeId.value)))){
-        // retrieve the max and min numFrame
-        if(isNaN(this.minNumFrame)){
-          this.minNumFrame = parseInt(obj.attrs.timeId.value, 10);
-        }else if(this.minNumFrame > obj.attrs.timeId.value){
-          this.minNumFrame = parseInt(obj.attrs.timeId.value, 10);
-        }
-        if(isNaN(this.maxNumFrame)){
-          this.maxNumFrame = parseInt(obj.attrs.timeId.value, 10);
-
-        }else if(this.maxNumFrame < obj.attrs.timeId.value, 10){
-          this.maxNumFrame = parseInt(obj.attrs.timeId.value, 10);
-        }
       }
     }
 
