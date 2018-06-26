@@ -28,7 +28,7 @@ export class configAnnotationManager{
     var that = this;
     var JQcheckBoxDiv='#'+checkBoxDiv;
     this.xsds.forEach(function(xsd, i){
-      var labelConfig = "annontation_" + i
+      var labelConfig = "annotation_" + i
       var JQlabelConfig='#'+labelConfig;
       var extractorCheckBox = '<p><input class="filled-in" id="'+ labelConfig + '" type="checkbox"/>'
       extractorCheckBox += '<label for="'+ labelConfig + '">' + $(xmls[i]).attr('name') + '</label></p>'
@@ -37,7 +37,6 @@ export class configAnnotationManager{
       var xsdObj = new XSDObject(xsd);
       var xmlxsdObj = new XMLXSDObj(xmls[i], xsdObj);
 
-      // console.log('this.visualizerDivs', that.visualizerDivs);
       var visualizerFactory = new VisualizerFactory(xmlxsdObj,that.visualizerDivs )
       var extractor = xmls[i].clone().empty()
       var visualizer = visualizerFactory.getVisualizer(extractor)
@@ -48,7 +47,6 @@ export class configAnnotationManager{
         divIds.push(idDiv)
       })
       $(JQlabelConfig).change(function(){that.checkBoxChange( JQlabelConfig, divIds)})
-      // console.log('visualizer', visualizer)
 
       $( window ).resize(function() {
         setTimeout(function(){
@@ -129,6 +127,97 @@ export class configAnnotationManager{
       }
     }
   }
+
+  /* function called when a new extraction is done to refresh the annotation manager with a new annotation
+  @idExtractor : xml of the extraction with the annotations parsed
+  @xsd : XSD file of the extractor parsed
+  */
+  addAnnotation(idExtractor,version){
+    var idProject = Router.current().params._id;
+    var xmlPath = '/tmp/' + idProject + '/annotation.xml';
+    Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
+      if(xmlErr){
+        alert(xmlErr.reason);
+      }else{
+        var xmlDoc = result.data;
+        var xmlParsed = $.parseXML(result.data)
+        var xmlExtractor = $(xmlParsed).find('extractors').children().each(function(i,elem){
+          if ($(elem).prop('tagName') === idExtractor &&
+             $(elem).attr('version') === version){
+               return elem;
+          }
+        });
+        var exists = false;
+        $(this.xmls).each(function(i,elemxml){
+          var header = $(elemxml).clone().empty();
+          if($(header).prop('tagName') == $(xmlExtractor).prop('tagName')){
+            if($(header).attr('version') == $(xmlExtractor).attr('version')){
+              exists = true;
+            }
+          }
+        });
+          //Recuperer uniquement le xml du nouvel extracteur
+        extractorPath  = '/tmp/'+ idExtractor + '/' + version + '/descriptor.xsd';
+        Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
+          if(xsdErr){
+            toastr.warning(xsdErr.reason);
+          }else{
+            var xsd = $.parseXML(resultExtractor.data);
+            //getxml du xsd et l'envoyer au configAnnotationManager
+            if(!exists){
+
+              this.xsds.push(xsd);
+              this.xmls.push(xmlExtractor);
+              var JQcheckBoxDiv='#'+this.checkBoxDiv;
+
+              var labelConfig = "annotation_" + (this.xsds.length-1)
+              var JQlabelConfig='#'+labelConfig;
+              var extractorCheckBox = '<p><input class="filled-in" id="'+ labelConfig + '" type="checkbox"/>'
+              extractorCheckBox += '<label for="'+ labelConfig + '">' + $(xmlExtractor).attr('name') + '</label></p>'
+              $(JQcheckBoxDiv).append(extractorCheckBox);
+
+              var xsdObj = new XSDObject(xsd);
+              var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
+
+              var visualizerFactory = new VisualizerFactory(xmlxsdObj,this.visualizerDivs )
+              var extractor = xmlExtractor.clone().empty()
+              var visualizer = visualizerFactory.getVisualizer(extractor)
+              visualizer.visualize()
+              this.visualizers.push(visualizer);
+              var that = this;
+              var divIds = []
+              visualizer.getIdsDiv().forEach(function(idDiv){
+                divIds.push(idDiv)
+              })
+              $(JQlabelConfig).change(function(){that.checkBoxChange( JQlabelConfig, divIds)})
+            }
+
+            else{
+              var v = version.replace('.','-');
+              var id = idExtractor + '_' + v;
+              var that = this;
+              this.visualizers.forEach(function(elem,i){
+                if(elem.idExtractor!=null){
+                  if(elem.idExtractor === id){
+                    that.visualizers.splice(i,1);
+                  }
+                }
+              });
+
+              var xsdObj = new XSDObject(xsd);
+              var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
+              var visualizerFactory = new VisualizerFactory(xmlxsdObj,this.visualizerDivs )
+              var extractor = xmlExtractor.clone().empty()
+              var visualizer = visualizerFactory.getVisualizer(extractor)
+              visualizer.visualize()
+              this.visualizers.push(visualizer);
+            }
+          }
+        });
+      }
+    });
+  }
+
 
   /*function which checked if the current user has the right write on the proejct
   */

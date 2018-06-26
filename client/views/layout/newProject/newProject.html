@@ -126,9 +126,10 @@
             <span class="red-text">{{errorMessage 'duration'}}</span>
           </div>
           <div class="col s6">
+            <p class="flow-text">{{_ 'frameRate'}}</p>
             <div class="input-field col s12 {{errorClass 'frameRate'}}">
               <select id="frameRate">
-                <option value="" disabled selected>{{_ 'frameRate'}}</option>
+                <option value="" disabled selected></option>
                 <option value="23.98">23.98</option>
                 <option value="24">24</option>
                 <option value="25">25</option>

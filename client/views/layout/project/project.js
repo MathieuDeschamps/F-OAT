@@ -127,8 +127,8 @@ Template.project.onRendered(()=>{
         var extractors = Parser.getListExtractors(xmlDoc)
 
         // global table which will contains the form objects
-        xsdArray = [extractors.lenght]
-        xmlArray = [extractors.lenght]
+        xsdArray = []
+        xmlArray = []
         console.log('extractors', extractors)
 
         // add the extractor list and build the forms
@@ -158,10 +158,14 @@ Template.project.onRendered(()=>{
           if(i+1 === extractors.length){
             var idProject = Router.current().params._id;
             if(Projects.findOne(idProject).isFile){
+              if(Projects.findOne(idProject).fileId!=null){
+                Session.set('projectReady',1);
+              }
               var idUpload = "upload_"+Router.current().params._id;
               var upload = Session.get(idUpload);
               if(upload!=null){
-                Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+                Tracker.autorun(function doWhenVideoUploaded(computation) {
+                  var idUpload = "upload_"+Router.current().params._id;
                   if(Session.get(idUpload)==100){
                     Session.set('projectReady', 1)
                     computation.stop();
@@ -202,6 +206,7 @@ Template.project.onRendered(()=>{
               vidctrllistener = true;
               //Event emitted in videoPlayer.js
               eventDDPVideo.addListener('videoCtrl',()=>{
+                Session.set('projectReady',1);
                 var nbFrames=0;
                 extractors.forEach(function(extractor){
                   // console.log('nb Frame',extractor);

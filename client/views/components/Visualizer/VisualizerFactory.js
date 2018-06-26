@@ -19,7 +19,7 @@ export class VisualizerFactory{
     var expression = name;
     var visualizer;
     var id = idExtractor + '_' + version
-    var idForm = 'form_annontation_' + id + '_' + version;
+    var idForm = 'form_annotation_' + id + '_' + version;
     var idTimeLine = 'time_line_' + id + '_' + version;
     var idOverlay = 'overlay_' + id + '_' + version;
     var divTimeLine;

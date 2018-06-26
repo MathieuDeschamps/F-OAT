@@ -3,16 +3,15 @@ export class seekBarManager {
 		this.videoCtrl=videoControler;
 		this.follow=1;
 	}
-	
+
 	mousePressed(){
 		this.follow = 0;
 	}
-	
+
 	mouseReleased(){
 		this.follow = 1;
-		this.refresh();
 	}
-	
+
 	notify(currentFrame){
 		//console.log("seekBar");
 		if (this.follow == 1){
@@ -20,9 +19,5 @@ export class seekBarManager {
 		}
 		//this.refresh();
 		//console.log($( "#seekBar" ).val().toString());
-	}
-	
-	refresh(){
-		$( "#seekBar" ).val(this.videoCtrl.getCurrentFrame());
 	}
 }

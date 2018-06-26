@@ -5,6 +5,7 @@ import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
 import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
 
+eventNewExtraction = null
 
 export class configExtractorManager{
 	constructor(extractors,checkBoxDiv,formDiv){
@@ -114,18 +115,14 @@ export class configExtractorManager{
 				isFile = false;
 			}
 			else{
-				//var video = Videos.findOne(project.fileId);
 				downUrl = project.fileId;
-				console.log("DownUrl",downUrl);
-				//downUrl = "file:///home/elliot/Documents/cours_meteor/F-OAT/.meteor/local/build/programs/server/"+downUrl;
 				downUrl+=".mp4";
-				console.log("DownUrl",downUrl);
 				isFile = true;
 			}
 
 			Meteor.call("initRequest",idProject,extractor.ip,checksum,downUrl,isFile,(err,result)=>{
 				console.log("finish initRequest");
-				if (err){
+				if (err || !result){
 					toastr.warning('Download problem by '+extractor.name + ' : ' +err.reason);
 					console.log("initRequest that : ",that);
 					console.log("form :", xmlxsdForm);
@@ -138,11 +135,21 @@ export class configExtractorManager{
 				}else{
 					// Extraction launch
 					toastr.success("Extraction in progress");
-					//Changement ici extractor au lieu de extractor.ip
+
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
 							toastr.warning('Download problem by '+extractor.name + ' : ' +err.reason);
 							that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
+						}
+						else{
+							if(!eventNewExtraction){
+								eventNewExtraction = new EventDDP('newExtraction', Meteor.connection);
+							}
+							eventNewExtraction.setClient({
+								appId: Router.current().params._id,
+								_id: Meteor.userId()
+							});
+							eventNewExtraction.emit('newExtraction',extractor._id,result);
 						}
 					});
 				}
