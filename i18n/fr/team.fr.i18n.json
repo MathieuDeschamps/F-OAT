@@ -15,11 +15,6 @@
   "errorUserAlready" : "__user__ appartient déjà au projet",
   "rightChanged" : "Droit modifié !",
   "participantRemoved" : "Utilisateur retiré du projet",
-  "titleProject" : "Rechercher le titre du film de ce projet",
-  "searchTitle" : "Rechercher",
-  "selectTitle" : "Selectionner ce film",
-  "modifyMovie" : "Valider",
-  "changeMovieTitle" : "Modifier le titre du film du projet",
-  "titleChanged" : "Titre modifié!"
+  "changeMovieTitle" : "Modifier le titre du film du projet"
 
 }

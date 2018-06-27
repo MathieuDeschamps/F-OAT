@@ -91,31 +91,6 @@
           </div>
         </div>
         <div class="row">
-          <div class="input-field col s6 {{errorSearchClass 'search'}}">
-            <input type="text" id="movieTitle"/>
-            <label for="movieTitle">{{_ 'titleProject'}}</label>
-            <span  class="red-text">{{errorSearchMessage 'search'}}</span>
-          </div>
-          <div class="col s4" >
-            <a class="btn waves-effect waves-light blue-grey darken-2 truncate" id="searchTitle" name="action" style="margin-top:20px;">{{_ 'searchTitle'}}
-            </a>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col s6">
-            <table>
-              {{#each searchTitles}}
-                <tr>
-                  <td>{{title}}, {{date}}</td>
-                  <td><a class="select_title btn-tiny btn-floating green right-align right" title="{{_ 'selectTitle'}}">
-                    <i class="material-icons" name="{{title}},{{date}}">check</i>
-                  </a></td>
-                </tr>
-              {{/each}}
-            </table>
-          </div>
-        </div>
-        <div class="row">
           <div class="col s6">
             <p class="flow-text">{{_ 'movieDuration'}}</p>
             <div class="input-field inline col s12 {{errorClass 'duration'}}">
@@ -128,7 +103,7 @@
           <div class="col s6">
             <p class="flow-text">{{_ 'frameRate'}}</p>
             <div class="input-field col s12 {{errorClass 'frameRate'}}">
-              <select id="frameRate">
+              <select id="frameRate" class="single-select">
                 <option value="" disabled selected></option>
                 <option value="23.98">23.98</option>
                 <option value="24">24</option>
@@ -143,6 +118,7 @@
             </div>
           </div>
         </div>
+        {{> omdbForm}}
         <div class="row">
           <div class="col s4 offset-s4" >
             <a class="btn waves-effect waves-light " id="newProjectForm" name="action">{{_ 'createButton'}}

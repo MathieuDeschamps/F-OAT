@@ -162,16 +162,18 @@ Template.project.onRendered(()=>{
               if(Projects.findOne(idProject).fileId!=null){
                 Session.set('projectReady',1);
               }
-              var idUpload = "upload_"+Router.current().params._id;
-              var upload = Session.get(idUpload);
-              if(upload!=null){
-                Tracker.autorun(function doWhenVideoUploaded(computation) {
-                  var idUpload = "upload_"+Router.current().params._id;
-                  if(Session.get(idUpload)==100){
-                    Session.set('projectReady', 1)
-                    computation.stop();
-                  }
-                });
+              else{
+                var idUpload = "upload_"+Router.current().params._id;
+                var upload = Session.get(idUpload);
+                if(upload!=null){
+                  Tracker.autorun(function doWhenVideoUploaded(computation) {
+                    var idUpload = "upload_"+Router.current().params._id;
+                    if(Session.get(idUpload)==100){
+                      Session.set('projectReady', 1)
+                      computation.stop();
+                    }
+                  });
+                }
               }
             }
             else{

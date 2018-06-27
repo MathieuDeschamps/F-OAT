@@ -18,8 +18,6 @@ var API_KEY = 'ef18ae37';
 
 Template.team.onCreated(function(){
   Session.set("search/keyword","");
-  Session.set('searchTitles',[]);
-  Session.set('postSearchErrors',{});
 });
 
 
@@ -125,44 +123,6 @@ Template.team.events({
     }
   },
 
-
-  'click #searchMovie' (event,instance){
-      var movie = $('#filmTitle').val();
-      var errors = {}
-      if(movie!='' && movie!=null){
-        $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&s='+encodeURI(movie)+'&r=xml',function(data){
-          var results = $(data).find('root').children('result[title]');
-          var titles = [];
-          if(results.length==0){
-            errors.search = TAPi18n.__('errorSearch');
-            return Session.set('postSearchErrors',errors);
-          }
-          else{
-            $(results).each(function(i,result){
-              titles.push({title: $(result).attr('title'), date: $(result).attr('year')});
-            });
-          }
-          Session.set('searchTitles',titles);
-        });
-      }
-      else{
-        errors.search = TAPi18n.__('errorSearchNull');
-      }
-      return Session.set('postSearchErrors',errors);
-  },
-
-  'keyup #filmTitle' (event,instance){
-    $('#modifyMovie').attr('disabled',true);
-  },
-
-  'click .select_title'(event,instance){
-    var elm = event.target;
-    var $elm = $(elm);
-    $('#filmTitle').val($elm.attr('name'));
-    $('#modifyMovie').removeAttr('disabled');
-    Session.set('searchTitles',[]);
-  },
-
   'click #modifyMovie'(event,instance){
     var movieTitle = $('#filmTitle').val();
     var movie = movieTitle.split(',');
@@ -213,18 +173,6 @@ Template.team.helpers({
       var users = Meteor.users.find({ $and : [{username: regexp},{_id: {$ne:owner}}]});
       return users;
     }
-  },
-
-  searchTitles: function(){
-    return Session.get('searchTitles');
-  },
-
-  errorSearchMessage : function(field){
-    return Session.get('postSearchErrors')[field];
-  },
-
-  errorSearchClass : function(field){
-    return !!Session.get('postSearchErrors')[field] ? 'has-error' : '';
-  },
+  }
 
 });

@@ -15,11 +15,5 @@
   "errorUserAlready" : "__user__ is already in the project",
   "rightChanged" : "Right changed !",
   "participantRemoved" : "User removed from the project",
-  "titleProject" : "Search title of the movie of this project",
-  "searchTitle" : "Search",
-  "selectTitle" : "Select this movie",
-  "modifyMovie" : "Validate",
-  "changeMovieTitle" : "Change the movie's title in the project",
-  "titleChanged" : "Title changed !"
-
+  "changeMovieTitle" : "Change the movie's title in the project"
 }

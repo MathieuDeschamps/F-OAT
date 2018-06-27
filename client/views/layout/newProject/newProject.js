@@ -4,7 +4,6 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Writer} from '../../components/class/Writer.js'
 import './newProject.html';
 
-var API_KEY = 'ef18ae37';
 /*
 * On creation of the template, initialize session vars.
 * postSubmitErrors : errors in the form
@@ -12,12 +11,12 @@ var API_KEY = 'ef18ae37';
 * participants : coworkers added in the project
 * search/keyword : used in input search of users
 */
+var API_KEY = 'ef18ae37';
+
 Template.newproject.onCreated(function(){
   Session.set('postSubmitErrors',{});
   Session.set('postUserErrors',{});
-  Session.set('postSearchErrors',{});
   Session.set('participants',[]);
-  Session.set('searchTitles',[]);
   Session.set("search/keyword","");
 });
 
@@ -35,14 +34,6 @@ Template.newproject.helpers({
     return !!Session.get('postUserErrors')[field] ? 'has-error' : '';
   },
 
-  errorSearchMessage : function(field){
-    return Session.get('postSearchErrors')[field];
-  },
-
-  errorSearchClass : function(field){
-    return !!Session.get('postSearchErrors')[field] ? 'has-error' : '';
-  },
-
   users(){
     var keyword = Session.get("search/keyword");
     if(keyword!=null && keyword!=""){
@@ -55,16 +46,12 @@ Template.newproject.helpers({
 
   coworkers: function(){
     return Session.get('participants');
-  },
-
-  searchTitles: function(){
-    return Session.get('searchTitles');
   }
 
 });
 
 Template.newproject.onRendered(function(){
-  $('select').material_select();
+  $('.single-select').material_select();
 });
 
 Template.newproject.events({
@@ -89,10 +76,10 @@ Template.newproject.events({
       _duration = parseInt(_seconds) + parseInt(_minutes) * 60 + parseInt(_hours) * 3600;
     }
 
-    var movieTitle = $('#movieTitle').val();
+    var filmTitle = $('#filmTitle').val();
     var errorsSearch = {}
-    if(movieTitle!=null && movieTitle!=''){
-      if(!$('#movieTitle').prop('disabled')){
+    if(filmTitle!=null && filmTitle!=''){
+      if($('#filmTitle').attr('name') === 'false'){
         errorsSearch.search = TAPi18n.__('errorSearchInvalid');
         return Session.set('postSearchErrors',errorsSearch);
       }
@@ -149,9 +136,9 @@ Template.newproject.events({
             else{
 
               //We use odmb api if a movie title is given
-              var movieTitle = $('#movieTitle').val();
-              if(movieTitle!=null && movieTitle!=''){
-                var movie = movieTitle.split(',');
+              var filmTitle = $('#filmTitle').val();
+              if(filmTitle!=null && filmTitle!=''){
+                var movie = filmTitle.split(',');
                 $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
                   var result = $(data).find('root').find('movie');
                   result.removeAttr('poster')
@@ -226,43 +213,8 @@ Template.newproject.events({
         $('#url').val('');
         $('#url-down').val('');
       }
-  },
-
-  'click #searchTitle' (event,instance){
-      var movie = $('#movieTitle').val();
-      var errors = {}
-      if(movie!='' && movie!=null){
-        $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&s='+encodeURI(movie)+'&r=xml',function(data){
-          var results = $(data).find('root').children('result[title]');
-          var titles = [];
-          if(results.length==0){
-            errors.search = TAPi18n.__('errorSearch');
-            return Session.set('postSearchErrors',errors);
-          }
-          else{
-            $(results).each(function(i,result){
-              titles.push({title: $(result).attr('title'), date: $(result).attr('year')});
-            });
-          }
-          Session.set('searchTitles',titles);
-        });
-      }
-      else{
-        errors.search = TAPi18n.__('errorSearchNull');
-      }
-
-      return Session.set('postSearchErrors',errors);
-
-  },
-
-  'click .select_title'(event,instance){
-    var elm = event.target;
-    var $elm = $(elm);
-    $('#movieTitle').val($elm.attr('name'));
-    $('#movieTitle').prop('disabled',true);
-    Session.set('searchTitles',[]);
-
   }
+
 });
 
 Template.newproject.onDestroyed(()=>{
