@@ -1,6 +1,8 @@
 import { ShotExtractVisualizer } from './ShotExtractVisualizer.js';
 import { CharacterExtractVisualizer } from './CharacterExtractVisualizer.js';
 import { DefaultVisualizer } from './DefaultVisualizer.js';
+import { OmdbApiVisualizer } from './OmdbApiVisualizer.js';
+
 
 export class VisualizerFactory{
   /* Constructor
@@ -46,6 +48,9 @@ export class VisualizerFactory{
         $('#' + this.divIdTimeLine).append(divTimeLine);
 
         visualizer = new CharacterExtractVisualizer(this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
+        break;
+      case "omdbapi":
+        visualizer = new OmdbApiVisualizer(this.xmlxsdObj,id, name, idForm);
         break;
       default:
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)
