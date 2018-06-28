@@ -56,17 +56,15 @@ export class ShotExtractVisualizer{
   */
   notifyAll(){
       this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     })
   }
 
   /* Obsever pattern : update function
   */
-  // update(){
-  //   this.getDataTimeLine();
-  //   this.getDataOverlay();
-  //   this.notifyAll()
-  // }
+  updateVideoControler(){
+    this.notifyAll()
+  }
 
   /* Visualize the XMLXSDObject
   */
@@ -91,8 +89,8 @@ export class ShotExtractVisualizer{
     this.attach(overlay);
     vidCtrl.attach(overlay,1);
 
-    // console.log('timeLineData', timeLineData);
-    // console.log('overlayData', overlayData);
+    console.log('timeLineData', timeLineData);
+    console.log('overlayData', overlayData);
 
   }
 

@@ -51,13 +51,13 @@ export class CharacterExtractVisualizer{
   */
   notifyAll(){
       this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     })
   }
 
   /* Obsever pattern : update function
   */
-  update(){
+  updateVisualizer(){
     this.getDataTimeLine();
     this.notifyAll()
   }

@@ -1,5 +1,6 @@
 {
   "begin" : "Select. début",
+  "currentFrame" : "Frame courante",
   "end" : "Select. fin",
   "partialPlay" : "Lecture partielle"
 }

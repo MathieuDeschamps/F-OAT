@@ -44,15 +44,15 @@ export class DefaultVisualizer{
   */
   notifyAll(){
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     })
   }
 
   /* Obsever pattern : update function
   */
-  // update(){
-  //   this.notifyAll()
-  // }
+  updateVisualizer(){
+    this.notifyAll()
+  }
 
   /* Visualize the XMLXSDObject
   */

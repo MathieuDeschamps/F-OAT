@@ -1,17 +1,15 @@
 export class VideoControler {
-	constructor(vid,frameRate){
+	constructor(vid,frameRate, duration){
 
 		// Balise vidéo
 		this.vid=vid;
 
-		// nbFrame
-		this.nbFramesSetted=false;
-
 		// Framerate
 		this.frameRate=frameRate;
+		this.duration=duration;
 		// Plage de lecture (pour le mode partialPlaying)
 		this.beginVid=1;
-
+		this.endVid=parseInt(this.frameRate * this.duration)
 		// Commande du lecteur
 		this.playerCommand=undefined;
 
@@ -19,20 +17,6 @@ export class VideoControler {
 		// On utilise un intervalle qui vérifie si la vidéo est prête à être lue.
 		var that=this;
 
-		this.settingInterval=setInterval(function(){
-			if (that.vid!=undefined && that.vid.readyState > 1 && that.vid.duration>0) {
-				//console.log('duration', that.vid.duration);
-				if (!that.nbFramesSetted && that.endVid==undefined){
-					that.setEndVid(that.timeToFrame(that.vid.duration));
-				}
-				that.beginSelect=1;
-				if (that.endSelect==undefined){
-					that.setEndSelect(that.endVid);
-					//that.endSelect=that.endVid;
-				}
-				clearInterval(that.settingInterval);
-			}
-		},50);
 
 		// Mode lecture
 		this.mode="full";
@@ -58,7 +42,6 @@ export class VideoControler {
 
 	setEndVid(end){
 		this.endVid=end;
-		$( "#"+this.playerCommand.idSeekBar ).prop('max', end);
 	}
 
 	setNbFrames(nbFrame){
@@ -69,14 +52,6 @@ export class VideoControler {
 			this.endSelect=Math.min(this.endSelect,nbFrame);
 		}
 		this.nbFramesSetted=true;
-		this.setFrameRate();
-	}
-
-	setFrameRate(){
-		if (this.nbFramesSetted && this.vid.duration>0){
-			this.frameRate=(this.endVid-1)/this.vid.duration;
-			//console.log('frameRate',this.frameRate);
-		}
 	}
 
 	setAnnotedFrames(annotedFrame){
@@ -116,13 +91,13 @@ export class VideoControler {
 	// Redéfinit le numéro de la frame courante de la vidéo
 	setCurrentFrame(newCurrentFrame){
 		//this.vid.currentTime=this.frameToTime(newCurrentFrame);
-		this.vid.play();
-		this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
-		if (!this.isPlaying){
-			var that=this;
-			this.vid.addEventListener('playing',function(){that.pause();});
-			//that.forcedNotifyAttachedObjects(newCurrentFrame);
-		}
+			this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
+			this.vid.play();
+			if (!this.isPlaying){
+				var that=this;
+				this.vid.addEventListener('playing',function(){that.pause();});
+				//that.forcedNotifyAttachedObjects(newCurrentFrame);
+			}
 		//console.log('setCurrentFrame',newCurrentFrame,this.frameToTime(newCurrentFrame),typeof this.frameToTime(newCurrentFrame));
 	}
 
@@ -154,7 +129,6 @@ export class VideoControler {
 		////console.log(this.mode,this.beginSelect,this.endSelect);
 	}
 
-
 	// Configuration du mode de lecture
 	configMode(){
 		clearInterval(this.updateInterval);
@@ -182,7 +156,7 @@ export class VideoControler {
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
 			if (curFrame % that.attachedObjectFrequency.get(object)==0){
-				object.update();
+				object.updateVideoControler();
 			}
 		});
 	}
@@ -194,7 +168,7 @@ export class VideoControler {
 		var that=this;
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
-			object.update();
+			object.updateVideoControler();
 		});
 	}
 
@@ -324,9 +298,15 @@ export class VideoControler {
 		}
 	}
 
+	// Desabonnement de tous les objets
+	detachAll(){
+		this.attachedObject = []
+		this.attachedObjectFrequency = new Map();
+	}
 
 	// Passer à la prochaine frame annotée
 	nextAnnotedFrame(){
+		// console.log('nextAnnotedFrame')
 		var i=0,
 			j=this.annotedFrame.length-1,
 			currentFrame=this.getCurrentFrame(),
@@ -356,6 +336,7 @@ export class VideoControler {
 
 	// Passer à la précédente frame annotée
 	prevAnnotedFrame(){
+		// console.log('prevAnnotedFrame')
 		var i=0,
 			j=this.annotedFrame.length-1,
 			currentFrame=this.getCurrentFrame(),k;

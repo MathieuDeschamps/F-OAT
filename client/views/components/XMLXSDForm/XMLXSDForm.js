@@ -98,9 +98,9 @@ export class XMLXSDForm{
 
 		var headStack=this.stack[this.stack.length-1];
 		if (typeof headStack!== 'undefined'){
-			$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+			$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false,undefined));
 		}else{
-			$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+			$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false, undefined));
 		}
 		var $divBody =$('<div class="collapsible-body"/>')
 		$li.append($divBody)
@@ -109,15 +109,18 @@ export class XMLXSDForm{
 		var that=this;
 		xmlxsdElt.eltsList.forEach(function(elt,i){
 			var idName=that.id+'_elt'+xmlxsdElt.name+i+'config';
+			var idClear = that.id+'_'+idName+'_clear'
 
 			$li = $('<li/>');
 			$ul.append($li)
 			// check if the element can be delete or not
 			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
-				$li.append(that.generateHeaderContent(idName, 'keyboard_arrow_right',xmlxsdElt.name,true));
+				$li.append(that.generateHeaderContent(idName, 'keyboard_arrow_right',
+					xmlxsdElt.name,true, idClear));
 			}
 			else{
-				$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right', xmlxsdElt.name,false));
+				$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
+					xmlxsdElt.name,false, undefined));
 			}
 
 			that.eventHandler.push({
@@ -150,7 +153,7 @@ export class XMLXSDForm{
 							visualizer.notifyAll();
 						}
 					},
-					id:that.id+'_'+idName+'_clear',
+					id:idClear,
 					eventName:'click'
 				});
 			};
@@ -162,7 +165,8 @@ export class XMLXSDForm{
 
 			$li = $('<li>');
 			$ul.append($li)
-			$li.append(that.generateHeaderContent(idEltAdd, 'add_circle', xmlxsdElt.name, false))
+			$li.append(that.generateHeaderContent(idEltAdd, 'add_circle',
+			 	xmlxsdElt.name, false, undefined))
 
 			this.eventHandler.push({
 				function:function(){
@@ -216,7 +220,8 @@ export class XMLXSDForm{
 		$div.append($ul)
 		var $li = $('<li>')
 		$ul.append($li)
-		$li.append(this.generateHeaderContent("seq"+xmlxsdSeq.name+"configTitle",'keyboard_arrow_right', this.stack[this.stack.length-1].tag, false));
+		$li.append(this.generateHeaderContent("seq"+xmlxsdSeq.name+"configTitle",'keyboard_arrow_right',
+		 	this.stack[this.stack.length-1].tag, false, undefined));
 		var $divBody = $('<div id="seq'+xmlxsdSeq.name+'configContent" class="collapsible-body"/>');
 		$li.append($divBody)
 
@@ -231,14 +236,16 @@ export class XMLXSDForm{
 			seq.forEach(function(xmlxsdElt,j){
 
 				xmlxsdElt.eltsList.forEach(function(elt,i){
-					var idName=that.id+'_elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
-
+					var idName= that.id+'_elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
+					var idClear = idName+'_clear'
 					$li = $('<li/>');
 					$ul.append($li)
 					if(xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
-						$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right', xmlxsdElt.name,true));
+						$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
+							xmlxsdElt.name,true, idClear));
 					}else{
-						$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right', xmlxsdElt.name,false));
+						$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
+						 	xmlxsdElt.name,false, undefined));
 					}
 
 					that.eventHandler.push({
@@ -272,7 +279,7 @@ export class XMLXSDForm{
 									visualizer.notifyAll();
 								}
 							},
-							id:that.id+'_'+idName+'_clear',
+							id:idClear,
 							eventName:'click'
 						});
 					};
@@ -285,7 +292,8 @@ export class XMLXSDForm{
 
 					$li =$('<li/>');
 					$ul.append($li)
-					$li.append(that.generateHeaderContent(idEltAdd, 'add_circle', xmlxsdElt.name, false));
+					$li.append(that.generateHeaderContent(idEltAdd, 'add_circle',
+					 	xmlxsdElt.name, false, undefined));
 
 					that.eventHandler.push({
 						function:function(){
@@ -361,7 +369,8 @@ export class XMLXSDForm{
 		$div.append($ul);
 		var $li =$('<li/>');
 		$ul.append($li);
-		$li.append(this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle','keyboard_arrow_down',this.stack[this.stack.length-1].tag,false));
+		$li.append(this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle','keyboard_arrow_down',
+		 	this.stack[this.stack.length-1].tag,false, undefined));
 		var $divBody = $('<div id="ext'+xmlxsdExt.name+'configContent" class="collapsible-body row"/>');
 		$li.append($divBody);
 
@@ -429,9 +438,11 @@ export class XMLXSDForm{
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						this.name,false, undefined));
 				}
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
@@ -506,7 +517,7 @@ export class XMLXSDForm{
 						}
 					},
 					id:formName,
-					eventName:'focusout'
+					eventName:'change'
 				});
 			}
 		}else{
@@ -525,9 +536,11 @@ export class XMLXSDForm{
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						this.name,false, undefined));
 				}
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
@@ -603,7 +616,7 @@ export class XMLXSDForm{
 						}
 					},
 					id:formName,
-					eventName:'focusout'
+					eventName:'change'
 				});
 			}
 			return result
@@ -622,9 +635,11 @@ export class XMLXSDForm{
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						this.name,false, undefined));
 				}
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
@@ -699,7 +714,7 @@ export class XMLXSDForm{
 						}
 					},
 					id:formName,
-					eventName:'focusout'
+					eventName:'change'
 				});
 			}
 		}else{
@@ -718,9 +733,11 @@ export class XMLXSDForm{
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack!== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						this.name,false, undefined));
 				}
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
@@ -816,9 +833,11 @@ export class XMLXSDForm{
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+						this.name,false, undefined));
 				}
 				var $divBody =$('<div class="collapsible-body"/>')
 				$li.append($divBody)
@@ -856,9 +875,11 @@ export class XMLXSDForm{
 
 			var headStack=this.stack[this.stack.length-1];
 			if (typeof headStack !== 'undefined'){
-				$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false));
+				$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					headStack.tag,false, undefined));
 			}else{
-				$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false));
+				$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					this.name,false,undefined));
 			}
 			var $divBody =$('<div class="collapsible-body"/>')
 			$li.append($divBody)
@@ -945,7 +966,7 @@ export class XMLXSDForm{
 	@deletable boolean to display or not the clear element
 	@return the code for the header element
 	*/
-	generateHeaderContent(id, icon, nameHeader,deletable){
+	generateHeaderContent(id, icon, nameHeader,deletable, idClear){
 		var result = ''
 		result+='<div id="'+id+'" class="collapsible-header white-text">'
 		result+='<div class="col s2">'
@@ -955,8 +976,8 @@ export class XMLXSDForm{
 		result+= nameHeader
 		result+='</div>'
 		result+='<div class="col s2">'
-		if(deletable){
-			result+='<i id="'+id+'clear" class="red darken-4 material-icons tiny deleteButton"> clear</i>';
+		if(deletable && typeof idClear !=='undefined'){
+			result+='<i id="'+idClear+'" class="red darken-4 material-icons tiny deleteButton"> clear</i>';
 		}
 		result+='</div>'
 		result+='</div>'
@@ -1121,6 +1142,7 @@ export class XMLXSDForm{
 	/* Apply the event of this.eventHandler and	initialize some element
 	*/
 	applyEventHandler(){
+		console.log('this.eventHandler', this.eventHandler);
 		this.eventHandler.forEach(function(handler){
 			var jqElt
 			if(typeof handler.id !== 'undefined' &&
@@ -1166,7 +1188,7 @@ export class XMLXSDForm{
 
 	/* Observer pattern : update function
 	*/
-	update(){
+	updateVisualizer(){
 			var saveStack = this.stack.slice(0)
 			this.eventHandler = [];
 			this.displayedElement.accept(this)

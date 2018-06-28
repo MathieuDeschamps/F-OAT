@@ -3,7 +3,7 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
-// import { PlayerCommand} from '../../components/playerCommand/PlayerCommand.js'
+import { PlayerCommand} from '../../components/playerCommand/PlayerCommand.js'
 
 var em;
 var vidctrllistener;
@@ -11,7 +11,7 @@ var deleteprojectlistener;
 var id;
 var username;
 
-// function which checked if the current user has the right write on the proejct
+// function which checked if the current user has the right write on the project
 hasRightToWrite = function(){
   var idProject = Router.current().params._id
   var project = Projects.findOne(idProject)
@@ -38,9 +38,36 @@ projectExists = function(){
   return true;
 }
 
+projectReady = function(){
+  var idProject = Router.current().params._id;
+  if(Projects.findOne(idProject).isFile){
+    if(Projects.findOne(idProject).fileId!=null){
+        Session.set('projectReady',1);
+    }else{
+      var idUpload = "upload_"+Router.current().params._id;
+      var upload = Session.get(idUpload);
+      if(upload!=null){
+        this.projectReadyTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+          // console.log('updload', Session)
+          if(Session.get(idUpload)==100){
+            // console.log('projectReady 1')
+            Session.set('projectReady', 1)
+            computation.stop();
+          }
+        });
+      }
+    }
+  }
+  else{
+    // console.log('projectReady 2')
+    Session.set('projectReady', 1)
+  }
+}
+
 Template.project.onCreated(()=>{
   Session.set('errorMessageFile','');
   Session.set('projectReady',0);
+  // global variables id and username to be accessable in onDestroyed
   id = Router.current().params._id;
   username = Meteor.user().username;
   var idUpload = "upload_"+Router.current().params._id;
@@ -120,7 +147,6 @@ Template.project.onRendered(()=>{
       if(xmlErr){
         alert(xmlErr.reason);
       }else{
-        // Session.set('XMLDoc', result.data)
         var xmlDoc = result.data
         var xmlParsed = $.parseXML(result.data)
         Session.set('xml', xmlDoc)
@@ -128,28 +154,31 @@ Template.project.onRendered(()=>{
         var extractors = Parser.getListExtractors(xmlDoc)
 
         // global table which will contains the form objects
-        xsdArray = [extractors.lenght]
-        xmlArray = [extractors.lenght]
-        console.log('extractors', extractors)
+        xsdArray = new Array(extractors.lenght)
+        xmlArray = new Array(extractors.lenght)
+        // console.log('extractors', extractors)
 
+        if(extractors.length === 0){
+          projectReady();
+        }
         // add the extractor list and build the forms
         $(extractors).each(function(i,extractor){
 
-          extractorPath  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
-          Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
-            if(xsdErr){
-              console.log('path', pathExtractor)
-              // alert(xsdErr.reason);
-            }else{
-              // build the forms for the editor
-              var xmlTmp = $(xmlParsed).find('extractors').children().filter(function(){
-                return ($(this).prop('tagName') === $(extractor).prop('tagName') &&
-                    $(this).attr('version') === $(extractor).attr('version'))
+        extractorPath  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
+        Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
+          if(xsdErr){
+            // console.log('path', pathExtractor)
+            // alert(xsdErr.reason);
+          }else{
+            // build the forms for the editor
+            var xmlTmp = $(xmlParsed).find('extractors').children().filter(function(){
+              return ($(this).prop('tagName') === $(extractor).prop('tagName') &&
+                  $(this).attr('version') === $(extractor).attr('version'))
 
-              })
-              if(xmlTmp.length === 1){
-                xmlArray[i] = xmlTmp
-              }
+            })
+            if(xmlTmp.length === 1){
+              xmlArray[i] = xmlTmp
+            }
 
           xsdArray[i] = $.parseXML(resultExtractor.data)
           // console.log('XMLArray', XMLArray)
@@ -157,22 +186,7 @@ Template.project.onRendered(()=>{
           // console.log("vidctrl",vidCtrl);
 
           if(i+1 === extractors.length){
-            var idProject = Router.current().params._id;
-            if(Projects.findOne(idProject).isFile){
-              var idUpload = "upload_"+Router.current().params._id;
-              var upload = Session.get(idUpload);
-              if(upload!=null){
-                Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-                  if(Session.get(idUpload)==100){
-                    Session.set('projectReady', 1)
-                    computation.stop();
-                  }
-                });
-              }
-            }
-            else{
-              Session.set('projectReady', 1)
-            }
+            projectReady();
           }
         }
       })
@@ -218,14 +232,14 @@ Template.project.onDestroyed(()=>{
     });
   }
 
-  Meteor.call('decreaseCount',id,username,function(err,res){
+  Meteor.call('decreaseCount', id, username,function(err,res){
     if(err){
       toastr.warning(err.reason);
     }
     else{
       //If no one is on this page anymore, remove the video from database
       if(Projects.findOne(id).usersOnPage==0){
-        Meteor.call('removeVideo',id,function(error,result){
+        Meteor.call('removeVideo', id,function(error,result){
           if(error){
             toastr.warning(error.reason);
           }
@@ -234,6 +248,11 @@ Template.project.onDestroyed(()=>{
     }
   });
   Session.set('projectReady', 0);
+  // stop the tracker when the template is destroing
+  if(typeof this.projectReadyTracker !== 'undefined' &&
+  !this.projectReadyTracker.stopped){
+    this.projectReadyTracker.stop();
+  }
 
 });
 
@@ -387,6 +406,7 @@ Meteor.startup(function(){
       }
 
       Session.set('projectReady', 0);
+      console.log('id',id, 'username', username)
       if(id!=null && username!=null){
         Meteor.call('decreaseCount',id,username,function(err,res){
           if(err){
