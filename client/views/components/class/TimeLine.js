@@ -30,10 +30,9 @@ export class TimeLine {
       else{
         this.frame_rate = 30;
       }
-        this.visualizer = visualizer;
+      this.visualizer = visualizer;
       this.entries = []
       this.index_used_rect = -1;
-      this.used_color = '';
       var that = this
       $(data).each(function(i,e){
         that.entries.push(e.name)
@@ -174,8 +173,11 @@ export class TimeLine {
               .attr('height', function (d) {
                   return y1(0.8);
               })
-              .attr('index', function (d, i) {
+              .attr('number', function (d, i) {
                   return i;
+              })
+              .attr('index', function(d){
+                return d.index
               })
               .style('fill', function (d, i) {
                 if(that.index_used_rect === i){
@@ -240,18 +242,14 @@ export class TimeLine {
       // save the index of the used rect because lostFocus rested
       var save_index_used_rect = this.index_used_rect;
 
-      if(typeof vidCtrl.focusTimeLine !== 'undefined'){
-        vidCtrl.focusTimeLine.lostFocus();
-      }
+      vidCtrl.setTimeLineFocus(this);
 
-      if (save_index_used_rect !== parseInt($(target).attr('index')) || (!vidCtrl.getPartialPlaying())) {
+      if (save_index_used_rect !== parseInt($(target).attr('number')) || (!vidCtrl.getPartialPlaying())) {
         $(target).css('fill', my_selected_color[item.index % my_selected_color.length]);
-        this.used_color = my_color[item.index % my_color.length];
-        this.index_used_rect = parseInt($(target).attr('index'));
+        this.index_used_rect = parseInt($(target).attr('number'));
         this.xmlxsdForm.displayForm(item.stack)
         vidCtrl.setPlayingInterval(item.start, item.end);
         vidCtrl.setPartialPlaying(true);
-        vidCtrl.focusTimeLine = this;
         if(item.start < item.end){
           vidCtrl.play();
         }
@@ -263,17 +261,31 @@ export class TimeLine {
     };
 
     /* Called when this time line lost the focus of the video controleur
-    for an another time line
     */
     lostFocus(){
       if (this.index_used_rect !== -1) {
-        var used_rect = $('#'+this.div_id).find('rect[index="'+this.index_used_rect+'"]')
+        var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
         if(used_rect.length > 0){
-          $(used_rect).css('fill', this.used_color);
+          var my_color = TimeLine.MY_COLOR();
+          var index_color = parseInt($(used_rect).attr('index'))
+          $(used_rect).css('fill', my_color[index_color % my_color.length]);
         }
-        this.index_used_rect = -1;
       }
     }
+
+    /* Called when this time line take the focus of the video controleur
+    */
+    // takeFocus(){
+    //   if (this.index_used_rect !== -1) {
+    //     var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
+    //     if(used_rect.length > 0){
+    //       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
+    //       var index_color = parseInt($(used_rect).attr('index'))
+    //       console.log('index_color', index_color);
+    //       $(used_rect).css('fill', my_selected_color[index_color % my_selected_color.length]);
+    //     }
+    //   }
+    // }
 
     /* Observer pattern : update function
     */
@@ -293,11 +305,12 @@ export class TimeLine {
       $('#' + this.div_id).empty()
       this.draw();
 
-      if(this.index_used_rect !== -1) {
-        var currentItem = this.items[this.index_used_rect];
-        $(this.index_used_rect).css('fill', this.used_color)
+      if(this.index_used_rect !== -1){
+        var current_item = this.items[this.index_used_rect];
+        var my_color = TimeLine.MY_COLOR();
+        $(this.index_used_rect).css('fill', my_color[current_item.index % my_color.length])
         vidCtrl.setPartialPlaying(true);
-        vidCtrl.setPlayingInterval(currentItem.start, currentItem.end);
+        vidCtrl.setPlayingInterval(current_item.start, current_item.end);
       }
     }
 

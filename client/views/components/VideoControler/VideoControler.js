@@ -37,7 +37,8 @@ export class VideoControler {
 		this.annotedFrame=[];
 
 		// TimeLine qui a le focus du vidéo controleur
-		this.focusTimeLine = undefined;
+		this.isFocusedTimeLine = undefined;
+		this.isFocused = false;
 	}
 
 	setEndVid(end){
@@ -274,6 +275,18 @@ export class VideoControler {
 		if(typeof this.playerCommand!=='undefined'){
 			$("#"+this.playerCommand.idPartialButton).prop('checked',pp);
 		}
+		if(this.partialPlaying &&
+			typeof this.isFocusedTimeLine !== 'undefined' &&
+			!this.isFocused){
+				this.setTimeLineFocus(this.isFocusedTimeLine);
+		}
+		// Timeline lost focus when disabled partialPlay
+		if(!this.partialPlaying &&
+			 typeof this.isFocusedTimeLine !== 'undefined' &&
+			 this.isFocused){
+			this.isFocusedTimeLine.lostFocus();
+			this.isFocused = false;
+		}
 		this.setMode();
 	}
 
@@ -395,5 +408,18 @@ export class VideoControler {
 		if (i>=0){
 			return this.annotedFrame[i];
 		}
+	}
+
+	//
+	setTimeLineFocus(timeLine){
+		if(typeof timeLine !== 'undefined'){
+			if(typeof this.isFocusedTimeLine !== 'undefined' && this.isFocused){
+				this.isFocusedTimeLine.lostFocus();
+			}
+			this.isFocused = true;
+			this.isFocusedTimeLine = timeLine;
+			// this.isFocusedTimeLine.takeFocus();
+		}
+
 	}
 }

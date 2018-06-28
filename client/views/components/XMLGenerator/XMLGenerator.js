@@ -135,15 +135,15 @@ export class XMLGenerator{
 	@xmlxsdNodeValue: XMLXSDNodeValue object
 	*/
 	visitXMLXSDNodeValue(xmlxsdNodeValue){
-		if (this.xml!=undefined){
-			if (xmlxsdNodeValue.type.holds(xmlxsdNodeValue.value)){
-				this.xml+=xmlxsdNodeValue.value;
-			} else {
-				this.errorMessage+=xmlxsdNodeValue.value + 'does not fit node type.\n';
-				this.errorDone=false;
-				this.xml=undefined;
-			}
-		}
+		// if (this.xml!=undefined){
+		// 	if (xmlxsdNodeValue.type.holds(xmlxsdNodeValue.value)){
+		// 		this.xml+=xmlxsdNodeValue.value;
+		// 	} else {
+		// 		this.errorMessage+=xmlxsdNodeValue.value + 'does not fit node type.\n';
+		// 		this.errorDone=false;
+		// 		this.xml=undefined;
+		// 	}
+		// }
 	}
 
 	/* Visitor pattern : visit function
@@ -160,15 +160,15 @@ export class XMLGenerator{
 			});
 			if (this.xml!=undefined){
 				this.xml+='>';
-				if (xmlxsdElt.baseType.holds(xmlxsdElt.value)){
-					if(typeof xmlxsdElt.value !== 'undefined'){
-						this.xml+=xmlxsdElt.value;
-					}
-				} else {
-					this.errorMessage+=xmlxsdElt.value + 'does not fit base type.\n';
-					this.errorDone=false;
-					this.xml=undefined;
-				}
+				// if (xmlxsdElt.baseType.holds(xmlxsdElt.value)){
+				// 	if(typeof xmlxsdElt.value !== 'undefined'){
+				// 		this.xml+=xmlxsdElt.value;
+				// 	}
+				// } else {
+				// 	this.errorMessage+=xmlxsdElt.value + 'does not fit base type.\n';
+				// 	this.errorDone=false;
+				// 	this.xml=undefined;
+				// }
 			}
 		}
 	}

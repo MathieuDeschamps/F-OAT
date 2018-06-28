@@ -82,7 +82,18 @@ export class configAnnotationManager{
         idsDiv.forEach(function(idDiv){
           var JQidDiv = '#' + idDiv;
           $(JQidDiv).css('display', 'none');
+
         })
+        // Timeline lost the focus of the vidCtrl when it is hidden
+        if(typeof vidCtrl.isFocusedTimeLine !== 'undefined'){
+          var idTimeline = vidCtrl.isFocusedTimeLine.div_id;
+          if(idsDiv.indexOf(idTimeline) !== -1){
+            vidCtrl.isFocusedTimeLine.lostFocus();
+            vidCtrl.isFocused = false;
+            vidCtrl.setPlayingInterval(1, that.nbFrames);
+            vidCtrl.setPartialPlaying(false);
+          }
+        }
       }
   }
 
