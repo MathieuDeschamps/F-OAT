@@ -137,9 +137,9 @@ Template.videoPlayer.helpers({
 
 
   file(){
-    //A CHANGER
-    return "YOUR FILE IS UPLOADING";
-    //return Projects.findOne(Router.current().params._id).url;
+    var idProject = Router.current().params._id;
+    var idUpload = "upload_"+idProject;
+    return Session.get(idUpload+"_name");
   }
 })
 
@@ -165,9 +165,10 @@ Template.videoPlayer.events({
       chunkSize: 'dynamic'
     }, false);
 
-    upload.on('start', function () {
+    upload.on('start', function (errors,fileData) {
       var idUpload = "upload_"+idProject;
       Session.set(idUpload,upload.progress);
+      Session.set(idUpload+'_name',fileData.name);
       toastr.success(TAPi18n.__('fileUploading'));
     });
 
@@ -228,6 +229,7 @@ Template.videoPlayer.onDestroyed(function(){
   }
   Player.pause();
   Player.remove();
+  vidCtrl.pause();
   Session.set('videoPlayer', 0);
   Session.set('errorMessageFile','');
 });

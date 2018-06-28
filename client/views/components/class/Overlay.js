@@ -60,7 +60,9 @@ export class Overlay{
       .attr("width", width)
       .attr("height", height)
       .attr("tabindex", 3)
-      .on("mousedown", function() {mousedown(that);});
+      .on("mousedown", function() {mousedown(that);})
+      .on("mousemove", function() { mousemove(that);})
+      .on("mouseup", function() { mouseup(that);});
 
       y1 = d3.scale.linear()
       .domain([0, 1])
@@ -78,12 +80,13 @@ export class Overlay{
       });
       svg.append("path")
       .attr("class", "line")
-      .attr("tabindex", 3)
+      .attr("tabindex", 3);
+
       that = this
+
       d3.select(window)
-      .on("mousemove", function() { mousemove(that);})
-      .on("mouseup", function() { mouseup(that);})
       .on("keydown", function() { keydown(that);});
+
 
       svg.node().focus();
       this.firstDraw = false;
@@ -97,6 +100,8 @@ export class Overlay{
       .attr("tabindex", 3)
       .call(function() {redraw(that);});
 
+      d3.select(window)
+      .on("keydown", function() { keydown(that);});
 
     }
 
@@ -106,7 +111,17 @@ export class Overlay{
       var width = $('#' + overlay.divId).find('svg').width();
       var height = $('#' + overlay.divId).find('svg').height();
 
-      if(overlay.points.length>0){
+      var pointSelected = false;
+      if(overlay.selected!=null){
+        overlay.points.forEach(function(point){
+          if(point.x.toFixed(4) == overlay.selected.x.toFixed(4) && point.y.toFixed(4) == overlay.selected.y.toFixed(4)){
+            overlay.selected = point;
+            pointSelected = true;
+          }
+        });
+      }
+
+      if(overlay.points.length>0 && !pointSelected){
         overlay.selected = overlay.points[overlay.points.length-1];
       }
       y1 = d3.scale.linear()
@@ -155,14 +170,18 @@ export class Overlay{
                }
              overlay.visualizer.notifyAll()
            }
+           overlay.dragged = null;
        })
       .transition()
       .duration(750)
       .ease("elastic")
       .attr("r", 6.5);
+
+
       circle.classed("selected", function(d) { return d === overlay.selected; })
       .attr("cx", function(d) { return x1(d.x); })
       .attr("cy", function(d) { return y1(d.y); });
+
 
       circle.exit().remove();
 
@@ -183,7 +202,6 @@ export class Overlay{
       coordinates.x = x;
       coordinates.y = y;
       overlay.points.push(overlay.selected = overlay.dragged = coordinates);
-
       overlay.draw_circles();
     }
 

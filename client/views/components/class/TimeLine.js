@@ -310,15 +310,16 @@ export class TimeLine {
       var x1 = d3.scale.linear()
         .domain([0, this.nb_frames])
         .range([0, gen_width]);
-
-      // console.log('frame: ', currentFrame, ' time: ', vidCtrl.getCurrentTime())
-      // console.log('leftSpace: ', TimeLine.TRBL()[3] , ' scrollLeft: ', (currentFrame*scale) + TimeLine.TRBL()[3] )
+      var scrollLeftValue = (currentFrame * scale ) - (30 * this.frame_rate * scale);
+      // console.log('frame: ', currentFrame, ' this.nb_frames: ', this.nb_frames)
+      // console.log('leftSpace: ', TimeLine.TRBL()[3] , ' scrollLeft: ', scrollLeftValue )
       // console.log('scale: ', scale)
 
       $('#'+this.id_chart).find('#read_line').attr('x1', x1(currentFrame))
                                             .attr('x2', x1(currentFrame))
       $('#'+this.id_chart).animate({
-        scrollLeft: (currentFrame * scale) + TimeLine.TRBL()[3]}, 1
+        scrollLeft: scrollLeftValue
+        }, 1
       )
     }
 }

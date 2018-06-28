@@ -221,8 +221,10 @@ Meteor.methods({
       }
     });
     var idExtractor = "omdb_api_id";
-    old_xml('omdbapi').remove();
-    var new_data = '\n\t\t<omdbapi>\n\t\t</omdbapi>\n';
+    old_xml(idExtractor).remove();
+    var new_data = '\n\t\t<'+idExtractor+' name="omdbapi" version="1.0">\n\t\t</'+idExtractor+'>\n';
+    old_xml(new_data).appendTo('extractors');
+    new_data = '\n\t\t<omdbapi>\n\t\t</omdbapi>\n';
     old_xml(new_data).appendTo(idExtractor);
     old_xml(newXml).appendTo('omdbapi');
     var dir = "/tmp/"+idProject;

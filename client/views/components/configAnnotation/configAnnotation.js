@@ -7,8 +7,26 @@ import {Extractors} from '/lib/collections/extractors.js';
 
 import './configAnnotation.html';
 
+var newExtractionListener;
+var manager;
+
 Template.configAnnotation.onRendered(()=>{
   //Wait for project to be rendered before doing that
+  if(!eventNewExtraction){
+    eventNewExtraction = new EventDDP('newExtraction', Meteor.connection);
+  }
+  eventNewExtraction.setClient({
+    appId: Router.current().params._id,
+    _id: Meteor.userId()
+  });
+
+  if(!newExtractionListener){
+    newExtractionListener = true;
+    eventNewExtraction.addListener('newExtraction', function(idExtractor,version) {
+      addAnnotation(idExtractor,version);
+    });
+  }
+
   this.configAnnotationManagerTracker = Tracker.autorun(function doWhenProjectRendered(computation) {
     if(Session.get('projectReady') === 1 && Session.get('videoPlayer') === 1) {
       // console.log('config XMLArray',xmlArray)
@@ -19,12 +37,14 @@ Template.configAnnotation.onRendered(()=>{
       if(typeof project !== 'undefined'){
         nbFrames = parseInt(project.duration * project.frameRate)
       }
+      console.log("nbframes",nbFrames);
 
-      new configAnnotationManager(xsdArray, xmlArray, nbFrames, "configAnnotation", ["configAnnotationForm","timeLines","overlay"],"saveButtonAnnotations")
+      manager = new configAnnotationManager(xsdArray, xmlArray, nbFrames, "configAnnotation", ["configAnnotationForm","timeLines","overlay"],"saveButtonAnnotations")
       computation.stop();
     }
   });
-})
+
+});
 
 Template.configAnnotation.events({
 });
@@ -32,10 +52,19 @@ Template.configAnnotation.events({
 Template.configAnnotation.helpers({
 });
 
+function addAnnotation(idExtractor,version){
+    manager.addAnnotation(idExtractor,version);
+}
+
+
 Template.configAnnotation.onDestroyed(()=>{
   // stop the tracker when the template is destroing
   if(typeof this.configAnnotationManagerTracker !== 'undefined' &&
     !this.configAnnotationManagerTracker.stopped){
   this.configAnnotationManagerTracker.stop();
   }
-})
+  eventNewExtraction.setClient({
+    appId: -1,
+    _id: -1
+  });
+});

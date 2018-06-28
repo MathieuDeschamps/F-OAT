@@ -45,7 +45,7 @@ Meteor.methods({
         var url = "http://"+extractor.ip+"/param/"+_id;
         const result = HTTP.call("PUT",url,{data:{param: params , idExtractor: extractor._id}});
         if(result.statusCode == 200){
-            return true;
+            return result.content;
         }else{
             return false;
         }

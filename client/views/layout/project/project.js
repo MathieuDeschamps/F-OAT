@@ -40,8 +40,9 @@ projectExists = function(){
 
 projectReady = function(){
   var idProject = Router.current().params._id;
-  if(Projects.findOne(idProject).isFile){
-    if(Projects.findOne(idProject).fileId!=null){
+  var project = Projects.findOne(idProject)
+  if(project.isFile){
+    if(project.fileId!=null){
         Session.set('projectReady',1);
     }else{
       var idUpload = "upload_"+Router.current().params._id;
@@ -49,6 +50,7 @@ projectReady = function(){
       if(upload!=null){
         this.projectReadyTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
           // console.log('updload', Session)
+            var idUpload = "upload_"+Router.current().params._id;
           if(Session.get(idUpload)==100){
             // console.log('projectReady 1')
             Session.set('projectReady', 1)
@@ -59,14 +61,15 @@ projectReady = function(){
     }
   }
   else{
-    // console.log('projectReady 2')
+    console.log('projectReady 2')
     Session.set('projectReady', 1)
+    console.log('Session', Session)
   }
 }
 
 Template.project.onCreated(()=>{
   Session.set('errorMessageFile','');
-  Session.set('projectReady',0);
+  Session.set('projectReady', 0);
   // global variables id and username to be accessable in onDestroyed
   id = Router.current().params._id;
   username = Meteor.user().username;
@@ -208,8 +211,17 @@ Template.project.onRendered(()=>{
             }
             console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
             vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
-            computation.stop();
+
+            if(!vidctrllistener){
+              vidctrllistener = true;
+              //Event emitted in videoPlayer.js
+              eventDDPVideo.addListener('videoCtrl',()=>{
+                Session.set('projectReady',1);
+
+              });
             }
+            computation.stop();
+          }
         });
       }
     });

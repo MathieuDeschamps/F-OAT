@@ -1142,7 +1142,7 @@ export class XMLXSDForm{
 	/* Apply the event of this.eventHandler and	initialize some element
 	*/
 	applyEventHandler(){
-		console.log('this.eventHandler', this.eventHandler);
+		// console.log('this.eventHandler', this.eventHandler);
 		this.eventHandler.forEach(function(handler){
 			var jqElt
 			if(typeof handler.id !== 'undefined' &&
