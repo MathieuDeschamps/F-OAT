@@ -144,6 +144,32 @@ Template.team.events({
           toastr.success(TAPi18n.__('titleChanged'));
           $('#filmTitle').val('');
           $('#modifyMovie').attr('disabled',true);
+
+          //Call eventLiveUpdate to update the content for all users on page
+          if(!eventLiveUpdate){
+            eventLiveUpdate = new EventDDP('liveUpdate',Meteor.connection);
+          }
+
+          eventLiveUpdate.setClient({
+            appId: Router.current().params._id,
+            _id: Meteor.userId()
+          });
+
+          var extractor = result.id;
+          var version = result.version.replace('.','-');
+          var name = result.name;
+          var xml = '<'+extractor+' name="'+name+'" version="'+version+'">';
+          xml += '<'+name+'>';
+          xml += xmltostring;
+          xml += '</'+name+">";
+          xml += "</"+extractor+">";
+          var idVisualizer = extractor+"_"+version;
+          eventLiveUpdate.emit("liveUpdate",idVisualizer,xml);
+
+          eventLiveUpdate.setClient({
+            appId: -1,
+            _id: -1
+          });
         }
       });
     });
@@ -175,4 +201,11 @@ Template.team.helpers({
     }
   }
 
+});
+
+Template.team.onDestroyed(function(){
+  eventLiveUpdate.setClient({
+    appId: -1,
+    _id: -1
+  });
 });

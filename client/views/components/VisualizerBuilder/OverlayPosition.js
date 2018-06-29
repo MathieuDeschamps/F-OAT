@@ -17,6 +17,10 @@ export class OverlayPositon{
     this.currentTimeId = NaN;
   }
 
+  setXmlXsdObj(xmlxsdObj){
+    this.xmlxsdObj = xmlxsdObj;
+  }
+
   getOverlayData(){
     this.initialize();
     this.xmlxsdObj.accept(this);

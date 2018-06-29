@@ -179,8 +179,6 @@ export class configAnnotationManager{
 
               var xsdObj = new XSDObject(xsd);
               var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
-              console.log("this",this);
-              console.log("nbframes",this.nbFrames);
               var visualizerFactory = new VisualizerFactory(xmlxsdObj, this.nbFrames, this.visualizerDivs )
               var extractor = xmlExtractor.clone().empty()
               var visualizer = visualizerFactory.getVisualizer(extractor)
@@ -219,6 +217,37 @@ export class configAnnotationManager{
       }
     });
   }
+
+  /* Function that will update the visualizer content
+    Triggered by eventDDP liveUpdate
+    @idVisualizer : visualizer to update
+    @xml : new xml to put in visualizer
+  */
+  update(idVisualizer,xml){
+    var that = this;
+    this.visualizers.forEach(function(elem, i){
+      if(elem.idExtractor!=null){
+        if(elem.idExtractor === idVisualizer){
+          var xsd = that.xsds[i];
+          var parsexml = $.parseXML(xml);
+          that.xmls[i] = $(parsexml).children().first();
+          var xsdObj = new XSDObject(xsd);
+          var xmlxsdObj = new XMLXSDObj(that.xmls[i], xsdObj);
+          elem.setXmlXsdObj(xmlxsdObj);
+        }
+      }
+    });
+  }
+
+
+  /* Function that will reinitialize event ddp client of all visualizers
+  */
+  destroyVisualizersEventDDP(){
+    this.visualizers.forEach(function(elem, i){
+      elem.destroyEventDDP();
+    });
+  }
+
 
 
   /*function which checked if the current user has the right write on the proejct

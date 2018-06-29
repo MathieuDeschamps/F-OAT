@@ -23,6 +23,10 @@ export class TimeLineShot{
     return this.timeLineData;
   }
 
+  setXmlXsdObj(xmlxsdObj){
+    this.xmlxsdObj = xmlxsdObj;
+  }
+
   /* Visitor pattern : visit function
   @xmlxsdObj : XMLXSDObj object
   */
@@ -133,7 +137,7 @@ export class TimeLineShot{
       // code for the attribut timeId
       if(typeof obj.attrs.timeId !== 'undefined' &&
           (!isNaN(parseInt(obj.attrs.timeId.value)))){
-        
+
         // retrieve data for the timeLine
         this.timeLineData.forEach(function(element){
           if(!added && that.samePlace(element.intervals[0].stack)){

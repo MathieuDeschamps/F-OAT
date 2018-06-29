@@ -221,12 +221,14 @@ Meteor.methods({
       }
     });
     var idExtractor = "omdb_api_id";
+    var name = "omdbapi";
+    var version = "1.0";
     old_xml(idExtractor).remove();
-    var new_data = '\n\t\t<'+idExtractor+' name="omdbapi" version="1.0">\n\t\t</'+idExtractor+'>\n';
+    var new_data = '\n\t\t<'+idExtractor+' name="'+name+'" version="'+version+'">\n\t\t</'+idExtractor+'>\n';
     old_xml(new_data).appendTo('extractors');
-    new_data = '\n\t\t<omdbapi>\n\t\t</omdbapi>\n';
+    new_data = '\n\t\t<'+name+'>\n\t\t</'+name+'>\n';
     old_xml(new_data).appendTo(idExtractor);
-    old_xml(newXml).appendTo('omdbapi');
+    old_xml(newXml).appendTo(name);
     var dir = "/tmp/"+idProject;
 
     fs.writeFile(dir+"/annotation.xml",old_xml.html(),function (err) {
@@ -235,8 +237,14 @@ Meteor.methods({
       }
       else{
         console.log("File saved successfully! id: "+idProject);
+
       }
     });
+    var extractor = {};
+    extractor.id = idExtractor;
+    extractor.name = name;
+    extractor.version = version;
+    return extractor;
   }
 });
 

@@ -43,7 +43,7 @@ export class Writer{
       // add the node and the attributes
       result += tab +"<" + nodeName
       $(xmlDocument.attributes).each(function(i,attr){
-          result += " " + String(attr.name) + "=\"" + String(attr.value) +"\""
+          result += " " + String(attr.name) + "=\"" + _.escape(String(attr.value)) +"\""
       })
       if($(xmlDocument).text() != "" || $(xmlDocument).children().length > 0){
         result += ">"

@@ -17,6 +17,10 @@ export class TimeLineCharacter{
     this.currentCharacter = undefined;
   }
 
+  setXmlXsdObj(xmlxsdObj){
+    this.xmlxsdObj = xmlxsdObj;
+  }
+
   /*
   @returns timeLineData
   */
