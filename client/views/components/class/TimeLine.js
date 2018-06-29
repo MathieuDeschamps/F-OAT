@@ -71,7 +71,7 @@ export class TimeLine {
         return (this.frame_rate / 200);
       }
       else if(this.nb_frames<100000){
-        retrun (this.frame_rate / 500);
+        return (this.frame_rate / 500);
       }
       else{
         return (this.frame_rate / 1000);
