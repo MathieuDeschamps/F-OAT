@@ -1,5 +1,6 @@
 {
   "begin" : "Select begin",
+  "currentFrame" : "Current frame",
   "end" : "Select end",
   "partialPlay" : "Part. Play"
 }

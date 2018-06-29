@@ -142,7 +142,7 @@ main {
 #myBar {
    width: 1%;
    height: 30px;
-   background-color: #4CAF50;
+   background-color: #0d47a1 ;
    text-align: center; /* To center it horizontally (if you want) */
    line-height: 30px; /* To center it vertically */
    color: white;
@@ -150,5 +150,5 @@ main {
 
 #myProgress {
     width: 80%;
-    background-color: grey;
+    background-color: #90a4ae;
 }

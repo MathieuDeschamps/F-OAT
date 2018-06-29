@@ -45,7 +45,7 @@ export class DefaultVisualizer{
   */
   notifyAll(){
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     });
     if(!eventLiveUpdate){
       eventLiveUpdate = new EventDDP('liveUpdate',Meteor.connection);
@@ -71,9 +71,9 @@ export class DefaultVisualizer{
 
   /* Obsever pattern : update function
   */
-  // update(){
-  //   this.notifyAll()
-  // }
+  updateVisualizer(){
+    this.notifyAll()
+  }
 
   /* Visualize the XMLXSDObject
   */

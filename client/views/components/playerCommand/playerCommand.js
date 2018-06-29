@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+// import { PlayerCommand } from './PlayerCommand.js'
 
 import './playerCommand.html'
 import '../videoPlayer/videoPlayer.js';
@@ -6,7 +7,7 @@ import '../videoPlayer/videoPlayer.js';
 var vidPlayerCommandListener;
 
 Template.project.onRendered(function(){
-	var idsCommands = [7];
+	var idsCommands = new Array(9);
 	idsCommands[0] = "playButton";
 	idsCommands[1] = "pauseButton";
 	idsCommands[2] = "seekBar";
@@ -16,10 +17,13 @@ Template.project.onRendered(function(){
 	idsCommands[6] = "beginSelect";
 	idsCommands[7] = "endSelect";
 	idsCommands[8] = "partialButton";
-	var playerCommand = new PlayerCommand(idsCommands);
-	vidCtrl.setPlayerCommand(playerCommand);
-	Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-		if(Session.get('videoPlayer') === 1) {
+	var playerCommand;
+	this.playerCommandTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+		// console.log('playerCommand waiting')
+		if(Session.get('videoPlayer') === 1 && Session.get('projectReady') === 1 ) {
+			playerCommand = new PlayerCommand(idsCommands);
+			// console.log('playerCommand created')
+			vidCtrl.setPlayerCommand(playerCommand);
 			if(!vidPlayerCommandListener){
 				vidPlayerCommandListener = true;
 				//Event emitted in videoPlayer.js
@@ -28,10 +32,17 @@ Template.project.onRendered(function(){
 						playerCommand.render();
 					},50);
 				});
-				computation.stop();
 			}
+			playerCommand.render();
+			computation.stop();
 		}
 	});
-
-	playerCommand.render();
 });
+
+Template.project.onDestroyed(function(){
+	// stop the tracker when the template is destroing
+	if(typeof this.playerCommandTracker !== 'undefined' &&
+		!this.playerCommandTracker.stopped){
+			this.playerCommandTracker.stop();
+	}
+})

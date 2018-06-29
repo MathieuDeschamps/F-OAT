@@ -12,7 +12,6 @@ export class PlayerCommand{
       this.idBeginSelect = idsCommands[6];
       this.idEndSelect = idsCommands[7];
       this.idPartialButton = idsCommands[8];
-      console.log('playerCommand', this)
     }
   }
 
@@ -25,11 +24,16 @@ export class PlayerCommand{
     $( "#"+this.idPauseButton ).click(function() {
       vidCtrl.pause();
     } );
+    $('#'+this.idSeekBar).prop('max', vidCtrl.endVid);
     $( "#"+this.idSeekBar ).mousedown(function() {seekBarMng.mousePressed();} );
     $( "#"+this.idSeekBar ).mouseup(function() {seekBarMng.mouseReleased();} );
     $( "#"+this.idSeekBar ).change(function() {
-      vidCtrl.setCurrentFrame($( "#"+that.idSeekBar ).val());
+      vidCtrl.setCurrentFrame(parseInt($( "#"+that.idSeekBar ).val()));
     });
+    $( "#"+this.idCurrentFrame ).change(function(){
+      // console.log('change currentFrame', $( "#"+that.idCurrentFrame ).val())
+      vidCtrl.setCurrentFrame(parseInt($( "#"+that.idCurrentFrame ).val()));
+    })
     $( "#"+this.idPrevAnnotedButton ).click(function() {vidCtrl.prevAnnotedFrame();} );
     $( "#"+this.idNextAnnotedButton ).click(function() {vidCtrl.nextAnnotedFrame();} );
     $( "#"+this.idBeginSelect).change(function(){
@@ -45,11 +49,13 @@ export class PlayerCommand{
   }
 
   play(){
+    // console.log('play')
     $( "#"+this.idPlayButton ).css('display', 'none');
     $( "#"+this.idPauseButton ).css('display', 'block');
   }
 
   pause(){
+    // console.log('pause')
     $( "#"+this.idPauseButton ).css('display', 'none');
     $( "#"+this.idPlayButton ).css('display', 'block');
 

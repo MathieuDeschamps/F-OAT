@@ -45,7 +45,7 @@ export class OmdbApiVisualizer{
   */
   notifyAll(){
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     });
     if(!eventLiveUpdate){
       eventLiveUpdate = new EventDDP('liveUpdate',Meteor.connection);
@@ -75,7 +75,6 @@ export class OmdbApiVisualizer{
     var omdbForm = new OmdbApiForm(this.xmlxsdObj,this.idExtractor,this.name,this.divIdForm,this);
     this.attach(omdbForm);
     omdbForm.generateForm();
-    // console.log('observers', this.observers)
   }
 
   /*

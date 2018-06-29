@@ -97,7 +97,7 @@ export class OmdbApiForm{
 
   /* Observer pattern : update function
 	*/
-	update(){
+	updateVisualizer(){
 		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
 		this.generateForm();
 	}

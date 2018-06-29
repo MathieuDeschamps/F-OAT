@@ -52,7 +52,7 @@ export class CharacterExtractVisualizer{
   */
   notifyAll(){
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     });
     if(!eventLiveUpdate){
       eventLiveUpdate = new EventDDP('liveUpdate',Meteor.connection);
@@ -78,7 +78,7 @@ export class CharacterExtractVisualizer{
 
   /* Obsever pattern : update function
   */
-  update(){
+  updateVisualizer(){
     this.getDataTimeLine();
     this.notifyAll()
   }

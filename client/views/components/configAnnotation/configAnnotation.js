@@ -13,8 +13,6 @@ var liveUpdateListener;
 var manager;
 
 Template.configAnnotation.onRendered(()=>{
-  // var visualizerFactories = [];
-  // var visualizers = [];
   //Wait for project to be rendered before doing that
   if(!eventNewExtraction){
     eventNewExtraction = new EventDDP('newExtraction', Meteor.connection);
@@ -48,7 +46,7 @@ Template.configAnnotation.onRendered(()=>{
     });
   }
 
-  Tracker.autorun(function doWhenProjectRendered(computation) {
+  this.configAnnotationManagerTracker = Tracker.autorun(function doWhenProjectRendered(computation) {
     if(Session.get('projectReady') === 1 && Session.get('videoPlayer') === 1) {
       // console.log('config XMLArray',xmlArray)
       // console.log('config XSDArray', xsdArray)
@@ -61,7 +59,6 @@ Template.configAnnotation.onRendered(()=>{
       console.log("nbframes",nbFrames);
 
       manager = new configAnnotationManager(xsdArray, xmlArray, nbFrames, "configAnnotation", ["configAnnotationForm","timeLines","overlay"],"saveButtonAnnotations")
-      Session.set('projectReady', 0)
       computation.stop();
     }
   });
@@ -84,6 +81,11 @@ function updateManager(idVisualizer,xml){
 
 
 Template.configAnnotation.onDestroyed(()=>{
+  // stop the tracker when the template is destroing
+  if(typeof this.configAnnotationManagerTracker !== 'undefined' &&
+    !this.configAnnotationManagerTracker.stopped){
+  this.configAnnotationManagerTracker.stop();
+  }
   eventNewExtraction.setClient({
     appId: -1,
     _id: -1

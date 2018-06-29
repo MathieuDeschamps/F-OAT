@@ -13,10 +13,9 @@ export class SeekBar {
 		this.follow = 1;
 	}
 
-	update(){
+	updateVideoControler(){
 		var currentFrame = vidCtrl.getCurrentFrame();
-		console.log("seekBar update", currentFrame);
-		$( "#"+this.idCurrentFrame ).text(currentFrame);
+		$( "#"+this.idCurrentFrame ).val(currentFrame);
 		if (this.follow == 1){
 			$( "#seekBar" ).val(currentFrame);
 		}

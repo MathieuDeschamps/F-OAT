@@ -15,6 +15,14 @@ export class Overlay{
 
 
 
+  updateVisualizer(){
+    this.update()
+  }
+
+  updateVideoControler(){
+    this.update();
+  }
+
   update(){
     var currentFrame = vidCtrl.getCurrentFrame();
     this.data = this.visualizer.getOverlayData();

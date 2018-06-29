@@ -81,7 +81,7 @@ Template.videoPlayer.onRendered(function () {
     }
   });
   vid=$("#videoDisplayId").get(0);
-  vidCtrl=new VideoControler(vid, project.frameRate);
+  vidCtrl=new VideoControler(vid, project.frameRate, project.duration);
   seekBarMng=new SeekBar(vidCtrl, "currentFrame");
   vidCtrl.attach(seekBarMng,1);
   Session.set('videoPlayer', 1);
@@ -182,6 +182,8 @@ Template.videoPlayer.events({
         toastr.warning('Error during upload: ' + error);
       } else {
         var idUpload = "upload_"+idProject;
+        // Session.set(idUpload, 100);
+        // console.log('Session end upload', Session)
         Meteor.call('modifyFileId',idProject,fileObj._id,function(err1,res1){
           if(err1){
             toastr.warning(err1.reason);
@@ -197,7 +199,7 @@ Template.videoPlayer.events({
           _id: Meteor.userId()
         });
 
-        Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
+        this.videoPlayerTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
           if(Session.get('videoPlayer') === 1 || Session.get('isOnDashboard')===1) {
             //Event listened in videoPlayer.js
             eventDDPVideo.emit('videoPlayer');
@@ -212,12 +214,19 @@ Template.videoPlayer.events({
 });
 
 Template.videoPlayer.onDestroyed(function(){
+  vidCtrl.pause();
+  vidCtrl.detachAll();
   $('.videoContainer').remove();
 
   eventDDPVideo.setClient({
     appId: -1,
     _id: -1
   });
+  // stop the tracker when the template is destroing
+  if(typeof this.videoPlayerTracker !== 'undefined' &&
+    !this.videoPlayerTracker.stopped){
+      this.videoPlayerTracker.stop();
+  }
   Player.pause();
   Player.remove();
   vidCtrl.pause();

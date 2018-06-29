@@ -60,7 +60,7 @@ export class configExtractorManager{
 	manageParameters(result,extractor,i,idDiv,idDivForm,idDivButton,JQlabelConfig){
 		// console.log('parameters.xsd : ', result);
 		var xsd=$.parseXML(result);
-		console.log('XSD parsé : ',xsd);
+		// console.log('XSD parsé : ',xsd);
 
 		var xsdObj=new XSDObject(xsd);
 		// console.log('xsdObj',xsdObj);
@@ -90,7 +90,7 @@ export class configExtractorManager{
 		var JQidButton='#'+idButton;
 		$(JQidButton).click(function(){
 			var gen=new XMLGenerator(xmlxsdObj);
-			console.log(gen.generateXML());
+			// console.log(gen.generateXML());
 			var paramsXML=gen.generateXML();
 			if(typeof paramsXML === 'undefined'){
 				toastr.warning(TAPi18n.__('errorSendParms')+ gen.getErrorMessage())
