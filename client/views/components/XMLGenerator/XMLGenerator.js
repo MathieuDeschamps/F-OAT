@@ -1,6 +1,5 @@
 export class XMLGenerator{
 	constructor(xmlxsdObj){
-		console.log('xmlxsdObj', xmlxsdObj)
 		this.xmlxsdObj=xmlxsdObj;
 
 		this.xml=undefined;
@@ -17,7 +16,6 @@ export class XMLGenerator{
 		this.xml="";
 		this.xmlxsdObj.content.accept(this);
 		if (this.xml==undefined){
-			this.errorMessage
 			return undefined;
 		}
 		return this.xml;
@@ -106,7 +104,7 @@ export class XMLGenerator{
 		// console.log('XMLGenerator Attr :',xmlxsdAttr.name,xmlxsdAttr.use,xmlxsdAttr.value);
 		if (typeof this.xml !== 'undefined'){
 			if (typeof xmlxsdAttr.value !== 'undefined' && (xmlxsdAttr.type.holds(xmlxsdAttr.value)) && xmlxsdAttr.use!="prohibited"){
-				this.xml+=' '+xmlxsdAttr.name+'="'+xmlxsdAttr.value+'"';
+				this.xml+=' '+xmlxsdAttr.name+'="'+_.escape(xmlxsdAttr.value)+'"';
 			}else {
 				// console.log('XMLGenerator Attr 1');
 				if (typeof xmlxsdAttr.value !== 'undefined'){

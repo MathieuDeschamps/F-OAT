@@ -158,8 +158,8 @@ Template.project.onRendered(()=>{
         var extractors = Parser.getListExtractors(xmlDoc)
 
         // global table which will contains the form objects
-        xsdArray = new Array(extractors.lenght)
-        xmlArray = new Array(extractors.lenght)
+        xsdArray = new Array(extractors.length)
+        xmlArray = new Array(extractors.length)
         // console.log('extractors', extractors)
 
         if(extractors.length === 0){

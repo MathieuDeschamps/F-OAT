@@ -7,7 +7,9 @@ import {Extractors} from '/lib/collections/extractors.js';
 
 import './configAnnotation.html';
 
+eventLiveUpdate = null;
 var newExtractionListener;
+var liveUpdateListener;
 var manager;
 
 Template.configAnnotation.onRendered(()=>{
@@ -15,6 +17,7 @@ Template.configAnnotation.onRendered(()=>{
   if(!eventNewExtraction){
     eventNewExtraction = new EventDDP('newExtraction', Meteor.connection);
   }
+
   eventNewExtraction.setClient({
     appId: Router.current().params._id,
     _id: Meteor.userId()
@@ -24,6 +27,23 @@ Template.configAnnotation.onRendered(()=>{
     newExtractionListener = true;
     eventNewExtraction.addListener('newExtraction', function(idExtractor,version) {
       addAnnotation(idExtractor,version);
+    });
+  }
+
+  if(!eventLiveUpdate){
+    eventLiveUpdate = new EventDDP('liveUpdate',Meteor.connection);
+  }
+
+  eventLiveUpdate.setClient({
+    appId: Router.current().params._id,
+    _id: Meteor.userId()
+  });
+
+
+  if(!liveUpdateListener){
+    liveUpdateListener = true;
+    eventLiveUpdate.addListener('liveUpdate',function(idVisualizer,xml){
+      updateManager(idVisualizer,xml);
     });
   }
 
@@ -53,7 +73,11 @@ Template.configAnnotation.helpers({
 });
 
 function addAnnotation(idExtractor,version){
-    manager.addAnnotation(idExtractor,version);
+  manager.addAnnotation(idExtractor,version);
+}
+
+function updateManager(idVisualizer,xml){
+  manager.update(idVisualizer,xml);
 }
 
 
@@ -64,6 +88,11 @@ Template.configAnnotation.onDestroyed(()=>{
   this.configAnnotationManagerTracker.stop();
   }
   eventNewExtraction.setClient({
+    appId: -1,
+    _id: -1
+  });
+  manager.destroyVisualizersEventDDP();
+  eventLiveUpdate.setClient({
     appId: -1,
     _id: -1
   });

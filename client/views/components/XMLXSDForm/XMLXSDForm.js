@@ -55,7 +55,6 @@ export class XMLXSDForm{
 	*/
 	visitXMLXSDObject(xmlxsdObj){
 		// console.log('visitXMLXSDObject',xmlxsdObj);
-		console.log('xmlxsdObj', xmlxsdObj);
 		var jqDivId='#'+this.divId;
 
 		$(jqDivId).html(this.html);
@@ -67,7 +66,8 @@ export class XMLXSDForm{
 		// $(jqIdconfig).click(function(){
 		that.stack.push({
 			tag:that.name,
-			obj:xmlxsdObj.content
+			obj:xmlxsdObj.content,
+			i:0
 		});
 		xmlxsdObj.content.accept(that);
 
@@ -92,15 +92,25 @@ export class XMLXSDForm{
 		$div.append($divEditor)
 
 		var headStack=this.stack[this.stack.length-1];
+		var idHeader;
 		if (typeof headStack!== 'undefined'){
-			$divEditor.append(this.generateHeaderContent('','keyboard_arrow_down',headStack.tag,false,undefined));
+			idHeader = this.id+'_header_elt'+headStack.tag+'config';
+			$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',headStack.tag,false,undefined));
 		}else{
-			$divEditor.append(this.generateHeaderContent('','keyboard_arrow_down',this.name,false, undefined));
+			idHeader = this.id+'_header'+this.name+'config';
+			$divEditor.append(this.generateHeaderContent(ideHeader,'keyboard_arrow_down',this.name,false, undefined));
 		}
+		var that=this;
+		this.eventHandler.push({
+			function:function(){
+				that.eventEditorHeader(this);
+			},
+			id:idHeader,
+			eventName:'click'
+		});
 		var $divBody =$('<div class="editor-body row"/>')
 		$divEditor.append($divBody)
 
-		var that=this;
 		xmlxsdElt.eltsList.forEach(function(elt,i){
 			var idName=that.id+'_elt'+xmlxsdElt.name+i+'config';
 			var idClear = that.id+'_'+idName+'_clear';
@@ -120,7 +130,8 @@ export class XMLXSDForm{
 				function:function(){
 					that.stack.push({
 						tag:xmlxsdElt.name,
-						obj:xmlxsdElt.eltsList[0]
+						obj:xmlxsdElt.eltsList[0],
+						i:0
 					});
 					that.displayedElement = elt
 					elt.accept(that);
@@ -197,6 +208,7 @@ export class XMLXSDForm{
 	*/
 	visitXMLXSDSequence(xmlxsdSeq){
 		this.eventHandler=[];
+		var that=this;
 		// console.log('visitXMLXSDSeq',xmlxsdSeq);
 
 		var $div = $('<div id="extractor' + this.id + 'config"/>')
@@ -207,19 +219,23 @@ export class XMLXSDForm{
 
 		var $divEditor = $('<div id="seq'+xmlxsdSeq.name+'config" class="editor"/>');
 		$div.append($divEditor)
-		// var $li = $('<li>')
-		// $ul.append($li)
-		$divEditor.append(this.generateHeaderContent("seq"+xmlxsdSeq.name+"configTitle",'keyboard_arrow_down',
+
+		var idHeader = this.id+"_header_seq"+xmlxsdSeq.name+"configTitle";
+		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag, false, undefined));
+
+		this.eventHandler.push({
+				function:function(){
+					that.eventEditorHeader(this);
+				},
+				id:idHeader,
+				eventName:'click'
+			});
+
 		var $divBody = $('<div id="seq'+xmlxsdSeq.name+'configContent" class="editor-body row"/>');
 		$divEditor.append($divBody)
 
 		$divBody.append(this.generateAttrsForm(xmlxsdSeq));
-
-		var that=this;
-
-		// $ul = $('<ul id="ulxmlxsdSeqconfig" class="collaspsible"/>');
-		// $divBody.append($ul)
 
 		xmlxsdSeq.seqList.forEach(function(seq,k){
 			seq.forEach(function(xmlxsdElt,j){
@@ -238,11 +254,13 @@ export class XMLXSDForm{
 						 	xmlxsdElt.name,false, undefined));
 					}
 
+
 					that.eventHandler.push({
 						function:function(){
 							that.stack.push({
 								tag:xmlxsdElt.name,
-								obj:xmlxsdElt.eltsList[i]
+								obj:xmlxsdElt.eltsList[i],
+								i:i
 							});
 							that.displayedElement = elt
 							elt.accept(that);
@@ -340,6 +358,7 @@ export class XMLXSDForm{
 	visitXMLXSDExtensionType(xmlxsdExt){
 		// console.log('visit XMLXSDExt',xmlxsdExt);
 		this.eventHandler=[];
+		var that = this;
 
 		var $div = $('<div id="extractor' + this.id + 'config" />');
 		this.html = $div;
@@ -349,8 +368,18 @@ export class XMLXSDForm{
 
 		var $divEditor = $('<div id="ext'+xmlxsdExt.name+'config" class="editor"/>');
 		$div.append($divEditor);
-		$divEditor.append(this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle','keyboard_arrow_down',
+		var idHeader = this.id+'_header_ext'+xmlxsdExt.name+'configTitle'
+		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag,false, undefined));
+
+		this.eventHandler.push({
+				function:function(){
+					that.eventEditorHeader(this);
+				},
+				id:idHeader,
+				eventName:'click'
+			});
+
 		var $divBody = $('<div id="ext'+xmlxsdExt.name+'configContent" class="editor-body row"/>');
 		$divEditor.append($divBody);
 
@@ -886,7 +915,6 @@ export class XMLXSDForm{
 	@return the code for the navigation bar
 	*/
 	generateNav(){
-		console.log('stack', this.stack);
 		var nbElementByNav = 3
 		var result = ''
 		result += '<div class="row nav-line" id="nav-'+ this.id + '_config">'
@@ -1143,23 +1171,29 @@ export class XMLXSDForm{
 		$('select').material_select()
 
 		// click on .editor-header
-		$('#'+this.divId).find('.editor-header').click(function(){
-			var divBody = $(this).parent().children('.editor-body')
-			if(divBody.length === 1){
-				if($(this).prop('opened')){
-					$(divBody).css('padding', '0rem')
-					$(divBody).css('max-height', '0px')
-					$(this).children('i').text('keyboard_arrow_right')
-					$(this).prop('opened', false)
-				}else{
-					var maxHeight = $(divBody).prop('scrollHeight');
-					$(divBody).css('padding', '0.5rem')
-					$(divBody).css('max-height', maxHeight+'px');
-					$(this).children('i').text('keyboard_arrow_down')
-					$(this).prop('opened', true)
-				}
+		// $('#'+this.divId).find('.editor-header').click(function(){
+		// })
+	}
+
+	/* Event called on the editor header element
+	*/
+	eventEditorHeader(target){
+		var divBody = $(target).parent().children('.editor-body')
+		if(divBody.length === 1){
+			if($(target).prop('opened')){
+				$(divBody).css('padding', '0rem')
+				$(divBody).css('max-height', '0px')
+				$(target).children('i').text('keyboard_arrow_right')
+				$(target).prop('opened', false)
+			}else{
+				var maxHeight = $(divBody).prop('scrollHeight');
+				$(divBody).css('padding', '0.5rem')
+				$(divBody).css('max-height', maxHeight+'px');
+				$(target).children('i').text('keyboard_arrow_down')
+				$(target).prop('opened', true)
 			}
-		})
+		}
+
 	}
 
 	/* Display the form
@@ -1180,15 +1214,54 @@ export class XMLXSDForm{
 	/* Observer pattern : update function
 	*/
 	updateVisualizer(){
+
 		var saveStack = this.stack.slice(0)
 		this.eventHandler = [];
+		this.stack = [];
+		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
+
+		var that = this;
+
+		//Reconstruct the stack from the last stack with new xmlxsdObj
+		saveStack.forEach(function(elm,i){
+			if(that.stack.length==0){
+				that.displayedElement = that.xmlxsdObj.content;
+				that.stack.push({
+					tag:that.name,
+					obj:that.xmlxsdObj.content,
+					i:0
+				});
+			}
+			else if(that.stack.length==1){
+				that.displayedElement = that.displayedElement.eltsList[0];
+				that.stack.push({
+					tag:elm.tag,
+					obj:that.displayedElement,
+					i:0
+				});
+			}
+			else if(elm.obj.name==="sequence" || elm.obj.name==="extension"){
+				var displayed = $(that.displayedElement.seqList[0]).filter(function(j,seq){
+					return elm.tag===seq.name;
+				});
+
+				if(displayed[0].eltsList[elm.i]!=null){
+					that.displayedElement = displayed[0].eltsList[elm.i];
+
+					that.stack.push({
+						tag:elm.tag,
+						obj:that.displayedElement,
+						i:elm.i
+					});
+				}
+			}
+		});
+
 		this.displayedElement.accept(this)
 		var saveEventHandler = this.eventHandler.slice(0);
 
-		// restore the save stack before accept
-		this.stack = saveStack;
-
 		this.eventHandler = [];
+
 		var parentNav = $('#' + this.divId).children(':first');
 		$(parentNav).children('div[class~="nav-line"]').remove();
 		$(parentNav).prepend(this.generateNav());

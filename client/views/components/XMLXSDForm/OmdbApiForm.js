@@ -12,7 +12,6 @@ export class OmdbApiForm{
 		this.name=name;
 		this.divId=divId;
 		this.visualizer = visualizer
-		this.displayedElement = xmlxsdObj;
 	}
 
 	setVisualizer(visualizer){
@@ -84,7 +83,6 @@ export class OmdbApiForm{
   generateAttrsForm(obj){
     var that=this;
 		var result = '';
-		var visualizer = this.visualizer;
 		$.each(obj.attrs,function(key,attr){
       switch(attr.name){
         case "title" :
@@ -99,8 +97,9 @@ export class OmdbApiForm{
 
   /* Observer pattern : update function
 	*/
-	update(){
-
+	updateVisualizer(){
+		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
+		this.generateForm();
 	}
 
   capitalizeFirstLetter(string) {
