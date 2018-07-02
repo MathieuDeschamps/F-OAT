@@ -74,11 +74,7 @@ export class ShotExtractVisualizer{
     var generator = new XMLGenerator(this.xmlxsdObj);
     xml += generator.generateXML();
     xml += "</"+extractor+">";
-    // if(generator.getErrorMessage()===""){
-      eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
-    // }else{
-    //   console.log("error",generator.getErrorMessage());
-    // }
+    eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
   }
 
   /* Obsever pattern : update function
@@ -136,10 +132,15 @@ export class ShotExtractVisualizer{
     return this.overlayBuilder.getOverlayData();
   }
 
+  getXmlXsdObj(){
+    return this.xmlxsdObj;
+  }
+
   setXmlXsdObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
+    console.log("setXmlXsdObj",xmlxsdObj);
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     });
   }
 

@@ -71,7 +71,10 @@ Meteor.startup(() => {
   eventLiveUpdate.addListener('liveUpdate',(client,idVisualizer,xml)=>{
     eventLiveUpdate.matchEmit('liveUpdate',{
       $and: [
-        {_id: {$ne : client._id}},
+        {$or: [
+          {_id: client._id},
+          {_id: {$ne : client._id}}
+        ]},
         {appId: client.appId}
       ]
     },idVisualizer,xml);

@@ -34,7 +34,8 @@ export class TimeLineShot{
     // console.log('visit obj visualizer',xmlxsdObj);
     this.stack.push({
       tag:this.name,
-      obj:xmlxsdObj.content
+      obj:xmlxsdObj.content,
+      i:0
     });
     this.xmlxsdObj.content.accept(this);
   }
@@ -48,7 +49,8 @@ export class TimeLineShot{
     xmlxsdElt.eltsList.forEach(function(elt,i){
       that.stack.push({
         tag:xmlxsdElt.name,
-        obj:elt
+        obj:elt,
+        i:i
       });
       elt.accept(that);
     })
@@ -67,7 +69,8 @@ export class TimeLineShot{
         xmlxsdElt.eltsList.forEach(function(elt, i){
           that.stack.push({
             tag: xmlxsdElt.name,
-            obj: xmlxsdElt.eltsList[i]
+            obj: xmlxsdElt.eltsList[i],
+            i:i
           })
           elt.accept(that);
           that.stack.pop()

@@ -39,6 +39,7 @@ Template.configAnnotation.onRendered(()=>{
     _id: Meteor.userId()
   });
 
+
   if(!liveUpdateListener){
     liveUpdateListener = true;
     eventLiveUpdate.addListener('liveUpdate',function(idVisualizer,xml){

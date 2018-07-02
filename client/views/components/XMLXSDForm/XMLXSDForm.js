@@ -67,7 +67,8 @@ export class XMLXSDForm{
 		// $(jqIdconfig).click(function(){
 		that.stack.push({
 			tag:that.name,
-			obj:xmlxsdObj.content
+			obj:xmlxsdObj.content,
+			i:0
 		});
 		xmlxsdObj.content.accept(that);
 		var ul = $("#" + this.divId).find('ul')[0]
@@ -127,7 +128,8 @@ export class XMLXSDForm{
 				function:function(){
 					that.stack.push({
 						tag:xmlxsdElt.name,
-						obj:xmlxsdElt.eltsList[0]
+						obj:xmlxsdElt.eltsList[0],
+						i:0
 					});
 					that.displayedElement = elt
 					elt.accept(that);
@@ -252,7 +254,8 @@ export class XMLXSDForm{
 						function:function(){
 							that.stack.push({
 								tag:xmlxsdElt.name,
-								obj:xmlxsdElt.eltsList[i]
+								obj:xmlxsdElt.eltsList[i],
+								i:i
 							});
 							that.displayedElement = elt
 							elt.accept(that);
@@ -1189,15 +1192,55 @@ export class XMLXSDForm{
 	/* Observer pattern : update function
 	*/
 	updateVisualizer(){
+
 			var saveStack = this.stack.slice(0)
 			this.eventHandler = [];
+			this.stack = [];
+			this.xmlxsdObj = this.visualizer.getXmlXsdObj();
+
+			var that = this;
+
+			//Reconstruct the stack from the last stack with new xmlxsdObj
+			saveStack.forEach(function(elm,i){
+
+				if(that.stack.length==0){
+					that.displayedElement = that.xmlxsdObj.content;
+					that.stack.push({
+						tag:that.name,
+						obj:that.xmlxsdObj.content,
+						i:0
+					});
+				}
+				else if(that.stack.length==1){
+					that.displayedElement = that.displayedElement.eltsList[0];
+					that.stack.push({
+						tag:elm.tag,
+						obj:that.displayedElement,
+						i:0
+					});
+				}
+				else if(elm.obj.name==="sequence" || elm.obj.name==="extension"){
+					var displayed = $(that.displayedElement.seqList[0]).filter(function(j,seq){
+						return elm.tag===seq.name;
+					});
+
+					if(displayed[0].eltsList[elm.i]!=null){
+						that.displayedElement = displayed[0].eltsList[elm.i];
+
+						that.stack.push({
+							tag:elm.tag,
+							obj:that.displayedElement,
+							i:elm.i
+						});
+					}
+				}
+			});
+
 			this.displayedElement.accept(this)
 			var saveEventHandler = this.eventHandler.slice(0);
 
-			// restore the save stack before accept
-			this.stack = saveStack;
-
 			this.eventHandler = [];
+
 			var parentNav = $('#' + this.divId).children(':first');
 			$(parentNav).children('div[class~="nav-line"]').remove();
 			$(parentNav).prepend(this.generateNav());
@@ -1213,5 +1256,7 @@ export class XMLXSDForm{
 				$(ul).collapsible('open', 0)
 				$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 			}
+
+
 	}
 }

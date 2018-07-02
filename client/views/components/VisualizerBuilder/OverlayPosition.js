@@ -34,7 +34,8 @@ export class OverlayPositon{
     // console.log('visit obj visualizer',xmlxsdObj);
     this.stack.push({
       tag:this.name,
-      obj:xmlxsdObj.content
+      obj:xmlxsdObj.content,
+      i:0
     });
     this.xmlxsdObj.content.accept(this);
   }
@@ -47,6 +48,11 @@ export class OverlayPositon{
     var that = this;
     var oldCurrentTimeId = this.currentTimeId;
     xmlxsdElt.eltsList.forEach(function(elt,i){
+      that.stack.push({
+        tag:xmlxsdElt.name,
+        obj:elt,
+        i:i
+      });
       elt.accept(that);
     })
     this.currentTimeId = oldCurrentTimeId;
@@ -65,7 +71,8 @@ export class OverlayPositon{
         xmlxsdElt.eltsList.forEach(function(elt, i){
           that.stack.push({
             tag: xmlxsdElt.name,
-            obj: xmlxsdElt.eltsList[i]
+            obj: xmlxsdElt.eltsList[i],
+            i:i
           })
           elt.accept(that);
           that.stack.pop()

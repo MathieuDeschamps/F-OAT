@@ -69,11 +69,7 @@ export class CharacterExtractVisualizer{
     var generator = new XMLGenerator(this.xmlxsdObj);
     xml += generator.generateXML();
     xml += "</"+extractor+">";
-    if(generator.getErrorMessage()===""){
-      eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
-    }else{
-      console.log("error",generator.getErrorMessage());
-    }
+    eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
   }
 
   /* Obsever pattern : update function
@@ -113,6 +109,10 @@ export class CharacterExtractVisualizer{
     return result;
   }
 
+  getXmlXsdObj(){
+    return this.xmlxsdObj;
+  }
+
   getTimeLineData(){
     this.timeLineBuilder.setXmlXsdObj(this.xmlxsdObj);
     return this.timeLineBuilder.getTimeLineData();
@@ -121,7 +121,7 @@ export class CharacterExtractVisualizer{
   setXmlXsdObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     });
   }
 

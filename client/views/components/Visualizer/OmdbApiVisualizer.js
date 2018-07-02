@@ -62,11 +62,7 @@ export class OmdbApiVisualizer{
     var generator = new XMLGenerator(this.xmlxsdObj);
     xml += generator.generateXML();
     xml += "</"+extractor+">";
-    if(generator.getErrorMessage()===""){
-      eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
-    }else{
-      console.log("error",generator.getErrorMessage());
-    }
+    eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
   }
 
   /* Visualize the XMLXSDObject
@@ -93,7 +89,7 @@ export class OmdbApiVisualizer{
   setXmlXsdObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
     this.observers.forEach(function(observer){
-      observer.update();
+      observer.updateVisualizer();
     });
   }
 
