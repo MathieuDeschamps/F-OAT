@@ -55,7 +55,7 @@ export class XMLXSDForm{
 	*/
 	visitXMLXSDObject(xmlxsdObj){
 		// console.log('visitXMLXSDObject',xmlxsdObj);
-
+		console.log('xmlxsdObj', xmlxsdObj);
 		var jqDivId='#'+this.divId;
 
 		$(jqDivId).html(this.html);
@@ -70,9 +70,6 @@ export class XMLXSDForm{
 			obj:xmlxsdObj.content
 		});
 		xmlxsdObj.content.accept(that);
-		var ul = $("#" + this.divId).find('ul')[0]
-		$(ul).collapsible('open', 0)
-		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 
 		// });
 	}
@@ -91,35 +88,31 @@ export class XMLXSDForm{
 		// end generate nav
 
 		// Edit elt
-		var $ul = $('<ul id="elt'+xmlxsdElt.name+'config" class="collapsible"/>');
-		$div.append($ul)
-		var $li = $('<li/>')
-		$ul.append($li)
+		var $divEditor = $('<div id="elt'+xmlxsdElt.name+'config" class="editor"/>');
+		$div.append($divEditor)
 
 		var headStack=this.stack[this.stack.length-1];
 		if (typeof headStack!== 'undefined'){
-			$li.append(this.generateHeaderContent('','keyboard_arrow_right',headStack.tag,false,undefined));
+			$divEditor.append(this.generateHeaderContent('','keyboard_arrow_down',headStack.tag,false,undefined));
 		}else{
-			$li.append(this.generateHeaderContent('','keyboard_arrow_right',this.name,false, undefined));
+			$divEditor.append(this.generateHeaderContent('','keyboard_arrow_down',this.name,false, undefined));
 		}
-		var $divBody =$('<div class="collapsible-body"/>')
-		$li.append($divBody)
-		$ul = $('<ul id="ulElt'+xmlxsdElt.name+'config" class="collapsible"/>');
-		$divBody.append($ul)
+		var $divBody =$('<div class="editor-body row"/>')
+		$divEditor.append($divBody)
+
 		var that=this;
 		xmlxsdElt.eltsList.forEach(function(elt,i){
 			var idName=that.id+'_elt'+xmlxsdElt.name+i+'config';
-			var idClear = that.id+'_'+idName+'_clear'
-
-			$li = $('<li/>');
-			$ul.append($li)
+			var idClear = that.id+'_'+idName+'_clear';
+			var $divElement = $('<div class="editor-element"/>');
+			$divBody.append($divElement);
 			// check if the element can be delete or not
 			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
-				$li.append(that.generateHeaderContent(idName, 'keyboard_arrow_right',
+				$divElement.append(that.generateHeaderContent(idName, 'keyboard_arrow_right',
 					xmlxsdElt.name,true, idClear));
 			}
 			else{
-				$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
+				$divElement.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
 					xmlxsdElt.name,false, undefined));
 			}
 
@@ -131,9 +124,6 @@ export class XMLXSDForm{
 					});
 					that.displayedElement = elt
 					elt.accept(that);
-					var ul = $("#" + that.divId).find('ul')[0]
-					$(ul).collapsible('open', 0)
-					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 				},
 				id:idName,
 				eventName:'click'
@@ -142,16 +132,18 @@ export class XMLXSDForm{
 			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
 				that.eventHandler.push({
 					function:function(){
-						var deleted = xmlxsdElt.deleteElement(i);
+						var duration = 500 // 500ms
+						$(this).parent().fadeOut(duration);
 						that.displayedElement = xmlxsdElt
-						xmlxsdElt.accept(that);
-						var ul = $("#" + that.divId).find('ul')[0]
-						$(ul).collapsible('open', 0)
-						$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-						if(typeof visualizer !== 'undefined' &&
+						// wait the end of the animation fadeOut to remove the element
+						setTimeout(function() {
+							var deleted = xmlxsdElt.deleteElement(i);
+							xmlxsdElt.accept(that);
+							if(typeof visualizer !== 'undefined' &&
 							deleted ){
-							visualizer.notifyAll();
-						}
+								visualizer.notifyAll();
+							}
+						}, duration);
 					},
 					id:idClear,
 					eventName:'click'
@@ -163,9 +155,9 @@ export class XMLXSDForm{
 		if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
 			var idEltAdd=that.id+'_'+xmlxsdElt.name +'_add';
 
-			$li = $('<li>');
-			$ul.append($li)
-			$li.append(that.generateHeaderContent(idEltAdd, 'add_circle',
+			// $li = $('<li>');
+			// $ul.append($li)
+			$divBody.append(that.generateHeaderContent(idEltAdd, 'add_circle',
 			 	xmlxsdElt.name, false, undefined))
 
 			this.eventHandler.push({
@@ -173,9 +165,6 @@ export class XMLXSDForm{
 					xmlxsdElt.type.accept(xmlxsdElt);
 					that.displayedElement = xmlxsdElt;
 					xmlxsdElt.accept(that);
-					var ul = $("#" + that.divId).find('ul')[0]
-					$(ul).collapsible('open', 0)
-					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 					if(typeof visualizer !== 'undefined'){
 						visualizer.notifyAll();
 					}
@@ -216,35 +205,36 @@ export class XMLXSDForm{
 		// generate nav
 		$div.append(this.generateNav());
 
-		var $ul = $('<ul id="seq'+xmlxsdSeq.name+'config" class="collapsible"/>');
-		$div.append($ul)
-		var $li = $('<li>')
-		$ul.append($li)
-		$li.append(this.generateHeaderContent("seq"+xmlxsdSeq.name+"configTitle",'keyboard_arrow_right',
+		var $divEditor = $('<div id="seq'+xmlxsdSeq.name+'config" class="editor"/>');
+		$div.append($divEditor)
+		// var $li = $('<li>')
+		// $ul.append($li)
+		$divEditor.append(this.generateHeaderContent("seq"+xmlxsdSeq.name+"configTitle",'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag, false, undefined));
-		var $divBody = $('<div id="seq'+xmlxsdSeq.name+'configContent" class="collapsible-body"/>');
-		$li.append($divBody)
+		var $divBody = $('<div id="seq'+xmlxsdSeq.name+'configContent" class="editor-body row"/>');
+		$divEditor.append($divBody)
 
 		$divBody.append(this.generateAttrsForm(xmlxsdSeq));
 
 		var that=this;
 
-		$ul = $('<ul id="ulxmlxsdSeqconfig" class="collaspsible"/>');
-		$divBody.append($ul)
+		// $ul = $('<ul id="ulxmlxsdSeqconfig" class="collaspsible"/>');
+		// $divBody.append($ul)
 
 		xmlxsdSeq.seqList.forEach(function(seq,k){
 			seq.forEach(function(xmlxsdElt,j){
 
 				xmlxsdElt.eltsList.forEach(function(elt,i){
 					var idName= that.id+'_elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
-					var idClear = idName+'_clear'
-					$li = $('<li/>');
-					$ul.append($li)
+					var idClear = idName+'_clear';
+					var $divElement = $('<div class="editor-element"/>');
+					$divBody.append($divElement)
+
 					if(xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
-						$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
+						$divElement.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
 							xmlxsdElt.name,true, idClear));
 					}else{
-						$li.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
+						$divElement.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
 						 	xmlxsdElt.name,false, undefined));
 					}
 
@@ -256,9 +246,6 @@ export class XMLXSDForm{
 							});
 							that.displayedElement = elt
 							elt.accept(that);
-							var ul = $("#" + that.divId).find('ul')[0]
-							$(ul).collapsible('open', 0)
-							$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 						},
 						id:idName,
 						eventName:'click'
@@ -267,17 +254,18 @@ export class XMLXSDForm{
 					if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
 						that.eventHandler.push({
 							function:function(){
-								var deleted = xmlxsdElt.deleteElement(i);
+								var duration = 500 // 500ms
+								$(this).parent().fadeOut(duration);
 								that.displayedElement = xmlxsdSeq;
-								console.log('delete sequence')
-								xmlxsdSeq.accept(that);
-								var ul = $("#" + that.divId).find('ul')[0]
-								$(ul).collapsible('open', 0)
-								$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-								if(typeof visualizer !== 'undefined' &&
+
+								setTimeout(function() {
+									var deleted = xmlxsdElt.deleteElement(i);
+									xmlxsdSeq.accept(that);
+									if(typeof visualizer !== 'undefined' &&
 									deleted ){
-									visualizer.notifyAll();
-								}
+										visualizer.notifyAll();
+									}
+								}, duration);
 							},
 							id:idClear,
 							eventName:'click'
@@ -290,9 +278,7 @@ export class XMLXSDForm{
 				if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
 					var idEltAdd=that.id+'_'+xmlxsdElt.name +'add'+k+'_'+j;
 
-					$li =$('<li/>');
-					$ul.append($li)
-					$li.append(that.generateHeaderContent(idEltAdd, 'add_circle',
+					$divBody.append(that.generateHeaderContent(idEltAdd, 'add_circle',
 					 	xmlxsdElt.name, false, undefined));
 
 					that.eventHandler.push({
@@ -300,13 +286,9 @@ export class XMLXSDForm{
 							xmlxsdElt.type.accept(xmlxsdElt);
 							that.displayedElement = xmlxsdSeq;
 							xmlxsdSeq.accept(that);
-							var ul = $("#" + that.divId).find('ul')[0]
-							$(ul).collapsible('open', 0)
-							$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 							if(typeof visualizer !== 'undefined'){
 								visualizer.notifyAll();
 							}
-
 						},
 						id:idEltAdd,
 						eventName:'click'});
@@ -365,14 +347,12 @@ export class XMLXSDForm{
 		// generate nav
 		$div.append(this.generateNav());
 
-		var $ul = $('<ul id="ext'+xmlxsdExt.name+'config" class="collapsible"/>');
-		$div.append($ul);
-		var $li =$('<li/>');
-		$ul.append($li);
-		$li.append(this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle','keyboard_arrow_down',
+		var $divEditor = $('<div id="ext'+xmlxsdExt.name+'config" class="editor"/>');
+		$div.append($divEditor);
+		$divEditor.append(this.generateHeaderContent('ext'+xmlxsdExt.name+'configTitle','keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag,false, undefined));
-		var $divBody = $('<div id="ext'+xmlxsdExt.name+'configContent" class="collapsible-body row"/>');
-		$li.append($divBody);
+		var $divBody = $('<div id="ext'+xmlxsdExt.name+'configContent" class="editor-body row"/>');
+		$divEditor.append($divBody);
 
 		$divBody.append(this.generateAttrsForm(xmlxsdExt));
 		this.currentNodeValue=xmlxsdExt;
@@ -431,20 +411,20 @@ export class XMLXSDForm{
 
 				// generate nav
 				$div.append(this.generateNav());
-				var $ul = $('<ul id="typefloatconfig" class="collapsible"/>');
+				var $ul = $('<ul id="typefloatconfig" class="editor"/>');
 				$div.append($ul)
 				var $li = $('<li/>')
 				$ul.append($li)
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						this.name,false, undefined));
 				}
-				var $divBody =$('<div class="collapsible-body"/>')
+				var $divBody =$('<div class="editor-body row"/>')
 				$li.append($divBody)
 			}
 
@@ -529,20 +509,20 @@ export class XMLXSDForm{
 				// generate nav
 				$div.append(this.generateNav());
 
-				var $ul = $('<ul id="typeintegerconfig" class="collapsible"/>');
+				var $ul = $('<ul id="typeintegerconfig" class="editor row"/>');
 				$div.append($ul)
 				var $li = $('<li/>')
 				$ul.append($li)
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						this.name,false, undefined));
 				}
-				var $divBody =$('<div class="collapsible-body"/>')
+				var $divBody =$('<div class="editor-body row"/>')
 				$li.append($divBody)
 			}
 
@@ -628,20 +608,20 @@ export class XMLXSDForm{
 
 				// generate nav
 				$div.append(this.generateNav());
-				var $ul = $('<ul id="typefloatconfig" class="collapsible"/>');
+				var $ul = $('<ul id="typefloatconfig" class="editor row"/>');
 				$div.append($ul)
 				var $li = $('<li/>')
 				$ul.append($li)
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						this.name,false, undefined));
 				}
-				var $divBody =$('<div class="collapsible-body"/>')
+				var $divBody =$('<div class="editor-body row"/>')
 				$li.append($divBody)
 			}
 
@@ -726,20 +706,20 @@ export class XMLXSDForm{
 				// generate nav
 				$div.append(this.generateNav());
 
-				var $ul = $('<ul id="typeintegerconfig" class="collapsible"/>');
+				var $ul = $('<ul id="typeintegerconfig" class="editor row"/>');
 				$div.append($ul)
 				var $li = $('<li/>')
 				$ul.append($li)
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack!== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						this.name,false, undefined));
 				}
-				var $divBody =$('<div class="collapsible-body"/>')
+				var $divBody =$('<div class="editor-body row"/>')
 				$li.append($divBody)
 			}
 
@@ -826,20 +806,20 @@ export class XMLXSDForm{
 				// generate nav
 				$div.append(this.generateNav());
 
-				var $ul = $('<ul id="typestringconfig" class="collapsible"/>');
+				var $ul = $('<ul id="typestringconfig" class="editor row"/>');
 				$div.append($ul)
 				var $li = $('<li/>')
 				$ul.append($li)
 
 				var headStack=this.stack[this.stack.length-1];
 				if (typeof headStack !== 'undefined'){
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						headStack.tag,false, undefined));
 				}else{
-					$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+					$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 						this.name,false, undefined));
 				}
-				var $divBody =$('<div class="collapsible-body"/>')
+				var $divBody =$('<div class="editor-body row"/>')
 				$li.append($divBody)
 			}
 
@@ -868,20 +848,20 @@ export class XMLXSDForm{
 			$div.append(this.generateNav());
 			// this.html+=this.generateNav();
 
-			var $ul = $('<ul id="typevoidconfig" class="collapsible"/>');
+			var $ul = $('<ul id="typevoidconfig" class="editor row"/>');
 			$div.append($ul)
 			var $li = $('<li/>')
 			$ul.append($li)
 
 			var headStack=this.stack[this.stack.length-1];
 			if (typeof headStack !== 'undefined'){
-				$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+				$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 					headStack.tag,false, undefined));
 			}else{
-				$li.append(this.generateHeaderContent('','keyboard_arrow_right',
+				$li.append(this.generateHeaderContent('','keyboard_arrow_down',
 					this.name,false,undefined));
 			}
-			var $divBody =$('<div class="collapsible-body"/>')
+			var $divBody =$('<div class="editor-body row"/>')
 			$li.append($divBody)
 		}
 		// displaying GUI
@@ -906,6 +886,7 @@ export class XMLXSDForm{
 	@return the code for the navigation bar
 	*/
 	generateNav(){
+		console.log('stack', this.stack);
 		var nbElementByNav = 3
 		var result = ''
 		result += '<div class="row nav-line" id="nav-'+ this.id + '_config">'
@@ -945,9 +926,6 @@ export class XMLXSDForm{
 					that.stack=that.stack.slice(0,i + 1);
 					that.displayedElement = elm.obj
 					elm.obj.accept(that);
-					var ul = $("#" + that.divId).find('ul')[0]
-					$(ul).collapsible('open', 0)
-					$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 				},
 				id:idName,
 				eventName:'click'
@@ -967,20 +945,27 @@ export class XMLXSDForm{
 	@return the code for the header element
 	*/
 	generateHeaderContent(id, icon, nameHeader,deletable, idClear){
-		var result = ''
-		result+='<div id="'+id+'" class="collapsible-header white-text">'
-		result+='<div class="col s2">'
-		result+= '<i class="material-icons">'+icon+'</i>'
-		result+= '</div>'
-		result+= '<div class="col s8">'
+		var result = '';
+		var sizeHeader = 12;
+		if(deletable){
+			sizeHeader -= 2;
+		}
+		result+='<div id="'+id+'" class="editor-header valign-wrapper blue darken-4 white-text col s'+sizeHeader+'">'
+		result+= '<i class="material-icons small col s2">'+icon+'</i>'
+		result+= '<div class="col s10">'
 		result+= nameHeader
 		result+='</div>'
-		result+='<div class="col s2">'
+		result+='</div>'
 		if(deletable && typeof idClear !=='undefined'){
-			result+='<i id="'+idClear+'" class="red darken-4 material-icons tiny deleteButton"> clear</i>';
+			result+='<i id="'+idClear+'" class="red-text material-icons small deleteButton col s2"> clear</i>';
 		}
-		result+='</div>'
-		result+='</div>'
+		result = $.parseHTML(result);
+		if(icon === "keyboard_arrow_down"){
+			$(result).prop('opened', true);
+			// $(result).addClass('active');
+		}else if(icon == "keyboard_arrow_right"){
+			$(result).prop('opened', false);
+		}
 		return result;
 	}
 
@@ -1157,15 +1142,24 @@ export class XMLXSDForm{
 		// init the select elements
 		$('select').material_select()
 
-		// init the event on the collapsible class
-		$('.collapsible').collapsible({
-			onOpen: function(el){
-				$($(el).find('i')[0]).text('keyboard_arrow_down')
-			},
-			onClose: function(el){
-				$($(el).find('i')[0]).text('keyboard_arrow_right')
+		// click on .editor-header
+		$('#'+this.divId).find('.editor-header').click(function(){
+			var divBody = $(this).parent().children('.editor-body')
+			if(divBody.length === 1){
+				if($(this).prop('opened')){
+					$(divBody).css('padding', '0rem')
+					$(divBody).css('max-height', '0px')
+					$(this).children('i').text('keyboard_arrow_right')
+					$(this).prop('opened', false)
+				}else{
+					var maxHeight = $(divBody).prop('scrollHeight');
+					$(divBody).css('padding', '0.5rem')
+					$(divBody).css('max-height', maxHeight+'px');
+					$(this).children('i').text('keyboard_arrow_down')
+					$(this).prop('opened', true)
+				}
 			}
-		});
+		})
 	}
 
 	/* Display the form
@@ -1181,37 +1175,29 @@ export class XMLXSDForm{
 			this.displayedElement = this.xmlxsdObj
 		}
 		this.displayedElement.accept(this)
-		var ul = $("#" + this.divId).find('ul')[0]
-		$(ul).collapsible('open', 0)
-		$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
 	}
 
 	/* Observer pattern : update function
 	*/
 	updateVisualizer(){
-			var saveStack = this.stack.slice(0)
-			this.eventHandler = [];
-			this.displayedElement.accept(this)
-			var saveEventHandler = this.eventHandler.slice(0);
+		var saveStack = this.stack.slice(0)
+		this.eventHandler = [];
+		this.displayedElement.accept(this)
+		var saveEventHandler = this.eventHandler.slice(0);
 
-			// restore the save stack before accept
-			this.stack = saveStack;
+		// restore the save stack before accept
+		this.stack = saveStack;
 
-			this.eventHandler = [];
-			var parentNav = $('#' + this.divId).children(':first');
-			$(parentNav).children('div[class~="nav-line"]').remove();
-			$(parentNav).prepend(this.generateNav());
+		this.eventHandler = [];
+		var parentNav = $('#' + this.divId).children(':first');
+		$(parentNav).children('div[class~="nav-line"]').remove();
+		$(parentNav).prepend(this.generateNav());
 
-			// apply the event of the generate stack
-			this.applyEventHandler();
+		// apply the event of the generate stack
+		this.applyEventHandler();
 
-			// restore the save eventHandler before the generateNav
-			this.eventHandler = saveEventHandler;
-
-			if($('#'+ this.divId).css('display') !== 'none'){
-				var ul = $("#" + this.divId).find('ul')[0]
-				$(ul).collapsible('open', 0)
-				$($($(ul).find('.collapsible-header')[0]).find('i')[0]).text('keyboard_arrow_down')
-			}
+		// restore the save eventHandler before the generateNav
+		this.eventHandler = saveEventHandler;
 	}
+
 }

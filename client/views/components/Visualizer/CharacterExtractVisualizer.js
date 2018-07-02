@@ -75,8 +75,9 @@ export class CharacterExtractVisualizer{
 
     this.timeLineBuilder = new TimeLineCharacter(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var timeLine = new TimeLine(this.name, xmlxsdForm, this.nbFrames, timeLineData,
+    var timeLine = new TimeLine(this.name, this.nbFrames, timeLineData,
     this.divIdTimeLine,this);
+    timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
     console.log('timeLineData', timeLineData);

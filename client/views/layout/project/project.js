@@ -61,9 +61,9 @@ projectReady = function(){
     }
   }
   else{
-    console.log('projectReady 2')
+    // console.log('projectReady 2')
     Session.set('projectReady', 1)
-    console.log('Session', Session)
+    // console.log('Session', Session)
   }
 }
 
@@ -107,17 +107,17 @@ Template.project.onRendered(()=>{
             extractors.forEach(function(extractor){
               console.log('nb Frame',extractor);
               // var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
-              console.log(newNbFrames);
+              // console.log(newNbFrames);
               if (newNbFrames!=undefined){
                 console.log(newNbFrames);
                 nbFrames=Math.max(nbFrames,newNbFrames);
-                console.log(nbFrames);
+                // console.log(nbFrames);
               }
             });
             if (nbFrames>0){
               vidCtrl.setNbFrames(nbFrames);
             }
-            console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
+            // console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
             vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
 
           }
@@ -125,6 +125,7 @@ Template.project.onRendered(()=>{
 
       });
     }
+
     em.setClient({
       appId: Router.current().params._id,
       _id: Meteor.userId()
@@ -177,7 +178,6 @@ Template.project.onRendered(()=>{
             var xmlTmp = $(xmlParsed).find('extractors').children().filter(function(){
               return ($(this).prop('tagName') === $(extractor).prop('tagName') &&
                   $(this).attr('version') === $(extractor).attr('version'))
-
             })
             if(xmlTmp.length === 1){
               xmlArray[i] = xmlTmp
@@ -302,102 +302,7 @@ Template.project.helpers({
 });
 
 Template.project.events({
-  /*  Code du merge, à garder pour le moment et à réutiliser dès que les extracteurs sont utilisables.
-  //Test to merge XML file
-  'click #testmerge1'(event,instance){
-  var MergeXML = require('mergexml');
-  var oMX = new MergeXML();
-  var project = Projects.findOne(Router.current().params._id);
-  //Récupération du fichier XML déjà créé sur le serveur
-  Meteor.call("getXml","/tmp/"+project._id+"/annotation.xml",(err,result)=>{
-  if(err){
-  alert(err.reason);
-}else{
-oMX.AddSource(result.data);
-console.log(oMX.Get(1));
-if(oMX.error.code!==''){
-console.log('Merge Error annotation.xml '+oMX.error.text);
-}
-else{
-//Merge avec un nouveau fichier XML.
-Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/testmerge1.xml",(err,result)=>{
-if(err){
-alert(err.reason);
-}else{
-oMX.AddSource(result.data);
-console.log(oMX.Get(1));
-if(oMX.error.code !== ''){
-console.log("Merge Error new file "+oMX.error.text);
-}
-else if(oMX.count<2){
-console.log("Merge Error : 2 files needed");
-}
-else{
-Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/testmerge3.xml",(err,result)=>{
-if(err){
-alert(err.reason);
-}else{
-oMX.AddSource(result.data);
-console.log(oMX.Get(1));
-if(oMX.error.code !== ''){
-console.log("Merge Error new file "+oMX.error.text);
-}
-else if(oMX.count<2){
-console.log("Merge Error : 2 files needed");
-}
-else{
-Meteor.call("updateXML",project,oMX.Get(1),(err,result)=>{
-if(err){
-alert(err.reason);
-}
-});
-}
-}
-});
-}
-}});
-}
-}});
-},
 
-//Test2 to merge XML file
-'click #testmerge2'(event,instance){
-var MergeXML = require('mergexml');
-var oMX = new MergeXML();
-var project = Projects.findOne(Router.current().params._id);
-//Récupération du fichier XML déjà créé sur le serveur
-Meteor.call("getXml","/tmp/"+project._id+"/annotation.xml",(err,result)=>{
-if(err){
-alert(err.reason);
-}else{
-oMX.AddSource(result.data);
-if(oMX.error.code!==''){
-console.log('Merge Error annotation.xml '+oMX.error.text);
-}
-else{
-//Merge avec un nouveau fichier XML.
-Meteor.call("getXml","/home/elliot/Documents/cours_meteor/F-OAT/server/xmlFiles/testmerge2.xml",(err,result)=>{
-if(err){
-alert(err.reason);
-}else{
-oMX.AddSource(result.data);
-if(oMX.error.code !== ''){
-console.log("Merge Error new file "+oMX.error.text);
-}
-else if(oMX.count<2){
-console.log("Merge Error : 2 files needed");
-}
-else{
-Meteor.call("updateXML",project,oMX.Get(1),(err,result)=>{
-if(err){
-alert(err.reason);
-}
-})
-}
-}});
-}
-}});
-}*/
 });
 
 Meteor.startup(function(){
@@ -418,7 +323,7 @@ Meteor.startup(function(){
       }
 
       Session.set('projectReady', 0);
-      console.log('id',id, 'username', username)
+      // console.log('id',id, 'username', username)
       if(id!=null && username!=null){
         Meteor.call('decreaseCount',id,username,function(err,res){
           if(err){

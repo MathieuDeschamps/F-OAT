@@ -11,15 +11,15 @@ export class Writer{
     if(typeof xmlObject === 'undefined' &&
       typeof extractor === 'undefined' &&
       typeof annotation === 'undefined'){
-        console.log('replaceAnnotation : Illegal Argument Exception')
+        console.log('replaceAnnotation : Illegal Argument Exception');
     }else{
-      var selector = $(extractor).prop('tagName')
-      selector += '[name="' + $(extractor).attr('name') + '"]'
-      selector += '[version="' + $(extractor).attr('version') + '"]'
-      var oldAnnotation = $(xmlObject).find('extractors').first().children(selector)
+      var selector = $(extractor).prop('tagName');
+      selector += '[name="' + $(extractor).attr('name') + '"]';
+      selector += '[version="' + $(extractor).attr('version') + '"]';
+      var oldAnnotation = $(xmlObject).find('extractors').first().children(selector);
       if(oldAnnotation.length === 1){
-        $(oldAnnotation).empty()
-        $(oldAnnotation).append(newAnnotation)
+        $(oldAnnotation).empty();
+        $(oldAnnotation).append(newAnnotation);
       }
       return xmlObject
     }
@@ -30,41 +30,41 @@ export class Writer{
   @depth is the number of tabulation at the beginning
   */
   static convertDocumentToString(xmlDocument, depth){
-    var result =""
-    var nodeName = String(xmlDocument.nodeName)
+    var result ="";
+    var nodeName = String(xmlDocument.nodeName);
 
     // set the tabulation with the depth
-    var tab = ""
+    var tab = "";
 
     if(depth!=0){
       for(i = 1; i < depth; i++ ){
-        tab += "\t"
+        tab += "\t";
       }
       // add the node and the attributes
       result += tab +"<" + nodeName
       $(xmlDocument.attributes).each(function(i,attr){
-          result += " " + String(attr.name) + "=\"" + String(attr.value) +"\""
+          result += " " + String(attr.name) + "=\"" + String(attr.value) +"\"";
       })
       if($(xmlDocument).text() != "" || $(xmlDocument).children().length > 0){
-        result += ">"
+        result += ">";
       }else{
-        result += "/>"
+        result += "/>";
       }
     }
     // add the children to the result
     if ($(xmlDocument).children().length > 0){
-      result += "\n"
+      result += "\n";
       $(xmlDocument).children().each(function(i,child){
-        result += Writer.convertDocumentToString(child, depth + 1) + "\n"
+        result += Writer.convertDocumentToString(child, depth + 1) + "\n";
       })
-      result += tab
+      result += tab;
     }else{
-      result += $(xmlDocument).text()
+      result += $(xmlDocument).text();
     }
 
     if(depth!=0){
       if($(xmlDocument).text() != "" || $(xmlDocument).children().length > 0){
-        result += "</" + nodeName + ">"
+        result += "</" + nodeName + ">";
       }
     }
     return result;

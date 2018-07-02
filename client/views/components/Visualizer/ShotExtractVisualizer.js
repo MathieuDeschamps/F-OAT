@@ -55,6 +55,7 @@ export class ShotExtractVisualizer{
   /* Obsever pattern : notifyAll function
   */
   notifyAll(){
+    console.log('notifyAll', this.observers);
       this.observers.forEach(function(observer){
       observer.updateVisualizer();
     })
@@ -79,13 +80,15 @@ export class ShotExtractVisualizer{
 
     this.timeLineBuilder = new TimeLineShot(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var timeLine = new TimeLine(this.name, xmlxsdForm, this.nbFrames, timeLineData,
+    var timeLine = new TimeLine(this.name, this.nbFrames, timeLineData,
     this.divIdTimeLine,this);
+    timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
     this.overlayBuilder = new OverlayPositon(this.xmlxsdObj, this.name)
     var overlayData = this.overlayBuilder.getOverlayData();
-    var overlay = new Overlay(overlayData, xmlxsdForm, this.divIdOverlay,this)
+    var overlay = new Overlay(overlayData, this.divIdOverlay,this)
+    overlay.setXMLXSDForm(xmlxsdForm);
     this.attach(overlay);
     vidCtrl.attach(overlay,1);
 

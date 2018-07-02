@@ -35,12 +35,12 @@ export class XMLGenerator{
 		if (xmlxsdElt.eltsList.length<xmlxsdElt.minOccurs){
 			this.errorMessage+="Too few elements "+xmlxsdElt.name+'.\n';
 
-			this.xml=undefined;
+			// this.xml=undefined;
 		} else {
 			if (xmlxsdElt.eltsList.length>xmlxsdElt.maxOccurs){
 				this.errorMessage+="Too much elements "+xmlxsdElt.name+'.\n';
 				this.errorDone=true;
-				this.xml=undefined;
+				// this.xml=undefined;
 			} else {
 				var that=this;
 				xmlxsdElt.eltsList.forEach(function(elt){
@@ -79,11 +79,11 @@ export class XMLGenerator{
 			if (xmlxsdSeq.seqList.length<xmlxsdSeq.minO){
 				this.errorDone=false;
 				this.errorMessage+='Sequence incomplete.\n';
-				this.xml=undefined;
+				// this.xml=undefined;
 			} else if (xmlxsdSeq.seqList.length>xmlxsdSeq.maxO){
 				this.errorDone=false;
 				this.errorMessage+='Sequence too long.\n';
-				this.xml=undefined;
+				// this.xml=undefined;
 			}
 			if (this.xml!=undefined){
 				// On remet le ">" enlevé.
@@ -112,18 +112,18 @@ export class XMLGenerator{
 				if (typeof xmlxsdAttr.value !== 'undefined'){
 					if (xmlxsdAttr.use=="prohibited"){
 						this.errorMessage+=xmlxsdAttr.name + " is prohibited.\n";
-						this.xml=undefined;
+						// this.xml=undefined;
 					} else {
 						if (!xmlxsdAttr.type.holds(xmlxsdAttr.value)){
 							this.errorMessage+=xmlxsdAttr.value+ "does not follow the type of "+xmlxsdAttr.name+".\n";
-							this.xml=undefined;
+							// this.xml=undefined;
 						}
 					}
 				} else {
 					if (xmlxsdAttr.use=="required"){
 						this.errorMessage+=xmlxsdAttr.name + " is required.\n";
 						this.errorDone=false;
-						this.xml=undefined;
+						// this.xml=undefined;
 					}
 				}
 			}
