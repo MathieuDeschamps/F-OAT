@@ -212,6 +212,19 @@ export class configAnnotationManager{
               visualizer.visualize()
               this.visualizers.push(visualizer);
             }
+
+          var annotedFrames = [];
+          this.xmls.forEach(function(xml,i){
+            var xmltostring = Writer.convertDocumentToString(xml, 0)
+            var newFrames = Parser.getListTimeId(xmltostring);
+            newFrames.forEach(function(frame,j){
+              annotedFrames.push(frame);
+            })
+          });
+          annotedFrames.sort(function(a,b){
+            return a-b;
+          });
+          vidCtrl.setAnnotedFrames(annotedFrames);
           }
         });
       }
@@ -237,6 +250,19 @@ export class configAnnotationManager{
         }
       }
     });
+    var annotedFrames = [];
+    this.xmls.forEach(function(xml,i){
+      var xmltostring = Writer.convertDocumentToString(xml, 0)
+      var newFrames = Parser.getListTimeId(xmltostring);
+      newFrames.forEach(function(frame,j){
+        annotedFrames.push(frame);
+      })
+    });
+    annotedFrames.sort(function(a,b){
+      return a-b;
+    });
+    vidCtrl.setAnnotedFrames(annotedFrames);
+
   }
 
 
