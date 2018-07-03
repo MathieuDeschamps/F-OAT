@@ -1,11 +1,15 @@
 export class Overlay{
-  //data is an array of timeId and positions
-  constructor(data, xmlxsdForm, divId, visualizer){
+  /*
+  @data is an array of timeId and positions
+  @divId the id of html div which will contain the overlay
+  @visualizer the visualizer which created the overlay
+  */
+  constructor(data, divId, visualizer){
     this.data = data;
-    this.xmlxsdForm = xmlxsdForm;
     this.divId = divId;
     this.visualizer = visualizer;
     this.points=[];
+    this.xmlxsdForm = undefined;
     this.firstDraw = true;
     this.line = null;
     this.dragged = null;
@@ -13,32 +17,12 @@ export class Overlay{
     this.draw_circles();
   }
 
-
-
-  updateVisualizer(){
-    this.update()
+  setXMLXSDForm(xmlxsdForm){
+    this.xmlxsdForm = xmlxsdForm;
   }
 
-  updateVideoControler(){
-    this.update();
-  }
-
-  update(){
-    var currentFrame = vidCtrl.getCurrentFrame();
-    this.data = this.visualizer.getOverlayData();
-    this.points = [];
-    var newPoints =this.data.find( d => d.timeId == currentFrame);
-    var that = this;
-    if(newPoints!=null){
-      newPoints.positions.forEach(function(point){
-        if(that.points.find( p => (p.x == point.x && p.y == point.y))==null){
-          that.points.push(point);
-        }
-      });
-    }
-    this.draw_circles();
-  }
-
+  /* Draw points base on this.points and their events
+  */
   draw_circles(){
     var x1;
     var y1;
@@ -151,7 +135,8 @@ export class Overlay{
       .attr("r", 1e-6)
       .on("mousedown", function(d) {
         overlay.selected = overlay.dragged = d;
-        if(d.stack!=null){
+        if(d.stack!=null &&
+          typeof overlay.xmlxsdForm != 'undefined'){
           overlay.xmlxsdForm.displayForm(d.stack);
         }
         redraw(overlay);
@@ -258,7 +243,9 @@ export class Overlay{
               var deleted = xmlxsdElt.deleteElement(index)
               if(deleted){
                 overlay.points.splice(i, 1);
-                overlay.xmlxsdForm.displayForm(stack.splice(0, stack.length-1))
+                if(typeof overlay.xmlxsdForm !== 'undefined'){
+                  overlay.xmlxsdForm.displayForm(stack.splice(0, stack.length-1))
+                }
                 overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
                 overlay.draw_circles();
                 overlay.visualizer.notifyAll();
@@ -270,5 +257,35 @@ export class Overlay{
         }
       }
     }
+  }
+
+  /* Observer pattern : update function
+  */
+  updateVideoControler(){
+    this.update();
+  }
+
+  /* Observer pattern : update function
+  */
+  updateVisualizer(){
+    this.update()
+  }
+
+  /* Observer pattern : update function
+  */
+  update(){
+    var currentFrame = vidCtrl.getCurrentFrame();
+    this.data = this.visualizer.getOverlayData();
+    this.points = [];
+    var newPoints =this.data.find( d => d.timeId == currentFrame);
+    var that = this;
+    if(newPoints!=null){
+      newPoints.positions.forEach(function(point){
+        if(that.points.find( p => (p.x == point.x && p.y == point.y))==null){
+          that.points.push(point);
+        }
+      });
+    }
+    this.draw_circles();
   }
 }

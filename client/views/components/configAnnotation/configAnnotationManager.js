@@ -20,6 +20,7 @@ export class configAnnotationManager{
   constructor(xsds, xmls, nbFrames, checkBoxDiv, visualizerDivs, saveButtonDiv){
     this.xsds = xsds.slice(0);
     this.xmls = xmls.slice(0);
+    console.log('xmls', xmls);
     this.nbFrames = nbFrames;
     this.checkBoxDiv = checkBoxDiv;
     this.visualizerDivs = visualizerDivs;
@@ -62,7 +63,6 @@ export class configAnnotationManager{
         },20);
       });
     })
-
     var JQSaveButtonDiv = '#'+saveButtonDiv;
     $(JQSaveButtonDiv).click(function(){that.saveAnnotations()})
   }
@@ -82,7 +82,18 @@ export class configAnnotationManager{
         idsDiv.forEach(function(idDiv){
           var JQidDiv = '#' + idDiv;
           $(JQidDiv).css('display', 'none');
+
         })
+        // Timeline lost the focus of the vidCtrl when it is hidden
+        if(typeof vidCtrl.isFocusedTimeLine !== 'undefined'){
+          var idTimeline = vidCtrl.isFocusedTimeLine.div_id;
+          if(idsDiv.indexOf(idTimeline) !== -1){
+            vidCtrl.isFocusedTimeLine.lostFocus();
+            vidCtrl.isFocused = false;
+            vidCtrl.setPlayingInterval(1, that.nbFrames);
+            vidCtrl.setPartialPlaying(false);
+          }
+        }
       }
   }
 
@@ -99,7 +110,7 @@ export class configAnnotationManager{
       this.visualizers.forEach(function(visualizer, i){
         var xmlGenerator = new XMLGenerator(visualizer.xmlxsdObj)
         var xmlAnnotation = xmlGenerator.generateXML()
-        if(typeof xmlAnnotation !== 'undefined'){
+        if(xmlGenerator.getErrorMessage() === ""){
           var extractor = that.xmls[i].clone().empty();
           xmlDoc = Writer.replaceAnnotation(xmlDoc, extractor, xmlAnnotation)
         }else{

@@ -92,7 +92,7 @@ export class configExtractorManager{
 			var gen=new XMLGenerator(xmlxsdObj);
 			// console.log(gen.generateXML());
 			var paramsXML=gen.generateXML();
-			if(typeof paramsXML === 'undefined'){
+			if(xmlGenerator.getErrorMessage() !== ""){
 				toastr.warning(TAPi18n.__('errorSendParms')+ gen.getErrorMessage())
 			}else{
 
