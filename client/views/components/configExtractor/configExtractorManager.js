@@ -98,7 +98,6 @@ export class configExtractorManager{
 
 			var params={"param" : paramsXML};
 			// console.log('param en JSON',params);
-			// TODO uncomment before commit
 			$(JQidDivButton).html('');
 
 

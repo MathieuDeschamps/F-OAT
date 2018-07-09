@@ -39,19 +39,27 @@ export class XMLXSDElt{
 	}
 
 	/* Delete a element in the eltsList
-	@index: index of the element in the EltsList
+	@index: index of the element in the eltsList
 	@return: true if the element has been deleted
 					 false otherwise
 	*/
 	deleteElement(index){
 		var result = false;
-		if(this.eltsList.length != this.minOccurs &&
-			typeof index === 'number' &&
-			index < this.eltsList.length){
+		if(this.canBeDeleted(index)){
 			this.eltsList.splice(index, 1);
 			result = true;
 		}
 		return result
+	}
+	/* Say if a element in the eltsList can be deleted
+	@index: index of the element in eltsList
+	@return: true if the element can be deleted
+					 false otherwise
+	*/
+	canBeDeleted(index){
+		return this.eltsList.length != this.minOccurs &&
+			typeof index === 'number' &&
+			index < this.eltsList.length
 	}
 	/* Add an object to EltsList (case of sequenced element)
 	@xsdSeq : XSDSequence object

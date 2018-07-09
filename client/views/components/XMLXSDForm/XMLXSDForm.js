@@ -79,7 +79,7 @@ export class XMLXSDForm{
 	*/
 	visitXMLXSDElt(xmlxsdElt){
 		// console.log('visitXMLXSDElt',xmlxsdElt);
-		var $div = $('<div id="extractor' + this.id + 'config" />')
+		var $div = $('<div id="' + this.id + '_extractor" />')
 		var visualizer = this.visualizer
 		this.html = $div
 
@@ -88,16 +88,16 @@ export class XMLXSDForm{
 		// end generate nav
 
 		// Edit elt
-		var $divEditor = $('<div id="elt'+xmlxsdElt.name+'config" class="editor"/>');
+		var $divEditor = $('<div id="'+this.id+'_elt_'+xmlxsdElt.name+'_config" class="editor"/>');
 		$div.append($divEditor)
 
 		var headStack=this.stack[this.stack.length-1];
 		var idHeader;
 		if (typeof headStack!== 'undefined'){
-			idHeader = this.id+'_header_elt'+headStack.tag+'config';
+			idHeader = this.id+'_elt_'+headStack.tag+'_header';
 			$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',headStack.tag,false,undefined));
 		}else{
-			idHeader = this.id+'_header'+this.name+'config';
+			idHeader = this.id+'_elt_'+this.name+'_header';
 			$divEditor.append(this.generateHeaderContent(ideHeader,'keyboard_arrow_down',this.name,false, undefined));
 		}
 		var that=this;
@@ -108,12 +108,13 @@ export class XMLXSDForm{
 			id:idHeader,
 			eventName:'click'
 		});
-		var $divBody =$('<div class="editor-body row"/>')
+		var idBody = this.id+'_elt_'+this.name+'_body';
+		var $divBody =$('<div id="'+idBody+'" class="editor-body row"/>')
 		$divEditor.append($divBody)
 
 		xmlxsdElt.eltsList.forEach(function(elt,i){
-			var idName=that.id+'_elt'+xmlxsdElt.name+i+'config';
-			var idClear = that.id+'_'+idName+'_clear';
+			var idName=that.id+'_elt_'+xmlxsdElt.name+'_'+i+'_element';
+			var idClear = idName+'_clear';
 			var $divElement = $('<div class="editor-element"/>');
 			$divBody.append($divElement);
 			// check if the element can be delete or not
@@ -164,10 +165,8 @@ export class XMLXSDForm{
 		});
 		//Bouton d'ajout d'elt si nécessaire
 		if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
-			var idEltAdd=that.id+'_'+xmlxsdElt.name +'_add';
+			var idEltAdd=that.id+'_elt_'+xmlxsdElt.name +'_add';
 
-			// $li = $('<li>');
-			// $ul.append($li)
 			$divBody.append(that.generateHeaderContent(idEltAdd, 'add_circle',
 			 	xmlxsdElt.name, false, undefined))
 
@@ -211,18 +210,52 @@ export class XMLXSDForm{
 		var that=this;
 		// console.log('visitXMLXSDSeq',xmlxsdSeq);
 
-		var $div = $('<div id="extractor' + this.id + 'config"/>')
+		var $div = $('<div id="'+ this.id + '_extractor"/>')
 		this.html = $div
-		var visualizer = this.visualizer
 		// generate nav
 		$div.append(this.generateNav());
 
-		var $divEditor = $('<div id="seq'+xmlxsdSeq.name+'config" class="editor"/>');
+		var $divEditor = $('<div id="'+this.id+'_seq_'+xmlxsdSeq.name+'_config" class="editor"/>');
 		$div.append($divEditor)
 
-		var idHeader = this.id+"_header_seq"+xmlxsdSeq.name+"configTitle";
+		var idHeader = this.id+"_seq_"+xmlxsdSeq.name+"_header";
+		var deletable = false
+		var idClearHeader = idHeader + '_clear';
+		if(this.stack.length > 1){
+			var lastElement = this.stack[this.stack.length - 1]
+			var parentElement = this.stack[this.stack.length - 2]
+			if(typeof parentElement.obj !== 'undefined' &&
+				typeof parentElement.obj.name !== 'undefined' &&
+				parentElement.obj.name === 'sequence'){
+				var xmlxsdElt = $(parentElement.obj.seqList[0]).filter(function(){
+					return this.name === lastElement.tag
+				})[0]
+				var deletable = xmlxsdElt.canBeDeleted(lastElement.i);
+					if(deletable){
+						this.eventHandler.push({
+							function:function(){
+								var duration = 500 // 500ms
+								$(this).parent().parent().fadeOut(duration);
+								that.displayedElement = parentElement;
+								that.stack.pop();
+								setTimeout(function() {
+									var deleted = xmlxsdElt.deleteElement(lastElement.i);
+									parentElement.obj.accept(that);
+									if(typeof that.visualizer !== 'undefined' &&
+									deleted ){
+										that.visualizer.notifyAll();
+									}
+								}, duration);
+							},
+							id:idClearHeader,
+							eventName: 'click'
+						})
+					}
+				}
+		}
+
 		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
-		 	this.stack[this.stack.length-1].tag, false, undefined));
+		 	this.stack[this.stack.length-1].tag, deletable, idClearHeader));
 
 		this.eventHandler.push({
 				function:function(){
@@ -232,7 +265,8 @@ export class XMLXSDForm{
 				eventName:'click'
 			});
 
-		var $divBody = $('<div id="seq'+xmlxsdSeq.name+'configContent" class="editor-body row"/>');
+		var idBody = this.id+'_seq_'+xmlxsdSeq.name+'_body';
+		var $divBody = $('<div id="'+idBody+'" class="editor-body row"/>');
 		$divEditor.append($divBody)
 
 		$divBody.append(this.generateAttrsForm(xmlxsdSeq));
@@ -241,7 +275,7 @@ export class XMLXSDForm{
 			seq.forEach(function(xmlxsdElt,j){
 
 				xmlxsdElt.eltsList.forEach(function(elt,i){
-					var idName= that.id+'_elt'+xmlxsdElt.name+k+'_'+j+'_'+i+'config';
+					var idName= that.id+'_elt_'+xmlxsdElt.name+'_'+k+'-'+j+'-'+i+'_element';
 					var idClear = idName+'_clear';
 					var $divElement = $('<div class="editor-element"/>');
 					$divBody.append($divElement)
@@ -279,9 +313,9 @@ export class XMLXSDForm{
 								setTimeout(function() {
 									var deleted = xmlxsdElt.deleteElement(i);
 									xmlxsdSeq.accept(that);
-									if(typeof visualizer !== 'undefined' &&
+									if(typeof that.visualizer !== 'undefined' &&
 									deleted ){
-										visualizer.notifyAll();
+										that.visualizer.notifyAll();
 									}
 								}, duration);
 							},
@@ -294,7 +328,7 @@ export class XMLXSDForm{
 
 				//Bouton d'ajout d'elt si nécessaire
 				if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
-					var idEltAdd=that.id+'_'+xmlxsdElt.name +'add'+k+'_'+j;
+					var idEltAdd=that.id+'_elt_'+xmlxsdElt.name+'_add_'+k+'-'+j;
 
 					$divBody.append(that.generateHeaderContent(idEltAdd, 'add_circle',
 					 	xmlxsdElt.name, false, undefined));
@@ -304,8 +338,8 @@ export class XMLXSDForm{
 							xmlxsdElt.type.accept(xmlxsdElt);
 							that.displayedElement = xmlxsdSeq;
 							xmlxsdSeq.accept(that);
-							if(typeof visualizer !== 'undefined'){
-								visualizer.notifyAll();
+							if(typeof that.visualizer !== 'undefined'){
+								that.visualizer.notifyAll();
 							}
 						},
 						id:idEltAdd,
@@ -360,17 +394,54 @@ export class XMLXSDForm{
 		this.eventHandler=[];
 		var that = this;
 
-		var $div = $('<div id="extractor' + this.id + 'config" />');
+		var $div = $('<div id="'+ this.id +'_extractor" />');
 		this.html = $div;
 
 		// generate nav
 		$div.append(this.generateNav());
 
-		var $divEditor = $('<div id="ext'+xmlxsdExt.name+'config" class="editor"/>');
+		var $divEditor = $('<div id="'+this.id+'_ext_'+xmlxsdExt.name+'_config" class="editor"/>');
 		$div.append($divEditor);
-		var idHeader = this.id+'_header_ext'+xmlxsdExt.name+'configTitle'
+		var idHeader = this.id+'_ext_'+xmlxsdExt.name+'_header'
+		var deletable = false
+		var idClearHeader = idHeader + '_clear';
+		if(this.stack.length > 1){
+			var lastElement = this.stack[this.stack.length - 1]
+			var parentElement = this.stack[this.stack.length - 2]
+
+			if(typeof parentElement.obj !== 'undefined' &&
+				typeof parentElement.obj.name !== 'undefined' &&
+				parentElement.obj.name === 'sequence'){
+				var xmlxsdElt = $(parentElement.obj.seqList[0]).filter(function(){
+					return this.name === lastElement.tag
+				})[0]
+				var deletable = xmlxsdElt.canBeDeleted(lastElement.i);
+					if(deletable){
+						this.eventHandler.push({
+							function:function(){
+								console.log('deleted')
+								var duration = 500 // 500ms
+								$(this).parent().parent().fadeOut(duration);
+								that.displayedElement = parentElement;
+								that.stack.pop();
+								setTimeout(function() {
+									var deleted = xmlxsdElt.deleteElement(lastElement.i);
+									parentElement.obj.accept(that);
+									if(typeof that.visualizer !== 'undefined' &&
+									deleted ){
+										that.visualizer.notifyAll();
+									}
+								}, duration);
+							},
+							id:idClearHeader,
+							eventName: 'click'
+						})
+					}
+				}
+		}
+
 		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
-		 	this.stack[this.stack.length-1].tag,false, undefined));
+		 	this.stack[this.stack.length-1].tag,deletable, idClearHeader));
 
 		this.eventHandler.push({
 				function:function(){
@@ -379,8 +450,8 @@ export class XMLXSDForm{
 				id:idHeader,
 				eventName:'click'
 			});
-
-		var $divBody = $('<div id="ext'+xmlxsdExt.name+'configContent" class="editor-body row"/>');
+		var idBody = this.id+'_ext_'+xmlxsdExt.name+'_body'
+		var $divBody = $('<div id="'+idBody+'" class="editor-body row"/>');
 		$divEditor.append($divBody);
 
 		$divBody.append(this.generateAttrsForm(xmlxsdExt));
@@ -415,7 +486,7 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-			var selectFormName=this.id+'_'+this.attrFormName;
+			var selectFormName=this.attrFormName;
 			this.inputHtml = this.generateSelect(selectFormName,[true, false], value, disabled);
 			this.eventHandler.push({
 					function:function(){
@@ -491,7 +562,7 @@ export class XMLXSDForm{
 			}
 
 			if (xsdDeci.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdDeci.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -510,7 +581,7 @@ export class XMLXSDForm{
 						eventName:'change'
 					});
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
 
 				this.eventHandler.push({
@@ -590,7 +661,7 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdFloat.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdFloat.enumeration, value, disabled);
 				this.eventHandler.push({
 						function:function(){
@@ -609,7 +680,7 @@ export class XMLXSDForm{
 					});
 
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", 0.01, value, disabled);
 
 				this.eventHandler.push({
@@ -628,7 +699,6 @@ export class XMLXSDForm{
 					eventName:'change'
 				});
 			}
-			return result
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -688,7 +758,7 @@ export class XMLXSDForm{
 			}
 			// console.log('XSD int', xsdInt)
 			if (xsdInt.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -707,7 +777,7 @@ export class XMLXSDForm{
 						eventName:'change'
 					});
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
 
 				this.eventHandler.push({
@@ -787,7 +857,7 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdString.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -807,7 +877,7 @@ export class XMLXSDForm{
 				});
 
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
 				this.eventHandler.push({
 					function:function(){
@@ -915,10 +985,11 @@ export class XMLXSDForm{
 	@return the code for the navigation bar
 	*/
 	generateNav(){
-		var nbElementByNav = 3
-		var result = ''
-		result += '<div class="row nav-line" id="nav-'+ this.id + '_config">'
-		result += '<nav>'
+		var nbElementByNav = 3;
+		var result = '';
+		var lineNumber = 0;
+		result += '<div class="row nav-line" id="'+ this.id + '_'+lineNumber+'_nav">';
+		result += '<nav>';
 		result += '<div class="nav-wrapper">'
 		result += '<div class="col s12">'
 		var nbCharacter = 0
@@ -926,7 +997,7 @@ export class XMLXSDForm{
 		var sizeRow = 24
 		var that=this;
 		this.stack.forEach(function(elm,i){
-			var idName=that.id+'navConfig'+i;
+			var idName=that.id+'_'+i+'_element';
 			if (i!==that.stack.length-1){
 				if(elm.tag.length > 24){
 					nbCharacter = 24
@@ -934,18 +1005,17 @@ export class XMLXSDForm{
 					nbCharacter = elm.tag.length
 				}
 				if(nbCharacterRow + nbCharacter > sizeRow){
-					// add empty breadcrumb for trigger before style in scss
-					// result += '<a id="'+that.id+'navConfig'+i+'" class="breadcrumb"/>';
 					result += '</div>';
-					result += '</nav>'
-					result += '</div>'
-					result += '<div class="row nav-line" id="nav-'+ that.id + '_config">'
-					result +=' <nav>'
-					result +=' <div class="nav-wrapper">'
-					result += '<div class="col s12">'
-					nbCharacterRow = 0
+					result += '</nav>';
+					result += '</div>';
+					lineNumber++;
+					result += '<div class="row nav-line" id="'+ that.id + '_'+lineNumber+'_nav">'
+					result +=' <nav>';
+					result +=' <div class="nav-wrapper">';
+					result += '<div class="col s12">';
+					nbCharacterRow = 0;
 				}
-				nbCharacterRow += nbCharacter
+				nbCharacterRow += nbCharacter;
 				result+='<a id="'+idName+'" class="breadcrumb">' + elm.tag.substr(0,sizeRow) +'</a>';
 			}
 
@@ -978,21 +1048,23 @@ export class XMLXSDForm{
 		if(deletable){
 			sizeHeader -= 2;
 		}
-		result+='<div id="'+id+'" class="editor-header valign-wrapper blue darken-4 white-text col s'+sizeHeader+'">'
-		result+= '<i class="material-icons small col s2">'+icon+'</i>'
-		result+= '<div class="col s10">'
-		result+= nameHeader
-		result+='</div>'
-		result+='</div>'
+		result+='<div class="row blue darken-4">';
+		result+='<div id="'+id+'" class="editor-header valign-wrapper white-text col s'+sizeHeader+'">';
+		result+= '<i class="material-icons small col s2">'+icon+'</i>';
+		result+= '<div class="col s10">';
+		result+= nameHeader;
+		result+='</div>';
+		result+='</div>';
 		if(deletable && typeof idClear !=='undefined'){
 			result+='<i id="'+idClear+'" class="red-text material-icons small deleteButton col s2"> clear</i>';
 		}
+		result+='</div>';
 		result = $.parseHTML(result);
 		if(icon === "keyboard_arrow_down"){
-			$(result).prop('opened', true);
+			$(result).children('.editor-header').prop('opened', true);
 			// $(result).addClass('active');
 		}else if(icon == "keyboard_arrow_right"){
-			$(result).prop('opened', false);
+			$(result).children('.editor-header').prop('opened', false);
 		}
 		return result;
 	}
@@ -1006,7 +1078,7 @@ export class XMLXSDForm{
 		var result = '';
 		var visualizer = this.visualizer;
 		$.each(obj.attrs,function(key,attr){
-			var formName=attr.name+'form';
+			var formName=that.id+'_'+attr.name+'form';
 			var jqFormName='#'+formName;
 			var switchName=attr.name+'switch';
 			var jqSwitchName='#'+switchName;
@@ -1065,10 +1137,9 @@ export class XMLXSDForm{
 						}
 
 						// reinitialize the material select with the new propertie
-						if($(jqFormName)[0].localName === "select"){
+						if($(jqFormName).prop('localName') === "select"){
 							$(jqFormName).material_select()
 						}
-
 					},
 					id: switchName,
 					eventName:'change'
@@ -1169,25 +1240,20 @@ export class XMLXSDForm{
 		});
 		// init the select elements
 		$('select').material_select()
-
-		// click on .editor-header
-		// $('#'+this.divId).find('.editor-header').click(function(){
-		// })
 	}
 
 	/* Event called on the editor header element
 	*/
 	eventEditorHeader(target){
-		var divBody = $(target).parent().children('.editor-body')
+		var divBody = $(target).parent().parent().children('.editor-body')
 		if(divBody.length === 1){
 			if($(target).prop('opened')){
-				$(divBody).css('padding', '0rem')
-				$(divBody).css('max-height', '0px')
+				var maxHeight = $(divBody).prop('scrollHeight');
+				$(divBody).css('max-height', 0+'px');
 				$(target).children('i').text('keyboard_arrow_right')
 				$(target).prop('opened', false)
 			}else{
 				var maxHeight = $(divBody).prop('scrollHeight');
-				$(divBody).css('padding', '0.5rem')
 				$(divBody).css('max-height', maxHeight+'px');
 				$(target).children('i').text('keyboard_arrow_down')
 				$(target).prop('opened', true)
@@ -1256,6 +1322,7 @@ export class XMLXSDForm{
 				}
 			}
 		});
+
 
 		this.displayedElement.accept(this)
 		var saveEventHandler = this.eventHandler.slice(0);

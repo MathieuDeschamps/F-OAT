@@ -85,11 +85,11 @@ export class configAnnotationManager{
 
         })
         // Timeline lost the focus of the vidCtrl when it is hidden
-        if(typeof vidCtrl.isFocusedTimeLine !== 'undefined'){
-          var idTimeline = vidCtrl.isFocusedTimeLine.div_id;
+        if(typeof vidCtrl.focusedTimeLine !== 'undefined'){
+          var idTimeline = vidCtrl.focusedTimeLine.div_id;
           if(idsDiv.indexOf(idTimeline) !== -1){
-            vidCtrl.isFocusedTimeLine.lostFocus();
-            vidCtrl.isFocused = false;
+            vidCtrl.focusedTimeLine.lostFocus();
+            vidCtrl.isFocusedTimeLine = false;
             vidCtrl.setPlayingInterval(1, that.nbFrames);
             vidCtrl.setPartialPlaying(false);
           }

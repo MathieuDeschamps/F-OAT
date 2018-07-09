@@ -37,8 +37,8 @@ export class VideoControler {
 		this.annotedFrame=[];
 
 		// TimeLine qui a le focus du vidéo controleur
-		this.isFocusedTimeLine = undefined;
-		this.isFocused = false;
+		this.focusedTimeLine = undefined;
+		this.isFocusedTimeLine = false;
 	}
 
 	setEndVid(end){
@@ -86,21 +86,24 @@ export class VideoControler {
 
 	// Retourne le numéro de la frame courante de la vidéo
 	getCurrentFrame(){
-		return this.timeToFrame(this.vid.currentTime);
+		return this.timeToFrame(this.vid.getCurrentTime());
 	}
 
 	// Redéfinit le numéro de la frame courante de la vidéo
 	setCurrentFrame(newCurrentFrame){
-		// console.log('setCurrentFrame', newCurrentFrame)
-		//this.vid.currentTime=this.frameToTime(newCurrentFrame);
 			this.vid.setCurrentTime(this.frameToTime(newCurrentFrame));
-			this.vid.play();
-			if (!this.isPlaying){
-				var that=this;
-				this.vid.addEventListener('playing',function(){that.pause();});
-				//that.forcedNotifyAttachedObjects(newCurrentFrame);
+			this.vid.pause();
+			if (this.isPlaying){
+				this.play();
 			}
-		// console.log('setCurrentFrame',newCurrentFrame,this.frameToTime(newCurrentFrame),typeof this.frameToTime(newCurrentFrame));
+			var that = this;
+			// add a delay before notify the observers
+			// which lasts the time to set the current time
+			// the value of the delay is arbitary
+			setTimeout(function() {
+				// console.log('currentFrame expected: ', newCurrentFrame, ' real: ', that.getCurrentFrame());
+				that.notifyAttachedObjects();
+			}, 200);
 	}
 
 	// Longueur de la vidéo
@@ -153,11 +156,11 @@ export class VideoControler {
 
 	// Notification des objets abonnés (Pattern Observer)
 	notifyAttachedObjects(){
-		var curFrame=this.getCurrentFrame();
 		var that=this;
+		var currentFrame=this.getCurrentFrame();
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
-			if (curFrame % that.attachedObjectFrequency.get(object)==0){
+			if (currentFrame % that.attachedObjectFrequency.get(object)==0){
 				object.updateVideoControler();
 			}
 		});
@@ -170,13 +173,14 @@ export class VideoControler {
 		var that=this;
 		// On notifie les objets qui sont abonnés au contrôleur vidéo.
 		this.attachedObject.forEach(function(object){
-			object.updateVideoControler();
+			object.updateVideoControler(numFrame);
 		});
 	}
 
 	// Fonction de l'intervalle en mode full
 	fullPlay(){
-		this.notifyAttachedObjects();
+		newCurrentFrame = this.getCurrentFrame()
+		this.notifyAttachedObjects(newCurrentFrame);
 		// console.log("full");
 	}
 
@@ -185,8 +189,9 @@ export class VideoControler {
 		// console.log('partialPlay',this.getCurrentFrame(),this.beginSelect,this.endSelect)
 		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
 			this.setCurrentFrame(this.beginSelect);
+		}else{
+			this.notifyAttachedObjects(this.getCurrentFrame());
 		}
-		this.notifyAttachedObjects();
 		// console.log("partial");
 	}
 
@@ -215,7 +220,8 @@ export class VideoControler {
 		}
 		clearInterval(this.updateInterval);
 		this.vid.removeEventListener('playing');
-		this.notifyAttachedObjects();
+		// var newCurrentFrame = this.getCurrentFrame();
+		// this.notifyAttachedObjects(newCurrentFrame);
 	}
 
 	// Définition de l'intervalle de lecture
@@ -277,17 +283,17 @@ export class VideoControler {
 			$("#"+this.playerCommand.idPartialButton).prop('checked',pp);
 		}
 		if(this.partialPlaying &&
-			typeof this.isFocusedTimeLine !== 'undefined' &&
-			!this.isFocused){
-				this.setTimeLineFocus(this.isFocusedTimeLine);
+			typeof this.focusedTimeLine !== 'undefined' &&
+			!this.isFocusedTimeLine){
+				this.setTimeLineFocus(this.focusedTimeLine);
 		}
 		// Timeline lost focus when disabled partialPlay
 		if(!this.partialPlaying &&
-			 typeof this.isFocusedTimeLine !== 'undefined' &&
-			 this.isFocused){
+			 typeof this.focusedTimeLine !== 'undefined' &&
+			 this.isFocusedTimeLine){
 				 // console.log('vidCtrl lostFocus')
-			this.isFocusedTimeLine.lostFocus();
-			this.isFocused = false;
+			this.focusedTimeLine.lostFocus();
+			this.isFocusedTimeLine = false;
 		}
 		this.setMode();
 	}
@@ -415,12 +421,12 @@ export class VideoControler {
 	//
 	setTimeLineFocus(timeLine){
 		if(typeof timeLine !== 'undefined'){
-			if(typeof this.isFocusedTimeLine !== 'undefined' && this.isFocused){
-				this.isFocusedTimeLine.lostFocus();
+			if(typeof this.focusedTimeLine !== 'undefined' && this.isFocusedTimeLine){
+				this.focusedTimeLine.lostFocus();
 			}
-			this.isFocused = true;
-			this.isFocusedTimeLine = timeLine;
-			// this.isFocusedTimeLine.takeFocus();
+			this.isFocusedTimeLine = true;
+			this.focusedTimeLine = timeLine;
+			// this.focusedTimeLine.takeFocus();
 		}
 
 	}

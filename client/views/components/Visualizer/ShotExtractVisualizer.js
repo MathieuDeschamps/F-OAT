@@ -106,7 +106,6 @@ export class ShotExtractVisualizer{
     var overlay = new Overlay(overlayData, this.divIdOverlay,this)
     overlay.setXMLXSDForm(xmlxsdForm);
     this.attach(overlay);
-    vidCtrl.attach(overlay,1);
 
     console.log('timeLineData', timeLineData);
     console.log('overlayData', overlayData);
@@ -140,7 +139,7 @@ export class ShotExtractVisualizer{
 
   setXmlXsdObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
-    console.log("setXmlXsdObj",xmlxsdObj);
+    // console.log("setXmlXsdObj",xmlxsdObj);
     this.observers.forEach(function(observer){
       observer.updateVisualizer();
     });

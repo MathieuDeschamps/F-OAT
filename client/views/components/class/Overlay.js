@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 export class Overlay{
   /*
   @data is an array of timeId and positions
@@ -14,6 +15,7 @@ export class Overlay{
     this.line = null;
     this.dragged = null;
     this.selected = null;
+    vidCtrl.attach(this,1);
     this.draw_circles();
   }
 
@@ -28,8 +30,8 @@ export class Overlay{
     var y1;
 
     if(this.firstDraw){
-      this.line = d3.svg.line();
-      this.line.interpolate("cardinal");
+      this.line = d3.line()
+        .curve(d3.curveCardinal);
 
       var svg = d3.select("#"+this.divId).append("svg")
 
@@ -48,11 +50,11 @@ export class Overlay{
       .on("mousemove", function() { mousemove(that);})
       .on("mouseup", function() { mouseup(that);});
 
-      y1 = d3.scale.linear()
+      y1 = d3.scaleLinear()
       .domain([0, 1])
       .range([0, height]);
 
-      x1 = d3.scale.linear()
+      x1 = d3.scaleLinear()
       .domain([0, 1])
       .range([0, width]);
 
@@ -82,41 +84,38 @@ export class Overlay{
       .datum(this.points)
       .attr("class", "line")
       .attr("tabindex", 3)
-      .call(function() {redraw(that);});
 
       d3.select(window)
-      .on("keydown", function() { keydown(that);});
-
+      .call(function(){redraw();})
+      .on("keydown", function(){keydown();});
     }
 
-
-
-    function redraw(overlay) {
-      var width = $('#' + overlay.divId).find('svg').width();
-      var height = $('#' + overlay.divId).find('svg').height();
+    function redraw() {
+      var width = $('#' + that.divId).find('svg').width();
+      var height = $('#' + that.divId).find('svg').height();
 
       var pointSelected = false;
-      if(overlay.selected!=null){
-        overlay.points.forEach(function(point){
-          if(point.x.toFixed(4) == overlay.selected.x.toFixed(4) && point.y.toFixed(4) == overlay.selected.y.toFixed(4)){
-            overlay.selected = point;
+      if(that.selected!=null){
+        that.points.forEach(function(point){
+          if(point.x.toFixed(4) == that.selected.x.toFixed(4) && point.y.toFixed(4) == that.selected.y.toFixed(4)){
+            that.selected = point;
             pointSelected = true;
           }
         });
       }
 
-      if(overlay.points.length>0 && !pointSelected){
-        overlay.selected = overlay.points[overlay.points.length-1];
+      if(that.points.length>0 && !pointSelected){
+        that.selected = that.points[that.points.length-1];
       }
-      y1 = d3.scale.linear()
+      y1 = d3.scaleLinear()
       .domain([0, 1])
       .range([0, height]);
 
-      x1 = d3.scale.linear()
+      x1 = d3.scaleLinear()
       .domain([0, 1])
       .range([0, width]);
 
-      overlay.line.x(function(d) {
+      that.line.x(function(d) {
         return x1(d.x);
       })
       .y(function(d) {
@@ -126,20 +125,20 @@ export class Overlay{
       svg.select("rect").attr("width",width)
       .attr("height",height);
 
-      svg.select("path").attr("d", overlay.line);
+      svg.select("path").attr("d", that.line);
 
       var circle = svg.selectAll("circle")
-      .data(overlay.points);
+      .data(that.points);
 
       circle.enter().append("circle")
       .attr("r", 1e-6)
       .on("mousedown", function(d) {
-        overlay.selected = overlay.dragged = d;
+        that.selected = that.dragged = d;
         if(d.stack!=null &&
-          typeof overlay.xmlxsdForm != 'undefined'){
-          overlay.xmlxsdForm.displayForm(d.stack);
+          typeof that.xmlxsdForm != 'undefined'){
+          that.xmlxsdForm.displayForm(d.stack);
         }
-        redraw(overlay);
+        redraw();
        })
        .on('mouseup', function(d){
            if(typeof d.stack !== 'undefined'){
@@ -153,17 +152,17 @@ export class Overlay{
                  d.stack[d.stack.length - 1].obj.attrs.x.setValue(newX);
                  d.stack[d.stack.length - 1].obj.attrs.y.setValue(newY);
                }
-             overlay.visualizer.notifyAll()
+             that.visualizer.notifyAll()
            }
-           overlay.dragged = null;
+           that.dragged = null;
        })
       .transition()
       .duration(750)
-      .ease("elastic")
+      .ease(d3.easeElastic)
       .attr("r", 6.5);
 
 
-      circle.classed("selected", function(d) { return d === overlay.selected; })
+      circle.classed("selected", function(d) { return d === that.selected; })
       .attr("cx", function(d) { return x1(d.x); })
       .attr("cy", function(d) { return y1(d.y); });
 
@@ -177,48 +176,48 @@ export class Overlay{
     }
 
 
-    function mousedown(overlay) {
-      var width = $('#' + overlay.divId).find('svg').width();
-      var height = $('#' + overlay.divId).find('svg').height();
+    function mousedown() {
+      var width = $('#' + that.divId).find('svg').width();
+      var height = $('#' + that.divId).find('svg').height();
       var m = d3.mouse(svg.node());
       var x = m[0]/width;
       var y = m[1]/height;
       var coordinates = {};
       coordinates.x = x;
       coordinates.y = y;
-      overlay.points.push(overlay.selected = overlay.dragged = coordinates);
-      overlay.draw_circles();
+      that.points.push(that.selected = that.dragged = coordinates);
+      that.draw_circles();
     }
 
-    function mousemove(overlay) {
-      if (!overlay.dragged) return;
+    function mousemove() {
+      if (!that.dragged) return;
       var m = d3.mouse(svg.node());
-      var width = $('#' + overlay.divId).find('svg').width();
-      var height = $('#' + overlay.divId).find('svg').height();
+      var width = $('#' + that.divId).find('svg').width();
+      var height = $('#' + that.divId).find('svg').height();
       var x = m[0]/width;
       var y = m[1]/height;
-      overlay.dragged.x = Math.max(0, Math.min(1, x));
-      overlay.dragged.y = Math.max(0, Math.min(1, y));
-      overlay.draw_circles();
+      that.dragged.x = Math.max(0, Math.min(1, x));
+      that.dragged.y = Math.max(0, Math.min(1, y));
+      that.draw_circles();
     }
 
-    function mouseup(overlay) {
-      if (!overlay.dragged) return;
-      mousemove(overlay);
-      overlay.dragged = null;
+    function mouseup() {
+      if (!that.dragged) return;
+      mousemove();
+      that.dragged = null;
     }
 
-    function keydown(overlay) {
-      if (!overlay.selected) return;
+    function keydown() {
+      if (!that.selected) return;
       switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: { // delete
-          var i = overlay.points.indexOf(overlay.selected);
-          var stack = overlay.selected.stack
+          var i = that.points.indexOf(that.selected);
+          var stack = that.selected.stack
           if(typeof stack === 'undefined'){
-            overlay.points.splice(i, 1);
-            overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
-            overlay.draw_circles();
+            that.points.splice(i, 1);
+            that.selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
+            that.draw_circles();
           }else if(stack.length > 1){
             var element = stack[stack.length - 1];
             var parent = stack[stack.length - 2].obj
@@ -242,13 +241,13 @@ export class Overlay{
               var index = xmlxsdElt.eltsList.indexOf(element.obj)
               var deleted = xmlxsdElt.deleteElement(index)
               if(deleted){
-                overlay.points.splice(i, 1);
-                if(typeof overlay.xmlxsdForm !== 'undefined'){
-                  overlay.xmlxsdForm.displayForm(stack.splice(0, stack.length-1))
+                that.points.splice(i, 1);
+                if(typeof that.xmlxsdForm !== 'undefined'){
+                  that.xmlxsdForm.displayForm(stack.splice(0, stack.length-1))
                 }
-                overlay.selected = overlay.points.length ? overlay.points[i > 0 ? i - 1 : 0] : null;
-                overlay.draw_circles();
-                overlay.visualizer.notifyAll();
+                that.selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
+                that.draw_circles();
+                that.visualizer.notifyAll();
               }
             }
           }

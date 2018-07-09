@@ -12,6 +12,9 @@ export class PlayerCommand{
       this.idBeginSelect = idsCommands[6];
       this.idEndSelect = idsCommands[7];
       this.idPartialButton = idsCommands[8];
+      $('#'+this.idSeekBar).prop('max', vidCtrl.endVid);
+      $('#'+this.idCurrentFrame).prop('max', vidCtrl.endVid);
+      vidCtrl.attach(this, 1);
     }
   }
 
@@ -24,14 +27,15 @@ export class PlayerCommand{
     $( "#"+this.idPauseButton ).click(function() {
       vidCtrl.pause();
     } );
-    $('#'+this.idSeekBar).prop('max', vidCtrl.endVid);
     $( "#"+this.idSeekBar ).mousedown(function() {seekBarMng.mousePressed();} );
     $( "#"+this.idSeekBar ).mouseup(function() {seekBarMng.mouseReleased();} );
     $( "#"+this.idSeekBar ).change(function() {
+      vidCtrl.setPartialPlaying(false);
       vidCtrl.setCurrentFrame(parseInt($( "#"+that.idSeekBar ).val()));
     });
     $( "#"+this.idCurrentFrame ).change(function(){
       // console.log('change currentFrame', $( "#"+that.idCurrentFrame ).val())
+      vidCtrl.setPartialPlaying(false);
       vidCtrl.setCurrentFrame(parseInt($( "#"+that.idCurrentFrame ).val()));
     })
     $( "#"+this.idPrevAnnotedButton ).click(function() {vidCtrl.prevAnnotedFrame();} );
@@ -58,6 +62,10 @@ export class PlayerCommand{
     // console.log('pause')
     $( "#"+this.idPauseButton ).css('display', 'none');
     $( "#"+this.idPlayButton ).css('display', 'block');
+  }
 
+  updateVideoControler(){
+    var currentFrame = vidCtrl.getCurrentFrame();
+    $( "#"+this.idCurrentFrame ).val(currentFrame);
   }
 }

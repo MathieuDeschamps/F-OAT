@@ -44,16 +44,16 @@ projectReady = function(){
   if(project.isFile){
     if(project.fileId!=null){
         Session.set('projectReady',1);
+        $('#saveButtonAnnotations').css('display', 'block');
     }else{
       var idUpload = "upload_"+Router.current().params._id;
       var upload = Session.get(idUpload);
       if(upload!=null){
         this.projectReadyTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-          // console.log('updload', Session)
             var idUpload = "upload_"+Router.current().params._id;
           if(Session.get(idUpload)==100){
-            // console.log('projectReady 1')
             Session.set('projectReady', 1)
+            $('#saveButtonAnnotations').css('display', 'block');
             computation.stop();
           }
         });
@@ -62,6 +62,7 @@ projectReady = function(){
   }
   else{
     // console.log('projectReady 2')
+    $('#saveButtonAnnotations').css('display', 'block');
     Session.set('projectReady', 1)
     // console.log('Session', Session)
   }
@@ -83,6 +84,7 @@ Template.project.onCreated(()=>{
 });
 
 Template.project.onRendered(()=>{
+  $("#saveButtonAnnotations").css('display', 'none');
   if(projectExists()){
     var xmlPath = '/tmp/' + Router.current().params._id + '/annotation.xml'
     var extractorPath

@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 export class TimeLine {
 
     // Constants
@@ -7,10 +8,10 @@ export class TimeLine {
     // static MY_SELECTED_COLOR(){ return ['#f0f', '#ff0']}
     static MY_SELECTED_COLOR(){ return ['#f57f17', '#0d47a1']}
     static SCALE_MIN(){return 30}
-    static SCROLL_HEIGTH(){ return 16}
+    static X_AXIS_HEIGTH(){ return 20}
     static TRBL(){
       /*top right bottom left */
-      return [20, 15, 30, 5]
+      return [20, 15, 10, 5]
     }
 
     /*
@@ -36,6 +37,7 @@ export class TimeLine {
       this.visualizer = visualizer;
       this.entries = [];
       this.index_used_rect = -1;
+      this.current_frame = 1;
       var that = this;
       $(data).each(function(i,e){
         that.entries.push(e.name);
@@ -48,6 +50,9 @@ export class TimeLine {
       })
       this.id_entries =  this.div_id+'_entries';
       this.id_chart =  this.div_id+'_chart';
+      // the scale of x axis set by draw
+      this.x1 = undefined
+
       this.draw();
     }
 
@@ -87,23 +92,18 @@ export class TimeLine {
     /* Draw the time line in the div id
     */
     draw(){
+      var that = this;
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
       var that = this;
       var scale = this.getScale();
 
-      var width_total = TimeLine.TRBL()[3] + (this.nb_frames * scale);
+      var width_total = (this.nb_frames * scale);
+      width_total += TimeLine.TRBL()[1] + TimeLine.TRBL()[3];
       var gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - TimeLine.TRBL()[1] - TimeLine.TRBL()[3];
-      var scaleData = [];
-      for(var i = 0; i < this.nb_frames; i++){
-        if((i / this.frame_rate) % TimeLine.SCALE_MIN() == 0){
-          var min = Math.trunc((i / this.frame_rate) / 60);
-          var sec = (i / this.frame_rate) % 60;
-          sec = ('0' + sec).slice(-2);
-          scaleData.push({'time_id':i,'label':min + ':' + sec});
-        }
-      }
-      var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length)) + 40;
+
+      var height_total = (TimeLine.LINE_HEIGHT() * (this.entries.length) + TimeLine.X_AXIS_HEIGTH());
+      height_total += TimeLine.TRBL()[0] + TimeLine.TRBL()[3];
       var gen_height = (TimeLine.LINE_HEIGHT() * this.entries.length) - (2 * TimeLine.EXT_MARGIN());
       var prec_timeLine = -1; // time line of the old rectanlge
 
@@ -117,123 +117,156 @@ export class TimeLine {
       $('#'+this.div_id).append($chart);
 
       $('#'+this.div_id).addClass('row')
-                        .css('background-color', '#f2f2f2');
-      // div height is the height of the svg + height horizontal scroll bar
-      $('#'+this.id_entries).css('height_total', height_total + TimeLine.SCROLL_HEIGTH())
-                      .addClass('col s2');
-      // div height is the height of the svg + height horizontal scroll bar
-      $('#'+this.id_chart).css('height', height_total + TimeLine.SCROLL_HEIGTH())
-                      .addClass('col s10')
-                      .css('overflow-x', 'auto')
-                      .css('overflow-y', 'hidden');
-      // generate the two div one for the caption and one for the chart
-      var chart = d3.select('#'+this.id_chart)
-              .append('svg');
-      var entries = d3.select('#'+this.id_entries)
-              .append('svg');
+          .css('background-color', '#f2f2f2');
+      $('#'+this.id_entries).css('height', height_total)
+          .addClass('col s2');
 
-      $('#'+this.id_chart).find('svg').attr('width',width_total)
-              .attr('height',height_total + TimeLine.SCROLL_HEIGTH())
-              .css('position','relative');
+      // div height is the height of the svg + height horizontal scroll bar
+      $('#'+this.id_chart).css('height', height_total)
+          .addClass('col s10')
+          .css('overflow-x', 'auto')
+          .css('overflow-y', 'hidden');
+
+      this.x1 = d3.scaleLinear()
+          .domain([0, this.nb_frames])
+          .range([0, gen_width]);
+
+      var xAxis = d3.axisBottom()
+        	.scale(that.x1)
+          .tickSize(1);
+
+      var y1 = d3.scaleLinear()
+          .domain([0, this.entries.length])
+          .range([0, gen_height]);
+
+      var yAxis = d3.axisLeft()
+          .scale(y1)
+          .tickSize(1);
+
+      // generate the two div one for the caption and one for the chart
+      var entries = d3.select('#'+this.id_entries)
+          .append('svg');
+
+      var chart = d3.select('#'+this.id_chart)
+          .append('svg')
+          .style('width',width_total)
+          .style('height',height_total)
+          .style('position','relative');
+
+      var zoom = d3.zoom()
+          .scaleExtent([1, this.frame_rate])
+          .on('zoom', zoomed)
+        chart.call(zoom);
+
+      $('#'+this.id_chart).find('svg')
 
       var gen = chart.append('g')
-              .attr('transform', 'translate(' + (TimeLine.TRBL()[3] + TimeLine.EXT_MARGIN()) + ',' + (TimeLine.TRBL()[0] + TimeLine.EXT_MARGIN()) + ')')
-              .attr('width', gen_width)
-              .attr('height', gen_height)
-              .attr('class', 'general');
 
-      var y1 = d3.scale.linear()
-              .domain([0, this.entries.length])
-              .range([0, gen_height]);
+      gen.attr('transform', 'translate(' + (TimeLine.TRBL()[3] + TimeLine.EXT_MARGIN()) + ',' + (TimeLine.TRBL()[0] + TimeLine.EXT_MARGIN()) + ')')
+          .style('width', gen_width)
+          .style('height', gen_height)
+          .attr('class', 'general');
 
-      var x1 = d3.scale.linear()
-              .domain([0, this.nb_frames])
-              .range([0, gen_width]);
+      // add x axis
+      chart.append('g')
+        .classed('x axis', true).call(xAxis)
+        .attr('transform', 'translate('+TimeLine.TRBL()[3]+', '+ y1(this.entries.length + 1) +')')
+
+      function zoomed(){
+          // chart.style('width', new_width);
+
+          // update the scale
+          chart.select('.x.axis').call(xAxis);
+          // redraw the read line
+          gen.select('#read_line').attr('x1', that.x1(that.current_frame))
+          .attr('x2', that.x1(that.current_frame));
+
+
+          // redraw the rectangles
+          gen.selectAll('rect')
+          .data(that.items)
+          .attr('x', function (d) {
+            return that.x1(d.start + 0.1);
+          })
+          .attr('y', function (d) {
+            return y1(d.index + 0.1);
+          })
+          .attr('width', function (d) {
+            return Math.max(that.x1(d.end - 0.1) - that.x1(d.start), 5);
+          })
+          .attr('height', function (d) {
+            return y1(0.8);
+          })
+
+        }
 
       gen.selectAll('.entryLines')
-              .data(this.entries)
-              .enter().append('line')
-              .attr('x1', 0)
-              .attr('y1', function (d, i) {
-                  return y1(i + 1);
-              })
-              .attr('x2', gen_width)
-              .attr('y2', function (d, i) {
-                  return y1(i + 1);
-              })
-              .attr('stroke', 'lightgray');
+          .data(this.entries)
+          .enter().append('line')
+          .attr('x1', 0)
+          .attr('y1', function (d, i) {
+              return y1(i + 1);
+          })
+          .attr('x2', gen_width)
+          .attr('y2', function (d, i) {
+              return y1(i + 1);
+          })
+          .attr('stroke', 'lightgray');
 
       var rect = gen.selectAll('rect')
-              .data(this.items);
-      var that = this;
+          .data(this.items);
 
 
       rect.enter().append('rect')
-              .attr('x', function (d) {
-                  return x1(d.start + 0.1);
-              })
-              .attr('y', function (d) {
-                  return y1(d.index + 0.1);
-              })
-              .attr('width', function (d) {
-                  return Math.max(x1(d.end - 0.1) - x1(d.start), 5);
-              })
-              .attr('height', function (d) {
-                  return y1(0.8);
-              })
-              .attr('number', function (d, i) {
-                  return i;
-              })
-              .attr('index', function(d){
-                return d.index
-              })
-              .style('fill', function (d, i) {
-                  return my_color[d.index % my_color.length];
-              })
-              .attr('stroke', 'lightgray')
-              .on('click', function(d, i){ that.blockPlay(d, this)});
+          .attr('x', function (d) {
+              return that.x1(d.start + 0.1);
+          })
+          .attr('y', function (d) {
+              return y1(d.index + 0.1);
+          })
+          .attr('width', function (d) {
+              return Math.max(that.x1(d.end - 0.1) - that.x1(d.start), 5);
+          })
+          .attr('height', function (d) {
+              return y1(0.8);
+          })
+          .attr('number', function (d, i) {return i;})
+          .attr('index', function(d){
+            return d.index
+          })
+          .style('fill', function (d, i) {return my_color[d.index % my_color.length];
+          })
+          .attr('stroke', 'lightgray')
+          .on('click', function(d, i){ that.blockPlay(d, this)});
 
       gen.append('line')
-              .attr('id', 'read_line')
-              .attr('x1', x1(0))
-              .attr('y1', 0)
-              .attr('x2', x1(0))
-              .attr('y2', gen_height)
-              .attr('stroke', 'gray');
+          .attr('id', 'read_line')
+          .attr('x1', that.x1(that.current_frame))
+          .attr('y1', 0)
+          .attr('x2', that.x1(that.current_frame))
+          .attr('y2', gen_height)
+          .attr('stroke', 'gray');
 
       entries.append('text')
-              .text(this.name_extractor)
-              .attr('x', 0)
-              .attr('y', 15)
-              .attr('text-anchor', 'start')
-              .attr('dy', '.5ex')
-              .style('font-size', '20px')
-              .style('font-weight', 'bold');
+          .text(this.name_extractor)
+          .attr('x', 0)
+          .attr('y', 15)
+          .attr('text-anchor', 'start')
+          .attr('dy', '.5ex')
+          .style('font-size', '20px')
+          .style('font-weight', 'bold');
 
       entries.selectAll('.entryText')
-              .data(this.entries)
-              .enter().append('text')
-              .text(function (d) {
-                  return d;
-              })
-              .attr('x',  0)
-              .attr('y', function (d, i) {
-                  return ((TimeLine.LINE_HEIGHT() * (i + 1)) + 5);
-              })
-              // .attr('dy', '.5ex')
-              .attr('text-anchor', 'start');
-
-      gen.selectAll('.scaleText')
-              .data(scaleData)
-              .enter().append('text')
-              .text(function(d){
-                return d.label;
-              })
-              .attr('x', function(d){
-                return x1(d.time_id);
-              })
-              .attr('y', height_total - TimeLine.TRBL()[2]);
-
+          .data(this.entries)
+          .enter().append('text')
+          .text(function (d) {
+              return d;
+          })
+          .attr('x',  0)
+          .attr('y', function (d, i) {
+              return ((TimeLine.LINE_HEIGHT() * (i + 1)) + 5);
+          })
+          .attr('text-anchor', 'start');
     }
 
     /* Event trigger when click on a rect of the time line
@@ -269,7 +302,6 @@ export class TimeLine {
     /* Called when this time line lost the focus of the video controleur
     */
     lostFocus(){
-      console.log('timeline lostFocus');
       if (this.index_used_rect !== -1) {
         var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
         if(used_rect.length > 0){
@@ -298,20 +330,13 @@ export class TimeLine {
     */
     updateVideoControler(){
       var that = this;
-      var currentFrame = vidCtrl.getCurrentFrame();
-      var scale = this.getScale();
-      var width_total = TimeLine.TRBL()[3] + (this.nb_frames * scale);
-      var gen_width = width_total - 2 * TimeLine.EXT_MARGIN() - TimeLine.TRBL()[1] - TimeLine.TRBL()[3];
-      var x1 = d3.scale.linear()
-        .domain([0, this.nb_frames])
-        .range([0, gen_width]);
-      var scrollLeftValue = (currentFrame * scale ) - (30 * this.frame_rate * scale);
-      // console.log('frame: ', currentFrame, ' this.nb_frames: ', this.nb_frames)
-      // console.log('leftSpace: ', TimeLine.TRBL()[3] , ' scrollLeft: ', scrollLeftValue )
-      // console.log('scale: ', scale)
+      this.current_frame = vidCtrl.getCurrentFrame();
+      this.moveReadLine();
+      var half_chart_width = $('#'+this.id_chart).width()
+      half_chart_width += TimeLine.TRBL()[1] +TimeLine.TRBL()[3]
+      half_chart_width = half_chart_width / 2 + TimeLine.TRBL()[3];
+      var scrollLeftValue = this.x1(this.current_frame) - half_chart_width;
 
-      $('#'+this.id_chart).find('#read_line').attr('x1', x1(currentFrame))
-                                            .attr('x2', x1(currentFrame));
       $('#'+this.id_chart).animate({
         scrollLeft: scrollLeftValue
         }, 1
@@ -321,8 +346,10 @@ export class TimeLine {
     /* Observer pattern : update function
     */
     updateVisualizer() {
+      var saveScrollLeftValue = $('#'+this.id_chart).prop('scrollLeft')
       var that = this;
       var data = this.visualizer.getTimeLineData();
+      this.current_frame = vidCtrl.getCurrentFrame();
       this.entries = [];
       $(data).each(function(i,e){
         that.entries.push(e.name);
@@ -335,16 +362,30 @@ export class TimeLine {
       })
       $('#' + this.div_id).empty();
       this.draw();
-
+      this.moveReadLine();
+      $('#'+this.id_chart).animate({
+        scrollLeft: saveScrollLeftValue
+        }, 1
+      )
       if(this.index_used_rect !== -1 &&
         typeof vidCtrl.focusedTimeLine !== 'undefined' &&
-        vidCtrl.isFocused &&
+        vidCtrl.isFocusedTimeLine &&
         vidCtrl.focusedTimeLine.equals(this)){
         var current_item = this.items[this.index_used_rect];
         var my_selected_color = TimeLine.MY_SELECTED_COLOR();
-        $(this.index_used_rect).css('fill', my_selected_color[current_item.index % my_selected_color.length]);
+        var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
+        $(used_rect).css('fill', my_selected_color[current_item.index % my_selected_color.length]);
+        vidCtrl.setPlayingInterval(current_item.start, current_item.end);
+        vidCtrl.setPartialPlaying(true);
+        if(current_item.start < current_item.end  && vidCtrl.isPlaying ){
+          vidCtrl.play();
+        }
       }
-      this.updateVideoControler();
     }
 
+    moveReadLine(){
+      x = this.x1(this.current_frame)
+      $('#'+this.id_chart).find('#read_line').attr('x1', x)
+                                            .attr('x2', x);
+    }
 }

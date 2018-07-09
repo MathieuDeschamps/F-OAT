@@ -95,8 +95,8 @@
             <p class="flow-text">{{_ 'movieDuration'}}</p>
             <div class="input-field inline col s12 {{errorClass 'duration'}}">
               <input class="col s3" type="number" max="99" min="0" id="hours" placeholder="HH"/>
-              <input class="col s3" type="number" max="99" min="0" id="minutes" placeholder="mm"/>
-              <input class="col s3" type="number" max="99" min="0" id="seconds" placeholder="ss"/>
+              <input class="col s3" type="number" max="60" min="0" id="minutes" placeholder="mm"/>
+              <input class="col s3" type="number" max="60" min="0" id="seconds" placeholder="ss"/>
             </div>
             <span class="red-text">{{errorMessage 'duration'}}</span>
           </div>

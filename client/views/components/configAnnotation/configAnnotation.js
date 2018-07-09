@@ -73,11 +73,15 @@ Template.configAnnotation.helpers({
 });
 
 function addAnnotation(idExtractor,version){
-  manager.addAnnotation(idExtractor,version);
+  if(typeof manager != 'undefined'){
+    manager.addAnnotation(idExtractor,version);
+  }
 }
 
 function updateManager(idVisualizer,xml){
-  manager.update(idVisualizer,xml);
+  if(typeof manager != 'undefined'){
+    manager.update(idVisualizer,xml);
+  }
 }
 
 
@@ -91,7 +95,10 @@ Template.configAnnotation.onDestroyed(()=>{
     appId: -1,
     _id: -1
   });
-  manager.destroyVisualizersEventDDP();
+  if(typeof manager !== 'undefined'){
+    manager.destroyVisualizersEventDDP();
+  }
+
   eventLiveUpdate.setClient({
     appId: -1,
     _id: -1

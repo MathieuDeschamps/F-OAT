@@ -76,7 +76,7 @@ Template.videoPlayer.onRendered(function () {
     features: '[]',
     clickToPlayPause : false,
     success: function (mediaElement, domObject) {
-      Player =mediaElement;
+      Player = mediaElement;
       mediaElement.setSrc(url);
     }
   });
