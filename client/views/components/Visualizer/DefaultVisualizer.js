@@ -62,7 +62,11 @@ export class DefaultVisualizer{
     var generator = new XMLGenerator(this.xmlxsdObj);
     xml += generator.generateXML();
     xml += "</"+extractor+">";
-    eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
+    if(generator.getErrorMessage()===""){
+      eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
+    }else{
+      console.log("error",generator.getErrorMessage());
+    }
   }
 
   /* Obsever pattern : update function
