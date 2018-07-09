@@ -231,9 +231,7 @@ export class TimeLine {
               return y1(0.8);
           })
           .attr('number', function (d, i) {return i;})
-          .attr('index', function(d){
-            return d.index
-          })
+          .attr('index', function(d){return d.index;})
           .style('fill', function (d, i) {return my_color[d.index % my_color.length];
           })
           .attr('stroke', 'lightgray')

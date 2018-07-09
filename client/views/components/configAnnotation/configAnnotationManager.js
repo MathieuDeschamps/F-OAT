@@ -20,7 +20,6 @@ export class configAnnotationManager{
   constructor(xsds, xmls, nbFrames, checkBoxDiv, visualizerDivs, saveButtonDiv){
     this.xsds = xsds.slice(0);
     this.xmls = xmls.slice(0);
-    console.log('xmls', xmls);
     this.nbFrames = nbFrames;
     this.checkBoxDiv = checkBoxDiv;
     this.visualizerDivs = visualizerDivs;
@@ -223,6 +222,19 @@ export class configAnnotationManager{
               visualizer.visualize()
               this.visualizers.push(visualizer);
             }
+
+          var annotedFrames = [];
+          this.xmls.forEach(function(xml,i){
+            var xmltostring = Writer.convertDocumentToString(xml, 0)
+            var newFrames = Parser.getListTimeId(xmltostring);
+            newFrames.forEach(function(frame,j){
+              annotedFrames.push(frame);
+            })
+          });
+          annotedFrames.sort(function(a,b){
+            return a-b;
+          });
+          vidCtrl.setAnnotedFrames(annotedFrames);
           }
         });
       }
@@ -248,8 +260,38 @@ export class configAnnotationManager{
         }
       }
     });
+    var annotedFrames = [];
+    this.xmls.forEach(function(xml,i){
+      var xmltostring = Writer.convertDocumentToString(xml, 0)
+      var newFrames = Parser.getListTimeId(xmltostring);
+      newFrames.forEach(function(frame,j){
+        annotedFrames.push(frame);
+      })
+    });
+    annotedFrames.sort(function(a,b){
+      return a-b;
+    });
+    vidCtrl.setAnnotedFrames(annotedFrames);
+
   }
 
+  /* Function that will update all visualizers
+  triggered by eventDDP setXmls for a user coming on project page to get last version
+  @xmls : array of xml from the manager of another user
+  */
+  updateXmls(xmls){
+
+    var that = this;
+    xmls.forEach(function(xml,i){
+      var visualizer = that.visualizers[i];
+      var xsd = that.xsds[i];
+      var parsexml = $.parseXML(xml);
+      that.xmls[i] = $(parsexml).children().first();
+      var xsdObj = new XSDObject(xsd);
+      var xmlxsdObj = new XMLXSDObj(that.xmls[i], xsdObj);
+      visualizer.setXmlXsdObj(xmlxsdObj);
+    });
+  }
 
   /* Function that will reinitialize event ddp client of all visualizers
   */
@@ -259,7 +301,15 @@ export class configAnnotationManager{
     });
   }
 
-
+  getXmls(){
+    var xmls = [];
+    var that = this;
+    this.xmls.forEach(function(xmlDoc,i){
+      var xml = xmlDoc[0].outerHTML;
+      xmls.push(xml);
+    })
+    return xmls;
+  }
 
   /*function which checked if the current user has the right write on the proejct
   */

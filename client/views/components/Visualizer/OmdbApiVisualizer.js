@@ -62,7 +62,11 @@ export class OmdbApiVisualizer{
     var generator = new XMLGenerator(this.xmlxsdObj);
     xml += generator.generateXML();
     xml += "</"+extractor+">";
-    eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
+    if(generator.getErrorMessage()===""){
+      eventLiveUpdate.emit("liveUpdate",this.idExtractor,xml);
+    }else{
+      console.log("error",generator.getErrorMessage());
+    }
   }
 
   /* Visualize the XMLXSDObject

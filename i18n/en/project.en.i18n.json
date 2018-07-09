@@ -4,13 +4,13 @@
   "save" : "Save",
   "errorProjectRight" : "Sorry, you do not have the right to modify this project.",
   "errorSaveProject" : "Sorry, the annotations cannot be saved.",
-  "errorSendParms" : "Sorry, an error has occurs during the sending of the parameters.",
+  "errorSendParms" : "Sorry, an error has occured while sending parameters.",
   "projectDeleted" : "Project has been deleted by owner. Back to dashboard.",
+  "extractionProgress" : "Extraction in progress",
   "uploadProject" : "Upload your video file",
   "fileProject" : "File",
   "addFileButton" : "Upload",
 
   "errorExtensionFile" : "File must be a .mp4 file",
   "errorFile" : "Give a file to upload"
-
 }

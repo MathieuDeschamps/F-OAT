@@ -79,6 +79,26 @@ Meteor.startup(() => {
       ]
     },idVisualizer,xml);
   });
+
+  eventLiveUpdate.addListener('getXmls',(client,idUserSet,idUserGet)=>{
+    eventLiveUpdate.matchEmit("getXmls",{
+      $and: [
+        {_id: {$eq : idUserGet}},
+        {appId: client.appId}
+      ]
+    },idUserGet,idUserSet);
+  });
+
+  eventLiveUpdateSet = new EventDDP('setUpdate');
+
+  eventLiveUpdateSet.addListener('setXmls',(client,xmls,idUserSet)=>{
+    eventLiveUpdateSet.matchEmit("setXmls",{
+      $and: [
+        {_id: {$eq : idUserSet}},
+        {appId: client.appId}
+      ]
+    },xmls,idUserSet);
+  });
 });
 
 
