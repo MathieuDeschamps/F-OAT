@@ -415,7 +415,7 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-			var selectFormName=this.id+'_'+this.attrFormName;
+			var selectFormName=this.attrFormName;
 			this.inputHtml = this.generateSelect(selectFormName,[true, false], value, disabled);
 			this.eventHandler.push({
 					function:function(){
@@ -491,7 +491,7 @@ export class XMLXSDForm{
 			}
 
 			if (xsdDeci.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdDeci.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -510,7 +510,7 @@ export class XMLXSDForm{
 						eventName:'change'
 					});
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
 
 				this.eventHandler.push({
@@ -590,7 +590,7 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdFloat.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdFloat.enumeration, value, disabled);
 				this.eventHandler.push({
 						function:function(){
@@ -609,7 +609,7 @@ export class XMLXSDForm{
 					});
 
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", 0.01, value, disabled);
 
 				this.eventHandler.push({
@@ -628,7 +628,6 @@ export class XMLXSDForm{
 					eventName:'change'
 				});
 			}
-			return result
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -688,7 +687,7 @@ export class XMLXSDForm{
 			}
 			// console.log('XSD int', xsdInt)
 			if (xsdInt.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -707,7 +706,7 @@ export class XMLXSDForm{
 						eventName:'change'
 					});
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
 
 				this.eventHandler.push({
@@ -787,7 +786,7 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			if (xsdString.isEnumerated()){
-				var selectFormName=this.id+'_'+this.attrFormName;
+				var selectFormName=this.attrFormName;
 				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value, disabled);
 
 				this.eventHandler.push({
@@ -807,7 +806,7 @@ export class XMLXSDForm{
 				});
 
 			}else{
-				var formName=this.id+'_'+this.attrFormName;
+				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
 				this.eventHandler.push({
 					function:function(){
@@ -1006,7 +1005,7 @@ export class XMLXSDForm{
 		var result = '';
 		var visualizer = this.visualizer;
 		$.each(obj.attrs,function(key,attr){
-			var formName=attr.name+'form';
+			var formName=this.id+'_'+attr.name+'form';
 			var jqFormName='#'+formName;
 			var switchName=attr.name+'switch';
 			var jqSwitchName='#'+switchName;

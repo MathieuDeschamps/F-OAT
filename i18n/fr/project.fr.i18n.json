@@ -5,6 +5,7 @@
   "errorProjectRight" : "Désolé, vous n'avez pas le droit de modifier ce projet.",
   "errorSaveProject" : "Désolé, les annotations ne peuvent pas être sauvegardées.",
   "errorSendParms" : "Désolé, une erreur s'est produite lors de l'envoi des paramètres.",
+  "extractionProgress" : "Extraction en cours",
   "projectDeleted" : "Le projet a été supprimé par le propriétaire, retour au menu.",
   "uploadProject" : "Télécharger votre fichier vidéo",
   "fileProject" : "Fichier",
@@ -12,5 +13,4 @@
 
   "errorExtensionFile" : "Le fichier doit être un fichier .mp4",
   "errorFile" : "Donnez un fichier à télécharger"
-
 }

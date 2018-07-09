@@ -92,7 +92,7 @@ export class configExtractorManager{
 			var gen=new XMLGenerator(xmlxsdObj);
 			// console.log(gen.generateXML());
 			var paramsXML=gen.generateXML();
-			if(xmlGenerator.getErrorMessage() !== ""){
+			if(gen.getErrorMessage() !== ""){
 				toastr.warning(TAPi18n.__('errorSendParms')+ gen.getErrorMessage())
 			}else{
 
@@ -134,7 +134,7 @@ export class configExtractorManager{
 					that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 				}else{
 					// Extraction launch
-					toastr.success("Extraction in progress");
+					toastr.success(TAPi18n.__('extractionProgress'));
 
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
