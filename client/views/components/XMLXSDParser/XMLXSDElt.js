@@ -61,6 +61,7 @@ export class XMLXSDElt{
 			typeof index === 'number' &&
 			index < this.eltsList.length
 	}
+	
 	/* Add an object to EltsList (case of sequenced element)
 	@xsdSeq : XSDSequence object
 	*/

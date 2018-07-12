@@ -44,13 +44,13 @@ export class TimeLine {
         that.items.push(interval);
       })
     })
-    this.id_entries =  this.div_id+'_entries';
-    this.id_chart =  this.div_id+'_chart';
+
     // these attributs following attributs are intiliased by draw
     this.scale_x1 = undefined
     this.scale_x2 = undefined
     this.first_draw = true;
     this.brush = undefined;
+    this.main = undefined
     this.mini = undefined;
     this.draw();
   }
@@ -118,10 +118,10 @@ export class TimeLine {
 
     // scales
     this.scale_x1 = d3.scaleLinear()
-        .domain([0, this.nb_frames])
+        .domain([1, this.nb_frames])
         .range([0, width_main]);
     this.scale_x2 = d3.scaleLinear()
-        .domain([0, this.nb_frames])
+        .domain([1, this.nb_frames])
         .range([0, width_main]);
     var scale_y1 = d3.scaleLinear()
         .domain([0, this.entries.length])
@@ -138,7 +138,7 @@ export class TimeLine {
     this.brush = d3.brushX(this.scale_x2)
         .extent([[0,0],[width_main, height_mini]])
         .on('brush end', brushed);
-    
+
     // zoom
     var zoom = d3.zoom()
         .scaleExtent([1, Infinity])
@@ -150,7 +150,8 @@ export class TimeLine {
         .append('svg')
         .attr('width', width_total)
         .attr('height', height_total)
-        .attr('class', 'chart');
+        .attr('class', 'chart')
+        .call(zoom);
 
     chart.append('defs').append('clipPath')
         .attr('id', 'clip')
@@ -168,7 +169,8 @@ export class TimeLine {
         .style('font-size', '20px')
         .style('font-weight', 'bold');
 
-    var main = chart.append('g')
+
+    this.main = chart.append('g')
         .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')')
         .attr('width', width_main)
         .attr('height', height_main)
@@ -182,7 +184,7 @@ export class TimeLine {
 
 
     //main texts
-    main.append('g').selectAll('.laneText')
+    this.main.append('g').selectAll('.laneText')
         .data(this.entries)
         .enter().append('text')
         .text(function(d){;return d;})
@@ -193,25 +195,16 @@ export class TimeLine {
         .attr('class', 'laneText');
 
     // main axis x
-    main.append('g')
+    this.main.append('g')
         .attr('class', 'axis axis--x')
-        .attr('transform', 'translate('+0+', '+ height_main+')')
+        .attr('transform', 'translate('+0+', '+(height_main+1)+')')
         .call(axis_x1);
 
-    // zoom container
-    main.append('rect')
-        .attr('class', 'zoom')
-        .attr('width', width_main)
-        .attr('height', height_main)
-        .attr('transform', 'translate(' + 0 + ',' + 0 + ')')
-        .style("opacity", 0)
-        .call(zoom);
-
-    var itemRects = main.append("g")
+    var itemRects = this.main.append("g")
         .attr("clip-path", "url(#clip)");
 
     //main read line
-    main.append('line')
+    this.main.append('line')
         .attr('class', 'read_line')
         .attr('x1', that.scale_x1(that.current_frame))
         .attr('x2', that.scale_x1(that.current_frame))
@@ -247,8 +240,8 @@ export class TimeLine {
         .attr('class', 'read_line')
         .attr('x1', that.scale_x2(that.current_frame))
         .attr('x2', that.scale_x2(that.current_frame))
-        .attr('y1', scale_y1.range()[0])
-        .attr('y2', scale_y1.range()[1])
+        .attr('y1', 0)
+        .attr('y2', height_mini)
         .attr('stroke', 'black');
 
 
@@ -270,14 +263,14 @@ export class TimeLine {
       var rects;
       var s = d3.event.selection || that.scale_x2.range();
       that.scale_x1.domain(s.map(that.scale_x2.invert, that.scale_x2));
-      main.select(".axis--x").call(axis_x1);
+      that.main.select(".axis--x").call(axis_x1);
       var min = that.scale_x1.domain()[0]
       var max = that.scale_x1.domain()[1]
-      drawMainRect(min, max);
       that.moveReadLine();
+      drawMainRect(min, max);
 
       // update zoom
-      main.select('.zoom').call(zoom.transform, d3.zoomIdentity
+      chart.call(zoom.transform, d3.zoomIdentity
         .scale(width_main / (s[1] - s[0]))
         .translate(-s[0], 0));
     }
@@ -286,12 +279,12 @@ export class TimeLine {
         if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore brush-by-zoom
         var t = d3.event.transform;
         that.scale_x1.domain(t.rescaleX(that.scale_x2).domain());
-        main.select(".axis--x").call(axis_x1);
+        that.main.select(".axis--x").call(axis_x1);
         var min = that.scale_x1.domain()[0]
         var max = that.scale_x1.domain()[1]
 
-        drawMainRect(min, max);
         that.moveReadLine();
+        drawMainRect(min, max);
 
         // update the brush
         that.mini.select('.brush').call(that.brush.move, [that.scale_x2(min), that.scale_x2(max)])
@@ -413,7 +406,6 @@ export class TimeLine {
     /* Observer pattern : update function
     */
     updateVisualizer() {
-      var saveScrollLeftValue = $('#'+this.id_chart).prop('scrollLeft')
       var that = this;
       var data = this.visualizer.getTimeLineData();
       this.current_frame = vidCtrl.getCurrentFrame();
@@ -429,8 +421,8 @@ export class TimeLine {
       })
       $('#' + this.div_id).empty();
       var domain_x1 = this.scale_x1.domain();
-      this.draw();
       this.moveReadLine();
+      this.draw();
       // update the brush
       that.mini.select('.brush').call(that.brush.move, [that.scale_x2(domain_x1[0]), that.scale_x2(domain_x1[1])])
 
@@ -457,10 +449,34 @@ export class TimeLine {
         // move the read line of main
         x1 = this.scale_x1(this.current_frame);
         var read_line1 =   $('#'+this.div_id).find('.read_line:eq(0)')
+        // update the brush when the read line is out of the main  windows
+        // or every 10 seconds
+        if((x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1] ||
+        this.current_frame % (this.frame_rate * 10) === 0) &&
+        vidCtrl.isPlaying &&
+        this.current_frame < this.nb_frames &&
+        this.current_frame > 1 ){
+          var old_min = this.scale_x1.domain()[0];
+          var old_max = this.scale_x1.domain()[1];
+          var half_brush_size = (old_max - old_min) / 2 ;
+
+          var new_min = this.current_frame - half_brush_size;
+          if(new_min < this.scale_x2.domain()[0])new_min = this.scale_x2.domain()[0];
+
+          var new_max = this.current_frame + half_brush_size;
+          if(new_max > this.scale_x2.domain()[1])new_max = this.scale_x2.domain()[1];
+
+          if(new_min >= new_max){
+            new_min = old_min;
+            new_max = old_max;
+          }
+          this.mini.select('.brush').call(this.brush.move, [this.scale_x2(new_min), this.scale_x2(new_max)])
+        }
+        
         if(x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1]){
-          $(read_line1).css('opacity', '0')
+          $(read_line1).css('opacity', 0)
         }else{
-          $(read_line1).css('opacity', '100')
+          $(read_line1).css('opacity', 100)
         }
         $(read_line1).attr('x1', x1)
             .attr('x2', x1);

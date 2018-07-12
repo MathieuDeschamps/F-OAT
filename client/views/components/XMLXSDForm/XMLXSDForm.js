@@ -24,14 +24,11 @@ export class XMLXSDForm{
 		this.attrManage=false;
 		this.attrFormName="";
 		this.inputHtml="";
+		this.idFocusedInput = undefined
 		this.currentNodeValue = undefined
 
 		this.currentNodeValue = undefined
 		this.htmlUpdate=false;
-	}
-
-	setVisualizer(visualizer){
-		this.visualizer = visualizer
 	}
 
 	equals(object){
@@ -59,11 +56,7 @@ export class XMLXSDForm{
 
 		$(jqDivId).html(this.html);
 
-
-		// console.log($(jqIdconfig));
 		var that=this;
-		//  Appear at the same time
-		// $(jqIdconfig).click(function(){
 		that.stack.push({
 			tag:that.name,
 			obj:xmlxsdObj.content,
@@ -71,7 +64,6 @@ export class XMLXSDForm{
 		});
 		xmlxsdObj.content.accept(that);
 
-		// });
 	}
 
 	/* Visitor pattern : visit function
@@ -80,7 +72,6 @@ export class XMLXSDForm{
 	visitXMLXSDElt(xmlxsdElt){
 		// console.log('visitXMLXSDElt',xmlxsdElt);
 		var $div = $('<div id="' + this.id + '_extractor" />')
-		var visualizer = this.visualizer
 		this.html = $div
 
 		// generate nav
@@ -101,13 +92,7 @@ export class XMLXSDForm{
 			$divEditor.append(this.generateHeaderContent(ideHeader,'keyboard_arrow_down',this.name,false, undefined));
 		}
 		var that=this;
-		this.eventHandler.push({
-			function:function(){
-				that.eventEditorHeader(this);
-			},
-			id:idHeader,
-			eventName:'click'
-		});
+		this.addEventEditorHeader(idHeader);
 		var idBody = this.id+'_elt_'+this.name+'_body';
 		var $divBody =$('<div id="'+idBody+'" class="editor-body row"/>')
 		$divEditor.append($divBody)
@@ -151,9 +136,9 @@ export class XMLXSDForm{
 						setTimeout(function() {
 							var deleted = xmlxsdElt.deleteElement(i);
 							xmlxsdElt.accept(that);
-							if(typeof visualizer !== 'undefined' &&
+							if(typeof that.visualizer !== 'undefined' &&
 							deleted ){
-								visualizer.notifyAll();
+								that.visualizer.notifyAll();
 							}
 						}, duration);
 					},
@@ -173,10 +158,20 @@ export class XMLXSDForm{
 			this.eventHandler.push({
 				function:function(){
 					xmlxsdElt.type.accept(xmlxsdElt);
-					that.displayedElement = xmlxsdElt;
-					xmlxsdElt.accept(that);
-					if(typeof visualizer !== 'undefined'){
-						visualizer.notifyAll();
+					// add a new element
+					xmlxsdElt.type.accept(xmlxsdElt);
+					// move into the new element
+					var eltsList = xmlxsdElt.eltsList;
+					var newElt = eltsList[eltsList.length - 1]
+					that.displayedElement =newElt;
+					newElt.accept(that);
+					that.stack.push({
+						tag:xmlxsdElt.name,
+						obj:newElt,
+						i:eltsList.length - 1
+					});
+					if(typeof that.visualizer !== 'undefined'){
+						that.visualizer.notifyAll();
 					}
 				},
 				id:idEltAdd,
@@ -257,13 +252,7 @@ export class XMLXSDForm{
 		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag, deletable, idClearHeader));
 
-		this.eventHandler.push({
-				function:function(){
-					that.eventEditorHeader(this);
-				},
-				id:idHeader,
-				eventName:'click'
-			});
+		this.addEventEditorHeader(idHeader);
 
 		var idBody = this.id+'_seq_'+xmlxsdSeq.name+'_body';
 		var $divBody = $('<div id="'+idBody+'" class="editor-body row"/>');
@@ -335,9 +324,18 @@ export class XMLXSDForm{
 
 					that.eventHandler.push({
 						function:function(){
+							// add a new element
 							xmlxsdElt.type.accept(xmlxsdElt);
-							that.displayedElement = xmlxsdSeq;
-							xmlxsdSeq.accept(that);
+							// move into the new element
+							var eltsList = xmlxsdElt.eltsList;
+							var newElt = eltsList[eltsList.length - 1]
+							that.displayedElement =newElt;
+							newElt.accept(that);
+							that.stack.push({
+								tag:xmlxsdElt.name,
+								obj:newElt,
+								i:eltsList.length - 1
+							});
 							if(typeof that.visualizer !== 'undefined'){
 								that.visualizer.notifyAll();
 							}
@@ -443,13 +441,8 @@ export class XMLXSDForm{
 		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag,deletable, idClearHeader));
 
-		this.eventHandler.push({
-				function:function(){
-					that.eventEditorHeader(this);
-				},
-				id:idHeader,
-				eventName:'click'
-			});
+		this.addEventEditorHeader(idHeader)
+
 		var idBody = this.id+'_ext_'+xmlxsdExt.name+'_body'
 		var $divBody = $('<div id="'+idBody+'" class="editor-body row"/>');
 		$divEditor.append($divBody);
@@ -468,7 +461,6 @@ export class XMLXSDForm{
 	*/
 	visitXSDBooleanType(xsdBool){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -486,23 +478,10 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-			var selectFormName=this.attrFormName;
-			this.inputHtml = this.generateSelect(selectFormName,[true, false], value, disabled);
-			this.eventHandler.push({
-					function:function(){
-						var jqSelectFormName='#'+selectFormName;
-						var oldValue = attr.value;
-						attr.setValue($(jqSelectFormName).val());
-						newValue = attr.value;
-						$(jqSelectFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id: selectFormName,
-					eventName:'change'
-				});
+			var formName=this.attrFormName;
+			this.inputHtml = this.generateSelect(formName,[true, false], value, disabled);
+
+			this.addEventInput(formName)
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -542,7 +521,6 @@ export class XMLXSDForm{
 	*/
 	visitXSDDecimalType(xsdDeci){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -560,46 +538,13 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-
+			var formName=this.attrFormName;
 			if (xsdDeci.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdDeci.enumeration, value, disabled);
-
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							var oldValue = attr.value;
-							attr.setValue($(jqSelectFormName).val());
-							newValue = attr.value;
-							$(jqSelectFormName).val(newValue);
-							if(typeof visualizer !== 'undefined' &&
-								oldValue !== newValue){
-								visualizer.notifyAll();
-							}
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
+				this.inputHtml = this.generateSelect(formName, xsdDeci.enumeration, value, disabled);
 			}else{
-				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						$(jqFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'change'
-				});
 			}
+			this.addEventInput(formName)
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -642,7 +587,6 @@ export class XMLXSDForm{
 	*/
 	visitXSDFloatType(xsdFloat){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -660,45 +604,13 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
+			var formName=this.attrFormName;
 			if (xsdFloat.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdFloat.enumeration, value, disabled);
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							var oldValue = attr.value;
-							attr.setValue($(jqSelectFormName).val());
-							newValue = attr.value;
-							$(jqSelectFormName).val(newValue);
-							if(typeof visualizer !== 'undefined' &&
-								oldValue !== newValue){
-								visualizer.notifyAll();
-							}
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
+				this.inputHtml = this.generateSelect(formName, xsdFloat.enumeration, value, disabled);
 			}else{
-				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", 0.01, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						$(jqFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'change'
-				});
 			}
+			this.addEventInput(formName)
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -738,7 +650,6 @@ export class XMLXSDForm{
 	*/
 	visitXSDIntegerType(xsdInt){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -757,45 +668,14 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			// console.log('XSD int', xsdInt)
+			var formName=this.attrFormName;
 			if (xsdInt.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value, disabled);
-
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							var oldValue = attr.value;
-							attr.setValue($(jqSelectFormName).val());
-							newValue = attr.value;
-							$(jqSelectFormName).val(newValue);
-							if(typeof visualizer !== 'undefined' &&
-								oldValue !== newValue){
-								visualizer.notifyAll();
-							}
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
+				this.inputHtml = this.generateSelect(formName, xsdInt.enumeration, value, disabled);
 			}else{
-				var formName=this.attrFormName;
 				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						$(jqFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'change'
-				});
 			}
+			this.addEventInput(formName)
+
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -839,7 +719,6 @@ export class XMLXSDForm{
 		// console.log('visit XSDStringType')
 		var that = this
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -856,44 +735,14 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
+			var formName=this.attrFormName;
 			if (xsdString.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqSelectFormName='#'+selectFormName;
-						var oldValue = attr.value;
-						attr.setValue($(jqSelectFormName).val());
-						newValue = attr.value;
-						$(jqSelectFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id: selectFormName,
-					eventName:'change'
-				});
-
-			}else{
-				var formName=this.attrFormName;
-				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'focusout'
-				});
+				this.inputHtml = this.generateSelect(formName, xsdString.enumeration, value, disabled)
 			}
+			else{
+				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
+			}
+			this.addEventInput(formName)
 		}
 		else
 		{
@@ -985,6 +834,7 @@ export class XMLXSDForm{
 	@return the code for the navigation bar
 	*/
 	generateNav(){
+		// console.log('this.stack', this.stack)
 		var nbElementByNav = 3;
 		var result = '';
 		var lineNumber = 0;
@@ -1076,9 +926,8 @@ export class XMLXSDForm{
 	generateAttrsForm(obj){
 		var that=this;
 		var result = '';
-		var visualizer = this.visualizer;
 		$.each(obj.attrs,function(key,attr){
-			var formName=that.id+'_'+attr.name+'form';
+			var formName=that.id+'_'+attr.name+'_form';
 			var jqFormName='#'+formName;
 			var switchName=attr.name+'switch';
 			var jqSwitchName='#'+switchName;
@@ -1113,9 +962,9 @@ export class XMLXSDForm{
 							$(jqFormName).prop("disabled", false)
 							attr.setValue(value);
 							$(jqFormName).val(value)
-							if(typeof visualizer !== 'undefined' &&
+							if(typeof that.visualizer !== 'undefined' &&
 							 typeof value !== 'undefined'){
-								 visualizer.notifyAll();
+								 that.visualizer.notifyAll();
 							 }
 						} else if($(jqSwitchName).prop('checked') &&
 						 	typeof attr.fixedValue !== 'undefined'){
@@ -1123,7 +972,7 @@ export class XMLXSDForm{
 							attr.setValue(value);
 							$(jqFormName).val(value)
 							if(typeof value !== 'undefined'){
-								 visualizer.notifyAll();
+								 that.visualizer.notifyAll();
 							 }
 
 						}else{
@@ -1131,8 +980,8 @@ export class XMLXSDForm{
 							$(jqFormName).prop("disabled", true);
 							attr.setValue(undefined);
 							$(jqFormName).val(undefined)
-							if(typeof visualizer !== 'undefined'){
-								visualizer.notifyAll();
+							if(typeof that.visualizer !== 'undefined'){
+								that.visualizer.notifyAll();
 							}
 						}
 
@@ -1242,24 +1091,70 @@ export class XMLXSDForm{
 		$('select').material_select()
 	}
 
-	/* Event called on the editor header element
+	/* Add the event for the editor header to eventHandler
+	@idHeader id of the header
 	*/
-	eventEditorHeader(target){
-		var divBody = $(target).parent().parent().children('.editor-body')
-		if(divBody.length === 1){
-			if($(target).prop('opened')){
-				var maxHeight = $(divBody).prop('scrollHeight');
-				$(divBody).css('max-height', 0+'px');
-				$(target).children('i').text('keyboard_arrow_right')
-				$(target).prop('opened', false)
-			}else{
-				var maxHeight = $(divBody).prop('scrollHeight');
-				$(divBody).css('max-height', maxHeight+'px');
-				$(target).children('i').text('keyboard_arrow_down')
-				$(target).prop('opened', true)
-			}
-		}
+	addEventEditorHeader(idHeader){
+		this.eventHandler.push({
+			function:function(){
+				var divBody = $(this).parent().parent().children('.editor-body')
+				if(divBody.length === 1){
+					if($(this).prop('opened')){
+						var maxHeight = $(divBody).prop('scrollHeight');
+						$(divBody).css('max-height', 0+'px');
+						$(this).children('i').text('keyboard_arrow_right')
+						$(this).prop('opened', false)
+					}else{
+						var maxHeight = $(divBody).prop('scrollHeight');
+						$(divBody).css('max-height', maxHeight+'px');
+						$(this).children('i').text('keyboard_arrow_down')
+						$(this).prop('opened', true)
+					}
+				}
+			},
+			id: idHeader,
+			eventName:'click'
+		})
+	}
 
+	/* Add the events for the input
+	@idInput id of the input
+	*/
+	addEventInput(idInput){
+		var that = this;
+		// event to set the id of the focused element
+		this.eventHandler.push({
+			function:function(){
+				that.idFocusedInput = idInput;
+			},
+			id:idInput,
+			eventName:'focus'
+		})
+		var attr=this.currentAttr;
+		// event to set the new value of the attr
+		this.eventHandler.push({
+			function:function(){
+				var jqIdInput='#'+idInput;
+				var oldValue = attr.value;
+				attr.setValue($(jqIdInput).val());
+				newValue = attr.value;
+				$(jqIdInput).val(newValue);
+				if(typeof that.visualizer !== 'undefined' &&
+					oldValue !== newValue){
+					that.visualizer.notifyAll();
+				}
+			},
+			id: idInput,
+			eventName:'change'
+		});
+		// event to reset the id of the focused element
+		this.eventHandler.push({
+			function:function(){
+				that.idFocusedInput = undefined;
+			},
+			id:idInput,
+			eventName:'focusout'
+		})
 	}
 
 	/* Display the form
@@ -1287,7 +1182,6 @@ export class XMLXSDForm{
 		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
 
 		var that = this;
-
 		//Reconstruct the stack from the last stack with new xmlxsdObj
 		saveStack.forEach(function(elm,i){
 			if(that.stack.length==0){
@@ -1338,6 +1232,13 @@ export class XMLXSDForm{
 
 		// restore the save eventHandler before the generateNav
 		this.eventHandler = saveEventHandler;
+
+		// set the input focused
+		var focusedInput = $('#'+this.divId).find('#'+this.idFocusedInput)
+		if(typeof this.idFocusedInput !== 'undefined' &&
+			focusedInput.length === 1){
+			$(focusedInput).focus();
+		}
 	}
 
 }

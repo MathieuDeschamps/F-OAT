@@ -14,10 +14,6 @@ export class OmdbApiForm{
 		this.visualizer = visualizer
 	}
 
-	setVisualizer(visualizer){
-		this.visualizer = visualizer
-	}
-
   equals(object){
     var result = false;
     if(typeof this === typeof object){
