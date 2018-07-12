@@ -145,7 +145,8 @@ export class TimeLine {
 
       // generate the two div one for the caption and one for the chart
       var entries = d3.select('#'+this.id_entries)
-          .append('svg');
+          .append('svg')
+          .style('height',height_total);
 
       var chart = d3.select('#'+this.id_chart)
           .append('svg')

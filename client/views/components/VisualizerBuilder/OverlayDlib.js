@@ -1,4 +1,4 @@
-export class OverlayPosition{
+export class OverlayDlib{
   /* Constructor
   */
   constructor(xmlxsdObj, name){
@@ -114,16 +114,22 @@ export class OverlayPosition{
 
     // code for the attributs x and y
     if((!isNaN(this.currentTimeId)) &&
-      typeof obj.attrs.x !== 'undefined' &&
-      typeof obj.attrs.y !== 'undefined' &&
-      parseFloat(obj.attrs.x.value) <= 1 &&
-      parseFloat(obj.attrs.y.value) <= 1
+      typeof obj.attrs.top !== 'undefined' &&
+      typeof obj.attrs.right!== 'undefined' &&
+      parseFloat(obj.attrs.top.value) <= 1 &&
+      parseFloat(obj.attrs.right.value) <= 1 &&
+      typeof obj.attrs.bottom !== 'undefined' &&
+      typeof obj.attrs.left!== 'undefined' &&
+      parseFloat(obj.attrs.bottom.value) <= 1 &&
+      parseFloat(obj.attrs.left.value) <= 1
       ){
         this.overlayData.forEach(function(element){
           if(!added && element.timeId === that.currentTimeId){
             element.positions.push({
-              x: parseFloat(obj.attrs.x.value),
-              y: parseFloat(obj.attrs.y.value),
+              top: parseFloat(obj.attrs.top.value),
+              right: parseFloat(obj.attrs.right.value),
+              bottom: parseFloat(obj.attrs.bottom.value),
+              left: parseFloat(obj.attrs.left.value),
               // clone the stack
               stack:that.stack.slice(0),
             })
@@ -134,8 +140,10 @@ export class OverlayPosition{
           this.overlayData.push({
             timeId: parseInt(this.currentTimeId, 10),
             positions: [{
-              x: parseFloat(obj.attrs.x.value),
-              y: parseFloat(obj.attrs.y.value),
+              top: parseFloat(obj.attrs.top.value),
+              right: parseFloat(obj.attrs.right.value),
+              bottom: parseFloat(obj.attrs.bottom.value),
+              left: parseFloat(obj.attrs.left.value),
               // clone the stack
               stack: this.stack.slice(0),
             }]
