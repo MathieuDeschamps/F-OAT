@@ -7,10 +7,12 @@ export class TimeLineCharacter{
     this.name = name
     this.stack = [];
     this.timeLineData = [];
+    this.count = 0;
     this.currentCharacter = undefined;
   }
 
   initialize(){
+    this.count = 0;
     this.stack = [];
     this.timeLineData = [];
     this.isCharacter = false;
@@ -131,9 +133,11 @@ export class TimeLineCharacter{
                 index: parseInt(element.intervals[0].index, 10),
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
+                id: that.count,
                 // clone the stack
                 stack: that.stack.slice(0),
               })
+              that.count++;
               added = true
             }
           })
@@ -144,10 +148,12 @@ export class TimeLineCharacter{
                 index: parseInt(that.timeLineData.length, 10),
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
+                id: that.count,
                 // clone the stack
                 stack: this.stack.slice(0),
               }]
             })
+            this.count++;
           }
           added = false
       }

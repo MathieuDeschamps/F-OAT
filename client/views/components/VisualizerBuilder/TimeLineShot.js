@@ -5,11 +5,13 @@ export class TimeLineShot{
   constructor(xmlxsdObj, name){
     this.xmlxsdObj = xmlxsdObj;
     this.name = name
+    this.count = 0
     this.stack = [];
     this.timeLineData = [];
   }
 
   initialize(){
+    this.count= 0;
     this.stack = [];
     this.timeLineData = [];
   }
@@ -116,9 +118,11 @@ export class TimeLineShot{
                 index: parseInt(element.intervals[0].index, 10),
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
+                id: that.count,
                 // clone the stack
                 stack: that.stack.slice(0),
               })
+              that.count++;
               added = true
             }
           })
@@ -129,10 +133,12 @@ export class TimeLineShot{
                 index: parseInt(that.timeLineData.length, 10),
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
+                id: that.count,
                 // clone the stack
                 stack: this.stack.slice(0),
               }]
             })
+            this.count++;
           }
           added = false
       }
@@ -148,9 +154,11 @@ export class TimeLineShot{
               index: parseInt(element.intervals[0].index, 10),
               start: obj.attrs.timeId.value,
               end: obj.attrs.timeId.value,
+              id: that.count,
               // clone the stack
               stack:that.stack.slice(0),
             })
+            that.count++;
             added = true
           }
         })
@@ -161,10 +169,12 @@ export class TimeLineShot{
               index: parseInt(that.timeLineData.length, 10),
               start: obj.attrs.timeId.value,
               end: obj.attrs.timeId.value,
+              id:that.count,
               // clone the stack
-              stack: this.stack.slice(0),
+              stack: this.stack.slice(0)
             }]
           })
+          this.count++;
         }
         added = false
       }
