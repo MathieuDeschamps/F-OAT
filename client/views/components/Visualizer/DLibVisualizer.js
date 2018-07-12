@@ -1,11 +1,11 @@
 import { TimeLine } from '../class/TimeLine.js'
-import { TimeLineShot } from '../VisualizerBuilder/TimeLineShot.js'
+import { TimeLineDlib } from '../VisualizerBuilder/TimeLineDlib.js'
 import { Overlay } from '../class/Overlay.js';
-import { OverlayPosition} from '../VisualizerBuilder/OverlayPosition.js'
+import { OverlayDlib} from '../VisualizerBuilder/OverlayDlib.js'
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
-export class ShotExtractVisualizer{
+export class DLibVisualizer{
 
   /* Constructor
   */
@@ -98,14 +98,14 @@ export class ShotExtractVisualizer{
     this.attach(xmlxsdForm)
     xmlxsdForm.generateForm();
 
-    this.timeLineBuilder = new TimeLineShot(this.xmlxsdObj, this.name);
+    this.timeLineBuilder = new TimeLineDlib(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
     var timeLine = new TimeLine(this.name, this.nbFrames, timeLineData,
     this.divIdTimeLine,this);
     timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
-    this.overlayBuilder = new OverlayPosition(this.xmlxsdObj, this.name)
+    this.overlayBuilder = new OverlayDlib(this.xmlxsdObj, this.name)
     var overlayData = this.overlayBuilder.getOverlayData();
     var overlay = new Overlay(overlayData, this.divIdOverlay,this)
     overlay.setXMLXSDForm(xmlxsdForm);

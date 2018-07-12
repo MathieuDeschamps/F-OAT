@@ -2,6 +2,8 @@ import { ShotExtractVisualizer } from './ShotExtractVisualizer.js';
 import { CharacterExtractVisualizer } from './CharacterExtractVisualizer.js';
 import { DefaultVisualizer } from './DefaultVisualizer.js';
 import { OmdbApiVisualizer } from './OmdbApiVisualizer.js';
+import { DLibVisualizer } from './DLibVisualizer.js';
+
 
 
 export class VisualizerFactory{
@@ -51,6 +53,17 @@ export class VisualizerFactory{
         break;
       case "omdbapi":
         visualizer = new OmdbApiVisualizer(this.xmlxsdObj,id, name, idForm);
+        break;
+      case "dlib_face_detection":
+        divTimeLine = $('<div/>');
+        $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
+        $('#' + this.divIdTimeLine).append(divTimeLine);
+
+        divOverlay = $('<div/>')
+        $(divOverlay).attr('id', idOverlay).css('display', 'none');
+        $('#' + this.divIdOverlay).append(divOverlay);
+
+        visualizer = new DLibVisualizer(this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
         break;
       default:
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)
