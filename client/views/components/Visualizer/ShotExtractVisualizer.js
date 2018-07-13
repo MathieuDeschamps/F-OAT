@@ -2,6 +2,7 @@ import { TimeLine } from '../class/TimeLine.js'
 import { TimeLineShot } from '../VisualizerBuilder/TimeLineShot.js'
 import { Overlay } from '../class/Overlay.js';
 import { OverlayPosition} from '../VisualizerBuilder/OverlayPosition.js'
+import { XMLSelector } from '../XMLFilter/XMLSelector.js'
 import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
@@ -9,7 +10,8 @@ export class ShotExtractVisualizer{
 
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdOverlay){
+  constructor(xsdObj, xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdFilter, divIdOverlay){
+    this.xsdObj = xsdObj;
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
     this.name = name;
@@ -17,6 +19,7 @@ export class ShotExtractVisualizer{
     this.divIdForm = divIdForm;
     this.observers = [];
     this.divIdTimeLine = divIdTimeLine;
+    this.divIdFilter = divIdFilter;
     this.divIdOverlay = divIdOverlay;
     this.timeLineBuilder = undefined;
     this.overlayBuilder = undefined;
@@ -105,14 +108,17 @@ export class ShotExtractVisualizer{
     timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
+    var xmlSelectorTimeLine = new XMLSelector(this.xsdObj, this.divIdFilter)
+    xmlSelectorTimeLine.generateSelector();
+
     this.overlayBuilder = new OverlayPosition(this.xmlxsdObj, this.name)
     var overlayData = this.overlayBuilder.getOverlayData();
     var overlay = new Overlay(overlayData, this.divIdOverlay,this)
     overlay.setXMLXSDForm(xmlxsdForm);
     this.attach(overlay);
 
-    console.log('timeLineData', timeLineData);
-    console.log('overlayData', overlayData);
+    // console.log('timeLineData', timeLineData);
+    // console.log('overlayData', overlayData);
 
   }
 
@@ -123,6 +129,7 @@ export class ShotExtractVisualizer{
     var result = [];
     result.push(this.divIdForm)
     result.push(this.divIdTimeLine);
+    result.push(this.divIdFilter);
     result.push(this.divIdOverlay);
     return result;
   }

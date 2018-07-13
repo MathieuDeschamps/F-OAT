@@ -39,7 +39,7 @@ export class configAnnotationManager{
       var xmlxsdObj = new XMLXSDObj(xmls[i], xsdObj);
 
       // console.log('this.visualizerDivs', that.visualizerDivs);
-      var visualizerFactory = new VisualizerFactory(xmlxsdObj, that.nbFrames, that.visualizerDivs )
+      var visualizerFactory = new VisualizerFactory(xsdObj, xmlxsdObj, that.nbFrames, that.visualizerDivs )
       var extractor = xmls[i].clone().empty()
       var visualizer = visualizerFactory.getVisualizer(extractor)
       visualizer.visualize()

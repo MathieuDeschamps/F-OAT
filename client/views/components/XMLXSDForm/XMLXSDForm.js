@@ -5,6 +5,7 @@ export class XMLXSDForm{
 	@id : id of the form (id of the extractor in MongoDB)
 	@name : name of the form (name of the extractor)
 	@divId : the id of the div which will contain the code of the form
+	@visualizer : visualizer which created the XMLXSDForm
 	*/
 	constructor(xmlxsdObj,id,name,divId, visualizer){
 		this.xmlxsdObj=xmlxsdObj;
@@ -542,7 +543,7 @@ export class XMLXSDForm{
 			if (xsdDeci.isEnumerated()){
 				this.inputHtml = this.generateSelect(formName, xsdDeci.enumeration, value, disabled);
 			}else{
-				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
+				this.inputHtml = this.generateInput(formName, 'number', undefined, value, disabled);
 			}
 			this.addEventInput(formName)
 		}else{
@@ -608,7 +609,7 @@ export class XMLXSDForm{
 			if (xsdFloat.isEnumerated()){
 				this.inputHtml = this.generateSelect(formName, xsdFloat.enumeration, value, disabled);
 			}else{
-				this.inputHtml = this.generateInput(formName, "number", 0.01, value, disabled);
+				this.inputHtml = this.generateInput(formName, 'number', 0.01, value, disabled);
 			}
 			this.addEventInput(formName)
 		}else{
@@ -672,7 +673,7 @@ export class XMLXSDForm{
 			if (xsdInt.isEnumerated()){
 				this.inputHtml = this.generateSelect(formName, xsdInt.enumeration, value, disabled);
 			}else{
-				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
+				this.inputHtml = this.generateInput(formName, 'number', 1, value, disabled);
 			}
 			this.addEventInput(formName)
 
@@ -740,7 +741,7 @@ export class XMLXSDForm{
 				this.inputHtml = this.generateSelect(formName, xsdString.enumeration, value, disabled)
 			}
 			else{
-				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
+				this.inputHtml = this.generateInput(formName, 'text', undefined, value, disabled);
 			}
 			this.addEventInput(formName)
 		}
@@ -906,7 +907,7 @@ export class XMLXSDForm{
 		result+='</div>';
 		result+='</div>';
 		if(deletable && typeof idClear !=='undefined'){
-			result+='<i id="'+idClear+'" class="red-text material-icons small deleteButton col s2"> clear</i>';
+			result+='<i id="'+idClear+'" class="red-text material-icons small deleteButton col s2">clear</i>';
 		}
 		result+='</div>';
 		result = $.parseHTML(result);
@@ -1025,14 +1026,14 @@ export class XMLXSDForm{
 	 @value default value of the input element
 	 @returns the code for the input element
 	*/
-	generateInput(id, type, step, value, disabled){
+	generateInput(id, type, step, defaultValue, disabled){
 		var result =''
 		result+='<input id="'+ id +'" type="'+ type +'" '
-		if(type === "number" && typeof step !== 'undefined'){
+		if(type === 'number' && typeof step !== 'undefined'){
 			result+='step="'+ step +'" '
 		}
-		if(typeof value !== 'undefined'){
-			result+='value="'+ value +'" '
+		if(typeof defaultValue !== 'undefined'){
+			result+='value="'+ defaultValue +'" '
 		}
 		if(disabled){
 			result+='disabled '
@@ -1088,7 +1089,7 @@ export class XMLXSDForm{
 			}
 		});
 		// init the select elements
-		$('select').material_select()
+		$('#'+this.divId).find('select').material_select()
 	}
 
 	/* Add the event for the editor header to eventHandler

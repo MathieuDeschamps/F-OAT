@@ -1,3 +1,4 @@
+import { XMLSelector } from '../XMLFilter/XMLSelector.js'
 import * as d3 from 'd3';
 export class TimeLine {
 
@@ -17,11 +18,12 @@ export class TimeLine {
   @divId id of the html div which will contain the timeline
   @visualizer the visaulizer which created the overlay
   */
-  constructor(name, nbFrames, data, divId, visualizer){
-    this.div_id = divId;
-    this.xmlxsdForm = undefined;
+  constructor(name, nbFrames,data, divId, visualizer){
     this.name_extractor = name;
     this.nb_frames = nbFrames;
+    // this.xsd_obj = xsdObj;
+    this.div_id = divId;
+    this.xmlxsdForm = undefined;
     if(typeof vidCtrl !== 'undefined' &&
     typeof vidCtrl.frameRate !== 'undefined'){
       this.frame_rate = vidCtrl.frameRate;
@@ -338,11 +340,11 @@ export class TimeLine {
       }
   }
 
-    /* Event trigger when click on a rect of the time line
-    @item contains the data of the xml to the rectangle
-    @target is the html of the rectangle
-    */
-    blockPlay(item, target){
+  /* Event trigger when click on a rect of the time line
+  @item contains the data of the xml to the rectangle
+  @target is the html of the rectangle
+  */
+  blockPlay(item, target){
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color =  TimeLine.MY_SELECTED_COLOR();
       // save the index of the used rect because lostFocus rested
@@ -368,125 +370,114 @@ export class TimeLine {
 
     };
 
-    /* Called when this time line lost the focus of the video controleur
-    */
-    lostFocus(){
-      if (this.index_used_rect !== -1) {
-        var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
-        if(used_rect.length > 0){
-          var index_color = parseInt($(used_rect).attr('index'));
-          var my_color = TimeLine.MY_COLOR();
-          $(used_rect).css('fill', my_color[index_color % my_color.length]);
-        }
+  /* Called when this time line lost the focus of the video controleur
+  */
+  lostFocus(){
+    if (this.index_used_rect !== -1) {
+      var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
+      if(used_rect.length > 0){
+        var index_color = parseInt($(used_rect).attr('index'));
+        var my_color = TimeLine.MY_COLOR();
+        $(used_rect).css('fill', my_color[index_color % my_color.length]);
       }
     }
+  }
 
-    /* Called when this time line take the focus of the video controleur
-    */
-    // takeFocus(){
-    //   if (this.index_used_rect !== -1) {
-    //     var used_rect = $('#'+this.div_id).find('rect[number=''+this.index_used_rect+'']');
-    //     if(used_rect.length > 0){
-    //       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
-    //       var index_color = parseInt($(used_rect).attr('index'));
-    //       console.log('index_color', index_color);
-    //       $(used_rect).css('fill', my_selected_color[index_color % my_selected_color.length]);
-    //     }
-    //   }
-    // }
+  /* Observer pattern : update function
+  */
+  updateVideoControler(){
+    this.current_frame = vidCtrl.getCurrentFrame();
+    this.moveReadLine();
 
-    /* Observer pattern : update function
-    */
-    updateVideoControler(){
-      this.current_frame = vidCtrl.getCurrentFrame();
-      this.moveReadLine();
+  }
 
-    }
-
-    /* Observer pattern : update function
-    */
-    updateVisualizer() {
-      var that = this;
-      var data = this.visualizer.getTimeLineData();
-      this.current_frame = vidCtrl.getCurrentFrame();
-      this.entries = [];
-      $(data).each(function(i,e){
-        that.entries.push(e.name);
-      });
-      this.items = []
-      $(data).each(function(i,entry){
-        $(entry.intervals).each(function(j,interval){
-          that.items.push(interval);
-        })
+  /* Observer pattern : update function
+  */
+  updateVisualizer() {
+    var that = this;
+    var data = this.visualizer.getTimeLineData();
+    this.current_frame = vidCtrl.getCurrentFrame();
+    this.entries = [];
+    $(data).each(function(i,e){
+      that.entries.push(e.name);
+    });
+    this.items = []
+    $(data).each(function(i,entry){
+      $(entry.intervals).each(function(j,interval){
+        that.items.push(interval);
       })
-      $('#' + this.div_id).empty();
-      var domain_x1 = this.scale_x1.domain();
-      this.moveReadLine();
-      this.draw();
-      // update the brush
-      that.mini.select('.brush').call(that.brush.move, [that.scale_x2(domain_x1[0]), that.scale_x2(domain_x1[1])])
+    })
+    $('#' + this.div_id).empty();
+    var domain_x1 = this.scale_x1.domain();
+    this.moveReadLine();
+    this.draw();
+    // update the brush
+    that.mini.select('.brush').call(that.brush.move, [that.scale_x2(domain_x1[0]), that.scale_x2(domain_x1[1])])
 
-      if(this.index_used_rect !== -1 &&
-        typeof vidCtrl.focusedTimeLine !== 'undefined' &&
-        vidCtrl.isFocusedTimeLine &&
-        vidCtrl.focusedTimeLine.equals(this))
-      {
-        var current_item = $(this.items).filter(function(i, item){
-          if(item.id === that.index_used_rect){
-            return item
-          }
-        })[0];
-        vidCtrl.setPlayingInterval(current_item.start, current_item.end);
-        vidCtrl.setPartialPlaying(true);
-        if(current_item.start < current_item.end  && vidCtrl.isPlaying ){
-          vidCtrl.play();
+    // update the selected main rectangle
+    if(this.index_used_rect !== -1 &&
+      typeof vidCtrl.focusedTimeLine !== 'undefined' &&
+      vidCtrl.isFocusedTimeLine &&
+      vidCtrl.focusedTimeLine.equals(this)){
+      var current_item = $(this.items).filter(function(i, item){
+        if(item.id === that.index_used_rect){
+          return item
         }
+      })[0];
+      vidCtrl.setPlayingInterval(current_item.start, current_item.end);
+      vidCtrl.setPartialPlaying(true);
+      if(current_item.start < current_item.end  && vidCtrl.isPlaying ){
+        vidCtrl.play();
       }
     }
+  }
 
-    moveReadLine(){
-        this.current_frame = vidCtrl.getCurrentFrame();
-        // move the read line of main
-        x1 = this.scale_x1(this.current_frame);
-        var read_line1 =   $('#'+this.div_id).find('.read_line:eq(0)')
-        // update the brush when the read line is out of the main  windows
-        // or every 10 seconds
-        if((x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1] ||
-        this.current_frame % (this.frame_rate * 10) === 0) &&
-        vidCtrl.isPlaying &&
-        this.current_frame < this.nb_frames &&
-        this.current_frame > 1 ){
-          var old_min = this.scale_x1.domain()[0];
-          var old_max = this.scale_x1.domain()[1];
-          var half_brush_size = (old_max - old_min) / 2 ;
+  /* move the read lines of the time line
+   on the current frame of the video controler
+  */
+  moveReadLine(){
+      this.current_frame = vidCtrl.getCurrentFrame();
+      // move the read line of main
+      x1 = this.scale_x1(this.current_frame);
+      var main_read_line =   $('#'+this.div_id).find('.read_line:eq(0)')
+      // update the brush when the read line is out of the main  windows
+      // or every 10 seconds
+      if((x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1] ||
+      this.current_frame % (this.frame_rate * 10) === 0) &&
+      vidCtrl.isPlaying &&
+      this.current_frame < this.nb_frames &&
+      this.current_frame > 1 ){
+        var old_min = this.scale_x1.domain()[0];
+        var old_max = this.scale_x1.domain()[1];
+        var half_brush_size = (old_max - old_min) / 2 ;
 
-          var new_min = this.current_frame - half_brush_size;
-          if(new_min < this.scale_x2.domain()[0])new_min = this.scale_x2.domain()[0];
+        var new_min = this.current_frame - half_brush_size;
+        if(new_min < this.scale_x2.domain()[0])new_min = this.scale_x2.domain()[0];
 
-          var new_max = this.current_frame + half_brush_size;
-          if(new_max > this.scale_x2.domain()[1])new_max = this.scale_x2.domain()[1];
+        var new_max = this.current_frame + half_brush_size;
+        if(new_max > this.scale_x2.domain()[1])new_max = this.scale_x2.domain()[1];
 
-          if(new_min >= new_max){
-            new_min = old_min;
-            new_max = old_max;
-          }
-          this.mini.select('.brush').call(this.brush.move, [this.scale_x2(new_min), this.scale_x2(new_max)])
+        if(new_min >= new_max){
+          new_min = old_min;
+          new_max = old_max;
         }
-        
-        if(x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1]){
-          $(read_line1).css('opacity', 0)
-        }else{
-          $(read_line1).css('opacity', 100)
-        }
-        $(read_line1).attr('x1', x1)
-            .attr('x2', x1);
-
-        // move the read line of mini
-        x2 = this.scale_x2(this.current_frame);
-        $('#'+this.div_id).find('.read_line:eq(1)')
-            .attr('x1', x2)
-            .attr('x2', x2);
-
-        // TODO keep the focus on the read line
+        this.mini.select('.brush').call(this.brush.move, [this.scale_x2(new_min), this.scale_x2(new_max)])
       }
+
+      if(x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1]){
+        $(main_read_line).css('opacity', 0)
+      }else{
+        $(main_read_line).css('opacity', 100)
+      }
+      $(main_read_line).attr('x1', x1)
+          .attr('x2', x1);
+
+      // move the read line of mini
+      x2 = this.scale_x2(this.current_frame);
+      $('#'+this.div_id).find('.read_line:eq(1)')
+          .attr('x1', x2)
+          .attr('x2', x2);
+
+    }
+
 }
