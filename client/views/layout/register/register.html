@@ -1,32 +1,32 @@
 <template name="register">
     <div class="centered">
-        <div class="row">
+        <div class="row indigo lighten-5 divborder">
             <form class="col s12">
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">account_circle</i>
-                        <input type="text" id="userName"  class="validate" />
+                        <input type="text" id="userName"  class="validate white style-input-log" />
                         <label for="userName">{{_ 'usernameRegister'}}</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">email</i>
-                        <input type="text" id="mail"  class="validate" />
+                        <input type="text" id="mail"  class="validate white style-input-log" />
                         <label for="mail">{{_ 'email'}}</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">security</i>
-                        <input id="password" type="password" class="validate">
+                        <input id="password" type="password" class="validate white style-input-log">
                         <label for="password">{{_ 'passwordRegister'}}</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s4"></div>
                     <div class="col s4" >
-                        <a class="btn waves-effect waves-light blue darken-4" id="registerForm" name="action">{{_ 'submitRegister'}}
+                        <a class="btn waves-effect waves-light bold" id="registerForm" name="action">{{_ 'submitRegister'}}
                             <i class="material-icons right">send</i>
                         </a>
                     </div>

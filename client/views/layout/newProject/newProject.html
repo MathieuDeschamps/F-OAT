@@ -1,56 +1,58 @@
 <template name="newproject">
   <div class="centered">
-    <h2 class="blue-text text-darken-3">{{_ 'createProject'}}</h2>
+    <h2 class="indigo-text">{{_ 'createProject'}}</h2>
     <div class="content">
       <div class="row">
         <form class="col s12">
-          <div class="row">
-            <div class="input-field col s6 {{errorClass 'name'}}">
-              <input type="text" id="projectName" class="validate projectName" />
-              <label for="projectName">{{_ 'nameProject'}}</label>
-              <span class="red-text">{{errorMessage 'name'}}</span>
+          <div class="indigo lighten-5 divborder">
+            <div class="row">
+              <div class="input-field col s6 {{errorClass 'name'}}">
+                <input type="text" id="projectName" class="validate white style-input projectName" />
+                <label for="projectName">{{_ 'nameProject'}}</label>
+                <span class="red-text">{{errorMessage 'name'}}</span>
+              </div>
+              <div class="input-field col s6 {{errorClass 'url'}}">
+              </div>
             </div>
-            <div class="input-field col s6 {{errorClass 'url'}}">
+
+            <div class="row">
+              <form>
+              <div class="col s6">
+                <input id="radioButtonUrl" type="radio" name="video" value="{{_ 'useUrl'}}" checked>
+                <label for="radioButtonUrl">{{_ 'useUrl'}}</label>
+                <span  class="red-text">{{errorMessage 'file'}}</span>
+              </div>
+              <div class="col s6">
+                <input id="radioButtonFile" type="radio" name="video" value="{{_ 'useFile'}}">
+                <label for="radioButtonFile">{{_ 'useFile'}}</label>
+              </div>
+            </form>
+            </div>
+
+            <div class="row" id="urlForm">
+              <div class="input-field col s6 {{errorClass 'url'}}">
+                <input type="text" id="url" class="validate url white style-input"/>
+                <label for="url">{{_ 'urlProject'}}</label>
+                <span  class="red-text">{{errorMessage 'url'}}</span>
+              </div>
+              <div class="input-field col s6 {{errorClass 'downUrl'}}">
+                <input type="text" id="url-down" class="validate downUrl white style-input"/>
+                <label for="url-down">{{_ 'downUrlProject'}}</label>
+                <span  class="red-text">{{errorMessage 'downUrl'}}</span>
+              </div>
             </div>
           </div>
 
-          <div class="row">
-            <form>
-            <div class="col s6">
-              <input id="radioButtonUrl" type="radio" name="video" value="{{_ 'useUrl'}}" checked>
-              <label for="radioButtonUrl">{{_ 'useUrl'}}</label>
-              <span  class="red-text">{{errorMessage 'file'}}</span>
-            </div>
-            <div class="col s6">
-              <input id="radioButtonFile" type="radio" name="video" value="{{_ 'useFile'}}">
-              <label for="radioButtonFile">{{_ 'useFile'}}</label>
-            </div>
-          </form>
-          </div>
-
-          <div class="row" id="urlForm">
-            <div class="input-field col s6 {{errorClass 'url'}}">
-              <input type="text" id="url" class="validate url"/>
-              <label for="url">{{_ 'urlProject'}}</label>
-              <span  class="red-text">{{errorMessage 'url'}}</span>
-            </div>
-            <div class="input-field col s6 {{errorClass 'downUrl'}}">
-              <input type="text" id="url-down" class="validate downUrl"/>
-              <label for="url-down">{{_ 'downUrlProject'}}</label>
-              <span  class="red-text">{{errorMessage 'downUrl'}}</span>
-            </div>
-          </div>
-
-        <div class="row">
+        <div class="row indigo lighten-5 divborder">
           <div class="col s6 {{errorUserClass 'participant'}}">
             <div class="row">
               <div class="input-field col s12">
-                <input type="text" id="search">
+                <input type="text" id="search" class="white style-input">
                 <label for="search">{{_ 'searchUsers'}}</label>
               </div>
             </div>
             <div class="row">
-              <select multiple="multiple" size="5" class="select col s12" style="height:100px" id="participant">
+              <select multiple="multiple" size="5" class="select col s12 white style-input" style="height:100px" id="participant">
                 {{#each users}}
                 <option class="option" value="{{username}}">{{username}}</option>
                 {{/each}}
@@ -59,7 +61,7 @@
             </div>
             <div class="row">
               <div class="col s6 offset-s3">
-                <a class="btn waves-effect waves-light blue-grey darken-2 col s12" id="addUser" name="addUser">{{_ 'addUser'}}
+                <a class="btn waves-effect waves-light bold amber darken-1 col s12" id="addUser" name="addUser">{{_ 'addUser'}}
                 </a>
               </div>
             </div>
@@ -79,7 +81,7 @@
                     {{username}}
                   </td>
                   <td>
-                    <a class="remove_circle btn-floating btn-tiny waves-effect waves-light red darken-4 right-align right" title="{{_ 'removeUser'}}">
+                    <a class="remove_circle btn-floating btn-tiny waves-effect waves-light red lighten-1 right-align right" title="{{_ 'removeUser'}}">
                       <i class="material-icons" name="{{username}}">remove</i>
                     </a>
                   </td>
@@ -90,20 +92,20 @@
             </table>
           </div>
         </div>
-        <div class="row">
+        <div class="row indigo lighten-5 divborder">
           <div class="col s6">
             <p class="flow-text">{{_ 'movieDuration'}}</p>
             <div class="input-field inline col s12 {{errorClass 'duration'}}">
-              <input class="col s3" type="number" max="99" min="0" id="hours" placeholder="HH"/>
-              <input class="col s3" type="number" max="60" min="0" id="minutes" placeholder="mm"/>
-              <input class="col s3" type="number" max="60" min="0" id="seconds" placeholder="ss"/>
+              <input class="col s3 white style-duration right-align" type="number" max="99" min="0" id="hours" placeholder="HH"/>
+              <input class="col s3 white style-duration right-align" type="number" max="60" min="0" id="minutes" placeholder="MM"/>
+              <input class="col s3 white style-duration right-align" type="number" max="60" min="0" id="seconds" placeholder="SS"/>
             </div>
             <span class="red-text">{{errorMessage 'duration'}}</span>
           </div>
           <div class="col s6">
             <p class="flow-text">{{_ 'frameRate'}}</p>
             <div class="input-field col s12 {{errorClass 'frameRate'}}">
-              <select id="frameRate" class="single-select">
+              <select id="frameRate" class="single-select white style-input">
                 <option value="" disabled selected></option>
                 <option value="23.98">23.98</option>
                 <option value="24">24</option>
@@ -118,10 +120,12 @@
             </div>
           </div>
         </div>
-        {{> omdbForm}}
+        <div class="indigo lighten-5 divborder">
+          {{> omdbForm}}
+        </div>
         <div class="row">
           <div class="col s4 offset-s4" >
-            <a class="btn waves-effect waves-light " id="newProjectForm" name="action">{{_ 'createButton'}}
+            <a class="btn waves-effect waves-light bold" id="newProjectForm" name="action">{{_ 'createButton'}}
               <i class="material-icons right">send</i>
             </a>
           </div>

@@ -38,7 +38,7 @@ Template.team.events({
   'click .delete' (event,instance){
     Meteor.call('removeParticipant',Router.current().params._id,this.username,function(err,res){
       if(err){
-        toastr.warning(err.reason);
+        toastr.error(err.reason);
       }
       else{
         toastr.success(TAPi18n.__("participantRemoved"));
@@ -80,7 +80,7 @@ Template.team.events({
         if(err){
           alert(err.reason);
         }else if(!result){
-          toastr.warning(TAPi18n.__('errorUserNoExists'));
+          toastr.error(TAPi18n.__('errorUserNoExists'));
         }else{
           Meteor.call("getParticipants",Router.current().params._id,(err,result)=>{
             if(err){
@@ -99,11 +99,11 @@ Template.team.events({
             if(!present && newCoworker_name != project.owner){
               Meteor.call("addParticipant",Router.current().params._id, newCoworker_name, newCoworker_right, function(error,result){
                 if(error){
-                  toastr.warning(error.reason);
+                  toastr.error(error.reason);
                 }
               });
             }else{
-              toastr.warning(TAPi18n.__('errorUserAlready', {user :  newCoworker_name}));
+              toastr.error(TAPi18n.__('errorUserAlready', {user :  newCoworker_name}));
             }
           });
         }
@@ -138,7 +138,7 @@ Template.team.events({
       var xmltostring = Writer.convertDocumentToString(result[0],1);
       Meteor.call('modifyDefaultExtractor',idProject,xmltostring,function(error,result){
         if(error){
-          toastr.warning(error.reason);
+          toastr.error(error.reason);
         }
         else{
           toastr.success(TAPi18n.__('titleChanged'));

@@ -127,11 +127,11 @@ Template.newproject.events({
 
     Meteor.call('insertProject', project, function(err, res){
       if(err){
-        toastr.warning(err.reason);
+        toastr.error(err.reason);
       }else{
           Meteor.call('createXMLFile',res,function(error,result){
             if(error){
-              toastr.warning(error.reason);
+              toastr.error(error.reason);
             }
             else{
 
@@ -150,7 +150,7 @@ Template.newproject.events({
                   var xmltostring = Writer.convertDocumentToString(result[0],1);
                   Meteor.call('addDefaultExtractor',res,xmltostring,function(errorAdd,resultAdd){
                     if(errorAdd){
-                      toastr.warning(errorAdd.reason);
+                      toastr.error(errorAdd.reason);
                     }
                     else{
                       Router.go("/");

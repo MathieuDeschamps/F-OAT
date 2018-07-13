@@ -88,7 +88,7 @@ export class XMLXSDForm{
 		// end generate nav
 
 		// Edit elt
-		var $divEditor = $('<div id="'+this.id+'_elt_'+xmlxsdElt.name+'_config" class="editor"/>');
+		var $divEditor = $('<div id="'+this.id+'_elt_'+xmlxsdElt.name+'_config" class="editor grey lighten-4"/>');
 		$div.append($divEditor)
 
 		var headStack=this.stack[this.stack.length-1];
@@ -215,7 +215,7 @@ export class XMLXSDForm{
 		// generate nav
 		$div.append(this.generateNav());
 
-		var $divEditor = $('<div id="'+this.id+'_seq_'+xmlxsdSeq.name+'_config" class="editor"/>');
+		var $divEditor = $('<div id="'+this.id+'_seq_'+xmlxsdSeq.name+'_config" class="editor grey lighten-4"/>');
 		$div.append($divEditor)
 
 		var idHeader = this.id+"_seq_"+xmlxsdSeq.name+"_header";
@@ -400,7 +400,7 @@ export class XMLXSDForm{
 		// generate nav
 		$div.append(this.generateNav());
 
-		var $divEditor = $('<div id="'+this.id+'_ext_'+xmlxsdExt.name+'_config" class="editor"/>');
+		var $divEditor = $('<div id="'+this.id+'_ext_'+xmlxsdExt.name+'_config" class="editor grey lighten-4"/>');
 		$div.append($divEditor);
 		var idHeader = this.id+'_ext_'+xmlxsdExt.name+'_header'
 		var deletable = false
@@ -905,7 +905,7 @@ export class XMLXSDForm{
 				// generate nav
 				$div.append(this.generateNav());
 
-				var $ul = $('<ul id="typestringconfig" class="editor row"/>');
+				var $ul = $('<ul id="typestringconfig" class="editor row grey lighten-4"/>');
 				$div.append($ul)
 				var $li = $('<li/>')
 				$ul.append($li)
@@ -1048,15 +1048,17 @@ export class XMLXSDForm{
 		if(deletable){
 			sizeHeader -= 2;
 		}
-		result+='<div class="row blue darken-4">';
+		result+='<div class="row indigo lighten-2">';
 		result+='<div id="'+id+'" class="editor-header valign-wrapper white-text col s'+sizeHeader+'">';
-		result+= '<i class="material-icons small col s2">'+icon+'</i>';
+		result+= '<i class="material-icons small col s2" title="'+TAPi18n.__('add_element')+'">'+icon+'</i>';
 		result+= '<div class="col s10">';
 		result+= nameHeader;
 		result+='</div>';
 		result+='</div>';
 		if(deletable && typeof idClear !=='undefined'){
-			result+='<i id="'+idClear+'" class="red-text material-icons small deleteButton col s2"> clear</i>';
+			result+='<div class="white-text">'
+			result+='<i id="'+idClear+'" class="deleteButton material-icons small right" title="'+TAPi18n.__('remove_element')+'">remove_circle</i>';
+			result+='</div>'
 		}
 		result+='</div>';
 		result = $.parseHTML(result);
@@ -1178,7 +1180,7 @@ export class XMLXSDForm{
 	*/
 	generateInput(id, type, step, value, disabled){
 		var result =''
-		result+='<input id="'+ id +'" type="'+ type +'" '
+		result+='<input id="'+ id +'" class="white style-input-xmlform" type="'+ type +'" '
 		if(type === "number" && typeof step !== 'undefined'){
 			result+='step="'+ step +'" '
 		}
@@ -1202,9 +1204,9 @@ export class XMLXSDForm{
 		var result = ''
 		var that = this
 		if(disabled){
-			result+='<select id="'+ id +'" class="default-browser" disabled>'
+			result+='<select id="'+ id +'" class="default-browser white style-input-xmlform" disabled>'
 		}else{
-			result+='<select id="'+ id +'" class="default-browser">'
+			result+='<select id="'+ id +'" class="default-browser white style-input-xmlform">'
 		}
 		if(typeof defaultValue !== 'undefined'){
 			result+='<option value="" disabled>Choose your option</option>'

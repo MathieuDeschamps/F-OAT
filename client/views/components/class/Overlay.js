@@ -302,7 +302,6 @@ export class Overlay{
       var width = $('#' + that.divId).find('svg').width();
       var height = $('#' + that.divId).find('svg').height();
 
-      var rectSelected = false;
       if(that.selected!=null){
         that.rects.forEach(function(rect){
 
@@ -311,15 +310,11 @@ export class Overlay{
             if(rect.top.toFixed(4) == that.selected.top.toFixed(4) && rect.right.toFixed(4) == that.selected.right.toFixed(4) &&
             rect.bottom.toFixed(4) == that.selected.bottom.toFixed(4) && rect.left.toFixed(4) == that.selected.left.toFixed(4)){
               that.selected = rect;
-              rectSelected = true;
             }
           }
         });
       }
 
-      if(that.rects.length>0 && !rectSelected){
-        that.selected = that.rects[that.rects.length-1];
-      }
       y1 = d3.scaleLinear()
       .domain([0, 1])
       .range([0, height]);
@@ -347,11 +342,12 @@ export class Overlay{
           return (y1(d.bottom) - y1(d.top));
       })
       .attr('number', function (d, i) {return i;})
-      .attr('stroke', 'lightgray')
+      .attr('stroke', function(d) { if(d=== that.selected) return '#76ff03'; return 'white'})
       .attr('stroke-width',3)
       .attr('cursor','move')
       .attr('class','face')
       .on("mousedown", function(d) {
+        that.selected = d;
         if(d.stack!=null &&
           typeof that.xmlxsdForm != 'undefined'){
           that.xmlxsdForm.displayForm(d.stack);
@@ -370,7 +366,6 @@ export class Overlay{
       d3.select(this).raise().classed("active", true);
       var width = $('#' + that.divId).find('svg').width();
       var height = $('#' + that.divId).find('svg').height();
-
       that.distancesRect.x = d3.event.x/width - d.left;
       that.distancesRect.y = d3.event.y/height - d.top;
     }

@@ -1,22 +1,22 @@
 <template name="playerCommand">
 
-<div id='playerCommand' class="row center-align" >
+<div id='playerCommand' class="row center-align indigo lighten-5 divborder-config" >
 
 <div class="valign-wrapper col s8">
- <button id='playButton' class="col s1  btn waves-effect waves-light" type="button" ><i class="material-icons">play_arrow</i></button>
- <button id='pauseButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">pause</i></button>
+ <button id='playButton' class="col s1  btn waves-effect waves-light padding-button" type="button" ><i class="material-icons">play_arrow</i></button>
+ <button id='pauseButton' class="col s1 btn waves-effect waves-light padding-button" type="button" style="display:none;"><i class="material-icons">pause</i></button>
 
  <p class="col s5 range-field">
 	<input type="range" id="seekBar" value="1" min="1" max="10"/>
  </p>
-  <span class="col s2"> <label>{{_ 'currentFrame'}}</label> <input id="currentFrame" value="1" min="1" max="10" type="number"> </span>
-  <button id='prevAnnotedButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">skip_previous</i></button>
-  <button id='nextAnnotedButton' class="col s1 btn waves-effect waves-light" type="button"><i class="material-icons">skip_next</i></button>
+  <span class="col s2 bold"> <label>{{_ 'currentFrame'}}</label> <input id="currentFrame" class="white style-input" value="1" min="1" max="10" type="number"> </span>
+  <button id='prevAnnotedButton' class="col s1 btn waves-effect waves-light padding-button" type="button"><i class="material-icons">skip_previous</i></button>
+  <button id='nextAnnotedButton' class="col s1 btn waves-effect waves-light padding-button" type="button"><i class="material-icons">skip_next</i></button>
 </div>
  <form class="selection  valign-wrapper col s3" >
- <span class="col s6"> <label>{{_ 'begin'}}</label> <input id="beginSelect"  type="number"> </span>
- <span class="col s5"> <label>{{_ 'end'}}</label><input id="endSelect"  type="number"> </span>
-<div class = "col s1" style="margin-left: 0px;">
+ <span class="col s6 bold"> <label>{{_ 'begin'}}</label> <input id="beginSelect" class="white style-input" type="number"> </span>
+ <span class="col s5 bold"> <label>{{_ 'end'}}</label><input id="endSelect" class="white style-input" type="number"> </span>
+<div class = "col s1 bold" style="margin-left: 0px;">
     <label>{{_ 'partialPlay'}}</label>
         <div class = "switch">
 			<label>

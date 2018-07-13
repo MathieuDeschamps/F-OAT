@@ -30,10 +30,10 @@ Template.register.events({
     }
 
     if(!_password){
-      toastr.warning(TAPi18n.__('errorRegisterPassword'));
+      toastr.error(TAPi18n.__('errorRegisterPassword'));
     }
     else if(!_mail && !_name){
-      toastr.warning(TAPi18n.__('errorRegisterUsernameEmail'));
+      toastr.error(TAPi18n.__('errorRegisterUsernameEmail'));
     }
     else{
       //User validation is done on server/accounts.js in method Accounts.validateNewUser()
@@ -41,14 +41,14 @@ Template.register.events({
         if(err){
           console.log("ERR",err);
           if(err.error==500){
-            toastr.warning(TAPi18n.__(err.reason));
+            toastr.error(TAPi18n.__(err.reason));
           }
           else{
             if(err.reason==="Email already exists."){
-              toastr.warning(TAPi18n.__('errorRegisterEmailExists'));
+              toastr.error(TAPi18n.__('errorRegisterEmailExists'));
             }
             else{
-              toastr.warning(TAPi18n.__('errorRegisterUsernameExists'));
+              toastr.error(TAPi18n.__('errorRegisterUsernameExists'));
             }
           }
         }else{
