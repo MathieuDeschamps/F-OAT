@@ -15,10 +15,10 @@ Template.login.events({
     var _psswd = $('#password').val();
 
     if(!_usrname){
-      toastr.warning(TAPi18n.__('errorUsernameEmpty'))
+      toastr.error(TAPi18n.__('errorUsernameEmpty'))
     }
     else if(!_psswd){
-      toastr.warning(TAPi18n.__('errorPasswordEmpty'))
+      toastr.error(TAPi18n.__('errorPasswordEmpty'))
     }
     else{
       Meteor.loginWithPassword({
@@ -26,7 +26,7 @@ Template.login.events({
       }, _psswd, function(err) {
 
         if (err) {
-          toastr.warning(TAPi18n.__('errorLogin'))
+          toastr.error(TAPi18n.__('errorLogin'))
         }else{
           Router.go('/');
         }

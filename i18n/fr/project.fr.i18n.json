@@ -10,6 +10,8 @@
   "uploadProject" : "Télécharger votre fichier vidéo",
   "fileProject" : "Fichier",
   "addFileButton" : "Télécharger",
+  "add_element" : "Ajouter nouvel élément",
+  "remove_element" : "Supprimer l'élément",
 
   "errorExtensionFile" : "Le fichier doit être un fichier .mp4",
   "errorFile" : "Donnez un fichier à télécharger"

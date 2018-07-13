@@ -69,7 +69,7 @@ Template.notification.events({
       var valueToRemove = elmToRemove.substring(elmToRemove.indexOf(',')+1,elmToRemove.length);
       Meteor.call('removeNotification', Meteor.userId(), dateToRemove, valueToRemove,function(err,res){
         if(err){
-          toastr.warning(err.reason);
+          toastr.error(err.reason);
         }
       });
     }

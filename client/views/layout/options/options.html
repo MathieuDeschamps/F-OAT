@@ -1,52 +1,56 @@
 <template name="options">
   <div class="content">
     <div class="row centered">
-      <h2 class="blue-text text-darken-3">{{_ 'addExtractor'}}</h2>
-      <div class="input-field col s6">
-        <input class="name" id="extractorName" type="text"  />
-        <label for="extractorName">{{_ 'extractorName'}}</label>
-      </div>
-      <div class="input-field col s6">
-        <input class="ip" id="extractorIp" type="text" />
-        <label for="extractorIp">{{_ 'extractorIP'}}</label>
-      </div>
-      <div class="row">
-        <div class=" col s12">
-          <a class="btn waves-effect waves-light blue darken-4" id="submit" name="action">{{_ 'submitExtractor'}}
-            <i class="material-icons right">send</i>
-          </a>
+      <h2 class="indigo-text">{{_ 'addExtractor'}}</h2>
+      <div class="indigo lighten-5 divborder">
+        <div class="input-field col s6">
+          <input class="name white style-input" id="extractorName" type="text"  />
+          <label for="extractorName">{{_ 'extractorName'}}</label>
+        </div>
+        <div class="input-field col s6">
+          <input class="ip white style-input" id="extractorIp" type="text" />
+          <label for="extractorIp">{{_ 'extractorIP'}}</label>
+        </div>
+        <div class="row">
+          <div class=" col s12">
+            <a class="btn waves-effect waves-light bold" id="submit" name="action">{{_ 'submitExtractor'}}
+              <i class="material-icons right">send</i>
+            </a>
+          </div>
         </div>
       </div>
-      <table class="highlight">
-        <thead>
-          <tr>
-            <th>{{_ 'name'}}</th>
-            <th>{{_ 'ipport'}}</th>
-            <th>{{_ 'actions'}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each extractors}}
-          <tr>
-            <td>
-              <input id="name" type="text" value="{{name}}" />
-              <input type="hidden" id="id" value="{{_id}}" />
-            </td>
-            <td>
-              <input id="ip" type="text" value={{ip}} />
-            </td>
-            <td>
-              <a class=" btn-floating btn-small waves-effect center waves-light remove red darken-4" id="delete" title="{{_ 'removeExtractor'}}">
-                <i class="material-icons" name="{{name}}">delete</i>
-              </a>
-              <a class=" btn-floating btn-small waves-effect center waves-light remove blue darken-4" id="update" title="{{_ 'submitModif'}}">
-                <i class="material-icons" name="{{name}}">send</i>
-              </a>
-            </td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
+      <div class="indigo lighten-5 divborder">
+        <table>
+          <thead>
+            <tr>
+              <th>{{_ 'name'}}</th>
+              <th>{{_ 'ipport'}}</th>
+              <th>{{_ 'actions'}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each extractors}}
+            <tr>
+              <td>
+                <input id="name" type="text" value="{{name}}" class="white style-input-tab" />
+                <input type="hidden" id="id" value="{{_id}}" />
+              </td>
+              <td>
+                <input id="ip" type="text" value={{ip}} class="white style-input-tab"/>
+              </td>
+              <td>
+                <a class=" btn-floating btn-small waves-effect center waves-light remove red lighten-1" id="delete" title="{{_ 'removeExtractor'}}">
+                  <i class="material-icons" name="{{name}}">delete</i>
+                </a>
+                <a class=" btn-floating btn-small waves-effect center waves-light remove indigo lighten-2" id="update" title="{{_ 'submitModif'}}">
+                  <i class="material-icons" name="{{name}}">send</i>
+                </a>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>

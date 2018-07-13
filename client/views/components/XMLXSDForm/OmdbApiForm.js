@@ -74,6 +74,7 @@ export class OmdbApiForm{
   */
   visitXMLXSDExtensionType(xmlxsdExt){
     $("#"+this.divId).html(this.generateAttrsForm(xmlxsdExt));
+		$("#"+this.divId).addClass("grey lighten-4 divborder-config");
   }
 
   generateAttrsForm(obj){

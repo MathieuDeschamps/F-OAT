@@ -6,9 +6,9 @@ export class TimeLine {
   static LINE_HEIGHT(){ return 30}
   static LINE_HEIGHT_SCROLL_BAR(){ return 15}
   static EXT_MARGIN(){ return 5}
-  static MY_COLOR(){ return ['#f9a825', '#1565c0']}
+  static MY_COLOR(){ return ['#9fa8da','#ffc107']}
   // static MY_SELECTED_COLOR(){ return ['#f0f', '#ff0']}
-  static MY_SELECTED_COLOR(){ return ['#f57f17', '#0d47a1']}
+  static MY_SELECTED_COLOR(){ return ['#7986cb','#ffa000']}
   static SCALE_MIN(){return 30}
 
   /*
@@ -96,14 +96,16 @@ export class TimeLine {
       }
     })
 
-    var margin = {top: 30, right: 20, bottom: 20, left: margin_left};
+    var margin = {top: 30, right: 20, bottom: 30, left: margin_left};
 
     var height_main = TimeLine.LINE_HEIGHT() * this.entries.length;
     var height_mini = TimeLine.LINE_HEIGHT_SCROLL_BAR() * this.entries.length;
     var height_total = height_main + height_mini + margin.top + margin.bottom + margin.bottom;
 
     $('#'+this.div_id).addClass('row')
-    .css('background-color', '#f2f2f2')
+    .addClass('divtimeline')
+    .addClass('indigo')
+    .addClass('lighten-5')
     .css('width', '100%')
     .css('height', height_total);
     var width_total = 0

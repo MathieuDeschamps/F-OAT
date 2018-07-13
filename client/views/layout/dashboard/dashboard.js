@@ -42,7 +42,7 @@ Template.dashboard.events({
 
       Meteor.call('removeProject',$elm.attr('name'),function(err,res){
         if(err){
-          toastr.warning(err.reason);
+          toastr.error(err.reason);
         }
         else{
           toastr.success(TAPi18n.__('project_removed'));
@@ -52,7 +52,7 @@ Template.dashboard.events({
   'click .exit' (event, instance){
     Meteor.call('removeParticipant',event.target.getAttribute('name'),Meteor.user().username,function(err,res){
       if(err){
-        toastr.warning(err.reason);
+        toastr.error(err.reason);
       }
       else{
         toastr.success(TAPi18n.__('project_leaved'));

@@ -17,7 +17,7 @@
   "searchTitle" : "Rechercher",
   "selectTitle" : "Selectionner ce film",
   "movieDuration" : "Durée du film",
-  "frameRate" : "Frames par secondes",
+  "frameRate" : "Frames par seconde",
 
   "errorSelectUser" : "Selectionner un utilisateur à ajouter",
   "errorAddUser" : "L'utilisateur __user__ appartient déjà au projet",

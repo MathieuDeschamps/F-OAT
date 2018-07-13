@@ -1,0 +1,73 @@
+.divborder{
+  padding:30px;
+  border-radius: 20px;
+  margin-bottom:10px;
+}
+
+.divborder-config{
+  padding:15px;
+  border-radius: 10px;
+  margin-bottom:10px;
+}
+
+.divtimeline{
+  padding:5px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.padding-button{
+  margin-top:15px !important;
+}
+
+.style-input{
+  border-radius: 5px !important;
+  margin-left: -10px !important;
+  margin-top: 3px !important;
+  padding-left: 10px !important;
+}
+
+.style-input-tab{
+  border-radius: 5px !important;
+  margin-left: -10px !important;
+  margin-top: 3px !important;
+  padding-left: 5px !important;
+}
+
+.style-input-xmlform{
+  border-radius: 5px !important;
+  padding-left: 5px !important;
+}
+
+.style-input-log{
+  border-radius: 5px !important;
+  margin-left: 40px !important;
+  margin-top: 3px !important;
+  padding-left: 10px !important;
+}
+
+.style-duration{
+  border-radius: 5px !important;
+  margin-left : 5px !important;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+.toast {
+  background-color: #7986cb !important;
+}
+.toast-success {
+  background-color: #4caf50 !important;
+}
+.toast-error {
+  background-color: #d32f2f !important;
+}
+.toast-warning {
+  background-color: #d32f2f !important;
+}
+
+.toast-message {
+  font-weight: bold !important;
+}

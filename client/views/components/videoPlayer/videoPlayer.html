@@ -6,30 +6,34 @@
           <video preload id="videoDisplayId" style="width:100%; height:100%;"></video>
         </div>
       {{else}}
+      <div class="row centered indigo lighten-5 divborder">
         Uploading <b>{{file}}</b>:
         <div id="myProgress">
           <div id="myBar">{{uploading}}%</div>
         </div>
+      </div>
       {{/if}}
     {{else}}
-      <div class="row centered">
-        <p class="flow-text">{{_ 'uploadProject'}}</p>
-        <div class="file-field input-field col s12">
-          <div class="btn col s4 blue-grey darken-2">
-            <span>{{_ 'fileProject'}}</span>
-            <input type="file" id="selectedFile">
+      <div class="row centered indigo lighten-5 divborder">
+        <div class="indigo lighten-5">
+          <p class="flow-text">{{_ 'uploadProject'}}</p>
+          <div class="file-field input-field col s12">
+            <div class="btn col s4 bold amber darken-1">
+              <span>{{_ 'fileProject'}}</span>
+              <input type="file" id="selectedFile">
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate white style-input" type="text" placeholder="{{_ 'uploadProject'}}">
+            </div>
+            <span  class="red-text">{{errorMessageFile}}</span>
           </div>
-          <div class="file-path-wrapper">
-            <input class="file-path validate" type="text" placeholder="{{_ 'uploadProject'}}">
-          </div>
-          <span  class="red-text">{{errorMessageFile}}</span>
         </div>
-      </div>
-      <div class="row">
-        <div class="col s4 offset-s4" >
-          <a class="btn waves-effect waves-light " id="addFile" name="action">{{_ 'addFileButton'}}
-            <i class="material-icons right">send</i>
-          </a>
+        <div class="row">
+          <div class="col s4 offset-s4" >
+            <a class="btn waves-effect waves-light " id="addFile" name="action">{{_ 'addFileButton'}}
+              <i class="material-icons right">send</i>
+            </a>
+          </div>
         </div>
       </div>
       <div id="videoContainer" class="video" style="width:80%; display:none;">

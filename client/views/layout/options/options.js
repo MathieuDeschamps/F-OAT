@@ -26,24 +26,24 @@ Template.options.events({
       var extractor = {name: nameExtractor, ip: ipExtractor};
 
       if(!extractor.name){
-        toastr.warning(TAPi18n.__('errorExtractorEmpty'));
+        toastr.error(TAPi18n.__('errorExtractorEmpty'));
       }
       if(!extractor.ip){
-        toastr.warning(TAPi18n.__('errorExtractorIPEmpty'));
+        toastr.error(TAPi18n.__('errorExtractorIPEmpty'));
       }
 
       else if(!regex.test(extractor.ip)){
-          toastr.warning(TAPi18n.__('errorExtractorIPWrong'));
+          toastr.error(TAPi18n.__('errorExtractorIPWrong'));
       }
       else{
         Meteor.call('addExtractor',extractor,Meteor.user(),(err,result)=>{
           if(err){
-            toastr.warning(err.reason);
+            toastr.error(err.reason);
           }
           else{
 
             if(result < 0){
-                toastr.warning(TAPi18n.__('errorExtractorExists'));
+                toastr.error(TAPi18n.__('errorExtractorExists'));
             }else{
                 toastr.success(TAPi18n.__('successExtractor'));
             }
@@ -59,7 +59,7 @@ Template.options.events({
     var $elm = $(elm);
     Meteor.call('removeExtractor',$elm.attr('name'),Meteor.user(),function(err,res){
       if(err){
-        toastr.warning(err.reason);
+        toastr.error(err.reason);
       }
       else{
         toastr.success(TAPi18n.__('successExtractorRemoved'));
@@ -72,15 +72,15 @@ Template.options.events({
     var $elm = $(event.target).closest('tr');
     var extractor = {_id:$elm.find("#id").val() ,name: $elm.find("#name").val(), ip: $elm.find('#ip').val(), owner: Meteor.user().username};
     if(!regex.test(extractor.ip)){
-        toastr.warning(TAPi18n.__('errorExtractorIPWrong'));
+        toastr.error(TAPi18n.__('errorExtractorIPWrong'));
     }else{
       Meteor.call('updateExtractor',extractor,function(err,res){
         if(err){
-          toastr.warning(err.reason);
+          toastr.error(err.reason);
         }
         else{
           if(res<0){
-            toastr.warning(TAPi18n.__('errorExtractorExists'));
+            toastr.error(TAPi18n.__('errorExtractorExists'));
           }
           else{
             toastr.success(TAPi18n.__('successExtractorUpdate'));

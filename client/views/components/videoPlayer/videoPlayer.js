@@ -179,14 +179,14 @@ Template.videoPlayer.events({
 
     upload.on('end', function (error, fileObj) {
       if (error) {
-        toastr.warning('Error during upload: ' + error);
+        toastr.error('Error during upload: ' + error);
       } else {
         var idUpload = "upload_"+idProject;
         // Session.set(idUpload, 100);
         // console.log('Session end upload', Session)
         Meteor.call('modifyFileId',idProject,fileObj._id,function(err1,res1){
           if(err1){
-            toastr.warning(err1.reason);
+            toastr.error(err1.reason);
           }
         });
         toastr.success(TAPi18n.__('fileUploaded'));
