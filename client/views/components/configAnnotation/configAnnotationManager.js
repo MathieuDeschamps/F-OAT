@@ -211,7 +211,11 @@ export class configAnnotationManager{
               this.visualizers.forEach(function(elem,i){
                 if(elem.idExtractor!=null){
                   if(elem.idExtractor === id){
+<<<<<<< HEAD
                     elem.setXMLXSDObj(xmlxsdObj);
+=======
+                    elem.setXmlXsdObj(xmlxsdObj);
+>>>>>>> 56d4a1c7f7ea8a00c59c0f4f285c91507e837fd3
                   }
                 }
               });
