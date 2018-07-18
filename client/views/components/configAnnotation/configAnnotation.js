@@ -30,7 +30,9 @@ Template.configAnnotation.onRendered(()=>{
   if(!newExtractionListener){
     newExtractionListener = true;
     eventNewExtraction.addListener('newExtraction', function(idExtractor,version) {
-      addAnnotation(idExtractor,version);
+      setTimeout(function(){
+        addAnnotation(idExtractor,version);
+      },1000);
     });
   }
 

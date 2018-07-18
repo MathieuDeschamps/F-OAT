@@ -100,7 +100,7 @@ export class configAnnotationManager{
   */
   saveAnnotations(){
     if(!configAnnotationManager.hasRightToWrite()){
-       toastr.warning(TAPi18n.__('errorProjectRight'));
+       toastr.error(TAPi18n.__('errorProjectRight'));
     }else{
       var errorMessages = [];
       var that = this;
@@ -131,9 +131,9 @@ export class configAnnotationManager{
           }
         })
       }else{
-        toastr.warning(TAPi18n.__('errorSaveProject'));
+        toastr.error(TAPi18n.__('errorSaveProject'));
         errorMessages.forEach(function(errorMessage){
-          toastr.warning(errorMessage)
+          toastr.error(errorMessage)
         })
       }
     }
@@ -167,11 +167,11 @@ export class configAnnotationManager{
             }
           }
         });
-          //Recuperer uniquement le xml du nouvel extracteur
+        //Recuperer uniquement le xml du nouvel extracteur
         extractorPath  = '/tmp/'+ idExtractor + '/' + version + '/descriptor.xsd';
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
-            toastr.warning(xsdErr.reason);
+            toastr.error(xsdErr.reason);
           }else{
             var xsd = $.parseXML(resultExtractor.data);
             //getxml du xsd et l'envoyer au configAnnotationManager
@@ -206,21 +206,15 @@ export class configAnnotationManager{
               var v = version.replace('.','-');
               var id = idExtractor + '_' + v;
               var that = this;
+              var xsdObj = new XSDObject(xsd);
+              var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
               this.visualizers.forEach(function(elem,i){
                 if(elem.idExtractor!=null){
                   if(elem.idExtractor === id){
-                    that.visualizers.splice(i,1);
+                    elem.setXmlXsdObj(xmlxsdObj);
                   }
                 }
               });
-
-              var xsdObj = new XSDObject(xsd);
-              var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
-              var visualizerFactory = new VisualizerFactory(xmlxsdObj,this.nbFrames,this.visualizerDivs )
-              var extractor = xmlExtractor.clone().empty()
-              var visualizer = visualizerFactory.getVisualizer(extractor)
-              visualizer.visualize()
-              this.visualizers.push(visualizer);
             }
 
           var annotedFrames = [];
