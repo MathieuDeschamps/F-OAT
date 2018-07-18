@@ -5,9 +5,10 @@ export class TimeLineShot{
   constructor(xmlxsdObj, name){
     this.xmlxsdObj = xmlxsdObj;
     this.name = name
-    this.count = 0
     this.stack = [];
     this.timeLineData = [];
+    this.xmlFilter = undefined;
+    this.count = 0
   }
 
   initialize(){
@@ -17,7 +18,7 @@ export class TimeLineShot{
   }
 
   /*
-  @returns timeLineData
+  @returns: timeLineData
   */
   getTimeLineData(){
     this.initialize();
@@ -25,12 +26,16 @@ export class TimeLineShot{
     return this.timeLineData;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
   }
 
+  setXMLFilter(xmlFilter){
+    this.xmlFilter = xmlFilter
+  }
+
   /* Visitor pattern : visit function
-  @xmlxsdObj : XMLXSDObj object
+  @xmlxsdObj: XMLXSDObj object
   */
   visitXMLXSDObject(xmlxsdObj){
     // console.log('visit obj visualizer',xmlxsdObj);
@@ -40,10 +45,11 @@ export class TimeLineShot{
       i:0
     });
     this.xmlxsdObj.content.accept(this);
+    this.stack.pop();
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdElt : XMLXSDElt object
+  @xmlxsdElt: XMLXSDElt object
   */
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visit Element visualizer :', xmlxsdElt);
@@ -53,13 +59,19 @@ export class TimeLineShot{
         tag:xmlxsdElt.name,
         obj:elt,
         i:i
-      });
-      elt.accept(that);
+      })
+      if(typeof that.xmlFilter === 'undefined' ||
+        !that.xmlFilter.getIsActive()){
+        elt.accept(that);
+      }else if(that.xmlFilter.matchFilter(elt, that.stack.slice())){
+        elt.accept(that);
+      }
+      that.stack.pop();
     })
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdSeq : XMLXSDSequence object
+  @xmlxsdSeq: XMLXSDSequence object
   */
   visitXMLXSDSequence(xmlxsdSeq){
     // console.log('visit Sequence visualizer :', xmlxsdSeq);
@@ -73,16 +85,21 @@ export class TimeLineShot{
             tag: xmlxsdElt.name,
             obj: xmlxsdElt.eltsList[i],
             i:i
-          })
-          elt.accept(that);
-          that.stack.pop()
+          });
+          if(typeof that.xmlFilter === 'undefined' ||
+            !that.xmlFilter.getIsActive()){
+            elt.accept(that);
+          }else if(that.xmlFilter.matchFilter(elt, that.stack.slice())){
+            elt.accept(that);
+          }
+          that.stack.pop();
         })
       })
     })
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdExt : XMLXSDExtensionType object
+  @xmlxsdExt: XMLXSDExtensionType object
   */
   visitXMLXSDExtensionType(xmlxsdExt){
     this.buildAttrs(xmlxsdExt);
@@ -182,7 +199,7 @@ export class TimeLineShot{
 
 
   /* Use to determine if the two XML node have the same parents
-  @return true if this.stack and stack have the same tags
+  @returns: true if this.stack and stack have the same tags
           false otherwise
   */
   samePlace(stack){

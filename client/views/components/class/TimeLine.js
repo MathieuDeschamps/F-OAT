@@ -12,16 +12,16 @@ export class TimeLine {
   static SCALE_MIN(){return 30}
 
   /*
-  @name name of the extractor
-  @nbFrames number of frame of the video
-  @data used to build the time line
-  @divId id of the html div which will contain the timeline
-  @visualizer the visaulizer which created the overlay
+  @name: name of the extractor
+  @nbFrames: number of frame of the video
+  @data: used to build the time line
+  @divId: id of the html div which will contain the timeline
+  @visualizer: the visaulizer which created the overlay
   */
-  constructor(name, nbFrames,data, divId, visualizer){
+  constructor(name, nbFrames, xsdObj, data, divId, visualizer){
     this.name_extractor = name;
     this.nb_frames = nbFrames;
-    // this.xsd_obj = xsdObj;
+    this.xsd_obj = xsdObj;
     this.div_id = divId;
     this.xmlxsdForm = undefined;
     if(typeof vidCtrl !== 'undefined' &&
@@ -46,6 +46,26 @@ export class TimeLine {
         that.items.push(interval);
       })
     })
+    this.chart_id = this.div_id+'_chart';
+    var chart_div = $('<div/>');
+    $(chart_div).addClass('divtimeline')
+    $(chart_div).addClass('indigo')
+    $(chart_div).addClass('lighten-5')
+    $(chart_div).attr('id', this.chart_id)
+    $('#'+this.div_id).append(chart_div);
+
+    var filter_title = $('<h5/>');
+    $(filter_title).addClass('blue-text text-darken-3');
+    $(filter_title).text(TAPi18n.__('filter')+' '+this.name_extractor +' :');
+    $('#'+this.div_id).append(filter_title);
+
+    this.filter_id = this.div_id+'_filter';
+    var filter_div = $('<div/>');
+    $(filter_div).addClass('divborder')
+    $(filter_div).addClass('indigo')
+    $(filter_div).addClass('lighten-5')
+    $(filter_div).attr('id', this.filter_id);
+    $('#'+this.div_id).append(filter_div);
 
     // these attributs following attributs are intiliased by draw
     this.scale_x1 = undefined
@@ -55,6 +75,11 @@ export class TimeLine {
     this.main = undefined
     this.mini = undefined;
     this.draw();
+    var xmlSelector = new XMLSelector(this.xsd_obj, this.name_extractor, this.filter_id);
+    var xmlFilter = xmlSelector.getXMLFilter();
+    xmlFilter.attach(this);
+    this.visualizer.setTimeLineBuilderXMLFilter(xmlFilter);
+    xmlSelector.generateSelector();
   }
 
   setXMLXSDForm(xmlxsdForm){
@@ -103,9 +128,9 @@ export class TimeLine {
     var height_total = height_main + height_mini + margin.top + margin.bottom + margin.bottom;
 
     $('#'+this.div_id).addClass('row')
-    .addClass('divtimeline')
-    .addClass('indigo')
-    .addClass('lighten-5')
+    .css('width', '100%')
+
+    $('#'+this.chart_id).addClass('row')
     .css('width', '100%')
     .css('height', height_total);
     var width_total = 0
@@ -150,7 +175,7 @@ export class TimeLine {
         .extent([[0, 0], [width_main, height_main]])
         .on('zoom', zoomed);
 
-    var chart = d3.select('#'+this.div_id)
+    var chart = d3.select('#'+this.chart_id)
         .append('svg')
         .attr('width', width_total)
         .attr('height', height_total)
@@ -343,8 +368,8 @@ export class TimeLine {
   }
 
   /* Event trigger when click on a rect of the time line
-  @item contains the data of the xml to the rectangle
-  @target is the html of the rectangle
+  @item: contains the data of the xml to the rectangle
+  @target: is the html of the rectangle
   */
   blockPlay(item, target){
       var my_color = TimeLine.MY_COLOR();
@@ -376,7 +401,7 @@ export class TimeLine {
   */
   lostFocus(){
     if (this.index_used_rect !== -1) {
-      var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
+      var used_rect = $('#'+this.chart_id).find('rect[number="'+this.index_used_rect+'"]')
       if(used_rect.length > 0){
         var index_color = parseInt($(used_rect).attr('index'));
         var my_color = TimeLine.MY_COLOR();
@@ -409,7 +434,7 @@ export class TimeLine {
         that.items.push(interval);
       })
     })
-    $('#' + this.div_id).empty();
+    $('#' + this.chart_id).find('svg').remove();
     var domain_x1 = this.scale_x1.domain();
     this.moveReadLine();
     this.draw();
@@ -434,6 +459,13 @@ export class TimeLine {
     }
   }
 
+  /* Observer pattern : update function
+  */
+  updateXMLFilter(){
+    this.updateVisualizer();
+  }
+
+
   /* move the read lines of the time line
    on the current frame of the video controler
   */
@@ -441,7 +473,7 @@ export class TimeLine {
       this.current_frame = vidCtrl.getCurrentFrame();
       // move the read line of main
       x1 = this.scale_x1(this.current_frame);
-      var main_read_line =   $('#'+this.div_id).find('.read_line:eq(0)')
+      var main_read_line =   $('#'+this.chart_id).find('.read_line:eq(0)')
       // update the brush when the read line is out of the main  windows
       // or every 10 seconds
       if((x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1] ||
@@ -476,7 +508,7 @@ export class TimeLine {
 
       // move the read line of mini
       x2 = this.scale_x2(this.current_frame);
-      $('#'+this.div_id).find('.read_line:eq(1)')
+      $('#'+this.chart_id).find('.read_line:eq(1)')
           .attr('x1', x2)
           .attr('x2', x2);
 

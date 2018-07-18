@@ -4,8 +4,8 @@ Object class for restriction type in a xsd file.
 
 export class XSDRestrictionType{
 	/* Constructor
-	@restr : restriction description obtained by JQuery parsing
-	@table : symbol table
+	@restr: restriction description obtained by JQuery parsing
+	@table: symbol table
 	*/
 	constructor(restr,table){
 		var that = this;
@@ -81,15 +81,15 @@ export class XSDRestrictionType{
 	}
 
 	/* Convert a string to the base type of the restriction
-	@str : string
-	@return : restriction type
+	@str: string
+	@returns: restriction type
 	*/
 	convert(str){
 		return this.table.getType(this.baseType.name).convert(str);
 	}
 
 	/* test if the type is enumerated (when restrictions have been applied)
-	@returns : boolean
+	@returns: boolean
 	*/
 	isEnumerated(){
 		return (this.enumeratedValues!=undefined);
@@ -110,7 +110,7 @@ export class XSDRestrictionType{
 	}
 
 	/* add the x to enumeratedValues is an element of the base type
-	@x : object
+	@x: object
 	*/
 	addEnumeratedValue(x){
 		var result=true;
@@ -147,8 +147,8 @@ export class XSDRestrictionType{
 	}
 
 	/* tests if x is an element of the base type
-	@x : object
-	@returns : boolean
+	@x: object
+	@returns: boolean
 	*/
 	holds(x){
 		var result=true;
@@ -182,7 +182,7 @@ export class XSDRestrictionType{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitRestrictionType"
+	@visitor: object with a method "visitRestrictionType"
 	*/
 	accept(visitor){
 		visitor.visitXSDRestrictionType(this);

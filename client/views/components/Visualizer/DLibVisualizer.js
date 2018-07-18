@@ -9,7 +9,8 @@ export class DLibVisualizer{
 
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdOverlay){
+  constructor(xsdObj, xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdOverlay){
+    this.xsdObj = xsdObj;
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
     this.name = name;
@@ -23,7 +24,7 @@ export class DLibVisualizer{
   }
 
   /* Obsever pattern : attach function
-  @observer : Object
+  @observer; Object
   */
   attach(observer){
     if(!this.alreadyAttached(observer)){
@@ -32,7 +33,7 @@ export class DLibVisualizer{
   }
 
   /* Check if an observer is already attached
-  @returns  true if newOserver is include in this.observers
+  @returns: true if newOserver is include in this.observers
   *         false otherwise
   */
   alreadyAttached(newObserver){
@@ -45,8 +46,8 @@ export class DLibVisualizer{
     return result;
   }
 
-  /* Obsever pattern : dettach function
-  @observer : Object
+  /* Obsever pattern : detach function
+  @observer: Object
   */
   detach(observer){
     var index = this.observers.indexOf(observer);
@@ -100,8 +101,8 @@ export class DLibVisualizer{
 
     this.timeLineBuilder = new TimeLineDlib(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var timeLine = new TimeLine(this.name, this.nbFrames, timeLineData,
-    this.divIdTimeLine,this);
+    var timeLine = new TimeLine(this.name, this.nbFrames, this.xsdObj, timeLineData,
+    this.divIdTimeLine, this);
     timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
@@ -117,7 +118,7 @@ export class DLibVisualizer{
   }
 
   /*
-  @returns the list of the id
+  @returns: the list of the id
   */
   getIdsDiv(){
     var result = [];
@@ -128,22 +129,26 @@ export class DLibVisualizer{
   }
 
   getTimeLineData(){
-    this.timeLineBuilder.setXmlXsdObj(this.xmlxsdObj);
+    this.timeLineBuilder.setXMLXSDObj(this.xmlxsdObj);
     return this.timeLineBuilder.getTimeLineData();
   }
 
   getOverlayData(){
-    this.overlayBuilder.setXmlXsdObj(this.xmlxsdObj);
+    this.overlayBuilder.setXMLXSDObj(this.xmlxsdObj);
     return this.overlayBuilder.getOverlayData();
   }
 
-  getXmlXsdObj(){
+  getXMLXSDObj(){
     return this.xmlxsdObj;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setTimeLineBuilderXMLFilter(xmlFilter){
+    this.timeLineBuilder.setXMLFilter(xmlFilter);
+  }
+
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
-    // console.log("setXmlXsdObj",xmlxsdObj);
+    // console.log("setXMLXSDObj",xmlxsdObj);
     this.observers.forEach(function(observer){
       observer.updateVisualizer();
     });

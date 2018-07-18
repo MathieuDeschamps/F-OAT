@@ -1,10 +1,10 @@
 export class OmdbApiForm{
 
 	/* Constructor
-	@xmlxsdObj : XMLXSDObj object
-	@id : id of the form (id of the extractor in MongoDB)
-	@name : name of the form (name of the extractor)
-	@divId : the id of the div which will contain the code of the form
+	@xmlxsdObj: XMLXSDObj object
+	@id: id of the form (id of the extractor in MongoDB)
+	@name: name of the form (name of the extractor)
+	@divId: the id of the div which will contain the code of the form
 	*/
 	constructor(xmlxsdObj,id,name,divId, visualizer){
 		this.xmlxsdObj=xmlxsdObj;
@@ -31,7 +31,7 @@ export class OmdbApiForm{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdObj : XMLXSDObj object
+  @xmlxsdObj: XMLXSDObj object
   */
   visitXMLXSDObject(xmlxsdObj){
 
@@ -40,7 +40,7 @@ export class OmdbApiForm{
 }
 
   /* Visitor pattern : visit function
-  @xmlxsdElt : XMLXSDElt object
+  @xmlxsdElt: XMLXSDElt object
   */
   visitXMLXSDElt(xmlxsdElt){
     var that = this;
@@ -50,7 +50,7 @@ export class OmdbApiForm{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdSeq : XMLXSDSequence object
+  @xmlxsdSeq: XMLXSDSequence object
   */
   visitXMLXSDSequence(xmlxsdSeq){
     var that = this
@@ -70,7 +70,7 @@ export class OmdbApiForm{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdExt : XMLXSDExtensionType object
+  @xmlxsdExt: XMLXSDExtensionType object
   */
   visitXMLXSDExtensionType(xmlxsdExt){
     $("#"+this.divId).html(this.generateAttrsForm(xmlxsdExt));
@@ -95,7 +95,7 @@ export class OmdbApiForm{
   /* Observer pattern : update function
 	*/
 	updateVisualizer(){
-		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
+		this.xmlxsdObj = this.visualizer.getXMLXSDObj();
 		this.generateForm();
 	}
 

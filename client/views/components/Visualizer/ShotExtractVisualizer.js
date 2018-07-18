@@ -10,7 +10,7 @@ export class ShotExtractVisualizer{
 
   /* Constructor
   */
-  constructor(xsdObj, xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdFilter, divIdOverlay){
+  constructor(xsdObj, xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine, divIdOverlay){
     this.xsdObj = xsdObj;
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
@@ -19,14 +19,13 @@ export class ShotExtractVisualizer{
     this.divIdForm = divIdForm;
     this.observers = [];
     this.divIdTimeLine = divIdTimeLine;
-    this.divIdFilter = divIdFilter;
     this.divIdOverlay = divIdOverlay;
     this.timeLineBuilder = undefined;
     this.overlayBuilder = undefined;
   }
 
   /* Obsever pattern : attach function
-  @observer : Object
+  @observer: Object
   */
   attach(observer){
     if(!this.alreadyAttached(observer)){
@@ -35,7 +34,7 @@ export class ShotExtractVisualizer{
   }
 
   /* Check if an observer is already attached
-  @returns  true if newOserver is include in this.observers
+  @returns: true if newOserver is include in this.observers
   *         false otherwise
   */
   alreadyAttached(newObserver){
@@ -48,8 +47,8 @@ export class ShotExtractVisualizer{
     return result;
   }
 
-  /* Obsever pattern : dettach function
-  @observer : Object
+  /* Obsever pattern : detach function
+  @observer: Object
   */
   detach(observer){
     var index = this.observers.indexOf(observer);
@@ -93,9 +92,6 @@ export class ShotExtractVisualizer{
   /* Visualize the XMLXSDObject
   */
   visualize(){
-    // this.init()
-    // this.xmlxsdObj.accept(this);
-
     var xmlxsdForm = new XMLXSDForm(this.xmlxsdObj,this.idExtractor,this.name,
     this.divIdForm, this);
     this.attach(xmlxsdForm)
@@ -103,13 +99,10 @@ export class ShotExtractVisualizer{
 
     this.timeLineBuilder = new TimeLineShot(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var timeLine = new TimeLine(this.name, this.nbFrames, timeLineData,
+    var timeLine = new TimeLine(this.name, this.nbFrames, this.xsdObj, timeLineData,
     this.divIdTimeLine,this);
     timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
-
-    var xmlSelectorTimeLine = new XMLSelector(this.xsdObj, this.divIdFilter)
-    xmlSelectorTimeLine.generateSelector();
 
     this.overlayBuilder = new OverlayPosition(this.xmlxsdObj, this.name)
     var overlayData = this.overlayBuilder.getOverlayData();
@@ -123,7 +116,7 @@ export class ShotExtractVisualizer{
   }
 
   /*
-  @returns the list of the id
+  @returns: the list of the id
   */
   getIdsDiv(){
     var result = [];
@@ -135,26 +128,31 @@ export class ShotExtractVisualizer{
   }
 
   getTimeLineData(){
-    this.timeLineBuilder.setXmlXsdObj(this.xmlxsdObj);
+    this.timeLineBuilder.setXMLXSDObj(this.xmlxsdObj);
     return this.timeLineBuilder.getTimeLineData();
   }
 
   getOverlayData(){
-    this.overlayBuilder.setXmlXsdObj(this.xmlxsdObj);
+    this.overlayBuilder.setXMLXSDObj(this.xmlxsdObj);
     return this.overlayBuilder.getOverlayData();
   }
 
-  getXmlXsdObj(){
+  getXMLXSDObj(){
     return this.xmlxsdObj;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setTimeLineBuilderXMLFilter(xmlFilter){
+    this.timeLineBuilder.setXMLFilter(xmlFilter);
+  }
+
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
-    // console.log("setXmlXsdObj",xmlxsdObj);
+    // console.log("setXMLXSDObj",xmlxsdObj);
     this.observers.forEach(function(observer){
       observer.updateVisualizer();
     });
   }
+
 
   destroyEventDDP(){
     if(eventLiveUpdate!=null){

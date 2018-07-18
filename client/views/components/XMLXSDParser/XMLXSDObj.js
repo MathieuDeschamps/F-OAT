@@ -5,8 +5,8 @@ Object class for an XML file described by a XSD file.
 */
 export class XMLXSDObj{
 	/* Constructor
-	@xml : parsing of an xml file by JQuery
-	@xsdObj : XSDObj object
+	@xml: parsing of an xml file by JQuery
+	@xsdObj: XSDObj object
 	*/
 	constructor(xml,xsdObj){
 		if (xml!=undefined){
@@ -31,7 +31,7 @@ export class XMLXSDObj{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXMLXSDObject"
+	@visitor: object with a method "visitXMLXSDObject"
 	*/
 	accept(visitor){
 		visitor.visitXMLXSDObject(this);

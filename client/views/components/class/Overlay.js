@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 export class Overlay{
   /*
-  @data is an array of timeId and positions
-  @divId the id of html div which will contain the overlay
-  @visualizer the visualizer which created the overlay
+  @data: is an array of timeId and positions
+  @divId: the id of html div which will contain the overlay
+  @visualizer: the visualizer which created the overlay
   */
   constructor(data, divId, visualizer){
     this.data = data;

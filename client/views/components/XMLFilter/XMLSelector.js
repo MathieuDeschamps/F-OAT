@@ -1,35 +1,37 @@
+import { XMLFilter } from '../XMLFilter/XMLFilter.js'
 export class XMLSelector{
 
   /* Constructor
-  @xsdObj : XMLXSDObject
-  @divId : the id of the div which will contain the code of the filter
+  @xsdObj: XMLXSDObject
+  @nameExtractor: name of the extractor
+  @divId: the id of the div which will contain the code of the filter
   */
-  constructor(xsdObj, divId){
+  constructor(xsdObj, nameExtractor, divId){
     this.xsdObj = xsdObj;
+    this.nameExtractor = nameExtractor;
     this.divId = divId;
     this.indexFilter = 0;
     this.currentFilterIndex = undefined;
-    this.table = xsdObj.table;;
-    this.xmlFilter = undefined;
+    this.table = xsdObj.table;
+    this.stack = [];
     this.comboBoxList = [];
-    this.selector = {};
-    this.eventHandler = []
-    this.selectedElement = {type:undefined};
+    this.xmlFilter = new XMLFilter(this);
     this.currentAttr = undefined
     // value to prevent to generate code for attr out of attrManage restriction
     // which occurs when node value type are different of void type.
     this.attrManage = false;
   }
 
+  getXMLFilter(){
+    return this.xmlFilter;
+  }
+
+  /* Generate the form for the filter part
+  */
   generateSelector(){
     var that = this;
-    var divParent = $('<div/>');
-    $('#'+this.divId).append(divParent);
-
-    var title = $('<h5/>');
-    $(title).addClass('blue-text text-darken-3');
-    $(title).text('Filter :');
-    $(divParent).append(title);
+    var divParent =  $('#'+this.divId);
+    // $('#'+this.divId).append(divParent);
 
     var divAdd = $('<div/>');
     $(divAdd).addClass('row');
@@ -37,38 +39,78 @@ export class XMLSelector{
 
     var idAddFilter = this.divId+'_addFilter';
     var addFilter = $('<a/>');
-    $(addFilter).addClass('btn waves-effect waves-light');
-    $(addFilter).addClass('col s2');
+    $(addFilter).addClass('btn-floating');
+    $(addFilter).addClass('waves-effect waves-light');
+    $(addFilter).addClass('indigo lighten-2');
+    $(addFilter).addClass('bold');
     $(addFilter).attr('id', idAddFilter);
-    $(addFilter).text('Add a filter');
+    $(addFilter).attr('title', TAPi18n.__('add_filter'))
+    $(addFilter).on('click',function(){ that.eventAddFilter()});
     $(divAdd).append(addFilter);
     var iconAdd =  $('<i/>');
     $(iconAdd).addClass('material-icons left');
     $(iconAdd).text('add');
     $(addFilter).append(iconAdd);
 
-    this.eventAddFilter(idAddFilter);
+    var labelAddFilter = $('<a/>')
+    $(labelAddFilter).addClass('btn-flat disabled');
+    $(labelAddFilter).text(TAPi18n.__('add_filter'))
+    $(divAdd).append(labelAddFilter);
+
+    var divFilter = $('<div/>');
+    $(divFilter).addClass('row');
+    $(divParent).append(divFilter);
+
+
+    var idFilterButton = this.divId+'_filter';
+    var filterButton = $('<input/>');
+    $(filterButton).attr('type', 'checkbox');
+    $(filterButton).attr('class', 'filled-in');
+    $(filterButton).attr('id', idFilterButton);
+    $(filterButton).on('click',function(){ that.eventFilter(this)});
+    $(divFilter).append(filterButton);
+
+    var labelFilter = $('<label/>');
+    $(labelFilter).attr('for', idFilterButton);
+    $(divFilter).append(labelFilter);
+
+    var labelFilter = $('<a/>');
+    $(labelFilter).addClass('btn-flat disabled');
+    $(labelFilter).text(TAPi18n.__('filter'))
+    $(divFilter).append(labelFilter);
 
     that.xsdObj.accept(that);
-
-    that.applyEventHandler();
+    // console.log('this', this)
   }
 
+  /* Visitor pattern : visit function
+  @xmlxsdObj: XMLXSDObj object
+  */
   visitXSDObject(xsdObj){
     // console.log('xml filter visit xsdObj', xsdObj)
-    xsdObj.root.accept(this)
+    this.stack.push(this.nameExtractor);
+    xsdObj.root.accept(this);
+    this.stack.pop();
   }
 
+  /* Visitor pattern : visit function
+	@xmlxsdElt: XMLXSDElt object
+	*/
   visitXSDElt(xsdElt){
     // console.log('xml filter visit xsdElt', xsdElt)
     var typeName = xsdElt.type;
     var type = this.table.getType(typeName);
     if(typeof type !== 'undefined'){
+      this.stack.push(xsdElt.name)
       type.accept(this);
+      this.stack.pop();
     }
     this.eventAddElement(xsdElt);
   }
 
+  /* Visitor pattern : visit function
+  @xmlxsdSeq: XMLXSDSequence object
+  */
   visitXSDSequence(xsdSeq){
     // console.log('xml filter visit xsdSeq', xsdSeq)
     var that = this;
@@ -77,10 +119,16 @@ export class XMLSelector{
     })
   }
 
+  /* Visitor pattern : visit function
+	@xmlxsdExt: XMLXSDExtensionType object
+	*/
   visitXSDExtensionType(xsdExt){
 
   }
 
+  /* Visitor pattern : visit function
+	@xmlxsdAttr: XMLXSDAttr objects
+	*/
   visitXSDAttr(xsdAttr){
     // console.log('xml filter visit xsdAttr', xsdAttr)
     var type = this.table.getType(xsdAttr.type)
@@ -93,19 +141,28 @@ export class XMLSelector{
     this.attrManage = oldAttrManage;
   }
 
+  /* Visitor pattern : visit function
+	@xsdRestriction: XSDRestrictionType object
+	*/
   visitXSDRestrictionType(xsdRestriction){
     // console.log('xml filter visit xsdRestriction', xsdRestriction)
     var type = xsdRestriction.baseType;
     type.accept(this)
   }
 
+  /* Visitor pattern : visit function
+	@xsdBool: XSDBooleanType object
+	*/
   visitXSDBooleanType(xsdBool){
     // console.log('xml filter visit xsdBool', xsdBool)
     var optionsOp = ['=', '!='];
     var options = [true, false];
-    this.generateSelectSelector(optionsOp, options);
+    this.generateSelectSelector(optionsOp,  options, 'bool');
   }
 
+  /* Visitor pattern : visit function
+	@xsdDeci: XSDDecimalType object
+	*/
   visitXSDDecimalType(xsdDeci){
     // console.log('xml filter visit xsdDeci', xsdDeci)
     if(this.attrManage){
@@ -121,7 +178,7 @@ export class XMLSelector{
       }
       if (xsdDeci.isEnumerated()){
         optionsOp = [ '=', '!='];
-        this.generateSelectSelector(optionsOp, xsdDeci.enumeration);
+        this.generateSelectSelector(optionsOp, xsdDeci.enumeration, 'number');
       }else{
         optionsOp = [ '=', '!=', '>', '>=', '<', '<='];
         this.generateInputSelector(optionsOp, 'number', 0.01, value);
@@ -129,6 +186,9 @@ export class XMLSelector{
     }
   }
 
+  /* Visitor pattern : visit function
+	@xsdFloat: XSDFloatType object
+	*/
   visitXSDFloatType(xsdFloat){
     // console.log('xml filter visit xsdFloat', xsdFloat)
     if(this.attrManage){
@@ -144,7 +204,7 @@ export class XMLSelector{
         }else if(typeof attr.defaultValue !== 'undefined'){
           value = attr.defaultValue;
         }
-        this.generateSelectSelector(optionsOp, xsdFloat.enumeration);
+        this.generateSelectSelector(optionsOp, xsdFloat.enumeration,'number');
       }else{
         optionsOp = [ '=', '!=', '>', '>=', '<', '<='];
         this.generateInputSelector(optionsOp, 'number', 0.01, value);
@@ -152,6 +212,9 @@ export class XMLSelector{
     }
   }
 
+  /* Visitor pattern : visit function
+	@xsdInt: XSDIntegerType object
+	*/
   visitXSDIntegerType(xsdInt){
     // console.log('xml filter visit xsdInt', xsdInt);
     if(this.attrManage){
@@ -167,14 +230,17 @@ export class XMLSelector{
       }
       if (xsdInt.isEnumerated()){
         optionsOp = [ '=', '!='];
-        this.generateSelectSelector(optionsOp, xsdInt.enumeration);
+        this.generateSelectSelector(optionsOp, xsdInt.enumeration, 'number');
       }else{
         optionsOp = [ '=', '!=', '>', '>=', '<', '<='];
-        this.generateInputSelector(optionsOp, 'number', 0.01, value);
+        this.generateInputSelector(optionsOp, 'number', 1, value);
       }
     }
   }
 
+  /* Visitor pattern : visit function
+	@xsdString: XSDStringType object
+	*/
   visitXSDStringType(xsdString){
     // console.log('xml filter visit xsdString', xsdString)
     if(this.attrManage){
@@ -189,22 +255,33 @@ export class XMLSelector{
         value = attr.defaultValue;
       }
       if(xsdString.isEnumerated()){
-        this.generateSelectSelector(optionsOp, xsdString.enumeration);
+        this.generateSelectSelector(optionsOp, xsdString.enumeration, 'text');
       }else{
         this.generateInputSelector(optionsOp, 'text', undefined, value);
       }
     }
   }
 
+  /* Visitor pattern : visit function
+	@xsdVoid: XSDVoidType object
+	*/
   visitXSDVoidType(xsdVoid){
     // console.log('xml filter visit xsdVoid', xsdVoid)
 
   }
 
+  /* Generate the code for the basic attribut
+  @optionsOp: values of the select for the op
+  @type: of the input element
+  @step: of the input element only for the number
+  @defaultValue: of the input by default
+  */
   generateInputSelector(optionsOp, type, step, defaultValue){
-    divAttrId = this.divId + '_' + this.currentFilterIndex + '_attr';
+    var that = this;
+    var currentAttr = this.currentAttr;
+    var currentFilterIndex = this.currentFilterIndex;
+    var divAttrId = this.divId + '_' + this.currentFilterIndex + '_attr';
     var divParent =  $('#'+divAttrId).children().last();
-    console.log('divParent', divParent);
     if(this.currentAttr !== undefined){
       var label = $('<p/>');
       $(label).text(this.currentAttr.name + ':');
@@ -214,6 +291,10 @@ export class XMLSelector{
 
     var selectOp = $('<select/>');
     $(selectOp).addClass('col s2')
+    $(selectOp).addClass('white style-input-log')
+    $(selectOp).change(function(){
+      that.eventAttrOp(currentFilterIndex, currentAttr.name, this);
+    })
     var optionOp;
     optionsOp.forEach(function(option){
       optionOp = $('<option/>');
@@ -222,23 +303,40 @@ export class XMLSelector{
       $(selectOp).append(optionOp);
     })
     $(divParent).append(selectOp);
+    $(selectOp).material_select();
+    var defaultValue = $(selectOp).val()
+    // default value
+    that.eventAttrOp(currentFilterIndex, currentAttr.name, selectOp);
 
     var inputValue = $('<input/>');
     $(inputValue).attr('type', type);
     $(inputValue).addClass('col s6')
+    $(inputValue).addClass('white style-input-log')
     if(type === 'number' && typeof step !== 'undefined'){
       $(inputValue).attr('step', step);
     }
     if(typeof defaultValue !== 'undefined'){
       $(inputValue).attr('value', defaultValue)
     }
+    $(inputValue).change(function(){
+      that.eventAttrValue(currentFilterIndex, currentAttr.name, this, type);
+    })
     $(divParent).append(inputValue)
+    // default value
+    that.eventAttrValue(currentFilterIndex, currentAttr.name, inputValue, type);
   }
 
-  generateSelectSelector(optionsOp, options){
+  /* Generate the code for the restriction attribut
+  @optionsOp: values of the select for the op
+  @options: values of the attribut
+  @type: of the input element
+  */
+  generateSelectSelector(optionsOp, options, type){
+    var that = this;
+    var currentAttr = this.currentAttr;
+    var currentFilterIndex = this.currentFilterIndex;
     var idAttr = this.divId+'_'+this.currentFilterIndex+'_attr';
     var divParent =  $('#'+idAttr).children().last();
-    console.log('divParent', divParent, idAttr);
     if(this.currentAttr !== undefined){
       var label = $('<p/>');
       $(label).text(this.currentAttr.name + ':');
@@ -247,7 +345,11 @@ export class XMLSelector{
     }
 
     var selectOp = $('<select/>');
-    $(selectOp).addClass('col s2')
+    $(selectOp).addClass('col s2');
+    $(selectOp).addClass('white style-input-log')
+    $(selectOp).change(function(){
+      that.eventAttrOp(currentFilterIndex, currentAttr.name, this);
+    })
     var optionOp;
     optionsOp.forEach(function(option){
       optionOp = $('<option/>');
@@ -256,9 +358,19 @@ export class XMLSelector{
       $(selectOp).append(optionOp);
     })
     $(divParent).append(selectOp);
+    $(selectOp).material_select();
+    // default value
+    that.eventAttrOp(currentFilterIndex, currentAttr.name, selectOp);
 
     var selectValue = $('<select/>');
+    $(selectValue).addClass('white style-input-log')
     $(selectValue).prop('multiple', true);
+
+    var defaultValue = $('<option/>');
+    $(defaultValue).prop('disabled', true);
+    $(defaultValue).prop('selected', true);
+    $(selectValue).append(defaultValue);
+
     options.forEach(function(option){
       optionValue = $('<option/>');
       $(optionValue).text(option);
@@ -266,134 +378,210 @@ export class XMLSelector{
       $(selectValue).append(optionValue);
     })
     $(selectValue).addClass('col s6')
+    $(selectValue).change(function(){
+      that.eventAttrValue(currentFilterIndex, currentAttr.name, this, type);
+    })
+
     $(divParent).append(selectValue)
+    $(selectValue).material_select();
+    // default value
+    that.eventAttrValue(currentFilterIndex, currentAttr.name, selectValue, type);
   }
 
-  applyEventHandler(){
-    console.log('this.eventHandler', this.eventHandler);
-
-    this.eventHandler.forEach(function(handler){
-			var jqElt
-			if(typeof handler.id !== 'undefined' &&
-				 typeof handler.eventName !== 'undefined' &&
-			   typeof handler.function !== 'undefined'){
-				jqElt ='#'+handler.id;
-				$(jqElt).on(handler.eventName,handler.function);
-			}else{
-				alert('applyEventHandler : Event Handler Error'  )
-			}
-		});
-    this.eventHandler = [];
-  	$('#'+this.divId).find('select').material_select()
-  }
-
-  eventAddFilter(idAddFilter){
-    var that = this;
-    this.eventHandler.push({
-      function:function(){
-        var divSelect = $('<div/>');
-        $(divSelect).addClass('valign-wrapper');
-        $('#'+that.divId).append(divSelect);
-
-        var indexFilter = that.indexFilter
-        var iconClear = $('<i/>');
-        var idClear = that.divId+'_'+indexFilter+'_clear'
-        $(iconClear).addClass('material-icons small')
-        $(iconClear).addClass('red-text')
-        $(iconClear).addClass('col s1');
-        $(iconClear).attr('id',idClear);
-        $(iconClear).text('clear')
-        $(divSelect).append(iconClear);
-        that.eventRemoveFilter(idClear);
-
-        var select = $('<select/>');
-        var idSelect = that.divId+'_'+indexFilter+'_select'
-        $(select).attr('id', idSelect);
-        $(divSelect).append(select);
-
-        var option = $('<option/>');
-        $(option).text('Set a filter...');
-        $(option).prop('disabled', true);
-        $(option).prop('selected', true);
-        $(select).append(option);
-
-        that.comboBoxList.forEach(function(element){
-          option = $('<option/>');
-          $(option).text(element.name);
-          $(option).val(element.type);
-          $(select).append(option);
-        })
-
-        var divAttr = $('<div/>');
-        var idAttr = that.divId+'_'+indexFilter+'_attr'
-        $(divAttr).addClass('col s8');
-        $(divAttr).attr('id', idAttr)
-        $(divSelect).append(divAttr);
-
-        that.eventHandler.push({
-          function:function(){
-            that.currentFilterIndex = indexFilter;
-            var selected = $(this).find(':selected')
-            var selectedType = $(selected).val()
-            var selectedName = $(selected).text()
-            if(typeof selectedType !== 'undefined' &&
-            selectedType !== that.selectedElement.type){
-              that.selectedElement = {name: selectedName, type: selectedType}
-              var type = that.table.getType(selectedType);
-              $(divAttr).empty();
-              if(typeof type !== 'undefined' &&
-                typeof type.attrs !== 'undefined'){
-                var i = 0;
-                $.each(type.attrs, function(key, attr){
-                  if(i % 2 == 0){
-                    var div = $('<div/>')
-                    $(div).addClass('valign-wrapper col s12')
-                    $(divAttr).append(div)
-                  }
-                  attr.accept(that);
-                  i++;
-                })
-                that.applyEventHandler();
-              }
-            }
-          },
-          id: idSelect,
-          eventName:'change'
-        })
-
-        that.applyEventHandler();
-        this.indexFilter++;
-      },
-      id: idAddFilter,
-      eventName: 'click'
-    })
-  }
-
-  eventRemoveFilter(idClear){
-    var that = this;
-    this.eventHandler.push({
-      function:function(){
-        $(this).parents('div').first().remove();
-      },
-      id:idClear,
-      eventName: 'click'
-    })
-  }
-
-  eventRemoveElement(element){
-
-  }
-
+  /* Event handler for the adding of an element
+  @element: add to the comboxList
+  */
   eventAddElement(element){
+    var stackCopy = this.stack.slice()
+    stackCopy.push(element.name);
     this.comboBoxList.push({
       name : element.name,
-      type : element.type
+      type : element.type,
+      stack: stackCopy
     })
   }
 
-  eventAttrSelector(attr){
+  /* Event handler for the adding of a filter
+  */
+  eventAddFilter(){
+    var that = this;
+    var indexFilter = this.indexFilter
+    var divSelect = $('<div/>');
+    $(divSelect).addClass('valign-wrapper');
+    // add the filter just before filter div
+    $('#'+this.divId).children().last().before(divSelect);
+    var iconClear = $('<i/>');
+    var idClear = this.divId+'_'+indexFilter+'_clear'
+    $(iconClear).addClass('material-icons small')
+    $(iconClear).addClass('indigo-text text-lighten-2');
+    $(iconClear).addClass('col s1');
+    $(iconClear).attr('id',idClear);
+    $(iconClear).attr('title', TAPi18n.__('remove_filter'))
+    $(iconClear).text('remove_circle')
+    $(iconClear).click(function(){
+      that.eventDeleteFilter(indexFilter, this)
+    })
+    $(divSelect).append(iconClear);
 
+    var idSelect = this.divId+'_'+indexFilter+'_select'
+    var idAttr = this.divId+'_'+indexFilter+'_attr'
+
+    var select = $('<select/>');
+    $(select).attr('id', idSelect);
+    $(select).addClass('white')
+    $(select).change(function(){
+      that.eventSelectElement(idAttr, indexFilter, this);
+    })
+    $(divSelect).append(select);
+
+    var option = $('<option/>');
+    $(option).text('Set a filter...');
+    $(option).prop('disabled', true);
+    $(option).prop('selected', true);
+    $(select).append(option);
+
+    this.comboBoxList.forEach(function(element, i){
+      option = $('<option/>');
+      $(option).text(element.name);
+      $(option).val(i);
+      $(select).append(option);
+    })
+    $(select).material_select();
+
+    var divAttr = $('<div/>');
+    $(divAttr).addClass('col s8');
+    $(divAttr).attr('id', idAttr)
+    $(divSelect).append(divAttr);
+
+    this.indexFilter++;
   }
 
+  /* Event handler for the deleting of a filterAttr
+  @index: of the filter
+  @target: the delete button
+  */
+  eventDeleteFilter(index, target){
+    $(target).parents('div').first().remove();
+    this.xmlFilter.deleteFilter(index);
+  }
+
+  /* Event handler for filtering
+  @target: the checkbox element
+  */
+  eventFilter(target){
+    this.xmlFilter.setIsActive($(target).prop('checked'))
+  }
+
+  /* Event handler for selecting and element
+  @idAttr: of the div to display the code for the attributs
+  @index: of the filter
+  @target: the select element
+  */
+  eventSelectElement(idAttr, index, target){
+    var that = this;
+    var oldFilterIndex = this.currentFilterIndex;
+    this.currentFilterIndex = index;
+    var selected = $(target).find(':selected')
+    var selectedValue = $(selected).val()
+    var selectedType = this.comboBoxList[selectedValue].type;
+    var selectedStack = this.comboBoxList[selectedValue].stack;
+    var selectedName = $(selected).text()
+    if(typeof selectedType !== 'undefined'){
+      var type = this.table.getType(selectedType);
+      var divAttr = $('#'+this.divId).find('#'+idAttr);
+      $(divAttr).empty();
+      if(typeof type !== 'undefined' &&
+        typeof type.attrs !== 'undefined'){
+        var i = 0;
+        this.xmlFilter.deleteFilter(index);
+        this.xmlFilter.setStack(index, selectedStack);
+        $.each(type.attrs, function(key, attr){
+          if(i % 2 == 0){
+            var div = $('<div/>')
+            $(div).addClass('valign-wrapper col s12')
+            $(divAttr).append(div)
+          }
+          attr.accept(that);
+          i++;
+        })
+      }
+    }
+    this.currentFilterIndex = oldFilterIndex;
+  }
+
+  /* Event handler for change the value of the attr
+  @index: the index of the filter
+  @nameAttr: the name of the attr
+  @target: the element which contains the value(s) of the element
+  @type: of the attr (bool, text, number,...)
+  */
+  eventAttrValue(index, nameAttr, target, type){
+    var value = $(target).val();
+    var parsedValue
+    // case select multiple
+    if(Array.isArray(value)){
+      parsedValue = []
+      for(var i = 0, l = value.length; i < l; i++){
+        parsedValue[i] = XMLSelector.parseInput(value[i], type)
+      }
+    }else{
+      // case input
+      parsedValue = XMLSelector.parseInput(value, type)
+    }
+    this.xmlFilter.setAttrValue(index, nameAttr, parsedValue)
+  }
+
+  /* Parse the value of the input for the XMLFIlter object
+  @value: of the attr which is parse
+  @type: of the input (text, number, bool)
+  @returns: the parsedValue, default NaN for number and '' otherwise
+  */
+  static parseInput(value, type){
+    var parseValue = '';
+    switch(type){
+      case 'bool':
+        if(value === 'true'){
+          parsedValue = true;
+        }else if(value === 'false'){
+          parseValue = false
+        }
+        break;
+      case 'number':
+      if(value === null ||
+        value === undefined ||
+        value === ''){
+          parseValue = NaN;
+        }else{
+          parseValue = Number(value);
+        }
+      break;
+      case 'text':
+        if(value === null ||
+           value === undefined){
+          parseValue = '';
+        }else{
+          parseValue = String(value);
+        }
+      break;
+      default:
+        if(value === null ||
+           value === undefined){
+            parseValue = '';
+        }else{
+          parseValue = String(value);
+        }
+    }
+    return parseValue;
+  }
+
+  /* Event handler for change the value of the attr
+  @index: the index of the filter
+  @nameAttr: the name of the attr
+  @target: the input element
+  */
+  eventAttrOp(index, nameAttr, target){
+    var op = $(target).val();
+    this.xmlFilter.setAttrOp(index, nameAttr, op)
+  }
 
 }

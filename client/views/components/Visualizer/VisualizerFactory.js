@@ -27,7 +27,6 @@ export class VisualizerFactory{
     var id = idExtractor + '_' + version
     var idForm = 'form_annotation_' + id;
     var idTimeLine = 'time_line_' + id;
-    var idFilter = 'filter_' + id;
     var idOverlay = 'overlay_' + id;
     var divTimeLine;
     var divOverlay;
@@ -40,22 +39,18 @@ export class VisualizerFactory{
         $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
         $('#' + this.divIdTimeLine).append(divTimeLine);
 
-        divFilter = $('<div/>')
-        $(divFilter).attr('id', idFilter).addClass('row').css('display', 'none');
-        $('#' + this.divIdTimeLine).append(divFilter);
-
         divOverlay = $('<div/>')
         $(divOverlay).attr('id', idOverlay).css('display', 'none');
         $('#' + this.divIdOverlay).append(divOverlay);
 
-        visualizer = new ShotExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idFilter, idOverlay);
+        visualizer = new ShotExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
         break;
       case "character-extract":
         divTimeLine = $('<div/>');
         $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
         $('#' + this.divIdTimeLine).append(divTimeLine);
 
-        visualizer = new CharacterExtractVisualizer(this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
+        visualizer = new CharacterExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
         break;
       case "omdbapi":
         visualizer = new OmdbApiVisualizer(this.xmlxsdObj,id, name, idForm);
@@ -69,7 +64,7 @@ export class VisualizerFactory{
         $(divOverlay).attr('id', idOverlay).css('display', 'none');
         $('#' + this.divIdOverlay).append(divOverlay);
 
-        visualizer = new DLibVisualizer(this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
+        visualizer = new DLibVisualizer(this.xsdObj, this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
         break;
       default:
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)

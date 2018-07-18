@@ -10,9 +10,11 @@
   "uploadProject" : "Upload your video file",
   "fileProject" : "File",
   "addFileButton" : "Upload",
-  "add_element" : "Add new element",
+  "add_element" : "Add a new element",
   "remove_element" : "Remove element",
-
+  "filter" : "Filter",
+  "remove_filter" :  "Remove filter",
+  "add_filter" : "Add a filter",
   "errorExtensionFile" : "File must be a .mp4 file",
   "errorFile" : "Give a file to upload"
 }

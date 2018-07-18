@@ -17,7 +17,7 @@ export class OverlayDlib{
     this.currentTimeId = NaN;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
   }
 
@@ -28,7 +28,7 @@ export class OverlayDlib{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdObj : XMLXSDObj object
+  @xmlxsdObj: XMLXSDObj object
   */
   visitXMLXSDObject(xmlxsdObj){
     // console.log('visit obj visualizer',xmlxsdObj);
@@ -38,10 +38,11 @@ export class OverlayDlib{
       i:0
     });
     this.xmlxsdObj.content.accept(this);
+    this.stack.pop();
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdElt : XMLXSDElt object
+  @xmlxsdElt: XMLXSDElt object
   */
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visit Element visualizer :', xmlxsdElt);
@@ -54,12 +55,13 @@ export class OverlayDlib{
         i:i
       });
       elt.accept(that);
+      that.stack.pop();
     })
     this.currentTimeId = oldCurrentTimeId;
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdSeq : XMLXSDSequence object
+  @xmlxsdSeq: XMLXSDSequence object
   */
   visitXMLXSDSequence(xmlxsdSeq){
     // console.log('visit Sequence visualizer :', xmlxsdSeq);
@@ -82,7 +84,7 @@ export class OverlayDlib{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdExt : XMLXSDExtensionType object
+  @xmlxsdExt: XMLXSDExtensionType object
   */
   visitXMLXSDExtensionType(xmlxsdExt){
     this.buildAttrs(xmlxsdExt);
@@ -154,7 +156,7 @@ export class OverlayDlib{
   }
 
   /* Use to determine if the two XML node have the same parents
-  @return true if this.stack and stack have the same tags
+  @returns: true if this.stack and stack have the same tags
           false otherwise
   */
   samePlace(stack){

@@ -7,8 +7,8 @@ Object class for elements linked to a xsd dexcription
 */
 export class XMLXSDElt{
 	/*Constructor
-	@xmlEltsList : list of elements obtained by JQuery parsing
-	@xsdElt : XSDElt object
+	@xmlEltsList: list of elements obtained by JQuery parsing
+	@xsdElt: XSDElt object
 	*/
 	constructor(xmlEltsList,xsdElt){
 		this.name=xsdElt.name;
@@ -40,7 +40,7 @@ export class XMLXSDElt{
 
 	/* Delete a element in the eltsList
 	@index: index of the element in the eltsList
-	@return: true if the element has been deleted
+	@returns: true if the element has been deleted
 					 false otherwise
 	*/
 	deleteElement(index){
@@ -53,7 +53,7 @@ export class XMLXSDElt{
 	}
 	/* Say if a element in the eltsList can be deleted
 	@index: index of the element in eltsList
-	@return: true if the element can be deleted
+	@returns: true if the element can be deleted
 					 false otherwise
 	*/
 	canBeDeleted(index){
@@ -61,9 +61,9 @@ export class XMLXSDElt{
 			typeof index === 'number' &&
 			index < this.eltsList.length
 	}
-	
+
 	/* Add an object to EltsList (case of sequenced element)
-	@xsdSeq : XSDSequence object
+	@xsdSeq: XSDSequence object
 	*/
 	visitXSDSequence(xsdSeq){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -77,7 +77,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of extension Type object)
-	@type : xsd restriction type object
+	@type: xsd restriction type object
 	*/
 	visitXSDExtensionType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -92,7 +92,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of string element)
-	@type : string type xsd object
+	@type: string type xsd object
 	*/
 	visitXSDStringType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -112,7 +112,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of decimal element)
-	@type : xsd decimal type object
+	@type: xsd decimal type object
 	*/
 	visitXSDDecimalType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -132,7 +132,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of float element)
-	@type : xsd float type object
+	@type: xsd float type object
 	*/
 	visitXSDFloatType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -152,7 +152,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of integer element)
-	@type : xsd integer type object
+	@type: xsd integer type object
 	*/
 	visitXSDIntegerType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -172,7 +172,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of boolean element)
-	@type : xsd boolean type object
+	@type: xsd boolean type object
 	*/
 	visitXSDBooleanType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -192,7 +192,7 @@ export class XMLXSDElt{
 	}
 
 	/* Add an object to EltsList (case of void element)
-	@type : xsd void type object
+	@type: xsd void type object
 	*/
 	visitXSDVoidType(type){
 		if (this.xmlEltsList.length!=0 && this.xmlEltsList[0].localName==this.name){
@@ -212,7 +212,7 @@ export class XMLXSDElt{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXMLXSDElt"
+	@visitor: object with a method "visitXMLXSDElt"
 	*/
 	accept(visitor){
 		visitor.visitXMLXSDElt(this);

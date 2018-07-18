@@ -2,7 +2,7 @@ export class Parser{
 
 
   /*
-  @returns a JSON object with the list of extractors
+  @returns: a JSON object with the list of extractors
   */
   static getListExtractors(xml){
     if(xml == undefined){
@@ -18,8 +18,8 @@ export class Parser{
   }
 
   /*
-  @xml an XML String
-  @returns the list of the timeId sort in ascending order
+  @xml: an XML String
+  @returns: the list of the timeId sort in ascending order
   */
   static getListTimeId(xml){
     if(xml == undefined){

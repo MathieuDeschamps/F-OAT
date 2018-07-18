@@ -9,8 +9,8 @@ Object class for xml attributes linked to its xsd dexcription
 
 export class XMLXSDAttr{
 	/* Constructor
-	@value : object (value of the attribute)
-	@xsdAtt : XSDAttr object
+	@value: object (value of the attribute)
+	@xsdAttr: XSDAttr object
 	*/
 	constructor(value,xsdAttr){
 		this.type=xsdAttr.table.getType(xsdAttr.type);
@@ -27,7 +27,7 @@ export class XMLXSDAttr{
 	}
 
 	/* Setter for the value
-	@value : object
+	@value: object
 	*/
 	setValue(value){
 		if (value!=undefined){
@@ -74,7 +74,7 @@ export class XMLXSDAttr{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXMLXSDAttr"
+	@visitor: object with a method "visitXMLXSDAttr"
 	*/
 	accept(visitor){
 		visitor.visitXMLXSDAttr(this);

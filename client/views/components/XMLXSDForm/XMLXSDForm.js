@@ -1,11 +1,11 @@
 export class XMLXSDForm{
 
 	/* Constructor
-	@xmlxsdObj : XMLXSDObj object
-	@id : id of the form (id of the extractor in MongoDB)
-	@name : name of the form (name of the extractor)
-	@divId : the id of the div which will contain the code of the form
-	@visualizer : visualizer which created the XMLXSDForm
+	@xmlxsdObj: XMLXSDObj object
+	@id: id of the form (id of the extractor in MongoDB)
+	@name: name of the form (name of the extractor)
+	@divId: the id of the div which will contain the code of the form
+	@visualizer: visualizer which created the XMLXSDForm
 	*/
 	constructor(xmlxsdObj,id,name,divId, visualizer){
 		this.xmlxsdObj=xmlxsdObj;
@@ -49,7 +49,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdObj : XMLXSDObj object
+	@xmlxsdObj: XMLXSDObj object
 	*/
 	visitXMLXSDObject(xmlxsdObj){
 		// console.log('visitXMLXSDObject',xmlxsdObj);
@@ -68,7 +68,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdElt : XMLXSDElt object
+	@xmlxsdElt: XMLXSDElt object
 	*/
 	visitXMLXSDElt(xmlxsdElt){
 		// console.log('visitXMLXSDElt',xmlxsdElt);
@@ -199,7 +199,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdSeq : XMLXSDSequence object
+	@xmlxsdSeq: XMLXSDSequence object
 	*/
 	visitXMLXSDSequence(xmlxsdSeq){
 		this.eventHandler=[];
@@ -386,7 +386,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdExt : XMLXSDExtensionType object
+	@xmlxsdExt: XMLXSDExtensionType object
 	*/
 	visitXMLXSDExtensionType(xmlxsdExt){
 		// console.log('visit XMLXSDExt',xmlxsdExt);
@@ -458,7 +458,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdBool : XSDBooleanType object
+	@xsdBool: XSDBooleanType object
 	*/
 	visitXSDBooleanType(xsdBool){
 		if (this.attrManage){
@@ -518,7 +518,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdDeci : XSDDecimalType object
+	@xsdDeci: XSDDecimalType object
 	*/
 	visitXSDDecimalType(xsdDeci){
 		if (this.attrManage){
@@ -584,7 +584,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdFloat : XSDFloatType object
+	@xsdFloat: XSDFloatType object
 	*/
 	visitXSDFloatType(xsdFloat){
 		if (this.attrManage){
@@ -647,7 +647,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdInt : XSDIntegerType object
+	@xsdInt: XSDIntegerType object
 	*/
 	visitXSDIntegerType(xsdInt){
 		if (this.attrManage){
@@ -714,7 +714,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdString : XSDStringType object
+	@xsdString: XSDStringType object
 	*/
 	visitXSDStringType(xsdString){
 		// console.log('visit XSDStringType')
@@ -783,7 +783,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdVoid : XSDVoidType object
+	@xsdVoid: XSDVoidType object
 	*/
 	visitXSDVoidType(xsdVoidType){
 		// console.log('htmlUpdate', !this.htmlUpdate)
@@ -824,7 +824,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdRestriction XSDRestrictionType object
+	@xsdRestriction: XSDRestrictionType object
 	*/
 	visitXSDRestrictionType(xsdRestriction){
 		var type = xsdRestriction.baseType;
@@ -832,7 +832,7 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code navigation bar for the form
-	@return the code for the navigation bar
+	@returns: the code for the navigation bar
 	*/
 	generateNav(){
 		// console.log('this.stack', this.stack)
@@ -887,11 +887,11 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for content of the header in this.html
-	@id identifiant of the hedaer
-	@icon icon place before the nameHeader can be none
-	@nameHeader name of the header
-	@deletable boolean to display or not the clear element
-	@return the code for the header element
+	@id: identifiant of the hedaer
+	@icon: icon place before the nameHeader can be none
+	@nameHeader: name of the header
+	@deletable: boolean to display or not the clear element
+	@returns: the code for the header element
 	*/
 	generateHeaderContent(id, icon, nameHeader,deletable, idClear){
 		var result = '';
@@ -915,7 +915,6 @@ export class XMLXSDForm{
 		result = $.parseHTML(result);
 		if(icon === "keyboard_arrow_down"){
 			$(result).children('.editor-header').prop('opened', true);
-			// $(result).addClass('active');
 		}else if(icon == "keyboard_arrow_right"){
 			$(result).children('.editor-header').prop('opened', false);
 		}
@@ -923,8 +922,8 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for the attribute of the xmlxsd
-	@obj a xmlxsd complexType or simpleType
-	@return the code for the attributes
+	@obj: a xmlxsd complexType or simpleType
+	@returns: the code for the attributes
 	*/
 	generateAttrsForm(obj){
 		var that=this;
@@ -1022,11 +1021,11 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for the text input value
-	 @id of the input element
-	 @type of the input element
-	 @step of the input element only for the number
-	 @value default value of the input element
-	 @returns the code for the input element
+	 @id: of the input element
+	 @type: of the input element
+	 @step: of the input element only for the number
+	 @value: default value of the input element
+	 @returns: the code for the input element
 	*/
 	generateInput(id, type, step, defaultValue, disabled){
 		var result =''
@@ -1045,9 +1044,9 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for the select element
-	@id of the select element
-	@enumeration the list of the option
-	@default the default value of the selected option
+	@id: of the select element
+	@enumeration: the list of the option
+	@default: the default value of the selected option
 	@result
 	*/
 	generateSelect(id, enumValues, defaultValue,disabled){
@@ -1095,7 +1094,7 @@ export class XMLXSDForm{
 	}
 
 	/* Add the event for the editor header to eventHandler
-	@idHeader id of the header
+	@idHeader: id of the header
 	*/
 	addEventEditorHeader(idHeader){
 		this.eventHandler.push({
@@ -1121,7 +1120,7 @@ export class XMLXSDForm{
 	}
 
 	/* Add the events for the input
-	@idInput id of the input
+	@idInput: id of the input
 	*/
 	addEventInput(idInput){
 		var that = this;
@@ -1162,7 +1161,7 @@ export class XMLXSDForm{
 
 	/* Display the form
 	* call by the tool of visualisation (time line, overlay)
-	@stack Array of JSON Object {tag:String, obj:XMLXSDElment}
+	@stack: Array of JSON Object {tag:String, obj:XMLXSDElment}
 	*/
 	displayForm(stack){
 		this.stack = stack;
@@ -1182,7 +1181,7 @@ export class XMLXSDForm{
 		var saveStack = this.stack.slice(0)
 		this.eventHandler = [];
 		this.stack = [];
-		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
+		this.xmlxsdObj = this.visualizer.getXMLXSDObj();
 
 		var that = this;
 		//Reconstruct the stack from the last stack with new xmlxsdObj

@@ -10,8 +10,8 @@ import { Writer } from '../class/Writer.js'
 export class configAnnotationManager{
 
   /* Constructor
-  @xml : xml of the project with the annotations and the header parsed
-  @xsds : array which contains the XSD files parsed
+  @xml: xml of the project with the annotations and the header parsed
+  @xsds: array which contains the XSD files parsed
   @xmls: array which contains the XML of the extractors parsed
   @checkBoxDiv: id of the div of the checkBox
   @visualizerDivs: array which contains the id of div of the visualizer
@@ -140,8 +140,8 @@ export class configAnnotationManager{
   }
 
   /* function called when a new extraction is done to refresh the annotation manager with a new annotation
-  @idExtractor : xml of the extraction with the annotations parsed
-  @xsd : XSD file of the extractor parsed
+  @idExtractor: xml of the extraction with the annotations parsed
+  @xsd: XSD file of the extractor parsed
   */
   addAnnotation(idExtractor,version){
     var idProject = Router.current().params._id;
@@ -243,8 +243,8 @@ export class configAnnotationManager{
 
   /* Function that will update the visualizer content
     Triggered by eventDDP liveUpdate
-    @idVisualizer : visualizer to update
-    @xml : new xml to put in visualizer
+    @idVisualizer: visualizer to update
+    @xml: new xml to put in visualizer
   */
   update(idVisualizer,xml){
     var that = this;
@@ -256,7 +256,7 @@ export class configAnnotationManager{
           that.xmls[i] = $(parsexml).children().first();
           var xsdObj = new XSDObject(xsd);
           var xmlxsdObj = new XMLXSDObj(that.xmls[i], xsdObj);
-          elem.setXmlXsdObj(xmlxsdObj);
+          elem.setXMLXSDObj(xmlxsdObj);
         }
       }
     });
@@ -277,7 +277,7 @@ export class configAnnotationManager{
 
   /* Function that will update all visualizers
   triggered by eventDDP setXmls for a user coming on project page to get last version
-  @xmls : array of xml from the manager of another user
+  @xmls: array of xml from the manager of another user
   */
   updateXmls(xmls){
 
@@ -289,7 +289,7 @@ export class configAnnotationManager{
       that.xmls[i] = $(parsexml).children().first();
       var xsdObj = new XSDObject(xsd);
       var xmlxsdObj = new XMLXSDObj(that.xmls[i], xsdObj);
-      visualizer.setXmlXsdObj(xmlxsdObj);
+      visualizer.setXMLXSDObj(xmlxsdObj);
     });
   }
 

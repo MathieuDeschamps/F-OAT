@@ -4,8 +4,8 @@ Object class for attributes in an xsd file.
 
 export class XSDAttr {
 	/* Constructor :
-	@attr : attribute description given by JQuery parsing of the xsd file
-	@table : type table
+	@attr: attribute description given by JQuery parsing of the xsd file
+	@table: type table
 	*/
 	constructor(attr,table){
 		this.table=table;
@@ -49,7 +49,7 @@ export class XSDAttr {
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDAttr"
+	@visitor: object with a method "visitXSDAttr"
 	*/
 	accept(visitor){
 		visitor.visitXSDAttr(this);

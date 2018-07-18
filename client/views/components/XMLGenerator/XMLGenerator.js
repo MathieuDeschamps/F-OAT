@@ -9,7 +9,7 @@ export class XMLGenerator{
 	}
 
 	/* Generate the XML
-	@return: the xml generate of the XMLXSDObject
+	@returns: the xml generate of the XMLXSDObject
 	*/
 	generateXML(){
 		this.errorMessage="";
@@ -27,7 +27,7 @@ export class XMLGenerator{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdElt : XMLXSDElt object
+	@xmlxsdElt: XMLXSDElt object
 	*/
 	visitXMLXSDElt(xmlxsdElt){
 		if (xmlxsdElt.eltsList.length<xmlxsdElt.minOccurs){
@@ -60,7 +60,7 @@ export class XMLGenerator{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdSeq : XMLXSDSequence object
+	@xmlxsdSeq: XMLXSDSequence object
 	*/
 	visitXMLXSDSequence(xmlxsdSeq){
 		// On enlève le ">" du tag
@@ -145,7 +145,7 @@ export class XMLGenerator{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdExt : XMLXSDExtensionType object
+	@xmlxsdExt: XMLXSDExtensionType object
 	*/
 	visitXMLXSDExtensionType(xmlxsdElt){
 		if (this.xml!=undefined){

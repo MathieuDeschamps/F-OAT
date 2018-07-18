@@ -7,6 +7,7 @@ export class TimeLineCharacter{
     this.name = name
     this.stack = [];
     this.timeLineData = [];
+    this.xmlFilter = undefined;
     this.count = 0;
     this.currentCharacter = undefined;
   }
@@ -19,12 +20,17 @@ export class TimeLineCharacter{
     this.currentCharacter = undefined;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
   }
 
+  setXMLFilter(xmlFilter){
+    this.xmlFilter = xmlFilter;
+  }
+
   /*
-  @returns timeLineData
+  @returns: timeLineData
   */
   getTimeLineData(){
     this.initialize();
@@ -32,7 +38,7 @@ export class TimeLineCharacter{
     return this.timeLineData;
   }
   /* Visitor pattern : visit function
-  @xmlxsdObj : XMLXSDObj object
+  @xmlxsdObj: XMLXSDObj object
   */
   visitXMLXSDObject(xmlxsdObj){
     // console.log('visit obj visualizer',xmlxsdObj);
@@ -42,10 +48,11 @@ export class TimeLineCharacter{
       i:0
     });
     this.xmlxsdObj.content.accept(this);
+    this.stack.pop();
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdElt : XMLXSDElt object
+  @xmlxsdElt: XMLXSDElt object
   */
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visit Element visualizer :', xmlxsdElt);
@@ -58,12 +65,13 @@ export class TimeLineCharacter{
         i:i
       });
       elt.accept(that);
+      that.stack.pop();
     })
     this.currentCharacter = oldCurrentCharacter;
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdSeq : XMLXSDSequence object
+  @xmlxsdSeq: XMLXSDSequence object
   */
   visitXMLXSDSequence(xmlxsdSeq){
     // console.log('visit Sequence visualizer :', xmlxsdSeq);
@@ -86,7 +94,7 @@ export class TimeLineCharacter{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdExt : XMLXSDExtensionType object
+  @xmlxsdExt: XMLXSDExtensionType object
   */
   visitXMLXSDExtensionType(xmlxsdExt){
     this.buildAttrs(xmlxsdExt);
@@ -160,8 +168,8 @@ export class TimeLineCharacter{
     }
 
   /* Use to determine if the two XML node have the same parents
-  @return true if this.stack and stack have the same tags
-          false otherwise
+  @returns: true if this.stack and stack have the same tags
+            false otherwise
   */
   samePlace(stack){
     var result = true;
