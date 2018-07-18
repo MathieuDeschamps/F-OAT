@@ -49,7 +49,6 @@ export class Overlay{
       svg.append("rect")
       .attr("width", width)
       .attr("height", height)
-      .on("mousedown", function() {mousedown();})
       .on("mousemove", function() { mousemove();})
       .on("mouseup", function() { mouseup();});
 
@@ -73,7 +72,6 @@ export class Overlay{
       that = this
 
       d3.select(window)
-      .on("keydown", function() { keydown(that);});
 
 
       svg.node().focus();
@@ -88,7 +86,6 @@ export class Overlay{
 
       d3.select(window)
       .call(function(){redraw();})
-      .on("keydown", function(){keydown();});
     }
 
     function redraw() {
@@ -146,8 +143,8 @@ export class Overlay{
        .on('mouseup', function(d){
            if(typeof d.stack !== 'undefined'){
              if(d.x != null && d.y != null){
-               var newX = d.x
-               var newY = d.y
+               var newX = d.x.toFixed(4)
+               var newY = d.y.toFixed(4)
                if(typeof d.stack[d.stack.length - 1].obj.attrs.x !== 'undefined' &&
                  typeof d.stack[d.stack.length - 1].obj.attrs.y !== 'undefined'){
                    var oldX = d.stack[d.stack.length - 1].obj.attrs.x.value
@@ -176,18 +173,18 @@ export class Overlay{
     }
 
 
-    function mousedown() {
-      var width = $('#' + that.divId).find('svg').width();
-      var height = $('#' + that.divId).find('svg').height();
-      var m = d3.mouse(svg.node());
-      var x = m[0]/width;
-      var y = m[1]/height;
-      var coordinates = {};
-      coordinates.x = x;
-      coordinates.y = y;
-      that.points.push(that.selected = that.dragged = coordinates);
-      that.draw_circles();
-    }
+    // function mousedown() {
+    //   var width = $('#' + that.divId).find('svg').width();
+    //   var height = $('#' + that.divId).find('svg').height();
+    //   var m = d3.mouse(svg.node());
+    //   var x = m[0]/width;
+    //   var y = m[1]/height;
+    //   var coordinates = {};
+    //   coordinates.x = x;
+    //   coordinates.y = y;
+    //   that.points.push(that.selected = that.dragged = coordinates);
+    //   that.draw_circles();
+    // }
 
     function mousemove() {
       if (!that.dragged) return;
@@ -209,56 +206,6 @@ export class Overlay{
       that.dragged = null;
     }
 
-    function keydown() {
-      if (!that.selected) return;
-      switch (d3.event.keyCode) {
-        case 8: // backspace
-        case 46: { // delete
-          var i = that.points.indexOf(that.selected);
-          var stack = that.selected.stack
-          if(typeof stack === 'undefined'){
-            that.points.splice(i, 1);
-            that.selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
-            that.draw_circles();
-          }
-          // }else if(stack.length > 1){
-          //   var element = stack[stack.length - 1];
-          //   var parent = stack[stack.length - 2].obj
-          //   var xmlxsdElt
-          //   // case of parent is of type XSDElt we get the first sequence
-          //   if(typeof parent.eltsList !== 'undefined' &&
-          //   parent.eltsList.length > 0){
-          //     parent =  parent.eltsList[0]
-          //   }
-          //
-          //   // case parent is of type XSDSequence
-          //   if(typeof parent.seqList !== 'undefined'){
-          //     parent.seqList[0].forEach(function(elt){
-          //       if(elt.name === element.tag){
-          //         xmlxsdElt = elt
-          //       }
-          //     })
-          //   }
-          //
-          //   if(typeof xmlxsdElt !== 'undefined'){
-          //     var index = xmlxsdElt.eltsList.indexOf(element.obj)
-          //     var deleted = xmlxsdElt.deleteElement(index)
-          //     if(deleted){
-          //       that.points.splice(i, 1);
-          //       if(typeof that.xmlxsdForm !== 'undefined'){
-          //         that.xmlxsdForm.displayForm(stack.splice(0, stack.length-1))
-          //       }
-          //       that.selected = that.points.length ? that.points[i > 0 ? i - 1 : 0] : null;
-          //       that.draw_circles();
-          //       that.visualizer.notifyAll();
-          //     }
-          //   }
-          // }
-
-          break;
-        }
-      }
-    }
   }
 
   draw_rect(){
@@ -399,10 +346,10 @@ export class Overlay{
       d3.select(this).classed("active", false);
       if(typeof d.stack !== 'undefined'){
         if(d.right != null && d.top != null && d.left != null && d.bottom != null){
-          var newRight = d.right;
-          var newTop = d.top;
-          var newLeft = d.left;
-          var newBottom = d.bottom;
+          var newRight = d.right.toFixed(4);
+          var newTop = d.top.toFixed(4);
+          var newLeft = d.left.toFixed(4);
+          var newBottom = d.bottom.toFixed(4);
           if(typeof d.stack[d.stack.length - 1].obj.attrs.right !== 'undefined' &&
             typeof d.stack[d.stack.length - 1].obj.attrs.top !== 'undefined' &&
             typeof d.stack[d.stack.length - 1].obj.attrs.left !== 'undefined' &&

@@ -147,7 +147,6 @@ export class ShotExtractVisualizer{
 
   setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
-    // console.log("setXMLXSDObj",xmlxsdObj);
     this.observers.forEach(function(observer){
       observer.updateVisualizer();
     });
