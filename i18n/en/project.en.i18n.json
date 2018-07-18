@@ -6,7 +6,7 @@
   "errorSaveProject" : "Sorry, the annotations cannot be saved.",
   "errorSendParms" : "Sorry, an error has occured while sending parameters.",
   "projectDeleted" : "Project has been deleted by owner. Back to dashboard.",
-  "extractionProgress" : "Extraction in progress",
+  "extractionProgress" : "Extraction in progress, please wait, this may take some time (minutes to hours)...",
   "uploadProject" : "Upload your video file",
   "fileProject" : "File",
   "addFileButton" : "Upload",

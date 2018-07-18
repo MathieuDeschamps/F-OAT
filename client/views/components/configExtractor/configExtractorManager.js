@@ -85,7 +85,7 @@ export class configExtractorManager{
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';
-		$(JQidDivButton).append('<a class="btn waves-effect waves-light blue darken-4" id="'+idButton+'">Launch '+'</a>');
+		$(JQidDivButton).append('<a class="btn waves-effect waves-light" id="'+idButton+'">Launch '+'</a>');
 
 		var JQidButton='#'+idButton;
 		$(JQidButton).click(function(){
@@ -93,7 +93,7 @@ export class configExtractorManager{
 			// console.log(gen.generateXML());
 			var paramsXML=gen.generateXML();
 			if(gen.getErrorMessage() !== ""){
-				toastr.warning(TAPi18n.__('errorSendParms')+ gen.getErrorMessage())
+				toastr.error(TAPi18n.__('errorSendParms')+ gen.getErrorMessage())
 			}else{
 
 			var params={"param" : paramsXML};
@@ -120,9 +120,8 @@ export class configExtractorManager{
 			}
 
 			Meteor.call("initRequest",idProject,extractor.ip,checksum,downUrl,isFile,(err,result)=>{
-				console.log("finish initRequest");
 				if (err || !result){
-					toastr.warning('Download problem by '+extractor.name + ' : ' +err.reason);
+					toastr.error('Download problem by '+extractor.name + ' : ' +err.reason);
 					console.log("initRequest that : ",that);
 					console.log("form :", xmlxsdForm);
 					console.log("extractor",extractor);
@@ -137,8 +136,7 @@ export class configExtractorManager{
 
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
-							toastr.warning('Download problem by '+extractor.name + ' : ' +err.reason);
-							that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
+							//that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 						}
 						else{
 							if(!eventNewExtraction){

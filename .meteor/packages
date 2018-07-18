@@ -18,7 +18,6 @@ ecmascript@0.5.7              # Enable ECMAScript2015+ syntax in app code
 shell-server@0.2.4            # Server-side component of the `meteor shell` command
 
 fourseven:scss
-iron:router
 jquery@1.11.9
 materialize:materialize
 accounts-base@1.2.9
@@ -38,3 +37,4 @@ mrt:cheerio
 tap:i18n
 momentjs:moment
 ostrio:files
+iron:router
