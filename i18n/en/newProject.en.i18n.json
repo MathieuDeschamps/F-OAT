@@ -1,8 +1,8 @@
 {
   "createProject" : "Create a project",
-  "nameProject" : "Name of the project",
-  "urlProject" : "URL of the video",
-  "downUrlProject" : "Download URL of the video",
+  "nameProject" : "Name of the project *",
+  "urlProject" : "URL of the video *",
+  "downUrlProject" : "Download URL of the video *",
   "useFile" : "Use a file",
   "useUrl" : "Use an URL",
   "searchUsers" : "Search users for the project",
@@ -16,8 +16,8 @@
   "titleProject" : "Search title of the movie of this project",
   "searchTitle" : "Search",
   "selectTitle" : "Select this movie",
-  "movieDuration" : "Video duration",
-  "frameRate" : "Frame rate",
+  "movieDuration" : "Video duration *",
+  "frameRate" : "Frame rate *",
 
   "errorSelectUser" : "Select a user to add",
   "errorAddUser" : "User __user__ is already in the project",

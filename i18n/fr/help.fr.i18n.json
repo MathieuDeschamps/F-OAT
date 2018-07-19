@@ -1,0 +1,43 @@
+{
+  "helpPage" : "Mode d'emploi et questions",
+  "createProjectHelp" : "Créer un projet",
+  "projectPageHelp" : "Travailler sur un projet",
+  "extractorHelp" : "Qu'est-ce qu'un extracteur et comment l'utiliser",
+  "filterHelp" : "Qu'est-ce qu'un filtre et comment l'utiliser",
+  "urlDownHelp" : "Comment récupérer l'URL de téléchargement d'une vidéo ?",
+  "others" : "Autres questions :",
+
+  "createProjectHelpP1_1" : "Pour créer un projet, rendez-vous tout d'abord sur la page de ",
+  "projectLink" : "projet",
+  "createProjectHelpP1_2" : ", ou cliquez sur le bouton '+' sur la page d'accueil.",
+  "createProjectHelpP2" : "Les champs obligatoires sont marqués par un '*', la durée de la vidéo à analyser et le nombre de frames par secondes sont des informations importantes pour la suite du projet. Elles seront utilisées pour créer des lignes de temps sur mesure.",
+  "createProjectHelpP4" : "Lorsque vous souhaitez créer un projet avec un fichier local, celui-ci vous sera demandé lorsque vous entrer dans votre projet.",
+  "createProjectHelpP4" : "Vous pouvez également ajouter des collaborateurs à votre projet grâce à leur nom d'utilisateur et gérer leurs droits depuis la page d'options du projet.",
+  "createProjectHelpP5" : "Vous pouvez enfin rechercher le titre de votre film pour ajouter les informations générales du film à votre projet. Ces informations sont données par ",
+
+  "urlDownHelpP1" : "L'URL de téléchargement de la vidéo vous sera utile pour réaliser une extraction sur une vidéo venant d'une plateforme vidéos.",
+  "urlDownHelpP2" : "Toutes les plateformes de vidéos ne donnent pas forcément de liens de téléchargement, YouTube et Dailymotion par exemple ne permettent pas cette fonctionnalité.",
+  "urlDownHelpP3" : "Certaines vidéos sur Vimeo permettent de récupérer un lien de téléchargement. Pour cela, il faut que la vidéo possède un bouton 'Download' sous la vidéo, à côté du bouton 'Share'.",
+  "urlDownHelpP4" : "Pour récupérer l'URL de téléchargement, cliquez sur ce bouton 'Download', puis faites un clic droit sur un des boutons de téléchargement correspondant aux différentes résolutions de la vidéo, puis cliquez sur 'Copier l'adresse du lien'.",
+  "urlDownHelpP5_1" : "Important : ",
+  "urlDownHelpP5_2" : "Un lien de téléchargement Vimeo est unique, il ne permettra donc qu'une seule extraction. Vous devrez donc créer un autre projet pour réaliser une autre extraction sur la même vidéo, avec un nouveau lien de téléchargement. Une solution peut être de télécharger la vidéo et de l'utiliser dans un projet avec un fichier local.",
+
+  "projectPageHelpP1" : "Sur un projet, de nombreuses fonctionnalités s'offrent à vous. En effet, vous pourrez analyser votre vidéo grâce aux extracteurs proposés en haut à droite de la page. Cette plateforme collaborative vous permettra ensuite de visualiser et de modifier les résultats avec vos partenaires en temps réel.",
+  "projectPageHelpP2" : "Selon l'extracteur, différents affichages des résultats seront possibles. En effet si l'extraction fait une analyse de la vidéo dans le temps, alors ces données seront affichées sur une ligne de temps interactive sous la vidéo.",
+  "projectPageHelpP3" : "Des informations pourront également ếtre affichées par dessus la vidéo, par exemple des analyses de visage, de positions d'acteurs ou autres. Cet affichage est également interactif.",
+  "projectPageHelpP4" : "Pour plus de données et plus de précision, toutes les informations renvoyées par un extracteur sont présentes dans le formulaire sur la droite de la page. Vous pouvez modifer les données à souhait en cas d'erreurs de l'extracteur.",
+
+  "extractorHelpP1" : "Un extracteur est un serveur possédant un logiciel qui va analyser la vidéo envoyée pour retourner des données dans un format qu'il sera alors possible d'afficher (selon les différents visuels présentés précedemment) et de modifier sur notre plateforme.",
+  "extractorHelpP2" : "Tout utilisateur peut souhaiter ajouter son extracteur à l'application F-OAT depuis le bouton 'Options' en haut à droite de l'application. Il pourra alors faire profiter à tous les autres utilisateurs de son logiciel d'analyse de vidéos.",
+  "extractorHelpP3" : "N'hésitez pas à nous contacter pour avoir plus d'informations sur cette possibilité : ",
+  "extractorHelpP4" : "Pour utiliser un extracteur, il suffit de cocher l'extracteur souhaité en haut à droite de la page d'un projet, et de remplir les paramètres selon vos besoins. Une extraction peut prendre plusieurs minutes à plusieurs heures selon l'analyse, évitez de quitter l'application pendant ce temps afin d'éviter tout problème.",
+
+  "filterHelpP1" : "",
+  "filterHelpP2" : "",
+  "filterHelpP3" : "",
+
+
+  "contactUs" : "Pour tout autre problème, question ou suggestion sur l'application, contactez nous via notre github en créant un nouvel 'Issue' "
+
+
+}
