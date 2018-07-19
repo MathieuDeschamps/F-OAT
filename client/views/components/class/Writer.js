@@ -2,10 +2,10 @@ export class Writer{
 
 
   /* Replace the annotation of the extractor by the new annotation
-  @xmlObject the XMLDocument of the project
-  @extractor the extractor which will be replace
-  @newAnnotation the xml which contains the annotation
-  @returns the xmlObject
+  @xmlObject: the XMLDocument of the project
+  @extractor: the extractor which will be replace
+  @newAnnotation: the xml which contains the annotation
+  @returns: the xmlObject
   */
   static replaceAnnotation(xmlObject, extractor, newAnnotation){
     if(typeof xmlObject === 'undefined' &&
@@ -26,8 +26,8 @@ export class Writer{
   }
 
   /* convert a XMLDocument into a String
-  @xmlDocument the XMLDocumet to convert
-  @depth is the number of tabulation at the beginning
+  @xmlDocument: the XMLDocumet to convert
+  @depth: is the number of tabulation at the beginning
   */
   static convertDocumentToString(xmlDocument, depth){
     var result ="";

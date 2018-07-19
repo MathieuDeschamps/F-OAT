@@ -6,14 +6,14 @@ Object class for extension type of an xsd file.
 */
 export class XSDExtensionType{
 	/* Constructor
-	@extens : extensionType description from JQuery parsing
-	@table : symbol table
+	@extens: extensionType description from JQuery parsing
+	@table: symbol table
 	*/
 	constructor(extens,table){
 		this.table=table;
-		
+
 		this.baseType=$(extens).attr('base');
-		
+
 		var attrs={};
 		$(extens).children('xs\\:attribute').each(function(i,attr){
 			attrObj=new XSDAttr(attr,table);
@@ -25,13 +25,13 @@ export class XSDExtensionType{
 		})
 		this.attrs=attrs;
 	}
-	
-	
-	/* Visitor pattern : accept function 
-	@ visitor : object with a method "visitXSDExtensionType"
+
+
+	/* Visitor pattern : accept function
+	@visitor: object with a method "visitXSDExtensionType"
 	*/
 	accept(visitor){
 		visitor.visitXSDExtensionType(this);
 	}
-	
+
 }

@@ -25,8 +25,8 @@ export class XSDBooleanType {
 	*/
 
 	/* conversion of a string to boolean
-	@str : string
-	@returns : boolean
+	@str: string
+	@returns: boolean
 	*/
 	convert(str){
 		if (str.toLowerCase()=="true"){
@@ -39,8 +39,8 @@ export class XSDBooleanType {
 	}
 
 	/* test if b is a boolean
-	@b : object
-	@returns : boolean
+	@b: object
+	@returns: boolean
 	*/
 	holds(b){
 		// tester le type de b
@@ -48,7 +48,7 @@ export class XSDBooleanType {
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDBooleanType"
+	@visitor: object with a method "visitXSDBooleanType"
 	*/
 	accept(visitor){
 		visitor.visitXSDBooleanType(this);

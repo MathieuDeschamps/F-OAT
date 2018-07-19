@@ -1,3 +1,4 @@
+import { XMLSelector } from '../XMLFilter/XMLSelector.js'
 import * as d3 from 'd3';
 export class TimeLine {
 
@@ -11,17 +12,18 @@ export class TimeLine {
   static SCALE_MIN(){return 30}
 
   /*
-  @name name of the extractor
-  @nbFrames number of frame of the video
-  @data used to build the time line
-  @divId id of the html div which will contain the timeline
-  @visualizer the visaulizer which created the overlay
+  @name: name of the extractor
+  @nbFrames: number of frame of the video
+  @data: used to build the time line
+  @divId: id of the html div which will contain the timeline
+  @visualizer: the visaulizer which created the overlay
   */
-  constructor(name, nbFrames, data, divId, visualizer){
-    this.div_id = divId;
-    this.xmlxsdForm = undefined;
+  constructor(name, nbFrames, xsdObj, data, divId, visualizer){
     this.name_extractor = name;
     this.nb_frames = nbFrames;
+    this.xsd_obj = xsdObj;
+    this.div_id = divId;
+    this.xmlxsdForm = undefined;
     if(typeof vidCtrl !== 'undefined' &&
     typeof vidCtrl.frameRate !== 'undefined'){
       this.frame_rate = vidCtrl.frameRate;
@@ -44,15 +46,40 @@ export class TimeLine {
         that.items.push(interval);
       })
     })
-    this.id_entries =  this.div_id+'_entries';
-    this.id_chart =  this.div_id+'_chart';
+    this.chart_id = this.div_id+'_chart';
+    var chart_div = $('<div/>');
+    $(chart_div).addClass('divtimeline')
+    $(chart_div).addClass('indigo')
+    $(chart_div).addClass('lighten-5')
+    $(chart_div).attr('id', this.chart_id)
+    $('#'+this.div_id).append(chart_div);
+
+    var filter_title = $('<h5/>');
+    $(filter_title).addClass('blue-text text-darken-3');
+    $(filter_title).text(TAPi18n.__('filter')+' '+this.name_extractor +' :');
+    $('#'+this.div_id).append(filter_title);
+
+    this.filter_id = this.div_id+'_filter';
+    var filter_div = $('<div/>');
+    $(filter_div).addClass('divborder')
+    $(filter_div).addClass('indigo')
+    $(filter_div).addClass('lighten-5')
+    $(filter_div).attr('id', this.filter_id);
+    $('#'+this.div_id).append(filter_div);
+
     // these attributs following attributs are intiliased by draw
     this.scale_x1 = undefined
     this.scale_x2 = undefined
     this.first_draw = true;
     this.brush = undefined;
+    this.main = undefined
     this.mini = undefined;
     this.draw();
+    var xmlSelector = new XMLSelector(this.xsd_obj, this.name_extractor, this.filter_id);
+    var xmlFilter = xmlSelector.getXMLFilter();
+    xmlFilter.attach(this);
+    this.visualizer.setTimeLineBuilderXMLFilter(xmlFilter);
+    xmlSelector.generateSelector();
   }
 
   setXMLXSDForm(xmlxsdForm){
@@ -101,9 +128,9 @@ export class TimeLine {
     var height_total = height_main + height_mini + margin.top + margin.bottom + margin.bottom;
 
     $('#'+this.div_id).addClass('row')
-    .addClass('divtimeline')
-    .addClass('indigo')
-    .addClass('lighten-5')
+    .css('width', '100%')
+
+    $('#'+this.chart_id).addClass('row')
     .css('width', '100%')
     .css('height', height_total);
     var width_total = 0
@@ -120,10 +147,10 @@ export class TimeLine {
 
     // scales
     this.scale_x1 = d3.scaleLinear()
-        .domain([0, this.nb_frames])
+        .domain([1, this.nb_frames])
         .range([0, width_main]);
     this.scale_x2 = d3.scaleLinear()
-        .domain([0, this.nb_frames])
+        .domain([1, this.nb_frames])
         .range([0, width_main]);
     var scale_y1 = d3.scaleLinear()
         .domain([0, this.entries.length])
@@ -148,11 +175,12 @@ export class TimeLine {
         .extent([[0, 0], [width_main, height_main]])
         .on('zoom', zoomed);
 
-    var chart = d3.select('#'+this.div_id)
+    var chart = d3.select('#'+this.chart_id)
         .append('svg')
         .attr('width', width_total)
         .attr('height', height_total)
-        .attr('class', 'chart');
+        .attr('class', 'chart')
+        .call(zoom);
 
     chart.append('defs').append('clipPath')
         .attr('id', 'clip')
@@ -170,7 +198,8 @@ export class TimeLine {
         .style('font-size', '20px')
         .style('font-weight', 'bold');
 
-    var main = chart.append('g')
+
+    this.main = chart.append('g')
         .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')')
         .attr('width', width_main)
         .attr('height', height_main)
@@ -184,7 +213,7 @@ export class TimeLine {
 
 
     //main texts
-    main.append('g').selectAll('.laneText')
+    this.main.append('g').selectAll('.laneText')
         .data(this.entries)
         .enter().append('text')
         .text(function(d){;return d;})
@@ -195,25 +224,16 @@ export class TimeLine {
         .attr('class', 'laneText');
 
     // main axis x
-    main.append('g')
+    this.main.append('g')
         .attr('class', 'axis axis--x')
-        .attr('transform', 'translate('+0+', '+ height_main+')')
+        .attr('transform', 'translate('+0+', '+(height_main+1)+')')
         .call(axis_x1);
 
-    // zoom container
-    main.append('rect')
-        .attr('class', 'zoom')
-        .attr('width', width_main)
-        .attr('height', height_main)
-        .attr('transform', 'translate(' + 0 + ',' + 0 + ')')
-        .style("opacity", 0)
-        .call(zoom);
-
-    var itemRects = main.append("g")
+    var itemRects = this.main.append("g")
         .attr("clip-path", "url(#clip)");
 
     //main read line
-    main.append('line')
+    this.main.append('line')
         .attr('class', 'read_line')
         .attr('x1', that.scale_x1(that.current_frame))
         .attr('x2', that.scale_x1(that.current_frame))
@@ -249,8 +269,8 @@ export class TimeLine {
         .attr('class', 'read_line')
         .attr('x1', that.scale_x2(that.current_frame))
         .attr('x2', that.scale_x2(that.current_frame))
-        .attr('y1', scale_y1.range()[0])
-        .attr('y2', scale_y1.range()[1])
+        .attr('y1', 0)
+        .attr('y2', height_mini)
         .attr('stroke', 'black');
 
 
@@ -272,14 +292,14 @@ export class TimeLine {
       var rects;
       var s = d3.event.selection || that.scale_x2.range();
       that.scale_x1.domain(s.map(that.scale_x2.invert, that.scale_x2));
-      main.select(".axis--x").call(axis_x1);
+      that.main.select(".axis--x").call(axis_x1);
       var min = that.scale_x1.domain()[0]
       var max = that.scale_x1.domain()[1]
-      drawMainRect(min, max);
       that.moveReadLine();
+      drawMainRect(min, max);
 
       // update zoom
-      main.select('.zoom').call(zoom.transform, d3.zoomIdentity
+      chart.call(zoom.transform, d3.zoomIdentity
         .scale(width_main / (s[1] - s[0]))
         .translate(-s[0], 0));
     }
@@ -288,12 +308,12 @@ export class TimeLine {
         if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore brush-by-zoom
         var t = d3.event.transform;
         that.scale_x1.domain(t.rescaleX(that.scale_x2).domain());
-        main.select(".axis--x").call(axis_x1);
+        that.main.select(".axis--x").call(axis_x1);
         var min = that.scale_x1.domain()[0]
         var max = that.scale_x1.domain()[1]
 
-        drawMainRect(min, max);
         that.moveReadLine();
+        drawMainRect(min, max);
 
         // update the brush
         that.mini.select('.brush').call(that.brush.move, [that.scale_x2(min), that.scale_x2(max)])
@@ -347,11 +367,11 @@ export class TimeLine {
       }
   }
 
-    /* Event trigger when click on a rect of the time line
-    @item contains the data of the xml to the rectangle
-    @target is the html of the rectangle
-    */
-    blockPlay(item, target){
+  /* Event trigger when click on a rect of the time line
+  @item: contains the data of the xml to the rectangle
+  @target: is the html of the rectangle
+  */
+  blockPlay(item, target){
       var my_color = TimeLine.MY_COLOR();
       var my_selected_color =  TimeLine.MY_SELECTED_COLOR();
       // save the index of the used rect because lostFocus rested
@@ -377,102 +397,121 @@ export class TimeLine {
 
     };
 
-    /* Called when this time line lost the focus of the video controleur
-    */
-    lostFocus(){
-      if (this.index_used_rect !== -1) {
-        var used_rect = $('#'+this.div_id).find('rect[number="'+this.index_used_rect+'"]')
-        if(used_rect.length > 0){
-          var index_color = parseInt($(used_rect).attr('index'));
-          var my_color = TimeLine.MY_COLOR();
-          $(used_rect).css('fill', my_color[index_color % my_color.length]);
-        }
+  /* Called when this time line lost the focus of the video controleur
+  */
+  lostFocus(){
+    if (this.index_used_rect !== -1) {
+      var used_rect = $('#'+this.chart_id).find('rect[number="'+this.index_used_rect+'"]')
+      if(used_rect.length > 0){
+        var index_color = parseInt($(used_rect).attr('index'));
+        var my_color = TimeLine.MY_COLOR();
+        $(used_rect).css('fill', my_color[index_color % my_color.length]);
       }
     }
+  }
 
-    /* Called when this time line take the focus of the video controleur
-    */
-    // takeFocus(){
-    //   if (this.index_used_rect !== -1) {
-    //     var used_rect = $('#'+this.div_id).find('rect[number=''+this.index_used_rect+'']');
-    //     if(used_rect.length > 0){
-    //       var my_selected_color = TimeLine.MY_SELECTED_COLOR();
-    //       var index_color = parseInt($(used_rect).attr('index'));
-    //       console.log('index_color', index_color);
-    //       $(used_rect).css('fill', my_selected_color[index_color % my_selected_color.length]);
-    //     }
-    //   }
-    // }
+  /* Observer pattern : update function
+  */
+  updateVideoControler(){
+    this.current_frame = vidCtrl.getCurrentFrame();
+    this.moveReadLine();
 
-    /* Observer pattern : update function
-    */
-    updateVideoControler(){
-      this.current_frame = vidCtrl.getCurrentFrame();
-      this.moveReadLine();
+  }
 
-    }
-
-    /* Observer pattern : update function
-    */
-    updateVisualizer() {
-      var saveScrollLeftValue = $('#'+this.id_chart).prop('scrollLeft')
-      var that = this;
-      var data = this.visualizer.getTimeLineData();
-      this.current_frame = vidCtrl.getCurrentFrame();
-      this.entries = [];
-      $(data).each(function(i,e){
-        that.entries.push(e.name);
-      });
-      this.items = []
-      $(data).each(function(i,entry){
-        $(entry.intervals).each(function(j,interval){
-          that.items.push(interval);
-        })
+  /* Observer pattern : update function
+  */
+  updateVisualizer() {
+    var that = this;
+    var data = this.visualizer.getTimeLineData();
+    this.current_frame = vidCtrl.getCurrentFrame();
+    this.entries = [];
+    $(data).each(function(i,e){
+      that.entries.push(e.name);
+    });
+    this.items = []
+    $(data).each(function(i,entry){
+      $(entry.intervals).each(function(j,interval){
+        that.items.push(interval);
       })
-      $('#' + this.div_id).empty();
-      var domain_x1 = this.scale_x1.domain();
-      this.draw();
-      this.moveReadLine();
-      // update the brush
-      that.mini.select('.brush').call(that.brush.move, [that.scale_x2(domain_x1[0]), that.scale_x2(domain_x1[1])])
+    })
+    $('#' + this.chart_id).find('svg').remove();
+    var domain_x1 = this.scale_x1.domain();
+    this.moveReadLine();
+    this.draw();
+    // update the brush
+    that.mini.select('.brush').call(that.brush.move, [that.scale_x2(domain_x1[0]), that.scale_x2(domain_x1[1])])
 
-      if(this.index_used_rect !== -1 &&
-        typeof vidCtrl.focusedTimeLine !== 'undefined' &&
-        vidCtrl.isFocusedTimeLine &&
-        vidCtrl.focusedTimeLine.equals(this))
-      {
-        var current_item = $(this.items).filter(function(i, item){
-          if(item.id === that.index_used_rect){
-            return item
-          }
-        })[0];
-        vidCtrl.setPlayingInterval(current_item.start, current_item.end);
-        vidCtrl.setPartialPlaying(true);
-        if(current_item.start < current_item.end  && vidCtrl.isPlaying ){
-          vidCtrl.play();
+    // update the selected main rectangle
+    if(this.index_used_rect !== -1 &&
+      typeof vidCtrl.focusedTimeLine !== 'undefined' &&
+      vidCtrl.isFocusedTimeLine &&
+      vidCtrl.focusedTimeLine.equals(this)){
+      var current_item = $(this.items).filter(function(i, item){
+        if(item.id === that.index_used_rect){
+          return item
         }
+      })[0];
+      vidCtrl.setPlayingInterval(current_item.start, current_item.end);
+      vidCtrl.setPartialPlaying(true);
+      if(current_item.start < current_item.end  && vidCtrl.isPlaying ){
+        vidCtrl.play();
       }
     }
+  }
 
-    moveReadLine(){
-        this.current_frame = vidCtrl.getCurrentFrame();
-        // move the read line of main
-        x1 = this.scale_x1(this.current_frame);
-        var read_line1 =   $('#'+this.div_id).find('.read_line:eq(0)')
-        if(x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1]){
-          $(read_line1).css('opacity', '0')
-        }else{
-          $(read_line1).css('opacity', '100')
+  /* Observer pattern : update function
+  */
+  updateXMLFilter(){
+    this.updateVisualizer();
+  }
+
+
+  /* move the read lines of the time line
+   on the current frame of the video controler
+  */
+  moveReadLine(){
+      this.current_frame = vidCtrl.getCurrentFrame();
+      // move the read line of main
+      x1 = this.scale_x1(this.current_frame);
+      var main_read_line =   $('#'+this.chart_id).find('.read_line:eq(0)')
+      // update the brush when the read line is out of the main  windows
+      // or every 10 seconds
+      if((x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1] ||
+      this.current_frame % (this.frame_rate * 10) === 0) &&
+      vidCtrl.isPlaying &&
+      this.current_frame < this.nb_frames &&
+      this.current_frame > 1 ){
+        var old_min = this.scale_x1.domain()[0];
+        var old_max = this.scale_x1.domain()[1];
+        var half_brush_size = (old_max - old_min) / 2 ;
+
+        var new_min = this.current_frame - half_brush_size;
+        if(new_min < this.scale_x2.domain()[0])new_min = this.scale_x2.domain()[0];
+
+        var new_max = this.current_frame + half_brush_size;
+        if(new_max > this.scale_x2.domain()[1])new_max = this.scale_x2.domain()[1];
+
+        if(new_min >= new_max){
+          new_min = old_min;
+          new_max = old_max;
         }
-        $(read_line1).attr('x1', x1)
-            .attr('x2', x1);
-
-        // move the read line of mini
-        x2 = this.scale_x2(this.current_frame);
-        $('#'+this.div_id).find('.read_line:eq(1)')
-            .attr('x1', x2)
-            .attr('x2', x2);
-
-        // TODO keep the focus on the read line
+        this.mini.select('.brush').call(this.brush.move, [this.scale_x2(new_min), this.scale_x2(new_max)])
       }
+
+      if(x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1]){
+        $(main_read_line).css('opacity', 0)
+      }else{
+        $(main_read_line).css('opacity', 100)
+      }
+      $(main_read_line).attr('x1', x1)
+          .attr('x2', x1);
+
+      // move the read line of mini
+      x2 = this.scale_x2(this.current_frame);
+      $('#'+this.chart_id).find('.read_line:eq(1)')
+          .attr('x1', x2)
+          .attr('x2', x2);
+
+    }
+
 }

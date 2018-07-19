@@ -9,7 +9,8 @@ import { DLibVisualizer } from './DLibVisualizer.js';
 export class VisualizerFactory{
   /* Constructor
   */
-  constructor(xmlxsdObj, nbFrames, divIds){
+  constructor(xsdObj, xmlxsdObj, nbFrames, divIds){
+    this.xsdObj = xsdObj;
     this.xmlxsdObj = xmlxsdObj;
     this.nbFrames = nbFrames;
     this.divIdForm = divIds[0]
@@ -24,9 +25,9 @@ export class VisualizerFactory{
     var expression = name;
     var visualizer;
     var id = idExtractor + '_' + version
-    var idForm = 'form_annotation_' + id + '_' + version;
-    var idTimeLine = 'time_line_' + id + '_' + version;
-    var idOverlay = 'overlay_' + id + '_' + version;
+    var idForm = 'form_annotation_' + id;
+    var idTimeLine = 'time_line_' + id;
+    var idOverlay = 'overlay_' + id;
     var divTimeLine;
     var divOverlay;
     var divForm = $('<div/>');
@@ -42,14 +43,14 @@ export class VisualizerFactory{
         $(divOverlay).attr('id', idOverlay).css('display', 'none');
         $('#' + this.divIdOverlay).append(divOverlay);
 
-        visualizer = new ShotExtractVisualizer(this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
+        visualizer = new ShotExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
         break;
       case "character-extract":
         divTimeLine = $('<div/>');
         $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
         $('#' + this.divIdTimeLine).append(divTimeLine);
 
-        visualizer = new CharacterExtractVisualizer(this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
+        visualizer = new CharacterExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
         break;
       case "omdbapi":
         visualizer = new OmdbApiVisualizer(this.xmlxsdObj,id, name, idForm);
@@ -63,7 +64,7 @@ export class VisualizerFactory{
         $(divOverlay).attr('id', idOverlay).css('display', 'none');
         $('#' + this.divIdOverlay).append(divOverlay);
 
-        visualizer = new DLibVisualizer(this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
+        visualizer = new DLibVisualizer(this.xsdObj, this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
         break;
       default:
       visualizer = new DefaultVisualizer(this.xmlxsdObj, id, name, idForm)

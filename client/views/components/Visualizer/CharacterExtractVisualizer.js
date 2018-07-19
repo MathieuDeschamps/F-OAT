@@ -6,7 +6,8 @@ import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 export class CharacterExtractVisualizer{
   /* Constructor
   */
-  constructor(xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine){
+  constructor(xsdObj, xmlxsdObj,idExtractor, name, nbFrames, divIdForm, divIdTimeLine){
+    this.xsdObj = xsdObj;
     this.xmlxsdObj = xmlxsdObj;
     this.idExtractor = idExtractor;
     this.name = name;
@@ -18,7 +19,7 @@ export class CharacterExtractVisualizer{
   }
 
   /* Obsever pattern : attach function
-  @observer : Object
+  @observer: Object
   */
   attach(observer){
     if(!this.alreadyAttached(observer)){
@@ -27,7 +28,7 @@ export class CharacterExtractVisualizer{
   }
 
   /* Check if an observer is already attached
-  @returns  true if newOserver is include in this.observers
+  @returns: true if newOserver is include in this.observers
   *         false otherwise
   */
   alreadyAttached(newObserver){
@@ -40,8 +41,8 @@ export class CharacterExtractVisualizer{
     return result;
   }
 
-  /* Obsever pattern : dettach function
-  @observer : Object
+  /* Obsever pattern : detach function
+  @observer: Object
   */
   detach(observer){
     var index = this.observers.indexOf(observer);
@@ -96,8 +97,8 @@ export class CharacterExtractVisualizer{
 
     this.timeLineBuilder = new TimeLineCharacter(this.xmlxsdObj, this.name);
     var timeLineData = this.timeLineBuilder.getTimeLineData();
-    var timeLine = new TimeLine(this.name, this.nbFrames, timeLineData,
-    this.divIdTimeLine,this);
+    var timeLine = new TimeLine(this.name, this.nbFrames, this.xsdObj, timeLineData,
+    this.divIdTimeLine, this);
     timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
@@ -105,7 +106,7 @@ export class CharacterExtractVisualizer{
   }
 
   /*
-  @returns the list of the id
+  @returns: the list of the id
   */
   getIdsDiv(){
     var result = [];
@@ -114,16 +115,20 @@ export class CharacterExtractVisualizer{
     return result;
   }
 
-  getXmlXsdObj(){
+  getXMLXSDObj(){
     return this.xmlxsdObj;
   }
 
   getTimeLineData(){
-    this.timeLineBuilder.setXmlXsdObj(this.xmlxsdObj);
+    this.timeLineBuilder.setXMLXSDObj(this.xmlxsdObj);
     return this.timeLineBuilder.getTimeLineData();
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setTimeLineBuilderXMLFilter(xmlFilter){
+    this.timeLineBuilder.setXMLFilter(xmlFilter);
+  }
+
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
     this.observers.forEach(function(observer){
       observer.updateVisualizer();

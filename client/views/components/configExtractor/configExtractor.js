@@ -5,6 +5,8 @@ import './configExtractor.html';
 import {Extractors} from '/lib/collections/extractors.js';
 
 import {configExtractorManager} from './configExtractorManager.js';
+import { TestXMLFilter } from '../Test/TestXMLFilter.js';
+import { TestXMLSelector } from '../Test/TestXMLSelector.js';
 
 Template.configExtractor.onCreated(function(){
 
@@ -23,6 +25,9 @@ Template.configExtractor.onRendered(()=>{
   	new configExtractorManager(extractors,"configExtractor","configExtractorForm");
   })
 
+  // test xml filter run
+  // TestXMLSelector.run();
+  // TestXMLFilter.run();
 
 	/*extractors.forEach(function(extractor,i){
 		extractorCheckBox= '<p><input class="filled-in"  id="'+ i + '_config"  type="checkbox" mark="false"/>'

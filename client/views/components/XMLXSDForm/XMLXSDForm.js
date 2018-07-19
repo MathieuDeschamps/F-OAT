@@ -1,10 +1,11 @@
 export class XMLXSDForm{
 
 	/* Constructor
-	@xmlxsdObj : XMLXSDObj object
-	@id : id of the form (id of the extractor in MongoDB)
-	@name : name of the form (name of the extractor)
-	@divId : the id of the div which will contain the code of the form
+	@xmlxsdObj: XMLXSDObj object
+	@id: id of the form (id of the extractor in MongoDB)
+	@name: name of the form (name of the extractor)
+	@divId: the id of the div which will contain the code of the form
+	@visualizer: visualizer which created the XMLXSDForm
 	*/
 	constructor(xmlxsdObj,id,name,divId, visualizer){
 		this.xmlxsdObj=xmlxsdObj;
@@ -24,14 +25,11 @@ export class XMLXSDForm{
 		this.attrManage=false;
 		this.attrFormName="";
 		this.inputHtml="";
+		this.idFocusedInput = undefined
 		this.currentNodeValue = undefined
 
 		this.currentNodeValue = undefined
 		this.htmlUpdate=false;
-	}
-
-	setVisualizer(visualizer){
-		this.visualizer = visualizer
 	}
 
 	equals(object){
@@ -51,7 +49,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdObj : XMLXSDObj object
+	@xmlxsdObj: XMLXSDObj object
 	*/
 	visitXMLXSDObject(xmlxsdObj){
 		// console.log('visitXMLXSDObject',xmlxsdObj);
@@ -59,11 +57,7 @@ export class XMLXSDForm{
 
 		$(jqDivId).html(this.html);
 
-
-		// console.log($(jqIdconfig));
 		var that=this;
-		//  Appear at the same time
-		// $(jqIdconfig).click(function(){
 		that.stack.push({
 			tag:that.name,
 			obj:xmlxsdObj.content,
@@ -71,16 +65,14 @@ export class XMLXSDForm{
 		});
 		xmlxsdObj.content.accept(that);
 
-		// });
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdElt : XMLXSDElt object
+	@xmlxsdElt: XMLXSDElt object
 	*/
 	visitXMLXSDElt(xmlxsdElt){
 		// console.log('visitXMLXSDElt',xmlxsdElt);
 		var $div = $('<div id="' + this.id + '_extractor" />')
-		var visualizer = this.visualizer
 		this.html = $div
 
 		// generate nav
@@ -101,13 +93,7 @@ export class XMLXSDForm{
 			$divEditor.append(this.generateHeaderContent(ideHeader,'keyboard_arrow_down',this.name,false, undefined));
 		}
 		var that=this;
-		this.eventHandler.push({
-			function:function(){
-				that.eventEditorHeader(this);
-			},
-			id:idHeader,
-			eventName:'click'
-		});
+		this.addEventEditorHeader(idHeader);
 		var idBody = this.id+'_elt_'+this.name+'_body';
 		var $divBody =$('<div id="'+idBody+'" class="editor-body row"/>')
 		$divEditor.append($divBody)
@@ -151,9 +137,9 @@ export class XMLXSDForm{
 						setTimeout(function() {
 							var deleted = xmlxsdElt.deleteElement(i);
 							xmlxsdElt.accept(that);
-							if(typeof visualizer !== 'undefined' &&
+							if(typeof that.visualizer !== 'undefined' &&
 							deleted ){
-								visualizer.notifyAll();
+								that.visualizer.notifyAll();
 							}
 						}, duration);
 					},
@@ -173,10 +159,20 @@ export class XMLXSDForm{
 			this.eventHandler.push({
 				function:function(){
 					xmlxsdElt.type.accept(xmlxsdElt);
-					that.displayedElement = xmlxsdElt;
-					xmlxsdElt.accept(that);
-					if(typeof visualizer !== 'undefined'){
-						visualizer.notifyAll();
+					// add a new element
+					xmlxsdElt.type.accept(xmlxsdElt);
+					// move into the new element
+					var eltsList = xmlxsdElt.eltsList;
+					var newElt = eltsList[eltsList.length - 1]
+					that.displayedElement =newElt;
+					newElt.accept(that);
+					that.stack.push({
+						tag:xmlxsdElt.name,
+						obj:newElt,
+						i:eltsList.length - 1
+					});
+					if(typeof that.visualizer !== 'undefined'){
+						that.visualizer.notifyAll();
 					}
 				},
 				id:idEltAdd,
@@ -203,7 +199,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdSeq : XMLXSDSequence object
+	@xmlxsdSeq: XMLXSDSequence object
 	*/
 	visitXMLXSDSequence(xmlxsdSeq){
 		this.eventHandler=[];
@@ -257,13 +253,7 @@ export class XMLXSDForm{
 		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag, deletable, idClearHeader));
 
-		this.eventHandler.push({
-				function:function(){
-					that.eventEditorHeader(this);
-				},
-				id:idHeader,
-				eventName:'click'
-			});
+		this.addEventEditorHeader(idHeader);
 
 		var idBody = this.id+'_seq_'+xmlxsdSeq.name+'_body';
 		var $divBody = $('<div id="'+idBody+'" class="editor-body row"/>');
@@ -335,9 +325,18 @@ export class XMLXSDForm{
 
 					that.eventHandler.push({
 						function:function(){
+							// add a new element
 							xmlxsdElt.type.accept(xmlxsdElt);
-							that.displayedElement = xmlxsdSeq;
-							xmlxsdSeq.accept(that);
+							// move into the new element
+							var eltsList = xmlxsdElt.eltsList;
+							var newElt = eltsList[eltsList.length - 1]
+							that.displayedElement =newElt;
+							newElt.accept(that);
+							that.stack.push({
+								tag:xmlxsdElt.name,
+								obj:newElt,
+								i:eltsList.length - 1
+							});
 							if(typeof that.visualizer !== 'undefined'){
 								that.visualizer.notifyAll();
 							}
@@ -387,7 +386,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xmlxsdExt : XMLXSDExtensionType object
+	@xmlxsdExt: XMLXSDExtensionType object
 	*/
 	visitXMLXSDExtensionType(xmlxsdExt){
 		// console.log('visit XMLXSDExt',xmlxsdExt);
@@ -443,13 +442,8 @@ export class XMLXSDForm{
 		$divEditor.append(this.generateHeaderContent(idHeader,'keyboard_arrow_down',
 		 	this.stack[this.stack.length-1].tag,deletable, idClearHeader));
 
-		this.eventHandler.push({
-				function:function(){
-					that.eventEditorHeader(this);
-				},
-				id:idHeader,
-				eventName:'click'
-			});
+		this.addEventEditorHeader(idHeader)
+
 		var idBody = this.id+'_ext_'+xmlxsdExt.name+'_body'
 		var $divBody = $('<div id="'+idBody+'" class="editor-body row"/>');
 		$divEditor.append($divBody);
@@ -464,11 +458,10 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdBool : XSDBooleanType object
+	@xsdBool: XSDBooleanType object
 	*/
 	visitXSDBooleanType(xsdBool){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -486,23 +479,10 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-			var selectFormName=this.attrFormName;
-			this.inputHtml = this.generateSelect(selectFormName,[true, false], value, disabled);
-			this.eventHandler.push({
-					function:function(){
-						var jqSelectFormName='#'+selectFormName;
-						var oldValue = attr.value;
-						attr.setValue($(jqSelectFormName).val());
-						newValue = attr.value;
-						$(jqSelectFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id: selectFormName,
-					eventName:'change'
-				});
+			var formName=this.attrFormName;
+			this.inputHtml = this.generateSelect(formName,[true, false], value, disabled);
+
+			this.addEventInput(formName)
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -538,11 +518,10 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdDeci : XSDDecimalType object
+	@xsdDeci: XSDDecimalType object
 	*/
 	visitXSDDecimalType(xsdDeci){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -560,46 +539,13 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
-
+			var formName=this.attrFormName;
 			if (xsdDeci.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdDeci.enumeration, value, disabled);
-
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							var oldValue = attr.value;
-							attr.setValue($(jqSelectFormName).val());
-							newValue = attr.value;
-							$(jqSelectFormName).val(newValue);
-							if(typeof visualizer !== 'undefined' &&
-								oldValue !== newValue){
-								visualizer.notifyAll();
-							}
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
+				this.inputHtml = this.generateSelect(formName, xsdDeci.enumeration, value, disabled);
 			}else{
-				var formName=this.attrFormName;
-				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						$(jqFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'change'
-				});
+				this.inputHtml = this.generateInput(formName, 'number', undefined, value, disabled);
 			}
+			this.addEventInput(formName)
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -638,11 +584,10 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdFloat : XSDFloatType object
+	@xsdFloat: XSDFloatType object
 	*/
 	visitXSDFloatType(xsdFloat){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -660,45 +605,13 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
+			var formName=this.attrFormName;
 			if (xsdFloat.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdFloat.enumeration, value, disabled);
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							var oldValue = attr.value;
-							attr.setValue($(jqSelectFormName).val());
-							newValue = attr.value;
-							$(jqSelectFormName).val(newValue);
-							if(typeof visualizer !== 'undefined' &&
-								oldValue !== newValue){
-								visualizer.notifyAll();
-							}
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
-
+				this.inputHtml = this.generateSelect(formName, xsdFloat.enumeration, value, disabled);
 			}else{
-				var formName=this.attrFormName;
-				this.inputHtml = this.generateInput(formName, "number", 0.01, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						$(jqFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'change'
-				});
+				this.inputHtml = this.generateInput(formName, 'number', 0.01, value, disabled);
 			}
+			this.addEventInput(formName)
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -734,11 +647,10 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdInt : XSDIntegerType object
+	@xsdInt: XSDIntegerType object
 	*/
 	visitXSDIntegerType(xsdInt){
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -757,45 +669,14 @@ export class XMLXSDForm{
 				value = attr.defaultValue;
 			}
 			// console.log('XSD int', xsdInt)
+			var formName=this.attrFormName;
 			if (xsdInt.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdInt.enumeration, value, disabled);
-
-				this.eventHandler.push({
-						function:function(){
-							var jqSelectFormName='#'+selectFormName;
-							var oldValue = attr.value;
-							attr.setValue($(jqSelectFormName).val());
-							newValue = attr.value;
-							$(jqSelectFormName).val(newValue);
-							if(typeof visualizer !== 'undefined' &&
-								oldValue !== newValue){
-								visualizer.notifyAll();
-							}
-						},
-						id: selectFormName,
-						eventName:'change'
-					});
+				this.inputHtml = this.generateSelect(formName, xsdInt.enumeration, value, disabled);
 			}else{
-				var formName=this.attrFormName;
-				this.inputHtml = this.generateInput(formName, "number", undefined, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						$(jqFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'change'
-				});
+				this.inputHtml = this.generateInput(formName, 'number', 1, value, disabled);
 			}
+			this.addEventInput(formName)
+
 		}else{
 			if (!this.htmlUpdate){
 				this.eventHandler=[];
@@ -833,13 +714,12 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdString : XSDStringType object
+	@xsdString: XSDStringType object
 	*/
 	visitXSDStringType(xsdString){
 		// console.log('visit XSDStringType')
 		var that = this
 		if (this.attrManage){
-			var visualizer = this.visualizer
 			var attr=this.currentAttr;
 			var disabled;
 			var value;
@@ -856,44 +736,14 @@ export class XMLXSDForm{
 			}else if(typeof attr.defaultValue !== 'undefined'){
 				value = attr.defaultValue;
 			}
+			var formName=this.attrFormName;
 			if (xsdString.isEnumerated()){
-				var selectFormName=this.attrFormName;
-				this.inputHtml = this.generateSelect(selectFormName, xsdString.enumeration, value, disabled);
-
-				this.eventHandler.push({
-					function:function(){
-						var jqSelectFormName='#'+selectFormName;
-						var oldValue = attr.value;
-						attr.setValue($(jqSelectFormName).val());
-						newValue = attr.value;
-						$(jqSelectFormName).val(newValue);
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id: selectFormName,
-					eventName:'change'
-				});
-
-			}else{
-				var formName=this.attrFormName;
-				this.inputHtml = this.generateInput(formName, "text", undefined, value, disabled);
-				this.eventHandler.push({
-					function:function(){
-						var jqFormName='#'+formName;
-						var oldValue = attr.value;
-						attr.setValue($(jqFormName).val());
-						newValue = attr.value;
-						if(typeof visualizer !== 'undefined' &&
-							oldValue !== newValue){
-							visualizer.notifyAll();
-						}
-					},
-					id:formName,
-					eventName:'focusout'
-				});
+				this.inputHtml = this.generateSelect(formName, xsdString.enumeration, value, disabled)
 			}
+			else{
+				this.inputHtml = this.generateInput(formName, 'text', undefined, value, disabled);
+			}
+			this.addEventInput(formName)
 		}
 		else
 		{
@@ -933,7 +783,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdVoid : XSDVoidType object
+	@xsdVoid: XSDVoidType object
 	*/
 	visitXSDVoidType(xsdVoidType){
 		// console.log('htmlUpdate', !this.htmlUpdate)
@@ -974,7 +824,7 @@ export class XMLXSDForm{
 	}
 
 	/* Visitor pattern : visit function
-	@xsdRestriction XSDRestrictionType object
+	@xsdRestriction: XSDRestrictionType object
 	*/
 	visitXSDRestrictionType(xsdRestriction){
 		var type = xsdRestriction.baseType;
@@ -982,9 +832,10 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code navigation bar for the form
-	@return the code for the navigation bar
+	@returns: the code for the navigation bar
 	*/
 	generateNav(){
+		// console.log('this.stack', this.stack)
 		var nbElementByNav = 3;
 		var result = '';
 		var lineNumber = 0;
@@ -1036,11 +887,11 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for content of the header in this.html
-	@id identifiant of the hedaer
-	@icon icon place before the nameHeader can be none
-	@nameHeader name of the header
-	@deletable boolean to display or not the clear element
-	@return the code for the header element
+	@id: identifiant of the hedaer
+	@icon: icon place before the nameHeader can be none
+	@nameHeader: name of the header
+	@deletable: boolean to display or not the clear element
+	@returns: the code for the header element
 	*/
 	generateHeaderContent(id, icon, nameHeader,deletable, idClear){
 		var result = '';
@@ -1064,7 +915,6 @@ export class XMLXSDForm{
 		result = $.parseHTML(result);
 		if(icon === "keyboard_arrow_down"){
 			$(result).children('.editor-header').prop('opened', true);
-			// $(result).addClass('active');
 		}else if(icon == "keyboard_arrow_right"){
 			$(result).children('.editor-header').prop('opened', false);
 		}
@@ -1072,15 +922,14 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for the attribute of the xmlxsd
-	@obj a xmlxsd complexType or simpleType
-	@return the code for the attributes
+	@obj: a xmlxsd complexType or simpleType
+	@returns: the code for the attributes
 	*/
 	generateAttrsForm(obj){
 		var that=this;
 		var result = '';
-		var visualizer = this.visualizer;
 		$.each(obj.attrs,function(key,attr){
-			var formName=that.id+'_'+attr.name+'form';
+			var formName=that.id+'_'+attr.name+'_form';
 			var jqFormName='#'+formName;
 			var switchName=attr.name+'switch';
 			var jqSwitchName='#'+switchName;
@@ -1115,9 +964,9 @@ export class XMLXSDForm{
 							$(jqFormName).prop("disabled", false)
 							attr.setValue(value);
 							$(jqFormName).val(value)
-							if(typeof visualizer !== 'undefined' &&
+							if(typeof that.visualizer !== 'undefined' &&
 							 typeof value !== 'undefined'){
-								 visualizer.notifyAll();
+								 that.visualizer.notifyAll();
 							 }
 						} else if($(jqSwitchName).prop('checked') &&
 						 	typeof attr.fixedValue !== 'undefined'){
@@ -1125,7 +974,7 @@ export class XMLXSDForm{
 							attr.setValue(value);
 							$(jqFormName).val(value)
 							if(typeof value !== 'undefined'){
-								 visualizer.notifyAll();
+								 that.visualizer.notifyAll();
 							 }
 
 						}else{
@@ -1133,8 +982,8 @@ export class XMLXSDForm{
 							$(jqFormName).prop("disabled", true);
 							attr.setValue(undefined);
 							$(jqFormName).val(undefined)
-							if(typeof visualizer !== 'undefined'){
-								visualizer.notifyAll();
+							if(typeof that.visualizer !== 'undefined'){
+								that.visualizer.notifyAll();
 							}
 						}
 
@@ -1172,20 +1021,20 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for the text input value
-	 @id of the input element
-	 @type of the input element
-	 @step of the input element only for the number
-	 @value default value of the input element
-	 @returns the code for the input element
+	 @id: of the input element
+	 @type: of the input element
+	 @step: of the input element only for the number
+	 @value: default value of the input element
+	 @returns: the code for the input element
 	*/
-	generateInput(id, type, step, value, disabled){
+	generateInput(id, type, step, defaultValue, disabled){
 		var result =''
 		result+='<input id="'+ id +'" class="white style-input-xmlform" type="'+ type +'" '
 		if(type === "number" && typeof step !== 'undefined'){
 			result+='step="'+ step +'" '
 		}
-		if(typeof value !== 'undefined'){
-			result+='value="'+ value +'" '
+		if(typeof defaultValue !== 'undefined'){
+			result+='value="'+ defaultValue +'" '
 		}
 		if(disabled){
 			result+='disabled '
@@ -1195,9 +1044,9 @@ export class XMLXSDForm{
 	}
 
 	/* Generate the code for the select element
-	@id of the select element
-	@enumeration the list of the option
-	@default the default value of the selected option
+	@id: of the select element
+	@enumeration: the list of the option
+	@default: the default value of the selected option
 	@result
 	*/
 	generateSelect(id, enumValues, defaultValue,disabled){
@@ -1241,32 +1090,78 @@ export class XMLXSDForm{
 			}
 		});
 		// init the select elements
-		$('select').material_select()
+		$('#'+this.divId).find('select').material_select()
 	}
 
-	/* Event called on the editor header element
+	/* Add the event for the editor header to eventHandler
+	@idHeader: id of the header
 	*/
-	eventEditorHeader(target){
-		var divBody = $(target).parent().parent().children('.editor-body')
-		if(divBody.length === 1){
-			if($(target).prop('opened')){
-				var maxHeight = $(divBody).prop('scrollHeight');
-				$(divBody).css('max-height', 0+'px');
-				$(target).children('i').text('keyboard_arrow_right')
-				$(target).prop('opened', false)
-			}else{
-				var maxHeight = $(divBody).prop('scrollHeight');
-				$(divBody).css('max-height', maxHeight+'px');
-				$(target).children('i').text('keyboard_arrow_down')
-				$(target).prop('opened', true)
-			}
-		}
+	addEventEditorHeader(idHeader){
+		this.eventHandler.push({
+			function:function(){
+				var divBody = $(this).parent().parent().children('.editor-body')
+				if(divBody.length === 1){
+					if($(this).prop('opened')){
+						var maxHeight = $(divBody).prop('scrollHeight');
+						$(divBody).css('max-height', 0+'px');
+						$(this).children('i').text('keyboard_arrow_right')
+						$(this).prop('opened', false)
+					}else{
+						var maxHeight = $(divBody).prop('scrollHeight');
+						$(divBody).css('max-height', maxHeight+'px');
+						$(this).children('i').text('keyboard_arrow_down')
+						$(this).prop('opened', true)
+					}
+				}
+			},
+			id: idHeader,
+			eventName:'click'
+		})
+	}
 
+	/* Add the events for the input
+	@idInput: id of the input
+	*/
+	addEventInput(idInput){
+		var that = this;
+		// event to set the id of the focused element
+		this.eventHandler.push({
+			function:function(){
+				that.idFocusedInput = idInput;
+			},
+			id:idInput,
+			eventName:'focus'
+		})
+		var attr=this.currentAttr;
+		// event to set the new value of the attr
+		this.eventHandler.push({
+			function:function(){
+				var jqIdInput='#'+idInput;
+				var oldValue = attr.value;
+				attr.setValue($(jqIdInput).val());
+				newValue = attr.value;
+				$(jqIdInput).val(newValue);
+				if(typeof that.visualizer !== 'undefined' &&
+					oldValue !== newValue){
+					that.visualizer.notifyAll();
+				}
+			},
+			id: idInput,
+			eventName:'change'
+		});
+		// event to reset the id of the focused element
+		this.eventHandler.push({
+			function:function(){
+				that.idFocusedInput = undefined;
+			},
+			id:idInput,
+			eventName:'focusout'
+		})
 	}
 
 	/* Display the form
 	* call by the tool of visualisation (time line, overlay)
-	@stack Array of JSON Object {tag:String, obj:XMLXSDElment}
+	@stack: Array of JSON Object {tag:String, obj:XMLXSDElment}
 	*/
 	displayForm(stack){
 		this.stack = stack;
@@ -1286,10 +1181,9 @@ export class XMLXSDForm{
 		var saveStack = this.stack.slice(0)
 		this.eventHandler = [];
 		this.stack = [];
-		this.xmlxsdObj = this.visualizer.getXmlXsdObj();
+		this.xmlxsdObj = this.visualizer.getXMLXSDObj();
 
 		var that = this;
-
 		//Reconstruct the stack from the last stack with new xmlxsdObj
 		saveStack.forEach(function(elm,i){
 			if(that.stack.length==0){
@@ -1340,6 +1234,13 @@ export class XMLXSDForm{
 
 		// restore the save eventHandler before the generateNav
 		this.eventHandler = saveEventHandler;
+
+		// set the input focused
+		var focusedInput = $('#'+this.divId).find('#'+this.idFocusedInput)
+		if(typeof this.idFocusedInput !== 'undefined' &&
+			focusedInput.length === 1){
+			$(focusedInput).focus();
+		}
 	}
 
 }

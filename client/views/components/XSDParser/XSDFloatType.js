@@ -15,15 +15,15 @@ export class XSDFloatType {
 	}
 
 	/* test if the type is enumerated (when restrictions have been applied)
-	@returns : boolean
+	@returns: boolean
 	*/
 	isEnumerated(){
 		return (this.enumeration != undefined)
 	}
 
 	/* test if the value of the string is an integer
-	@string : string checked
-	@returns : boolean
+	@string: string checked
+	@returns: boolean
 	*/
 	static isFloat(string){
 		var result = true;
@@ -38,16 +38,16 @@ export class XSDFloatType {
 	}
 
 	/* Convert a string to number
-	@str : string
-	@return : number
+	@str: string
+	@returns: number
 	*/
 	convert(str){
 		return parseFloat(str);
 	}
 
 	/* tests if n is of the type taking into account the restrictions applied
-	@n : object
-	@returns : boolean
+	@n: object
+	@returns: boolean
 	*/
 	holds(n){
 		var result=true;
@@ -84,28 +84,28 @@ export class XSDFloatType {
 	}
 
 	/* test if minEx has no more is defaultValue
-	@returns boolean
+	@returns: boolean
 	*/
 	hasMinEx(){
 		return (this.minEx!="unbounded");
 	}
 
 	/* test if minIn has no more is defaultValue
-	@returns boolean
+	@returns: boolean
 	*/
 	hasMinIn(){
 		return (this.minIn!="unbounded");
 	}
 
 	/* test if maxEx has no more is defaultValue
-	@returns boolean
+	@returns: boolean
 	*/
 	hasMaxEx(){
 		return (this.maxEx!="unbounded");
 	}
 
 	/* test if maxIn has no more is defaultValue
-	@returns boolean
+	@returns: boolean
 	*/
 	hasMaxIn(){
 		return (this.maxIn!="unbounded");
@@ -113,8 +113,8 @@ export class XSDFloatType {
 
 	/* Setters for various restrictions
 	enumeration is filtered if necessary
-	@newMin : number
-	@newMax : number
+	@newMin: number
+	@newMax: number
 	*/
 	setMinEx(newMin){
 		if (this.hasMinEx()){
@@ -166,7 +166,7 @@ export class XSDFloatType {
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDDecimalType"
+	@visitor: object with a method "visitXSDDecimalType"
 	*/
 	accept(visitor){
 		visitor.visitXSDFloatType(this);

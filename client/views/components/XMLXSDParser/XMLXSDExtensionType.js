@@ -5,19 +5,19 @@ Object class for extension type (ie element with basic node value and attributes
 */
 export class XMLXSDExtensionType{
 	/*Constructor
-	@xml : description of the element by JQuery parsing
-	@extType : XSDExtensionType object
+	@xml: description of the element by JQuery parsing
+	@extType: XSDExtensionType object
 	*/
 	constructor(xml,extType){
-		
+
 		this.type=extType;
-		
+
 		this.baseType=extType.table.getType(extType.baseType);
-		
+
 		this.attrs={};
-		
+
 		this.name="extension";
-		
+
 		var that=this;
 		if (xml!=undefined){
 			Object.keys(extType.attrs).forEach(function(xsdAttr,i){
@@ -33,7 +33,7 @@ export class XMLXSDExtensionType{
 	}
 
 	/* Setter for the node value
-	@value : object
+	@value: object
 	*/
 	setValue(value){
 		if (this.baseType.holds(value)){
@@ -41,10 +41,10 @@ export class XMLXSDExtensionType{
 		}
 	}
 
-	/* Visitor pattern : accept function 
-	@ visitor : object with a method "visitXMLXSDExtensionType"
+	/* Visitor pattern : accept function
+	@visitor: object with a method "visitXMLXSDExtensionType"
 	*/
 	accept(visitor){
 		visitor.visitXMLXSDExtensionType(this)
-	}	
+	}
 }

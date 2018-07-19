@@ -4,8 +4,8 @@ Object class for elements in an xsd file.
 
 export class XSDElt{
 	/* Constructor :
-	@elt : element description given by JQuery parsing of the xsd file
-	@table : type table
+	@elt: element description given by JQuery parsing of the xsd file
+	@table: type table
 	*/
 	constructor(elt,table){
 		this.table=table;
@@ -63,7 +63,7 @@ export class XSDElt{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDElt"
+	@visitor: object with a method "visitXSDElt"
 	*/
 	accept(visitor){
 		visitor.visitXSDElt(this);

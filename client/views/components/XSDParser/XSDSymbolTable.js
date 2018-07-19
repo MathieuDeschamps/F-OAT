@@ -24,7 +24,7 @@ export class XSDSymbolTable{
 	}
 
 	/* adding a new type in the table
-	@type : xsd type object
+	@type: xsd type object
 	*/
 	addType(type){
 		if (typeof this.typeTable[type.name] == "undefined"){
@@ -36,15 +36,15 @@ export class XSDSymbolTable{
 	}
 
 	/* getting a type by its name
-	@typeName : string
-	@returns : XSD type object
+	@typeName: string
+	@returns: XSD type object
 	*/
 	getType(typeName){
 		return this.typeTable[typeName];
 	}
 
 	/* getting an anonymous type name
-	@returns : string
+	@returns: string
 	*/
 	newTypeName(){
 		typeName="__type__"+this.typeIdNumber;
@@ -53,8 +53,8 @@ export class XSDSymbolTable{
 	}
 
 	/* Create a simple type
-	@typeDef : type description obtained by JQuery parsing
-	@returns : XSD type object
+	@typeDef: type description obtained by JQuery parsing
+	@returns: XSD type object
 	*/
 	createSimpleType(typeDef){
 		var typeName=$(typeDef).attr('name');
@@ -108,12 +108,12 @@ export class XSDSymbolTable{
 	}
 
 	/* Create a complex type
-	@typeDef : type description obtained by JQuery parsing
-	@returns : XSD type object
+	@typeDef: type description obtained by JQuery parsing
+	@returns: XSD type object
 	*/
 	createComplexType(typeDef){
 		var typeName = $(typeDef).attr('name')
-		
+
 		if (typeName == undefined){
 			typeName=this.newTypeName();
 		}
@@ -171,8 +171,8 @@ export class XSDSymbolTable{
 	}
 
 	/* Create a restriction type
-	@typeDef : type description obtained by JQuery parsing
-	@returns : XSD type object
+	@typeDef: type description obtained by JQuery parsing
+	@returns: XSD type object
 	*/
 	createRestrictionType(typeDef){
 		var typeName;
@@ -202,8 +202,8 @@ export class XSDSymbolTable{
  		return type
 	}
 	/* Determine the kind of a complex type
-	@typeDef : type description obtained by JQuery parsing
-	@returns : string
+	@typeDef: type description obtained by JQuery parsing
+	@returns: string
 	*/
 	complexTypeKind(typeDef){
 		// undefined si mal défini

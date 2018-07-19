@@ -6,8 +6,8 @@ Object class for XML element in a sequence described by a XSDSequence².
 */
 export class XMLXSDSequence{
 	/* Constructor
-	@xmlElt : list of XML obtained by JQuery parsing
-	@xsdSeq : XSDSequence object
+	@xmlElt: list of XML obtained by JQuery parsing
+	@xsdSeq: XSDSequence object
 	*/
 	constructor(xmlElt,xsdSeq){
 		this.attrs={};
@@ -46,7 +46,7 @@ export class XMLXSDSequence{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXMLXSDSequence"
+	@visitor: object with a method "visitXMLXSDSequence"
 	*/
 	accept(visitor){
 		visitor.visitXMLXSDSequence(this);

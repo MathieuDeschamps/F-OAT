@@ -7,8 +7,9 @@ export class TimeLineDlib{
     this.name = name
     this.stack = [];
     this.timeLineData = [];
-    this.actorsNameMap = [];
+    this.xmlFilter = undefined;
     this.id = 0;
+    this.actorsNameMap = [];
   }
 
   initialize(){
@@ -18,12 +19,15 @@ export class TimeLineDlib{
     this.id = 0;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
   }
 
+  setXMLFilter(xmlFilter){
+    this.xmlFilter = xmlFilter;
+  }
   /*
-  @returns timeLineData
+  @returns: timeLineData
   */
   getTimeLineData(){
     this.initialize();
@@ -31,7 +35,7 @@ export class TimeLineDlib{
     return this.timeLineData;
   }
   /* Visitor pattern : visit function
-  @xmlxsdObj : XMLXSDObj object
+  @xmlxsdObj: XMLXSDObj object
   */
   visitXMLXSDObject(xmlxsdObj){
     this.stack.push({
@@ -40,10 +44,11 @@ export class TimeLineDlib{
       i:0
     });
     this.xmlxsdObj.content.accept(this);
+    this.stack.pop();
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdElt : XMLXSDElt object
+  @xmlxsdElt: XMLXSDElt object
   */
   visitXMLXSDElt(xmlxsdElt){
     var that = this;
@@ -54,11 +59,12 @@ export class TimeLineDlib{
         i:i
       });
       elt.accept(that);
+      that.stack.pop();
     })
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdSeq : XMLXSDSequence object
+  @xmlxsdSeq: XMLXSDSequence object
   */
   visitXMLXSDSequence(xmlxsdSeq){
     var that = this;
@@ -80,7 +86,7 @@ export class TimeLineDlib{
   }
 
   /* Visitor pattern : visit function
-  @xmlxsdExt : XMLXSDExtensionType object
+  @xmlxsdExt: XMLXSDExtensionType object
   */
   visitXMLXSDExtensionType(xmlxsdExt){
     this.buildAttrs(xmlxsdExt);
@@ -179,7 +185,7 @@ export class TimeLineDlib{
   }
 
   /* Use to determine if the two XML node have the same parents
-  @return true if this.stack and stack have the same tags
+  @returns: true if this.stack and stack have the same tags
   false otherwise
   */
   samePlace(stack){

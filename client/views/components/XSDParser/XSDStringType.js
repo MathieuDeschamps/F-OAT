@@ -15,23 +15,23 @@ export class XSDStringType {
 	}
 
 	/* test if the type is enumerated (when restrictions have been applied)
-	@returns : boolean
+	@returns: boolean
 	*/
 	isEnumerated(){
 		return (this.enumeration != undefined)
 	}
 
 	/* Convert an object to number
-	@str : object
-	@return : number
+	@str: object
+	@returns: number
 	*/
 	convert(str){
 		return str.toString();
 	}
 
 	/* tests if s is of the type taking into account the restrictions applied
-	@s : object
-	@returns : boolean
+	@s: object
+	@returns: boolean
 	*/
 	// TODO : check if s is a string
 	holds(s){
@@ -55,9 +55,9 @@ export class XSDStringType {
 
 	/* Setters for various restrictions
 	enumeration is filtered if necessary
-	@newMin : number
-	@newMax : number
-	@newLength : number
+	@newMin: number
+	@newMax: number
+	@newLength: number
 	*/
 	setMinLength(newMin){
 		this.minLength=Math.max(this.minLength,newMin);
@@ -90,7 +90,7 @@ export class XSDStringType {
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDStringType"
+	@visitor: object with a method "visitXSDStringType"
 	*/
 	accept(object){
 		object.visitXSDStringType(this);

@@ -5,9 +5,9 @@ Object class for sequence in a xsd file.
 */
 export class XSDSequence{
 	/*Constructor
-	@seqDef : description of the sequence obtained by JQuery parsing
-	@attrs : list of XSDAttr objects
-	@table : symbol table
+	@seqDef: description of the sequence obtained by JQuery parsing
+	@attrs: list of XSDAttr objects
+	@table: symbol table
 	*/
 	constructor(seqDef,attrs,table){
 		this.table=table;
@@ -36,7 +36,7 @@ export class XSDSequence{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDSequence"
+	@visitor: object with a method "visitXSDSequence"
 	*/
 	accept(visitor){
 		visitor.visitXSDSequence(this);

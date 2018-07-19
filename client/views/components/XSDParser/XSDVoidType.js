@@ -19,23 +19,23 @@ export class XSDVoidType {
 	}*/
 
 	/* conversion to void type
-	@x : object
-	@returns : undefined
+	@x: object
+	@returns: undefined
 	*/
 	convert(x){
 		return undefined;
 	}
 
 	/* test if x is undefined
-	@x : object
-	@returns : boolean
+	@x: object
+	@returns: boolean
 	*/
 	holds(x){
 		return (x === undefined || x === "");
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDBooleanType"
+	@visitor: object with a method "visitXSDBooleanType"
 	*/
 	accept(object){
 		object.visitXSDVoidType(this);

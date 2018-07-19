@@ -4,8 +4,8 @@ Object class for restriction type linked to its xsd dexcription
 */
 export class XMLXSDRestrictionType{
 	/*Constructor
-	@xml : description of the element by JQuery parsing
-	@extType : XSDExtensionType object
+	@xml: description of the element by JQuery parsing
+	@extType: XSDExtensionType object
 	*/
 	constructor(xml,restrType){
 
@@ -18,7 +18,7 @@ export class XMLXSDRestrictionType{
 
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXMLXSDRestrictionType"
+	@visitor: object with a method "visitXMLXSDRestrictionType"
 	*/
 	accept(visitor){
 		visitor.visitXMLXSDRestrictionType(this)

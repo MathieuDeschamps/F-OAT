@@ -13,7 +13,7 @@ Object class for an xsd file.
 */
 export class XSDObject{
 	/* Constructor
-	@XSD : XSD is the result of the parsing of an xsd file made by jquery
+	@XSD: XSD is the result of the parsing of an xsd file made by jquery
 	*/
 	constructor(XSD){
 		// Getting the schema node
@@ -53,7 +53,7 @@ export class XSDObject{
 	}
 
 	/* Visitor pattern : accept function
-	@ visitor : object with a method "visitXSDObject"
+	@visitor: object with a method "visitXSDObject"
 	*/
 	accept(visitor){
 		visitor.visitXSDObject(this);

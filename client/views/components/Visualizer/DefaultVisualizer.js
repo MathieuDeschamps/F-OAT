@@ -15,7 +15,7 @@ export class DefaultVisualizer{
   }
 
   /* Obsever pattern : attach function
-  @observer : Object
+  @observer: Object
   */
   attach(observer){
     if(!this.alreadyAttached(observer)){
@@ -33,8 +33,8 @@ export class DefaultVisualizer{
     return result;
   }
 
-  /* Obsever pattern : dettach function
-  @observer : Object
+  /* Obsever pattern : detach function
+  @observer: Object
   */
   detach(observer){
     var index = this.observers.indexOf(observer);
@@ -86,7 +86,7 @@ export class DefaultVisualizer{
   }
 
   /*
-  @returns the list of the id
+  @returns: the list of the id
   */
   getIdsDiv(){
     var result = []
@@ -94,11 +94,11 @@ export class DefaultVisualizer{
     return result
   }
 
-  getXmlXsdObj(){
+  getXMLXSDObj(){
     return this.xmlxsdObj;
   }
 
-  setXmlXsdObj(xmlxsdObj){
+  setXMLXSDObj(xmlxsdObj){
     this.xmlxsdObj = xmlxsdObj;
     this.observers.forEach(function(observer){
       observer.updateVisualizer();
