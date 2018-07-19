@@ -32,9 +32,9 @@
   "extractorHelpP3" : "N'hésitez pas à nous contacter pour avoir plus d'informations sur cette possibilité : ",
   "extractorHelpP4" : "Pour utiliser un extracteur, il suffit de cocher l'extracteur souhaité en haut à droite de la page d'un projet, et de remplir les paramètres selon vos besoins. Une extraction peut prendre plusieurs minutes à plusieurs heures selon l'analyse, évitez de quitter l'application pendant ce temps afin d'éviter tout problème.",
 
-  "filterHelpP1" : "",
-  "filterHelpP2" : "",
-  "filterHelpP3" : "",
+  "filterHelpP1" : "Si une ligne de temps est présente dans les affichages d'un extracteur, alors une fonctionnalité de filtre est à disposition.",
+  "filterHelpP2" : "Celle-ci se trouve sous la ligne de temps. Vous pouvez alors ajouter un filtre sur un ou plusieurs éléments des données de l'extracteur (Par exemple, je ne souhaite que les frames ayant un timeId inférieur à 2000, je ne souhaite que les passages contenant tel acteur, ...).",
+  "filterHelpP3" : "Lorsque le filtre est activé, la ligne de temps de l'extracteur sera filtrée et redessinnée pour afficher les résultats selon votre demande.",
 
 
   "contactUs" : "Pour tout autre problème, question ou suggestion sur l'application, contactez nous via notre github en créant un nouvel 'Issue' "
