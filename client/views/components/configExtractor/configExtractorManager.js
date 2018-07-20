@@ -85,7 +85,7 @@ export class configExtractorManager{
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';
-		$(JQidDivButton).append('<a class="btn waves-effect waves-light" id="'+idButton+'">Launch '+'</a>');
+		$(JQidDivButton).append('<a class="btn waves-effect waves-light bold" id="'+idButton+'">Launch '+'</a>');
 
 		var JQidButton='#'+idButton;
 		$(JQidButton).click(function(){
@@ -135,8 +135,12 @@ export class configExtractorManager{
 					toastr.success(TAPi18n.__('extractionProgress'));
 
 					var date = moment().calendar();
-					var val = "Project "+project.name+" : Extraction "+extractor.name+" is runningx.";
-					Meteor.call('addNotifications',id,date,val);
+					var val = "Project "+project.name+" : Extraction "+extractor.name+" is running.";
+					Meteor.call('addNotifications',idProject,date,val,function(err,res){
+						if(err){
+							toastr.error(err.reason);
+						}
+					});
 
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
