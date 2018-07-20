@@ -1,5 +1,6 @@
 import { Parser } from '../class/Parser.js'
 import { Projects } from '../../../../lib/collections/projects.js';
+import { TimeLine } from '../class/TimeLine.js'
 import { VisualizerFactory } from '../Visualizer/VisualizerFactory.js'
 import { XSDObject } from '../XSDParser/XSDObject.js';
 import { XMLXSDObj } from '../XMLXSDParser/XMLXSDObj.js';
@@ -84,7 +85,7 @@ export class configAnnotationManager{
 
         })
         // Timeline lost the focus of the vidCtrl when it is hidden
-        if(typeof vidCtrl.focusedTimeLine !== 'undefined'){
+        if(vidCtrl.focusedTimeLine instanceof TimeLine){
           var idTimeline = vidCtrl.focusedTimeLine.div_id;
           if(idsDiv.indexOf(idTimeline) !== -1){
             vidCtrl.focusedTimeLine.lostFocus();

@@ -1,3 +1,4 @@
+import { XMLFilter } from '../XMLFilter/XMLFilter.js'
 export class TimeLineCharacter{
 
   /* Constructor
@@ -10,6 +11,7 @@ export class TimeLineCharacter{
     this.xmlFilter = undefined;
     this.count = 0;
     this.currentCharacter = undefined;
+    this.isDisplayed = true;
   }
 
   initialize(){
@@ -18,6 +20,7 @@ export class TimeLineCharacter{
     this.timeLineData = [];
     this.isCharacter = false;
     this.currentCharacter = undefined;
+    this.isDisplayed = true;
   }
 
 
@@ -26,7 +29,9 @@ export class TimeLineCharacter{
   }
 
   setXMLFilter(xmlFilter){
-    this.xmlFilter = xmlFilter;
+    if(xmlFilter instanceof XMLFilter){
+      this.xmlFilter = xmlFilter;
+    }
   }
 
   /*
@@ -64,7 +69,14 @@ export class TimeLineCharacter{
         obj:elt,
         i:i
       });
+      var oldIsDiplayed = that.isDisplayed;
+      if(oldIsDiplayed &&
+        that.xmlFilter instanceof XMLFilter &&
+        that.xmlFilter.getIsActive()){
+        that.isDisplayed = that.xmlFilter.matchFilter(elt, that.stack.slice(0))
+      }
       elt.accept(that);
+      that.isDisplayed = oldIsDiplayed;
       that.stack.pop();
     })
     this.currentCharacter = oldCurrentCharacter;
@@ -86,7 +98,14 @@ export class TimeLineCharacter{
             obj: xmlxsdElt.eltsList[i],
             i:i
           })
+          var oldIsDiplayed = that.isDisplayed;
+          if(oldIsDiplayed &&
+            that.xmlFilter instanceof XMLFilter &&
+            that.xmlFilter.getIsActive()){
+              that.isDisplayed = that.xmlFilter.matchFilter(elt, that.stack.slice(0))
+          }
           elt.accept(that);
+          that.isDisplayed = oldIsDiplayed;
           that.stack.pop()
         })
       })
@@ -142,6 +161,7 @@ export class TimeLineCharacter{
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
                 id: that.count,
+                isDisplayed : that.isDisplayed,
                 // clone the stack
                 stack: that.stack.slice(0),
               })
@@ -157,6 +177,7 @@ export class TimeLineCharacter{
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
                 id: that.count,
+                isDisplayed : that.isDisplayed,
                 // clone the stack
                 stack: this.stack.slice(0),
               }]

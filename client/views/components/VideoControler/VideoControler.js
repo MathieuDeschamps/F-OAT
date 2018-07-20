@@ -1,3 +1,6 @@
+import { PlayerCommand } from '../playerCommand/PlayerCommand.js'
+import { TimeLine} from '../class/TimeLine.js'
+
 export class VideoControler {
 	constructor(vid,frameRate, duration){
 
@@ -21,7 +24,7 @@ export class VideoControler {
 		// Mode lecture
 		this.mode="full";
 		this.partialPlaying=false;
-		if(typeof this.playerCommand !=='undefined'){
+		if(this.playerCommand instanceof PlayerCommand){
 			$("#"+this.playerCommand.idPartialButton).prop('checked',false);
 		}
 		this.isPlaying=false;
@@ -61,7 +64,9 @@ export class VideoControler {
 	}
 
 	setPlayerCommand(playerCommand){
-		this.playerCommand = playerCommand;
+		if(playerCommand instanceof PlayerCommand){
+			this.playerCommand = playerCommand;
+		}
 	}
 	// Frame-Time management
 
@@ -162,6 +167,7 @@ export class VideoControler {
 		this.attachedObject.forEach(function(object){
 			if (currentFrame % that.attachedObjectFrequency.get(object)==0){
 				object.updateVideoControler();
+				// console.log('object', object)
 			}
 		});
 	}
@@ -205,7 +211,7 @@ export class VideoControler {
 			this.vid.play();
 			this.isPlaying=true;
 		// }
-		if(typeof this.playerCommand!=='undefined'){
+		if(this.playerCommand instanceof PlayerCommand){
 			this.playerCommand.play();
 		}
 		this.configMode();
@@ -215,7 +221,7 @@ export class VideoControler {
 	pause(){
 		this.vid.pause();
 		this.isPlaying=false;
-		if(typeof this.playerCommand!=='undefined'){
+		if(this.playerCommand instanceof PlayerCommand){
 			this.playerCommand.pause();
 		}
 		clearInterval(this.updateInterval);
@@ -231,10 +237,9 @@ export class VideoControler {
 		if (begin>=1 &&  begin <= end && (this.endVid==undefined || end<=this.endVid)){
 			this.beginSelect=begin;
 			this.endSelect=end;
-			if(typeof this.playerCommand!=='undefined'){
+			if(this.playerCommand instanceof PlayerCommand){
 				$("#"+this.playerCommand.idBeginSelect).val(begin);
 				$("#"+this.playerCommand.idEndSelect).val(end);
-
 			}
 		}
 		this.setMode();
@@ -244,12 +249,12 @@ export class VideoControler {
 		begin=Number(begin);
 		if (begin>=1 && (this.endVid==undefined || begin<=this.endVid )){
 			this.beginSelect=begin;
-			if(typeof this.playerCommand!=='undefined'){
+			if(this.playerCommand instanceof PlayerCommand){
 			$("#"+this.playerCommand.idBeginSelect).val(begin);
 		}
 			if (this.endSelect==undefined || this.endSelect<this.beginSelect){
 				this.endSelect=this.beginSelect;
-				if(typeof this.playerCommand!=='undefined'){
+				if(this.playerCommand instanceof PlayerCommand){
 					$("#"+this.playerCommand.idEndSelect).val(this.beginSelect);
 				}
 			}
@@ -262,12 +267,12 @@ export class VideoControler {
 		end=Number(end);
 		if (end>=1 && (this.endVid==undefined || end<=this.endVid )){
 			this.endSelect=end;
-			if(typeof this.playerCommand!=='undefined'){
+			if(this.playerCommand instanceof PlayerCommand){
 				$("#"+this.playerCommand.idEndSelect).val(end);
 			}
 			if (this.beginSelect==undefined || this.beginSelect>this.endSelect){
 				this.beginSelect=this.endSelect;
-				if(typeof this.playerCommand!=='undefined'){
+				if(this.playerCommand instanceof PlayerCommand){
 					$("#"+this.playerCommand.idBeginSelect).val(this.endSelect);
 				}
 			}
@@ -279,17 +284,17 @@ export class VideoControler {
 	// Mode de lecture partielle
 	setPartialPlaying(pp){
 		this.partialPlaying=pp;
-		if(typeof this.playerCommand!=='undefined'){
+		if(this.playerCommand instanceof PlayerCommand){
 			$("#"+this.playerCommand.idPartialButton).prop('checked',pp);
 		}
 		if(this.partialPlaying &&
-			typeof this.focusedTimeLine !== 'undefined' &&
+			this.playerCommand instanceof PlayerCommand &&
 			!this.isFocusedTimeLine){
 				this.setTimeLineFocus(this.focusedTimeLine);
 		}
 		// Timeline lost focus when disabled partialPlay
 		if(!this.partialPlaying &&
-			 typeof this.focusedTimeLine !== 'undefined' &&
+			 this.focusedTimeLine instanceof TimeLine &&
 			 this.isFocusedTimeLine){
 				 // console.log('vidCtrl lostFocus')
 			this.focusedTimeLine.lostFocus();
@@ -420,8 +425,8 @@ export class VideoControler {
 
 	//
 	setTimeLineFocus(timeLine){
-		if(typeof timeLine !== 'undefined'){
-			if(typeof this.focusedTimeLine !== 'undefined' && this.isFocusedTimeLine){
+		if(timeLine instanceof TimeLine){
+			if(this.focusedTimeLine instanceof TimeLine && this.isFocusedTimeLine){
 				this.focusedTimeLine.lostFocus();
 			}
 			this.isFocusedTimeLine = true;

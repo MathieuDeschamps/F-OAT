@@ -1,4 +1,5 @@
-import * as d3 from "d3";
+import * as d3 from 'd3';
+import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 export class Overlay{
   /*
   @data: is an array of timeId and positions
@@ -24,7 +25,9 @@ export class Overlay{
   }
 
   setXMLXSDForm(xmlxsdForm){
-    this.xmlxsdForm = xmlxsdForm;
+    if(xmlxsdForm instanceof XMLXSDForm){
+      this.xmlxsdForm = xmlxsdForm;
+    }
   }
 
   /* Draw points base on this.points and their events
@@ -135,7 +138,7 @@ export class Overlay{
       .on("mousedown", function(d) {
         that.selected = that.dragged = d;
         if(d.stack!=null &&
-          typeof that.xmlxsdForm != 'undefined'){
+          that.xmlxsdForm instanceof XMLXSDForm){
           that.xmlxsdForm.displayForm(d.stack);
         }
         redraw();
@@ -296,7 +299,7 @@ export class Overlay{
       .on("mousedown", function(d) {
         that.selected = d;
         if(d.stack!=null &&
-          typeof that.xmlxsdForm != 'undefined'){
+          that.xmlxsdForm instanceof XMLXSDForm){
           that.xmlxsdForm.displayForm(d.stack);
         }
       })

@@ -1,4 +1,6 @@
 import { XMLSelector } from '../XMLFilter/XMLSelector.js'
+import { VideoControler } from '../VideoControler/VideoControler.js'
+import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
 import * as d3 from 'd3';
 export class TimeLine {
 
@@ -24,7 +26,7 @@ export class TimeLine {
     this.xsd_obj = xsdObj;
     this.div_id = divId;
     this.xmlxsdForm = undefined;
-    if(typeof vidCtrl !== 'undefined' &&
+    if(vidCtrl instanceof VideoControler &&
     typeof vidCtrl.frameRate !== 'undefined'){
       this.frame_rate = vidCtrl.frameRate;
       vidCtrl.attach(this, 1);
@@ -48,10 +50,10 @@ export class TimeLine {
     })
     this.chart_id = this.div_id+'_chart';
     var chart_div = $('<div/>');
-    $(chart_div).addClass('divtimeline')
-    $(chart_div).addClass('indigo')
-    $(chart_div).addClass('lighten-5')
-    $(chart_div).attr('id', this.chart_id)
+    $(chart_div).addClass('divtimeline');
+    $(chart_div).addClass('indigo');
+    $(chart_div).addClass('lighten-5');
+    $(chart_div).attr('id', this.chart_id);
     $('#'+this.div_id).append(chart_div);
 
     var filter_title = $('<h5/>');
@@ -61,15 +63,15 @@ export class TimeLine {
 
     this.filter_id = this.div_id+'_filter';
     var filter_div = $('<div/>');
-    $(filter_div).addClass('divborder')
-    $(filter_div).addClass('indigo')
-    $(filter_div).addClass('lighten-5')
+    $(filter_div).addClass('divborder');
+    $(filter_div).addClass('indigo');
+    $(filter_div).addClass('lighten-5');
     $(filter_div).attr('id', this.filter_id);
     $('#'+this.div_id).append(filter_div);
 
     // these attributs following attributs are intiliased by draw
-    this.scale_x1 = undefined
-    this.scale_x2 = undefined
+    this.scale_x1 = undefined;
+    this.scale_x2 = undefined;
     this.first_draw = true;
     this.brush = undefined;
     this.main = undefined
@@ -83,7 +85,9 @@ export class TimeLine {
   }
 
   setXMLXSDForm(xmlxsdForm){
-    this.xmlxsdForm = xmlxsdForm;
+    if(xmlxsdForm instanceof XMLXSDForm){
+      this.xmlxsdForm = xmlxsdForm;
+    }
   }
 
   equals(object){
@@ -262,8 +266,11 @@ export class TimeLine {
         .attr('y', function(d) {return scale_y2(d.index + .5) - 5;})
         .attr('width', function(d) {return Math.max(that.scale_x1(d.end - 0.1) - that.scale_x1(d.start), 2);})
         .attr('height', TimeLine.LINE_HEIGHT_SCROLL_BAR() - TimeLine.EXT_MARGIN())
-        .style('fill', function (d, i) {return my_color[d.index % my_color.length];});
-
+        .style('fill', function (d, i) {return my_color[d.index % my_color.length];})
+        .style('display', function(d){
+          if(d.isDisplayed){return 'block';}
+          else{return 'none';}
+        });
     //mini read line
     this.mini.append('line')
         .attr('class', 'read_line')
@@ -345,24 +352,28 @@ export class TimeLine {
         .attr('height', TimeLine.LINE_HEIGHT() - TimeLine.EXT_MARGIN())
         .attr('index', function(d){return d.index;})
         .attr('number', function (d) {return d.id;})
-        .style('fill', function (d) {return getRectColor(d.id, d.index)})
+        .style('fill', function (d) {return getRectColor(d);})
+        .style('display', function(d){
+          if(d.isDisplayed){return 'block';}
+          else{return 'none';}
+        })
         .on('click', function(d){ that.blockPlay(d, this)});
 
         // remove the unneeded rect
         rects.exit().remove();
       }
 
-    function getRectColor(id, index){
-        if(that.index_used_rect === id  &&
-          typeof vidCtrl.focusedTimeLine !== 'undefined' &&
+    function getRectColor(item){
+        if(that.index_used_rect === item.id  &&
+          vidCtrl.focusedTimeLine instanceof TimeLine &&
           vidCtrl.isFocusedTimeLine &&
           vidCtrl.focusedTimeLine.equals(that))
         {
           var my_selected_color = TimeLine.MY_SELECTED_COLOR();
-          return my_selected_color[index % my_selected_color.length];
+          return my_selected_color[item.index % my_selected_color.length];
         }else{
           var my_color = TimeLine.MY_COLOR();
-          return my_color[index % my_color.length];
+          return my_color[item.index % my_color.length];
         }
       }
   }
@@ -382,14 +393,16 @@ export class TimeLine {
       if (save_index_used_rect !== parseInt($(target).attr('number')) || (!vidCtrl.getPartialPlaying())) {
         $(target).css('fill', my_selected_color[item.index % my_selected_color.length]);
         this.index_used_rect = parseInt($(target).attr('number'));
-        if(typeof this.xmlxsdForm !== 'undefined'){
+        if(this.xmlxsdForm instanceof XMLXSDForm){
           this.xmlxsdForm.displayForm(item.stack);
+        }
+        if(item.start < item.end){
+          vidCtrl.play();
+        }else if(item.start === item.end){
+          vidCtrl.setCurrentFrame(item.start);
         }
         vidCtrl.setPlayingInterval(item.start, item.end);
         vidCtrl.setPartialPlaying(true);
-        if(item.start < item.end){
-          vidCtrl.play();
-        }
       } else {
         vidCtrl.setPlayingInterval(1, this.nb_frames);
         vidCtrl.setPartialPlaying(false);
@@ -443,7 +456,7 @@ export class TimeLine {
 
     // update the selected main rectangle
     if(this.index_used_rect !== -1 &&
-      typeof vidCtrl.focusedTimeLine !== 'undefined' &&
+      vidCtrl.focusedTimeLine instanceof TimeLine &&
       vidCtrl.isFocusedTimeLine &&
       vidCtrl.focusedTimeLine.equals(this)){
       var current_item = $(this.items).filter(function(i, item){
@@ -451,10 +464,12 @@ export class TimeLine {
           return item
         }
       })[0];
-      vidCtrl.setPlayingInterval(current_item.start, current_item.end);
-      vidCtrl.setPartialPlaying(true);
       if(current_item.start < current_item.end  && vidCtrl.isPlaying ){
+        vidCtrl.setPartialPlaying(true);
+        vidCtrl.setPlayingInterval(current_item.start, current_item.end);
         vidCtrl.play();
+      }else if(current_item.start === current_item.end){
+        vidCtrl.setCurrentFrame(current_item.start)
       }
     }
   }
@@ -474,13 +489,18 @@ export class TimeLine {
       // move the read line of main
       x1 = this.scale_x1(this.current_frame);
       var main_read_line =   $('#'+this.chart_id).find('.read_line:eq(0)')
+
       // update the brush when the read line is out of the main  windows
       // or every 10 seconds
+      // and the brush is not in full size
       if((x1 < this.scale_x1.range()[0] || x1 > this.scale_x1.range()[1] ||
-      this.current_frame % (this.frame_rate * 10) === 0) &&
-      vidCtrl.isPlaying &&
-      this.current_frame < this.nb_frames &&
-      this.current_frame > 1 ){
+         this.current_frame % (this.frame_rate * 10) === 0) &&
+         vidCtrl.isPlaying &&
+         this.current_frame < this.nb_frames &&
+         this.current_frame > 1 &&
+         !(this.scale_x1.domain()[0] === this.scale_x2.domain()[0] &&
+         this.scale_x1.domain()[1] === this.scale_x2.domain()[1])
+       ){
         var old_min = this.scale_x1.domain()[0];
         var old_max = this.scale_x1.domain()[1];
         var half_brush_size = (old_max - old_min) / 2 ;
