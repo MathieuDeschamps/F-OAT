@@ -26,4 +26,8 @@ Template.nav.events({
       TAPi18n.setLanguage('en');
     }
   },
+
+  'click #help'(event,instance){
+    Router.go("help");
+  }
 });

@@ -1,0 +1,41 @@
+{
+  "helpPage" : "Need help ? Here are some answers",
+  "createProjectHelp" : "Create a project",
+  "projectPageHelp" : "Work on a project",
+  "extractorHelp" : "What is an extractor and how to use it",
+  "filterHelp" : "What is a filter and how to use it",
+  "urlDownHelp" : "How can I get the download URL of a video ?",
+  "others" : "Other questions or issues :",
+
+  "createProjectHelpP1_1" : "To create a project, first go on the ",
+  "projectLink" : "project page",
+  "createProjectHelpP1_2" : ", or click on the '+' button on home page.",
+  "createProjectHelpP2" : "Required fields are marked with a '*'. Video duration and frame rate are important information that will be used to display custom-made timelines on the project.",
+  "createProjectHelpP4" : "When you want to use a personal file on a project, this file will be asked when you will get on the project page",
+  "createProjectHelpP4" : "You can also add people to your project with their username and manage their rights on the project settings page.",
+  "createProjectHelpP5" : "Finally, you can search the title of your movie to add general information of the movie to your project. This data is given by ",
+
+  "urlDownHelpP1" : "A download URL will be useful to do an extraction on a video coming from a video platform.",
+  "urlDownHelpP2" : "All platforms do not give download URL on their videos, for example this is the case of YouTube and Dailymotion.",
+  "urlDownHelpP3" : "Some videos on Vimeo allow you to get a download URL of a video. For that, it will need to have a 'Download' button under the video, next to the 'Share' button.",
+  "urlDownHelpP4" : "To get the download URL of a video, click on the 'Download' button, then do a right click on one of the other download buttons given for every resolution of the video, then click on 'Copy link address'.",
+  "urlDownHelpP5_1" : "Important : ",
+  "urlDownHelpP5_2" : "A download link on Vimeo is unique, which means it will not allow to do more than one extraction with this link. You will need to create a new project with a new download URL to do another extraction. A solution would be to download the video and use it as a local file in a project.",
+
+  "projectPageHelpP1" : "In a project, many features are provided to you. You will be able to analyse your video thanks to the extractors available on the top right corner of the page. This collaborative platform will allow you to visualize and modify the results with your partners in real time.",
+  "projectPageHelpP2" : "Depending on the extractor used, multiple displays of the results are possible. Indeed, if the extraction do a time analysis on the video, then this data will be displayed on an interactive timeline under the video.",
+  "projectPageHelpP3" : "Information can also be displayed over the video, for example with analysis that gives the position of actors or detect faces. This display is also interactive.",
+  "projectPageHelpP4" : "To see more data and to be more accurate in your modifications, all the extractor's data are displayed in the form on the right of the page. You can change data as you wish if the extractors have done mistakes.",
+
+  "extractorHelpP1" : "An extractor is a server containing a software that will analyse your video. It will send back data in a format fitted to be displayed on our platform (with the different displays presented before).",
+  "extractorHelpP2" : "Every user can add his own extractor in F-OAT application by clicking on the 'Settings' button on the top right corner of the app. All users will then benefit of this software of video analysis.",
+  "extractorHelpP3" : "Do not hesitate to contact us if you want more information about this feature : ",
+  "extractorHelpP4" : "To use an extractor, you just need to select the extractor you want on the top right corner of a project page, and to fill the parameters with what you need. An extraction can take minutes to hours depending on the analysis, try not to leave the application until it is done to avoid problems on the results.",
+
+  "filterHelpP1" : "If the extractor selected displays a timeline, then a filter feature is available.",
+  "filterHelpP2" : "This feature is under the timeline of the extractor. You can add a filter on one or more elements of the extractor's data (For example, I only want frames with a timeId higher than 2000, I only want scenes with this actor,...).",
+  "filterHelpP3" : "When a filter is activated, the timeline will be redrawned to display the results filtered as you needed.",
+
+  "contactUs" : "For every other issue or questions or suggestion on the application, contact us on our github, create a new issue and we will answer as fast as we can "
+
+}

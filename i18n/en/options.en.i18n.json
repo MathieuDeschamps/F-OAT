@@ -1,7 +1,7 @@
 {
   "addExtractor" : "Add an extractor",
-  "extractorName" : "Extractor's name",
-  "extractorIP" : "Extractor's ip and port (ex:111.222.111.222:8080)",
+  "extractorName" : "Extractor's name *",
+  "extractorIP" : "Extractor's ip and port (ex:111.222.111.222:8080) *",
   "submitExtractor" : "Submit",
   "name" : "Name",
   "ipport" : "IP and port",
