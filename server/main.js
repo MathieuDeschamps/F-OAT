@@ -7,17 +7,6 @@ export const xmlPath = "/tmp/";
 Meteor.startup(() => {
   // code to run on server at startup
 
-  //Event to refresh editor & timeline in project.js
-  em = new EventDDP('test');
-  em.addListener('hello',(client)=>{
-    em.matchEmit("hello",{
-      $and: [
-        {_id: {$ne : client._id}},
-        {appId: client.appId}
-      ]
-    });
-  });
-
   //Event to refresh videoPlayer in videoPlayer.js in route /project
   eventDDPVideo = new EventDDP('videoPlayer');
   eventDDPVideo.addListener('videoPlayer',(client)=>{

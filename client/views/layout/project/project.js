@@ -89,50 +89,6 @@ Template.project.onRendered(()=>{
     var xmlPath = '/tmp/' + Router.current().params._id + '/annotation.xml'
     var extractorPath
 
-    if(!em){
-      em = new EventDDP('test',Meteor.connection);
-      em.addListener('update',()=>{
-        Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
-          if(xmlErr){
-            alert(xmlErr.reason);
-          }else{
-            Session.set('xmlDoc', result.data)
-            var xmlDoc = result.data
-
-            // build the extractors
-            var extractors = Parser.getListExtractors(xmlDoc)
-            var extractor
-            var timeLineData
-
-            //Video controler update :
-            var nbFrames=0;
-            extractors.forEach(function(extractor){
-              console.log('nb Frame',extractor);
-              // var newNbFrames=Parser.getNbFrames(xmlDoc,extractor);
-              // console.log(newNbFrames);
-              if (newNbFrames!=undefined){
-                console.log(newNbFrames);
-                nbFrames=Math.max(nbFrames,newNbFrames);
-                // console.log(nbFrames);
-              }
-            });
-            if (nbFrames>0){
-              vidCtrl.setNbFrames(nbFrames);
-            }
-            // console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
-            vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
-
-          }
-        });
-
-      });
-    }
-
-    em.setClient({
-      appId: Router.current().params._id,
-      _id: Meteor.userId()
-    });
-
     if(!eventDeleteProject){
       eventDeleteProject = new EventDDP('deleteProject',Meteor.connection);
     }
@@ -162,7 +118,6 @@ Template.project.onRendered(()=>{
         // global table which will contains the form objects
         xsdArray = new Array(extractors.length)
         xmlArray = new Array(extractors.length)
-        // console.log('extractors', extractors)
 
         if(extractors.length === 0){
           projectReady();
@@ -186,9 +141,6 @@ Template.project.onRendered(()=>{
             }
 
           xsdArray[i] = $.parseXML(resultExtractor.data)
-          // console.log('XMLArray', XMLArray)
-          // console.log('XSDArray', XSDArray)
-          // console.log("vidctrl",vidCtrl);
 
           if(i+1 === extractors.length){
             projectReady();
@@ -231,14 +183,8 @@ Template.project.onRendered(()=>{
 });
 
 Template.project.onDestroyed(()=>{
-  //put wrong values for the event => unsuscribe the user for the channel of this project
-  if(em!=null){
-    em.setClient({
-      appId: -1,
-      _id: -1
-    });
-  }
 
+  //put wrong values for the event => unsuscribe the user for the channel of this project
   if(eventDeleteProject!=null){
     eventDeleteProject.setClient({
       appId: -1,
@@ -310,13 +256,6 @@ Template.project.events({
 Meteor.startup(function(){
 
     $(window).bind('beforeunload', function() {
-      if(em!=null){
-        em.setClient({
-          appId: -1,
-          _id: -1
-        });
-      }
-
       if(eventDeleteProject!=null){
         eventDeleteProject.setClient({
           appId: -1,
