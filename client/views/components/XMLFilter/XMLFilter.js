@@ -8,7 +8,6 @@ export class XMLFilter{
   constructor(xmlSelector, nameExtractor){
     this.nameExtractor = nameExtractor;
     this.filterList = [];
-    this.stack = [];
     this.observers = [];
     this.isActive = false;
   }
@@ -111,15 +110,20 @@ export class XMLFilter{
 
   /* delete a filter
   @key: is the index of the filter to delete in the filterList
+  @returns true if deleted
+           false otherwise
   */
   deleteFilter(key){
+    var result = false;
     var filter = this.getFilter(key)
     if(typeof filter !== 'undefined'){
       delete this.filterList[key];
       if(this.isActive){
         this.notifyAll();
+        result = true;
       }
     }
+    return result;
   }
 
   /* Empty the filterList

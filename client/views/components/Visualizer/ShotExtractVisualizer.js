@@ -83,12 +83,6 @@ export class ShotExtractVisualizer{
     }
   }
 
-  /* Obsever pattern : update function
-  */
-  updateVideoControler(){
-    this.notifyAll()
-  }
-
   /* Visualize the XMLXSDObject
   */
   visualize(){
