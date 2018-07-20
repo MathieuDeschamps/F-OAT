@@ -1,11 +1,12 @@
 {
+  "tableOfContents" : "Table of contents",
   "helpPage" : "Need help ? Here are some answers",
   "createProjectHelp" : "Create a project",
   "projectPageHelp" : "Work on a project",
   "extractorHelp" : "What is an extractor and how to use it",
   "filterHelp" : "What is a filter and how to use it",
   "urlDownHelp" : "How can I get the download URL of a video ?",
-  "others" : "Other questions or issues :",
+  "others" : "Other questions or issues",
 
   "createProjectHelpP1_1" : "To create a project, first go on the ",
   "projectLink" : "project page",

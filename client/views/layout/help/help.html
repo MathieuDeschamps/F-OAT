@@ -2,10 +2,22 @@
   <div class="centered">
     <h3 class="indigo-text">{{_ 'helpPage'}}</h3>
     <div class="content">
-      <div class="indigo lighten-5 divborder col s12">
+      <div id="summary" class="indigo lighten-5 divborder row">
+        <h4 class="indigo-text">{{_ 'tableOfContents'}}</h4>
+        <ul class="collection">
+          <li><a href="#create_project_help" class="collection-item black-text">{{_ 'createProjectHelp'}}</a></li>
+          <li><a href="#url_down_help" class="collection-item black-text">{{_ 'urlDownHelp'}}</a></li>
+          <li><a href="#project_page_help" class="collection-item black-text">{{_ 'projectPageHelp'}}</a></li>
+          <li><a href="#extractor_help" class="collection-item black-text">{{_ 'extractorHelp'}}</a></li>
+          <li><a href="#filter_help" class="collection-item black-text">{{_ 'filterHelp'}}</a></li>
+          <li><a href="#others_help" class="collection-item black-text">{{_ 'others'}}</a></li>
+        </ul>
+      </div>
+
+      <div id="create_project_help" class="indigo lighten-5 divborder row">
         <p class="flow-text">{{_ 'createProjectHelp'}}</p>
         <p>
-          {{_ 'createProjectHelpP1_1'}} <a target="_blank" href="http://localhost:3000/newProject">{{_ 'projectLink'}}</a> {{_ 'createProjectHelpP1_2'}}
+          {{_ 'createProjectHelpP1_1'}} <a target="_blank" href="/newProject">{{_ 'projectLink'}}</a> {{_ 'createProjectHelpP1_2'}}
         </p>
         <p>
           {{_ 'createProjectHelpP2'}}
@@ -21,7 +33,7 @@
         </p>
 
       </div>
-      <div class="indigo lighten-5 divborder col s12">
+      <div id="url_down_help" class="indigo lighten-5 divborder row">
         <p class="flow-text">{{_ 'urlDownHelp'}}</p>
         <p>
           {{_ 'urlDownHelpP1'}}
@@ -40,7 +52,7 @@
         </p>
 
       </div>
-      <div class="indigo lighten-5 divborder col s12">
+      <div id="project_page_help" class="indigo lighten-5 divborder row">
         <p class="flow-text">{{_ 'projectPageHelp'}}</p>
 
         <p>
@@ -56,7 +68,7 @@
           {{_ 'projectPageHelpP4'}}
         </p>
       </div>
-      <div class="indigo lighten-5 divborder col s12">
+      <div id="extractor_help" class="indigo lighten-5 divborder row">
         <p class="flow-text">{{_ 'extractorHelp'}}</p>
         <p>
           {{_ 'extractorHelpP1'}}
@@ -71,7 +83,7 @@
           {{_ 'extractorHelpP4'}}
         </p>
       </div>
-      <div class="indigo lighten-5 divborder col s12">
+      <div id="filter_help" class="indigo lighten-5 divborder row">
         <p class="flow-text">{{_ 'filterHelp'}}</p>
         <p>
           {{_ 'filterHelpP1'}}
@@ -85,8 +97,8 @@
 
       </div>
 
-      <div class="indigo lighten-5 divborder col s12">
-        <p class="flow-text">{{_ 'others'}}</p>
+      <div id="others_help" class="indigo lighten-5 divborder row">
+        <p class="flow-text">{{_ 'others'}} :</p>
 
         <p>
           {{_ 'contactUs'}} : <a target="_blank" href="https://github.com/MathieuDeschamps/F-OAT">F-OAT github</a>

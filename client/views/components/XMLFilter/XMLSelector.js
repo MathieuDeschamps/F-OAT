@@ -57,6 +57,16 @@ export class XMLSelector{
     $(labelAddFilter).text(TAPi18n.__('add_filter'))
     $(divAdd).append(labelAddFilter);
 
+    var help = $('<a/>')
+    $(help).attr('target','_blank');
+    $(help).attr('href','/help#filter_help');
+    $(help).css('padding-top','20px');
+    var iconHelp = $('<i/>');
+    $(iconHelp).addClass('material-icons');
+    $(iconHelp).text('help');
+    $(help).append(iconHelp);
+    $(divAdd).append(help);
+
     var divFilter = $('<div/>');
     $(divFilter).addClass('row');
     $(divParent).append(divFilter);

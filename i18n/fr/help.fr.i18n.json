@@ -1,11 +1,12 @@
 {
+  "tableOfContents" : "Sommaire",
   "helpPage" : "Mode d'emploi et questions",
   "createProjectHelp" : "Créer un projet",
   "projectPageHelp" : "Travailler sur un projet",
   "extractorHelp" : "Qu'est-ce qu'un extracteur et comment l'utiliser",
   "filterHelp" : "Qu'est-ce qu'un filtre et comment l'utiliser",
   "urlDownHelp" : "Comment récupérer l'URL de téléchargement d'une vidéo ?",
-  "others" : "Autres questions :",
+  "others" : "Autres questions",
 
   "createProjectHelpP1_1" : "Pour créer un projet, rendez-vous tout d'abord sur la page de ",
   "projectLink" : "projet",

@@ -55,7 +55,7 @@ export class TimeLine {
     $('#'+this.div_id).append(chart_div);
 
     var filter_title = $('<h5/>');
-    $(filter_title).addClass('blue-text text-darken-3');
+    $(filter_title).addClass('indigo-text');
     $(filter_title).text(TAPi18n.__('filter')+' '+this.name_extractor +' :');
     $('#'+this.div_id).append(filter_title);
 

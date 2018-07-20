@@ -213,10 +213,6 @@ Template.newproject.events({
         $('#url').val('');
         $('#url-down').val('');
       }
-  },
-
-  'click #helpProject'(event,instance){
-    window.open(Router.url("help"));
   }
 });
 
