@@ -1,3 +1,4 @@
+import { XMLFilter } from '../XMLFilter/XMLFilter.js'
 export class TimeLineDlib{
 
   /* Constructor
@@ -10,6 +11,7 @@ export class TimeLineDlib{
     this.xmlFilter = undefined;
     this.id = 0;
     this.actorsNameMap = [];
+    this.isDisplayed = true;
   }
 
   initialize(){
@@ -17,6 +19,7 @@ export class TimeLineDlib{
     this.timeLineData = [];
     this.actorsNameMap = [];
     this.id = 0;
+    this.isDisplayed = true;
   }
 
   setXMLXSDObj(xmlxsdObj){
@@ -24,7 +27,9 @@ export class TimeLineDlib{
   }
 
   setXMLFilter(xmlFilter){
-    this.xmlFilter = xmlFilter;
+    if(xmlFilter instanceof XMLFilter){
+      this.xmlFilter = xmlFilter;
+    }
   }
   /*
   @returns: timeLineData
@@ -58,7 +63,14 @@ export class TimeLineDlib{
         obj:elt,
         i:i
       });
+      var oldIsDiplayed = that.isDisplayed;
+      if(oldIsDiplayed &&
+        that.xmlFilter instanceof XMLFilter &&
+        that.xmlFilter.getIsActive()){
+        that.isDisplayed = that.xmlFilter.matchFilter(elt, that.stack.slice(0))
+      }
       elt.accept(that);
+      that.isDisplayed = oldIsDiplayed;
       that.stack.pop();
     })
   }
@@ -78,7 +90,14 @@ export class TimeLineDlib{
             obj: xmlxsdElt.eltsList[i],
             i:i
           })
+          var oldIsDiplayed = that.isDisplayed;
+          if(oldIsDiplayed &&
+            that.xmlFilter instanceof XMLFilter &&
+            that.xmlFilter.getIsActive()){
+              that.isDisplayed = that.xmlFilter.matchFilter(elt, that.stack.slice(0))
+          }
           elt.accept(that);
+          that.isDisplayed = oldIsDiplayed;
           that.stack.pop()
         })
       })
@@ -145,6 +164,7 @@ export class TimeLineDlib{
             start: timeId,
             end: timeId,
             id: that.id,
+            isDisplayed : that.isDisplayed,
             // clone the stack
             stack:that.stack.slice(0),
           })
@@ -160,6 +180,7 @@ export class TimeLineDlib{
             start: timeId,
             end: timeId,
             id: that.id,
+            isDisplayed : that.isDisplayed,
             // clone the stack
             stack: this.stack.slice(0),
           }]

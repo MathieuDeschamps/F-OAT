@@ -59,6 +59,7 @@ export class XMLSelector{
 
     var divFilter = $('<div/>');
     $(divFilter).addClass('row');
+    $(divFilter).addClass('valign-wrapper');
     $(divParent).append(divFilter);
 
 
@@ -257,6 +258,7 @@ export class XMLSelector{
       if(xsdString.isEnumerated()){
         this.generateSelectSelector(optionsOp, xsdString.enumeration, 'text');
       }else{
+        console.log('value', value);
         this.generateInputSelector(optionsOp, 'text', undefined, value);
       }
     }
@@ -281,17 +283,24 @@ export class XMLSelector{
     var currentAttr = this.currentAttr;
     var currentFilterIndex = this.currentFilterIndex;
     var divAttrId = this.divId + '_' + this.currentFilterIndex + '_attr';
-    var divParent =  $('#'+divAttrId).children().last();
+    var divParent = $('<div/>');
+    $(divParent).addClass('col s12')
+    $('#'+divAttrId).append(divParent);
+
     if(this.currentAttr !== undefined){
       var label = $('<p/>');
       $(label).text(this.currentAttr.name + ':');
       $(label).addClass('col s4')
       $(divParent).append(label);
     }
+    var divOp = $('<div>');
+    $(divOp).addClass('inline-field inline');
+    $(divOp).addClass('col s2')
+    $(divParent).append(divOp);
 
     var selectOp = $('<select/>');
-    $(selectOp).addClass('col s2')
-    $(selectOp).addClass('white style-input-log')
+    $(selectOp).addClass('style-input-duration')
+    $(selectOp).addClass('white')
     $(selectOp).change(function(){
       that.eventAttrOp(currentFilterIndex, currentAttr.name, this);
     })
@@ -302,16 +311,20 @@ export class XMLSelector{
       $(optionOp).val(option);
       $(selectOp).append(optionOp);
     })
-    $(divParent).append(selectOp);
+    $(divOp).append(selectOp);
     $(selectOp).material_select();
-    var defaultValue = $(selectOp).val()
     // default value
     that.eventAttrOp(currentFilterIndex, currentAttr.name, selectOp);
 
+    var divInput = $('<div>');
+    $(divInput).addClass('inline-field inline');
+    $(divInput).addClass('col s6');
+    $(divParent).append(divInput);
+
     var inputValue = $('<input/>');
     $(inputValue).attr('type', type);
-    $(inputValue).addClass('col s6')
-    $(inputValue).addClass('white style-input-log')
+    $(inputValue).addClass('style-input-xmlform')
+    $(inputValue).addClass('white')
     if(type === 'number' && typeof step !== 'undefined'){
       $(inputValue).attr('step', step);
     }
@@ -321,7 +334,7 @@ export class XMLSelector{
     $(inputValue).change(function(){
       that.eventAttrValue(currentFilterIndex, currentAttr.name, this, type);
     })
-    $(divParent).append(inputValue)
+    $(divInput).append(inputValue)
     // default value
     that.eventAttrValue(currentFilterIndex, currentAttr.name, inputValue, type);
   }
@@ -335,8 +348,11 @@ export class XMLSelector{
     var that = this;
     var currentAttr = this.currentAttr;
     var currentFilterIndex = this.currentFilterIndex;
-    var idAttr = this.divId+'_'+this.currentFilterIndex+'_attr';
-    var divParent =  $('#'+idAttr).children().last();
+    var divAttrId = this.divId+'_'+this.currentFilterIndex+'_attr';
+    var divParent = $('<div/>');
+    $(divParent).addClass('col s12')
+    $('#'+divAttrId).append(divParent);
+
     if(this.currentAttr !== undefined){
       var label = $('<p/>');
       $(label).text(this.currentAttr.name + ':');
@@ -344,9 +360,16 @@ export class XMLSelector{
       $(divParent).append(label);
     }
 
+    var divOp = $('<div>');
+    $(divOp).addClass('inline-field inline');
+    $(divOp).addClass('col s1 m2')
+    $(divParent).append(divOp);
+
+
     var selectOp = $('<select/>');
-    $(selectOp).addClass('col s2');
-    $(selectOp).addClass('white style-input-log')
+    $(selectOp).addClass('style-input-xmlform')
+    $(selectOp).addClass('default-browser white')
+
     $(selectOp).change(function(){
       that.eventAttrOp(currentFilterIndex, currentAttr.name, this);
     })
@@ -357,13 +380,19 @@ export class XMLSelector{
       $(optionOp).val(option);
       $(selectOp).append(optionOp);
     })
-    $(divParent).append(selectOp);
+    $(divOp).append(selectOp);
     $(selectOp).material_select();
     // default value
     that.eventAttrOp(currentFilterIndex, currentAttr.name, selectOp);
 
+    var divSelect = $('<div/>');
+    $(divSelect).addClass('inline-field inline');
+    $(divSelect).addClass('col s6');
+    $(divParent).append(divSelect);
+
     var selectValue = $('<select/>');
-    $(selectValue).addClass('white style-input-log')
+    $(selectValue).addClass('style-input-xmlform')
+    $(selectValue).addClass('default-browser white')
     $(selectValue).prop('multiple', true);
 
     var defaultValue = $('<option/>');
@@ -377,12 +406,11 @@ export class XMLSelector{
       $(optionValue).val(option);
       $(selectValue).append(optionValue);
     })
-    $(selectValue).addClass('col s6')
     $(selectValue).change(function(){
       that.eventAttrValue(currentFilterIndex, currentAttr.name, this, type);
     })
 
-    $(divParent).append(selectValue)
+    $(divSelect).append(selectValue)
     $(selectValue).material_select();
     // default value
     that.eventAttrValue(currentFilterIndex, currentAttr.name, selectValue, type);
@@ -392,7 +420,7 @@ export class XMLSelector{
   @element: add to the comboxList
   */
   eventAddElement(element){
-    var stackCopy = this.stack.slice()
+    var stackCopy = this.stack.slice(0)
     stackCopy.push(element.name);
     this.comboBoxList.push({
       name : element.name,
@@ -428,14 +456,16 @@ export class XMLSelector{
 
     var select = $('<select/>');
     $(select).attr('id', idSelect);
-    $(select).addClass('white')
+    $(select).addClass('style-input-xmlform')
+    $(select).addClass('default-browser white ')
+    $(select).addClass('input-field inline');
     $(select).change(function(){
       that.eventSelectElement(idAttr, indexFilter, this);
     })
     $(divSelect).append(select);
 
     var option = $('<option/>');
-    $(option).text('Set a filter...');
+    $(option).text(TAPi18n.__('set_filter'));
     $(option).prop('disabled', true);
     $(option).prop('selected', true);
     $(select).append(option);
@@ -444,13 +474,16 @@ export class XMLSelector{
       option = $('<option/>');
       $(option).text(element.name);
       $(option).val(i);
+      $(option).mouseover(function(e){console.log('là', e)})
       $(select).append(option);
     })
     $(select).material_select();
 
     var divAttr = $('<div/>');
-    $(divAttr).addClass('col s8');
+    $(divAttr).addClass('col s9');
     $(divAttr).attr('id', idAttr)
+    // $(divAttr).addClass('divborder')
+    // $(divAttr).css('background', 'white')
     $(divSelect).append(divAttr);
 
     this.indexFilter++;
@@ -470,6 +503,10 @@ export class XMLSelector{
   */
   eventFilter(target){
     this.xmlFilter.setIsActive($(target).prop('checked'))
+  }
+
+  eventOption(target){
+    console.log('ici')
   }
 
   /* Event handler for selecting and element
@@ -496,11 +533,11 @@ export class XMLSelector{
         this.xmlFilter.deleteFilter(index);
         this.xmlFilter.setStack(index, selectedStack);
         $.each(type.attrs, function(key, attr){
-          if(i % 2 == 0){
-            var div = $('<div/>')
-            $(div).addClass('valign-wrapper col s12')
-            $(divAttr).append(div)
-          }
+          // if(i % 2 == 0){
+          //   var div = $('<div/>')
+          //   $(div).addClass('col s12')
+          //   $(divAttr).append(div)
+          // }
           attr.accept(that);
           i++;
         })
@@ -532,46 +569,48 @@ export class XMLSelector{
   }
 
   /* Parse the value of the input for the XMLFIlter object
-  @value: of the attr which is parse
+  @value: the stirng which parse
   @type: of the input (text, number, bool)
   @returns: the parsedValue, default NaN for number and '' otherwise
   */
   static parseInput(value, type){
-    var parseValue = '';
-    switch(type){
-      case 'bool':
+    var parsedValue = '';
+    if(typeof value === 'string'){
+      switch(type){
+        case 'bool':
         if(value === 'true'){
           parsedValue = true;
         }else if(value === 'false'){
-          parseValue = false
+          parsedValue = false
         }
         break;
-      case 'number':
-      if(value === null ||
-        value === undefined ||
-        value === ''){
-          parseValue = NaN;
-        }else{
-          parseValue = Number(value);
-        }
-      break;
-      case 'text':
-        if(value === null ||
-           value === undefined){
-          parseValue = '';
-        }else{
-          parseValue = String(value);
-        }
-      break;
-      default:
-        if(value === null ||
-           value === undefined){
-            parseValue = '';
-        }else{
-          parseValue = String(value);
+        case 'number':
+          // Number('') return 0
+          if(value !== ''){
+            parsedValue = Number(value);
+          }
+          if(isNaN(parsedValue) && parsedValue !== 0){
+            parsedValue = '';
+          }
+          break;
+        case 'text':
+          if(value === null ||
+            value === undefined){
+            parsedValue = '';
+          }else{
+            parsedValue = String(value);
+          }
+          break;
+        default:
+          if(value === null ||
+            value === undefined){
+              parsedValue = '';
+            }else{
+              parsedValue = String(value);
+            }
         }
     }
-    return parseValue;
+    return parsedValue;
   }
 
   /* Event handler for change the value of the attr

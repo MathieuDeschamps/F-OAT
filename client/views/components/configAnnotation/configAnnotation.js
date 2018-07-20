@@ -1,9 +1,9 @@
 import { Projects } from '../../../../lib/collections/projects.js';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import {configAnnotationManager} from './configAnnotationManager.js';
+import { configAnnotationManager } from './configAnnotationManager.js';
 
-import {Extractors} from '/lib/collections/extractors.js';
+import { Extractors } from '/lib/collections/extractors.js';
 
 import './configAnnotation.html';
 
@@ -126,13 +126,13 @@ Template.configAnnotation.helpers({
 });
 
 function addAnnotation(idExtractor,version){
-  if(typeof manager != 'undefined'){
+  if(manager instanceof configAnnotationManager){
     manager.addAnnotation(idExtractor,version);
   }
 }
 
 function updateManager(idVisualizer,xml){
-  if(typeof manager != 'undefined'){
+  if(manager instanceof configAnnotationManager){
     manager.update(idVisualizer,xml);
   }
 }
@@ -156,7 +156,7 @@ Template.configAnnotation.onDestroyed(()=>{
     appId: -1,
     _id: -1
   });
-  if(typeof manager !== 'undefined'){
+  if(manager instanceof configAnnotationManager){
     manager.destroyVisualizersEventDDP();
   }
 

@@ -1058,9 +1058,9 @@ export class XMLXSDForm{
 			result+='<select id="'+ id +'" class="default-browser white style-input-xmlform">'
 		}
 		if(typeof defaultValue !== 'undefined'){
-			result+='<option value="" disabled>Choose your option</option>'
+			result+='<option value="" disabled>'+TAPi18n.__('choose_option')+'</option>'
 		}else{
-			result+='<option value="" selected="selected" disabled>Choose your option</option>'
+			result+='<option value="" selected="selected" disabled>'+TAPi18n.__('choose_option')+'</option>'
 		}
 		enumValues.forEach(function(option){
 			if (defaultValue === option){

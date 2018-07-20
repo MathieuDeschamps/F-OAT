@@ -50,6 +50,10 @@ export class TestXMLFilter{
     xmlFilter2.setAttrValue(0, 'test', undefined)
     Assert.equals('setValue undefined nothing', '', xmlFilter2.getFilter(0).attrs['test'].value);
 
+    Assert.equals('instanceof xmlFilter2', true, xmlFilter2 instanceof XMLFilter);
+    Assert.equals('instanceof null', false, null instanceof XMLFilter);
+    Assert.equals('instanceof undefined', false, undefined instanceof XMLFilter);
+
     var xmlFilter3 = new XMLFilter();
     xmlFilter3.setStack(0, []);
     Assert.equals('setStack empty stack:', [], xmlFilter3.getFilter(0).stack);
@@ -121,6 +125,10 @@ export class TestXMLFilter{
     result  = XMLFilter.samePlace(['shot-extract', 'shot-extract', 'scene', 'shot'], ['shot-extract', 'shot-extract']);
     Assert.equals('samePlace include second into the first false', false, result)
 
+
+    result = XMLFilter.match('Anything Is True','=','')
+    Assert.equals('match string = ""', true, result)
+
     result = XMLFilter.match('test','=', 'test')
     Assert.equals('match string =', true, result)
     result = XMLFilter.match('test1','=', 'test')
@@ -130,7 +138,6 @@ export class TestXMLFilter{
     Assert.equals('match string !=', true, result)
     result = XMLFilter.match('test', '!=', 'test')
     Assert.equals('match string !=', false, result)
-
 
     result = XMLFilter.match('0', '!=', 0)
     Assert.equals('match  "0"!=0', true, result)
@@ -198,6 +205,41 @@ export class TestXMLFilter{
     result = XMLFilter.match('NaN', '<', NaN)
     Assert.equals('match "NaN"<NaN', false, result)
 
+    result = XMLFilter.match(true, '=', true)
+    Assert.equals('match true = true', true, result)
+    result = XMLFilter.match('true', '=', true)
+    Assert.equals('match "true" = true', false, result)
+
+    result = XMLFilter.match(true, '!=', true)
+    Assert.equals('match true = true', false, result)
+    result = XMLFilter.match('true', '!=', true)
+    Assert.equals('match "true" = true', true, result)
+
+    result = XMLFilter.match(true, '<', true)
+    Assert.equals('match true < true', false, result)
+    result = XMLFilter.match(true, '<=', true)
+    result = XMLFilter.match(true, '>', true)
+    Assert.equals('match true > true', false, result)
+    result = XMLFilter.match(false, '>=', true)
+    Assert.equals('match true >= true', false, result)
+
+    result = XMLFilter.match(false, '<', false)
+    Assert.equals('match false < false', false, result)
+    result = XMLFilter.match(false, '<=', false)
+    Assert.equals('match false <= false', false, result)
+    result = XMLFilter.match(false, '>', false)
+    Assert.equals('match false > false', false, result)
+    result = XMLFilter.match(false, '>=', false)
+    Assert.equals('match false >= false', false, result)
+
+    result = XMLFilter.match(false, '<', false)
+    Assert.equals('match false < false', false, result)
+    result = XMLFilter.match(false, '<=', false)
+    Assert.equals('match false <= false', false, result)
+    result = XMLFilter.match(false, '>', false)
+    Assert.equals('match false > false', false, result)
+    result = XMLFilter.match(false, '>=', false)
+    Assert.equals('match false >= false', false, result)
 
     console.log('===End Test XMLFilter class===');
 

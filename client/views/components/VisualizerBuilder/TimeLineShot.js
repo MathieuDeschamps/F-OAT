@@ -1,3 +1,4 @@
+import { XMLFilter } from '../XMLFilter/XMLFilter.js'
 export class TimeLineShot{
 
   /* Constructor
@@ -9,12 +10,14 @@ export class TimeLineShot{
     this.timeLineData = [];
     this.xmlFilter = undefined;
     this.count = 0
+    this.isDisplayed = true;
   }
 
   initialize(){
     this.count= 0;
     this.stack = [];
     this.timeLineData = [];
+    this.isDisplayed = true;
   }
 
   /*
@@ -31,7 +34,9 @@ export class TimeLineShot{
   }
 
   setXMLFilter(xmlFilter){
-    this.xmlFilter = xmlFilter
+    if(xmlFilter instanceof XMLFilter){
+      this.xmlFilter = xmlFilter;
+    }
   }
 
   /* Visitor pattern : visit function
@@ -60,12 +65,14 @@ export class TimeLineShot{
         obj:elt,
         i:i
       })
-      if(typeof that.xmlFilter === 'undefined' ||
-        !that.xmlFilter.getIsActive()){
-        elt.accept(that);
-      }else if(that.xmlFilter.matchFilter(elt, that.stack.slice())){
-        elt.accept(that);
+      var oldIsDiplayed = that.isDisplayed;
+      if(oldIsDiplayed &&
+        that.xmlFilter instanceof XMLFilter &&
+        that.xmlFilter.getIsActive()){
+        that.isDisplayed = that.xmlFilter.matchFilter(elt, that.stack.slice(0))
       }
+      elt.accept(that);
+      that.isDisplayed = oldIsDiplayed;
       that.stack.pop();
     })
   }
@@ -86,12 +93,14 @@ export class TimeLineShot{
             obj: xmlxsdElt.eltsList[i],
             i:i
           });
-          if(typeof that.xmlFilter === 'undefined' ||
-            !that.xmlFilter.getIsActive()){
-            elt.accept(that);
-          }else if(that.xmlFilter.matchFilter(elt, that.stack.slice())){
-            elt.accept(that);
+          var oldIsDiplayed = that.isDisplayed;
+          if(oldIsDiplayed &&
+            that.xmlFilter instanceof XMLFilter &&
+            that.xmlFilter.getIsActive()){
+              that.isDisplayed = that.xmlFilter.matchFilter(elt, that.stack.slice(0))
           }
+          elt.accept(that);
+          that.isDisplayed = oldIsDiplayed;
           that.stack.pop();
         })
       })
@@ -136,6 +145,7 @@ export class TimeLineShot{
                 start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
                 id: that.count,
+                isDisplayed : that.isDisplayed,
                 // clone the stack
                 stack: that.stack.slice(0),
               })
@@ -147,10 +157,11 @@ export class TimeLineShot{
             this.timeLineData.push({
               name:this.stack[this.stack.length - 1].tag,
               intervals:[{
-                index: parseInt(that.timeLineData.length, 10),
-                start: obj.attrs.startFrame.value,
                 end: obj.attrs.endFrame.value,
+                start: obj.attrs.startFrame.value,
                 id: that.count,
+                index: parseInt(that.timeLineData.length, 10),
+                isDisplayed : that.isDisplayed,
                 // clone the stack
                 stack: this.stack.slice(0),
               }]
@@ -172,6 +183,7 @@ export class TimeLineShot{
               start: obj.attrs.timeId.value,
               end: obj.attrs.timeId.value,
               id: that.count,
+              isDisplayed : that.isDisplayed,
               // clone the stack
               stack:that.stack.slice(0),
             })
@@ -187,6 +199,7 @@ export class TimeLineShot{
               start: obj.attrs.timeId.value,
               end: obj.attrs.timeId.value,
               id:that.count,
+              isDisplayed : that.isDisplayed,
               // clone the stack
               stack: this.stack.slice(0)
             }]

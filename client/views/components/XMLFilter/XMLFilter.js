@@ -10,7 +10,7 @@ export class XMLFilter{
     this.filterList = [];
     this.stack = [];
     this.observers = [];
-    isActive = false;
+    this.isActive = false;
   }
 
   getFilter(key){
@@ -224,59 +224,61 @@ export class XMLFilter{
   */
   static match(value, filterAttrOp, filterAttrValue){
     var result = true;
-    switch (filterAttrOp) {
-      case '=':
-        if(value !== filterAttrValue){
-          result = false;
-        }
-        break;
-      case '!=':
-        if(value === filterAttrValue){
-          result = false;
-        }
-        break;
-      case '>':
-        if(typeof value !== "number" ||
-         typeof filterAttrValue !== "number" ||
-         isNaN(value) ||
-         isNaN(filterAttrValue)){
-          result = false
-        }else if(value <= filterAttrValue){
-          result = false;
-        }
-        break;
-      case '>=':
-        if(typeof value !== "number" ||
-         typeof filterAttrValue !== "number" ||
-         isNaN(value) ||
-         isNaN(filterAttrValue)){
-          result = false
-        }else if(value < filterAttrValue){
-          result = false;
-        }
-        break;
-      case '<':
-        if(typeof value !== "number" ||
-         typeof filterAttrValue !== "number" ||
-         isNaN(value) ||
-         isNaN(filterAttrValue)){
-          result = false
-        }else if(value >= filterAttrValue){
-          result = false;
-        }
-        break;
-      case '<=':
-        if(typeof value !== "number" ||
-         typeof filterAttrValue !== "number" ||
-         isNaN(value) ||
-         isNaN(filterAttrValue)){
-          result = false
-        }else if(value > filterAttrValue ){
-          result = false;
-        }
-        break;
-      default:
+    if(!(filterAttrOp === '=' && filterAttrValue === '')){
+      switch (filterAttrOp) {
+        case '=':
+          if(value !== filterAttrValue){
+            result = false;
+          }
+          break;
+        case '!=':
+          if(value === filterAttrValue){
+            result = false;
+          }
+          break;
+        case '>':
+          if(typeof value !== "number" ||
+          typeof filterAttrValue !== "number" ||
+          isNaN(value) ||
+          isNaN(filterAttrValue)){
+            result = false
+          }else if(value <= filterAttrValue){
+            result = false;
+          }
+          break;
+        case '>=':
+          if(typeof value !== "number" ||
+          typeof filterAttrValue !== "number" ||
+          isNaN(value) ||
+          isNaN(filterAttrValue)){
+            result = false
+          }else if(value < filterAttrValue){
+            result = false;
+          }
+          break;
+        case '<':
+          if(typeof value !== "number" ||
+          typeof filterAttrValue !== "number" ||
+          isNaN(value) ||
+          isNaN(filterAttrValue)){
+            result = false
+          }else if(value >= filterAttrValue){
+            result = false;
+          }
+          break;
+        case '<=':
+          if(typeof value !== "number" ||
+          typeof filterAttrValue !== "number" ||
+          isNaN(value) ||
+          isNaN(filterAttrValue)){
+            result = false
+          }else if(value > filterAttrValue ){
+            result = false;
+          }
+          break;
+        default:
         result = true;
+        }
     }
     return result;
   }
