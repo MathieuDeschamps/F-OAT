@@ -39,7 +39,6 @@ Template.register.events({
       //User validation is done on server/accounts.js in method Accounts.validateNewUser()
       Accounts.createUser(_newUsr , (err)=>{
         if(err){
-          console.log("ERR",err);
           if(err.error==500){
             toastr.error(TAPi18n.__(err.reason));
           }

@@ -8,7 +8,7 @@ eventDeleteProject = null;
 
 Template.dashboard.helpers({
 
-  //retourne les projets de l'utiliateur courant.
+  //return the projects of the current user (owner or participant)
   projects(){
     return Projects.find({ $or: [ { owner: Meteor.user().username }, { "participants.username": Meteor.user().username } ] });
   },
@@ -26,6 +26,7 @@ Template.dashboard.helpers({
 
 Template.dashboard.events({
 
+  //Click on the remove project button (only for owner), remove project from database and prevent other users with eventDeleteProject
   'click .remove' (event, instance){
       var elm = event.target;
       var $elm = $(elm);
@@ -49,6 +50,8 @@ Template.dashboard.events({
         }
       });
   },
+
+  //Leave a project (only if not owner)
   'click .exit' (event, instance){
     Meteor.call('removeParticipant',event.target.getAttribute('name'),Meteor.user().username,function(err,res){
       if(err){

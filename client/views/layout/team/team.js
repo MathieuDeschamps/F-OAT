@@ -4,6 +4,7 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Writer} from '../../components/class/Writer.js'
 import './team.html';
 
+//Function used on the onRendered to avoid errors on team route if id doesnt exist.
 projectExists = function(){
   var idProject = Router.current().params._id;
   var project = Projects.findOne(idProject);
@@ -14,6 +15,7 @@ projectExists = function(){
 }
 
 var project;
+//API_KEY : omdbapi key to do request
 var API_KEY = 'ef18ae37';
 
 Template.team.onCreated(function(){
@@ -27,13 +29,14 @@ Template.team.onRendered(function(){
     if(Meteor.user().username != project.owner){
       Router.go('noRight');//current user can't access to this page
     }
+    //Prepare animation of the materialize select
     $('.single-select').material_select();
   }
 });
 Template.team.events({
 
   /**
-  Remove a participants of the team
+  Remove a participant of the team
   */
   'click .delete' (event,instance){
     Meteor.call('removeParticipant',Router.current().params._id,this.username,function(err,res){
@@ -55,6 +58,7 @@ Template.team.events({
     Meteor.call('changeRight',Router.current().params._id,this.username,newRight,(error,result)=>{
       if(error){
         alert(error.reason);
+        //If he gives the right of owner of project to another user, set current user to home page
       }else if(result === 2){
         Router.go("/")
         toastr.success(TAPi18n.__('rightChanged'));
@@ -116,6 +120,7 @@ Template.team.events({
     Session.set('search/keyword', event.target.value);
   },
 
+  //On click of one of the options given by the research of user, set the username field with this value
   'click .option' : function(event,instance){
     var _newParticipants = $('#participant').val();
     if(_newParticipants.length==1){
@@ -123,10 +128,13 @@ Template.team.events({
     }
   },
 
+  //On click of the validate button of movie title
   'click #modifyMovie'(event,instance){
     var movieTitle = $('#filmTitle').val();
     var movie = movieTitle.split(',');
     var idProject = Router.current().params._id;
+
+    //get the data of the movie chosen by the user, parse it and modify XML
     $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
       var result = $(data).find('root').find('movie');
       result.removeAttr('poster')

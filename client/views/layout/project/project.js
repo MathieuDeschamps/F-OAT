@@ -5,13 +5,15 @@ import { Parser } from '../../components/class/Parser.js'
 import { Writer } from '../../components/class/Writer.js'
 import { PlayerCommand} from '../../components/playerCommand/PlayerCommand.js'
 
-var em;
+//vidctrllistener & deleteprojectlistener are used to create only once the listeners of eventddps
 var vidctrllistener;
 var deleteprojectlistener;
+
+// global variables id and username to be accessable in onDestroyed
 var id;
 var username;
 
-// function which checked if the current user has the right write on the project
+// function which check if the current user has the right write on the project
 hasRightToWrite = function(){
   var idProject = Router.current().params._id
   var project = Projects.findOne(idProject)
@@ -29,6 +31,7 @@ hasRightToWrite = function(){
   }
 }
 
+//Fonction which check if the project exists in db, to avoid problems in onRendered
 projectExists = function(){
   var idProject = Router.current().params._id;
   var project = Projects.findOne(idProject);
@@ -38,6 +41,7 @@ projectExists = function(){
   return true;
 }
 
+//Fonction used to change value of projectReady session var, used in components of the page
 projectReady = function(){
   var idProject = Router.current().params._id;
   var project = Projects.findOne(idProject)
@@ -61,10 +65,8 @@ projectReady = function(){
     }
   }
   else{
-    // console.log('projectReady 2')
     $('#saveButtonAnnotations').css('display', 'block');
     Session.set('projectReady', 1)
-    // console.log('Session', Session)
   }
 }
 
@@ -76,6 +78,8 @@ Template.project.onCreated(()=>{
   username = Meteor.user().username;
   var idUpload = "upload_"+Router.current().params._id;
   var upload = Session.set(idUpload,-1);
+
+  //Counter used to know how many users are on the page
   Meteor.call('increaseCount',id,username,function(err,res){
     if(err){
       toastr.warning(err.reason);
@@ -94,7 +98,7 @@ Template.project.onRendered(()=>{
     }
     if(!deleteprojectlistener){
       deleteprojectlistener = true;
-      //Event emitted in dashboard.js
+      //Event emitted in dashboard.js when project is deleted by owner
       eventDeleteProject.addListener('deleteProject',()=>{
         toastr.warning(TAPi18n.__('projectDeleted'));
         Router.go("/");
@@ -163,7 +167,6 @@ Template.project.onRendered(()=>{
             if (nbFrames>0){
               vidCtrl.setNbFrames(nbFrames);
             }
-            console.log("annotedFrames",Parser.getListTimeId(xmlDoc));
             vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
 
             if(!vidctrllistener){
@@ -254,7 +257,7 @@ Template.project.events({
 });
 
 Meteor.startup(function(){
-
+    //Do the same as onDestroyed but when page is reloaded or leaved by user
     $(window).bind('beforeunload', function() {
       if(eventDeleteProject!=null){
         eventDeleteProject.setClient({

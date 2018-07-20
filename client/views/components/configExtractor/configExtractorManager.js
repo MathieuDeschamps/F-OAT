@@ -131,8 +131,12 @@ export class configExtractorManager{
 					console.log('JQlabel : ',JQlabelConfig);
 					that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 				}else{
-					// Extraction launch
+					// Extraction launched
 					toastr.success(TAPi18n.__('extractionProgress'));
+
+					var date = moment().calendar();
+					var val = "Project "+project.name+" : Extraction "+extractor.name+" is runningx.";
+					Meteor.call('addNotifications',id,date,val);
 
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
@@ -146,6 +150,8 @@ export class configExtractorManager{
 								appId: Router.current().params._id,
 								_id: Meteor.userId()
 							});
+
+							//listener in configAnnotation.js, send the result given by extractor
 							eventNewExtraction.emit('newExtraction',extractor._id,result);
 						}
 					});

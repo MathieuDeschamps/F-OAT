@@ -272,6 +272,7 @@ createFileXML = function(id){
 
 /**
 * Function that create the basic XML file of a project.
+* @project : project linked to the xml file
 */
 generateContent = function(project){
     var builder = require('xmlbuilder');

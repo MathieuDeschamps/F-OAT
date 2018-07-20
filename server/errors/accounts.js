@@ -1,3 +1,8 @@
+
+/**
+  Fonction called when a new user tries to register.
+  throw an error if a field is wrong, else return true
+*/
 Accounts.validateNewUser(function(user){
 
   if (!user.username){
@@ -30,6 +35,9 @@ Accounts.validateNewUser(function(user){
 
 });
 
+/**
+  Publish collection Users
+*/
 if (Meteor.isServer) {
   // This code only runs on the server
   Meteor.publish('users', function usersPublication() {
