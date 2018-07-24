@@ -2,7 +2,7 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import {XSDObject} from '../XSDParser/XSDObject.js';
 import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
-import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
+import {XMLXSDForm} from '../VisualizerTool/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
 
 eventNewExtraction = null

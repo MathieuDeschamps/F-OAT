@@ -1,6 +1,6 @@
-import { TimeLine } from '../class/TimeLine.js'
+import { TimeLine } from '../VisualizerTool/TimeLine.js'
 import { TimeLineCharacter } from '../VisualizerBuilder/TimeLineCharacter.js'
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
 export class CharacterExtractVisualizer{

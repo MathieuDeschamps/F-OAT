@@ -16,6 +16,7 @@
   "remove_filter" :  "Remove filter",
   "add_filter" : "Add a filter",
   "set_filter" : "Set a filter...",
+  "attach_filter" : "Attach to",
   "choose_option" : "Choose your option",
   "errorExtensionFile" : "File must be a .mp4 file",
   "errorFile" : "Give a file to upload"

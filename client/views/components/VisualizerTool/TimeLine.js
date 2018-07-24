@@ -1,6 +1,6 @@
 import { XMLSelector } from '../XMLFilter/XMLSelector.js'
 import { VideoControler } from '../VideoControler/VideoControler.js'
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js'
 import * as d3 from 'd3';
 export class TimeLine {
 
@@ -72,11 +72,13 @@ export class TimeLine {
     // these attributs following attributs are intiliased by draw
     this.scale_x1 = undefined;
     this.scale_x2 = undefined;
-    this.first_draw = true;
+    // var first_draw = true;
     this.brush = undefined;
     this.main = undefined
     this.mini = undefined;
+
     this.draw();
+
     var xmlSelector = new XMLSelector(this.xsd_obj, this.name_extractor, this.filter_id);
     var xmlFilter = xmlSelector.getXMLFilter();
     xmlFilter.attach(this);
@@ -104,7 +106,6 @@ export class TimeLine {
   /* Draw the time line in the div id
   */
   draw(){
-
     var that = this;
     var my_color = TimeLine.MY_COLOR();
     var my_selected_color = TimeLine.MY_SELECTED_COLOR();
@@ -132,21 +133,14 @@ export class TimeLine {
     var height_total = height_main + height_mini + margin.top + margin.bottom + margin.bottom;
 
     $('#'+this.div_id).addClass('row')
-    .css('width', '100%')
 
     $('#'+this.chart_id).addClass('row')
-    .css('width', '100%')
     .css('height', height_total);
     var width_total = 0
 
-    // When it is the first drawing, the width of the id div is the width of the client's screen.
-    // That's why we're cutting it in half.
-    if(this.first_draw){
-      width_total = parseInt($('#'+this.div_id).width() * 0.55)
-      this.first_draw = false;
-    }else{
-      width_total = parseInt($('#'+this.div_id).width())
-    }
+    // Use the width of the parent which is render before the current div
+    width_total = parseInt($('#'+this.div_id).parent().width())
+
     var width_main = width_total - margin.left - margin.right;
 
     // scales

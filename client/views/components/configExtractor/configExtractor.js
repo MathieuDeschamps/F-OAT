@@ -26,8 +26,8 @@ Template.configExtractor.onRendered(()=>{
   })
 
   // test xml filter run
-  // TestXMLSelector.run();
-  // TestXMLFilter.run();
+  TestXMLSelector.run();
+  TestXMLFilter.run();
 
 	/*extractors.forEach(function(extractor,i){
 		extractorCheckBox= '<p><input class="filled-in"  id="'+ i + '_config"  type="checkbox" mark="false"/>'

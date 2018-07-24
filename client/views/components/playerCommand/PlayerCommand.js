@@ -47,7 +47,7 @@ export class PlayerCommand{
       // console.log('change End')
       vidCtrl.setEndSelect(this.value);})
     $( "#"+this.idPartialButton ).click(function() {
-      // console.log('changePartialPlaying')
+      console.log('changePartialPlaying')
       pp=vidCtrl.getPartialPlaying();
       vidCtrl.setPartialPlaying(!pp);} );
   }

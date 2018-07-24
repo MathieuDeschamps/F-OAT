@@ -40,7 +40,7 @@ export class XMLXSDSequence{
 			});
 			this.seqList.push(seq);
 		}
-		if (xmlEltsList.lenght>0){
+		if (xmlEltsList.length > 0){
 			console.log("Too long sequence");
 		}
 	}

@@ -1,5 +1,5 @@
 import { PlayerCommand } from '../playerCommand/PlayerCommand.js'
-import { TimeLine} from '../class/TimeLine.js'
+import { TimeLine} from '../VisualizerTool/TimeLine.js'
 
 export class VideoControler {
 	constructor(vid,frameRate, duration){

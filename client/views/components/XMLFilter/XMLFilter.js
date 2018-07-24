@@ -1,18 +1,24 @@
-
 export class XMLFilter{
 
   /* Constructor
   @xsdObj: XMLXSDObject
   @nameExtractor: name of the extractor
   */
-  constructor(xmlSelector, nameExtractor){
-    this.nameExtractor = nameExtractor;
+  constructor(){
+    // check type of params
     this.filterList = [];
     this.observers = [];
     this.isActive = false;
+    this.toVisit = [];
+    this.currentFilter = undefined;
+    this.isMatching = true;
   }
 
   getFilter(key){
+    // check type of params
+    if(typeof key !== 'number'){
+      return
+    }
     return this.filterList[key];
   }
 
@@ -27,7 +33,12 @@ export class XMLFilter{
     }
   }
 
-  setStack(key, stack){
+  setFilterStack(key, stack){
+    // check type of params
+    if(!(typeof key === 'number' && stack instanceof Array)){
+      console.log('setFilterStack: Illegal Argument Exception');
+      return
+    }
     if(typeof key !== 'undefined' && key !== null){
       var oldLength = this.filterList.length
       if(typeof this.filterList[key] === 'undefined'){
@@ -36,8 +47,41 @@ export class XMLFilter{
           this.filterList.length = key + 1;
         }
       }
-      if(typeof name === 'undefined' || name === null || !Array.isArray(stack)){
-        this.filterList[key].stack = [];
+      if(typeof stack === 'undefined' || stack === null || !Array.isArray(stack)){
+        this.filterList[key].filterStack = [];
+      }else{
+        var parsedStack = []
+        for(var i = 0, l = stack.length; i < l; i++){
+          if(typeof stack[i] === 'string'){
+            parsedStack.push(stack[i])
+          }else{
+            parsedStack.push(String(stack[i]));
+          }
+        }
+        this.filterList[key].filterStack = parsedStack;
+        if(this.isActive){
+          this.notifyAll();
+        }
+      }
+    }
+  }
+
+  setAttachedStack(key, stack){
+    // check type of params
+    if(!(typeof key === 'number' && stack instanceof Array)){
+      console.log('setAttachedStack: Illegal Argument Exception');
+      return
+    }
+    if(typeof key !== 'undefined' && key !== null){
+      var oldLength = this.filterList.length
+      if(typeof this.filterList[key] === 'undefined'){
+        this.filterList[key] = {}
+        if(oldLength === this.filterList.length && key > oldLength){
+          this.filterList.length = key + 1;
+        }
+      }
+      if(typeof stack === 'undefined' || stack === null || ! Array.isArray(stack)){
+        this.filterList[key].attachedStack = [];
       }else{
         var parsedStack = []
         for(var i = 0, l = stack.length; i < l; i++){
@@ -48,7 +92,7 @@ export class XMLFilter{
           }
         }
         // console.log('stack', parsedStack)
-        this.filterList[key].stack = parsedStack;
+        this.filterList[key].attachedStack = parsedStack;
         if(this.isActive){
           this.notifyAll();
         }
@@ -57,10 +101,18 @@ export class XMLFilter{
   }
 
   setAttrOp(key, attrName, op){
+    // check type of params
+    if(!(typeof key === 'number' &&
+        typeof attrName === 'string' &&
+        (typeof op === 'string' || op instanceof Array))){
+      console.log('setAttrOp: Illegal Argument Exception');
+      return
+    }
     var filter = this.getFilter(key)
 
     if(typeof filter === 'undefined'){
-      this.setStack(key, []);
+      this.setFilterStack(key, []);
+      this.setAttachedStack(key, []);
       filter = this.getFilter(key)
     }
     if(typeof filter.attrs === 'undefined'){
@@ -82,10 +134,15 @@ export class XMLFilter{
   }
 
   setAttrValue(key, attrName, value){
-    var filter = this.getFilter(key)
-
+    // check type of params
+    if(!(typeof key === 'number' && typeof attrName === 'string')){
+      console.log('setAttrValue: Illegal Argument Exception');
+      return
+    }
+    var filter = this.getFilter(key);
     if(typeof filter === 'undefined'){
-      this.setStack(key, []);
+      this.setFilterStack(key, []);
+      this.setAttachedStack(key, []);
       filter = this.getFilter(key)
     }
     if(typeof filter.attrs === 'undefined'){
@@ -114,6 +171,10 @@ export class XMLFilter{
            false otherwise
   */
   deleteFilter(key){
+    // check type of params
+    if(!typeof key === 'number'){
+      return false;
+    }
     var result = false;
     var filter = this.getFilter(key)
     if(typeof filter !== 'undefined'){
@@ -175,14 +236,71 @@ export class XMLFilter{
     });
   }
 
+  /* Visitor pattern : visit function
+  @xmlxsdObj: XMLXSDObj object
+  */
+  visitXMLXSDObject(xmlxsdObj){
+    // console.log('visitXMLXSDObject ', xmlxsdObj);
+    xmlxsdObj.content.accept(this);
+  }
+  /* Visitor pattern : visit function
+  @xmlxsdElt: XMLXSDElt object
+  */
+  visitXMLXSDElt(xmlxsdElt){
+    // console.log('visitXMLXSDElt ', xmlxsdElt);
+    var that = this;
+    $(xmlxsdElt.eltsList).each(function(i, elt){
+      if(that.toVisit.length === 0){
+        if(that.isMatching){
+          that.isMatching = XMLFilter.matchElement(elt, that.currentFilter)
+        }
+      }else{
+        elt.accept(that);
+      }
+    })
+  }
+
+  /* Visitor pattern : visit function
+  @xmlxsdSeq: XMLXSDSequence object
+  */
+  visitXMLXSDSequence(xmlxsdSeq){
+    // console.log('visitXMLXSDSeq ', xmlxsdSeq);
+    var nameElement = this.toVisit.shift();
+    var xmlxsdElt = $(xmlxsdSeq.seqList[0]).filter(function(i, xmlxsdElt){
+      return xmlxsdElt.name === nameElement;
+    })
+    if(xmlxsdElt.length === 1){
+      xmlxsdElt[0].accept(this);
+    }else{
+      console.log('visitXMLXSDSeq: Element Not Found')
+      //TODO return something
+    }
+    // replace the firstElement;
+    this.toVisit.unshift(nameElement);
+  }
+
+  /* Visitor pattern : visit function
+	@xmlxsdExt: XMLXSDExtensionType object
+	*/
+  visitXMLXSDExtensionType(xmlxsdExt){
+    // console.log('visitXMLXSDExtensionType ', xmlxsdExt);
+
+  }
+
   /* Match XMLXSDElement and filterList
-  @xmlxsdElment: the XMLXSDElement to match
+  @xmlxsdElement: the XMLXSDElement to match
   @stack: of the XMLXSDElement
   @returns: true if the XMLXSDElement matchs the filterList
           false otherwise
   */
   matchFilter(xmlxsdElement, stack){
-    var result = true;
+    var that = this;
+    that.isMatching = true;
+    // check type of params
+    if(!stack instanceof Array){
+      return false;
+    }
+
     var parsedStack = []
     for(var i = 0, l = stack.length; i < l; i++){
       parsedStack.push(String(stack[i].tag))
@@ -190,34 +308,57 @@ export class XMLFilter{
     var matchedFilterList = this.getMatchedFilterList(parsedStack);
 
     matchedFilterList.forEach(function(filter){
-      $.each(filter.attrs, function(key, filterAttr){
+      if(XMLFilter.samePlace(filter.filterStack, filter.attachedStack)){
+        if(!XMLFilter.matchElement(xmlxsdElement, filter)){
+          return false
+        }
+      }else if(XMLFilter.childStack(filter.filterStack, filter.attachedStack)){
+        that.currentFilter = filter;
+        that.toVisit = filter.filterStack.slice(filter.attachedStack.length);
+        if(that.toVisit.length > 0){
+          xmlxsdElement.accept(that);
+          // console.log('that.isMatching', that.isMatching)
+          if(!this.isMatching){
+            // exit the loop
+            return
+          }
+        }else{
+          //TODO return something
+        }
 
-        if(typeof xmlxsdElement.attrs[key] !== 'undefined' &&
-          xmlxsdElement.attrs[key] !== null &&
-          typeof xmlxsdElement.attrs[key].value !== 'undefined' &&
-          typeof xmlxsdElement.attrs[key].value !== null &&
-          result ){
-            var currentAttrValue = xmlxsdElement.attrs[key].value;
+      }
 
-            if(filterAttr.value instanceof Array){
-              for(var i = 0, l = filterAttr.value; i < l; i++){
-                if(!XMLFilter.match(currentAttrValue, filterAttr.op, filterAttr.value[i])){
-                  result =  false;
-                  i = l;
-                }
-              }
-            }
-            else{
-              if(!XMLFilter.match( currentAttrValue, filterAttr.op, filterAttr.value)){
-                result = false;
+    })
+    return this.isMatching;
+  }
+
+  static matchElement(xmlxsdElement,filter){
+    var result = true;
+    $.each(filter.attrs, function(key, filterAttr){
+      if(typeof xmlxsdElement.attrs[key] !== 'undefined' &&
+        xmlxsdElement.attrs[key] !== null &&
+        typeof xmlxsdElement.attrs[key].value !== 'undefined' &&
+        typeof xmlxsdElement.attrs[key].value !== null &&
+        result ){
+          var currentAttrValue = xmlxsdElement.attrs[key].value;
+          if(filterAttr.value instanceof Array){
+            for(var i = 0, l = filterAttr.value.length; i < l; i++){
+              if(!XMLFilter.match(currentAttrValue, filterAttr.op, filterAttr.value[i])){
+                result =  false;
+                i = l;
               }
             }
           }
-
-      })
+          else{
+            if(!XMLFilter.match( currentAttrValue, filterAttr.op, filterAttr.value)){
+              result = false;
+            }
+          }
+        }
     })
     return result;
   }
+
 
   /* Macth a value with the filter's op and a filter's value
   @value: to match
@@ -227,6 +368,10 @@ export class XMLFilter{
            false otherwise
   */
   static match(value, filterAttrOp, filterAttrValue){
+    // check type of params
+    if(typeof filterAttrOp !=='string'){
+      return false;
+    }
     var result = true;
     if(!(filterAttrOp === '=' && filterAttrValue === '')){
       switch (filterAttrOp) {
@@ -292,11 +437,15 @@ export class XMLFilter{
   @returns: the list of the filter which macth with stack (which have the stack)
   */
   getMatchedFilterList(stack){
+    // check type of params
+    if(!stack instanceof Array){
+      return [];
+    }
     var matchedFilterList = []
     this.filterList.forEach(function(filter){
-      if(typeof filter.stack !== 'undefined' &&
-        filter.stack !== null &&
-        XMLFilter.samePlace(stack, filter.stack)){
+      if(typeof filter.attachedStack !== 'undefined' &&
+        filter.attachedStack !== null &&
+        XMLFilter.samePlace(stack, filter.attachedStack)){
           // console.log('samePlace', XMLFilter.samePlace(stack, filter.stack))
           // console.log('stack', stack, 'filter.stack', filter.stack);
           matchedFilterList.push(filter)
@@ -307,8 +456,13 @@ export class XMLFilter{
 
   /* Check if the stacks are the same
   @returns: true if stack1 and stack2 are equals
+            false otherwise
   */
   static samePlace(stack1, stack2){
+    // check type of params
+    if(!(stack1 instanceof Array && stack2 instanceof Array)){
+      return false;
+    }
     if(stack1.length !== stack2.length){
       return false
     }
@@ -323,5 +477,20 @@ export class XMLFilter{
       }
     }
     return true;
+  }
+
+  /* Check if stack 1 is a children stack of stack2
+  @returns: true if stack1 are a child stack of stack2
+            false otherwise
+  */
+  static childStack(stack1, stack2){
+    if(stack1.length <= stack2.length){
+      return false;
+    }
+    var subStack1 = stack1.slice(0, stack2.length)
+    if(!XMLFilter.samePlace(subStack1, stack2)){
+      return false
+    }
+    return true
   }
 }
