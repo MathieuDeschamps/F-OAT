@@ -173,8 +173,20 @@ Template.project.onRendered(()=>{
               vidctrllistener = true;
               //Event emitted in videoPlayer.js
               eventDDPVideo.addListener('videoCtrl',()=>{
-                Session.set('projectReady',1);
+                // VideoControler init
+                var nbFrames=0;
+                var idProject = Router.current().params._id;
+                var project = Projects.findOne(idProject)
+                var nbFrames = -1
+                if(typeof project !== 'undefined'){
+                  nbFrames = parseInt(project.duration * project.frameRate)
+                }
+                if (nbFrames>0){
+                  vidCtrl.setNbFrames(nbFrames);
+                }
+                vidCtrl.setAnnotedFrames(Parser.getListTimeId(xmlDoc));
 
+                Session.set('projectReady',1);
               });
             }
             computation.stop();

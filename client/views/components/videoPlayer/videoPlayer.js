@@ -47,6 +47,13 @@ Template.videoPlayer.onRendered(function () {
         }
         Player.setSrc(url);
         Player.load();
+        vidCtrl.pause();
+        vidCtrl.detachAll();
+        vid=$("#videoDisplayId").get(0);
+        vidCtrl=new VideoControler(vid, project.frameRate, project.duration);
+        seekBarMng=new SeekBar(vidCtrl, "currentFrame");
+        vidCtrl.attach(seekBarMng,1);
+
         //event listeners in project.js & playerCommand.js
         eventDDPVideo.emit('videoCtrl');
         eventDDPVideo.emit('playerCommand');
