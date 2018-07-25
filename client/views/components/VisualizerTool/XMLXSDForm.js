@@ -1215,7 +1215,6 @@ export class XMLXSDForm{
 				var displayed = $(that.displayedElement.seqList[0]).filter(function(j,seq){
 					return elm.tag===seq.name;
 				});
-
 				if(displayed[0].eltsList[elm.i]!=null){
 					that.displayedElement = displayed[0].eltsList[elm.i];
 

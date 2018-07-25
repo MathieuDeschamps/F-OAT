@@ -186,7 +186,7 @@ export class VideoControler {
 	// Fonction de l'intervalle en mode full
 	fullPlay(){
 		newCurrentFrame = this.getCurrentFrame()
-		this.notifyAttachedObjects(newCurrentFrame);
+		this.notifyAttachedObjects();
 		// console.log("full");
 	}
 
@@ -196,7 +196,7 @@ export class VideoControler {
 		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
 			this.setCurrentFrame(this.beginSelect);
 		}else{
-			this.notifyAttachedObjects(this.getCurrentFrame());
+			this.notifyAttachedObjects();
 		}
 		// console.log("partial");
 	}
@@ -227,7 +227,7 @@ export class VideoControler {
 		clearInterval(this.updateInterval);
 		this.vid.removeEventListener('playing');
 		// var newCurrentFrame = this.getCurrentFrame();
-		// this.notifyAttachedObjects(newCurrentFrame);
+		this.notifyAttachedObjects();
 	}
 
 	// Définition de l'intervalle de lecture

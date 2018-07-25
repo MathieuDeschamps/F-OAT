@@ -249,15 +249,20 @@ export class XMLFilter{
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visitXMLXSDElt ', xmlxsdElt);
     var that = this;
-    $(xmlxsdElt.eltsList).each(function(i, elt){
-      if(that.toVisit.length === 0){
-        if(that.isMatching){
-          that.isMatching = XMLFilter.matchElement(elt, that.currentFilter)
+    if(xmlxsdElt.eltsList.length === 0 && this.toVisit.length > 0){
+      // no element in the list but the filter want to filtering on this element
+      this.isMatching = false;
+    }else{
+      $(xmlxsdElt.eltsList).each(function(i, elt){
+        if(that.toVisit.length === 0){
+          if(that.isMatching){
+            that.isMatching = XMLFilter.matchElement(elt, that.currentFilter)
+          }
+        }else{
+          elt.accept(that);
         }
-      }else{
-        elt.accept(that);
-      }
-    })
+      })
+    }
   }
 
   /* Visitor pattern : visit function
