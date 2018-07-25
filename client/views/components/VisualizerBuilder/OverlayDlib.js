@@ -45,7 +45,6 @@ export class OverlayDlib{
   @xmlxsdElt: XMLXSDElt object
   */
   visitXMLXSDElt(xmlxsdElt){
-    // console.log('visit Element visualizer :', xmlxsdElt);
     var that = this;
     var oldCurrentTimeId = this.currentTimeId;
     xmlxsdElt.eltsList.forEach(function(elt,i){
@@ -64,11 +63,9 @@ export class OverlayDlib{
   @xmlxsdSeq: XMLXSDSequence object
   */
   visitXMLXSDSequence(xmlxsdSeq){
-    // console.log('visit Sequence visualizer :', xmlxsdSeq);
     var that = this;
     this.buildAttrs(xmlxsdSeq)
     xmlxsdSeq.seqList.forEach(function(seq, k){
-      // console.log('visit seq visualizer :', seq);
       seq.forEach(function (xmlxsdElt, j){
         xmlxsdElt.eltsList.forEach(function(elt, i){
           that.stack.push({

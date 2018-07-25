@@ -9,10 +9,11 @@ import './videoPlayer.css';
 import { Parser } from '../../components/class/Parser.js'
 
 eventDDPVideo = null;
+
+//vidPlayerListener is used to set only once the listener
 var vidPlayerListener;
 
 Template.videoPlayer.onCreated(function(){
-
   Meteor.subscribe('projects');
   Meteor.subscribe('videos');
 });
@@ -21,6 +22,7 @@ var Player;
 Template.videoPlayer.onRendered(function () {
   Session.set('videoPlayer', 0);
 
+  //This event will refresh the video Player src when a file upload is done, so all users on project can read it without refreshing
   if(!eventDDPVideo){
     eventDDPVideo = new EventDDP('videoPlayer',Meteor.connection);
   }
@@ -45,6 +47,13 @@ Template.videoPlayer.onRendered(function () {
         }
         Player.setSrc(url);
         Player.load();
+        vidCtrl.pause();
+        vidCtrl.detachAll();
+        vid=$("#videoDisplayId").get(0);
+        vidCtrl=new VideoControler(vid, project.frameRate, project.duration);
+        seekBarMng=new SeekBar(vidCtrl, "currentFrame");
+        vidCtrl.attach(seekBarMng,1);
+
         //event listeners in project.js & playerCommand.js
         eventDDPVideo.emit('videoCtrl');
         eventDDPVideo.emit('playerCommand');
@@ -159,6 +168,7 @@ Template.videoPlayer.events({
 
     var idProject = Router.current().params._id
 
+    //https://github.com/VeliovGroup/Meteor-Files is used to upload file in meteor
     const upload = Videos.insert({
       file: _projectFile,
       streams: 'dynamic',
@@ -182,8 +192,6 @@ Template.videoPlayer.events({
         toastr.error('Error during upload: ' + error);
       } else {
         var idUpload = "upload_"+idProject;
-        // Session.set(idUpload, 100);
-        // console.log('Session end upload', Session)
         Meteor.call('modifyFileId',idProject,fileObj._id,function(err1,res1){
           if(err1){
             toastr.error(err1.reason);
@@ -214,6 +222,7 @@ Template.videoPlayer.events({
 });
 
 Template.videoPlayer.onDestroyed(function(){
+  //Destroy event, videoContainer and Player on leaving the route
   vidCtrl.pause();
   vidCtrl.detachAll();
   $('.videoContainer').remove();

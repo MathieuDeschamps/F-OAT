@@ -354,6 +354,9 @@ export class XMLFilter{
               result = false;
             }
           }
+        }else{
+          // when the xmlxsdElement didn't have the attributs which filtering
+          result = false;
         }
     })
     return result;

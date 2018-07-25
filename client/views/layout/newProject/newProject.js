@@ -4,6 +4,9 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Writer} from '../../components/class/Writer.js'
 import './newProject.html';
 
+//API_KEY : key to request omdbapi
+
+var API_KEY = 'ef18ae37';
 /*
 * On creation of the template, initialize session vars.
 * postSubmitErrors : errors in the form
@@ -11,8 +14,6 @@ import './newProject.html';
 * participants : coworkers added in the project
 * search/keyword : used in input search of users
 */
-var API_KEY = 'ef18ae37';
-
 Template.newproject.onCreated(function(){
   Session.set('postSubmitErrors',{});
   Session.set('postUserErrors',{});
@@ -34,6 +35,7 @@ Template.newproject.helpers({
     return !!Session.get('postUserErrors')[field] ? 'has-error' : '';
   },
 
+  //return the list of users of db that matches the search keyword given, without current user
   users(){
     var keyword = Session.get("search/keyword");
     if(keyword!=null && keyword!=""){
@@ -51,6 +53,7 @@ Template.newproject.helpers({
 });
 
 Template.newproject.onRendered(function(){
+  //Prepare animation of the materialize select
   $('.single-select').material_select();
 });
 
@@ -66,6 +69,8 @@ Template.newproject.events({
     var _seconds = $('#seconds').val();
     var _frameRate = $('#frameRate').val();
     var _duration;
+
+    //Check that the duration given is ok
     if(_hours=='' || _minutes=='' || _seconds=='' || 
         isNaN(_hours) || isNaN(_minutes) || isNaN(_seconds) || 
         _hours < 0 || _minutes > 60 || _minutes < 0 || _seconds < 0 || _seconds > 60)
@@ -78,6 +83,8 @@ Template.newproject.events({
 
     var filmTitle = $('#filmTitle').val();
     var errorsSearch = {}
+
+    //Verify that the movie title given is good to do the request
     if(filmTitle!=null && filmTitle!=''){
       if($('#filmTitle').attr('name') === 'false'){
         errorsSearch.search = TAPi18n.__('errorSearchInvalid');
@@ -118,7 +125,7 @@ Template.newproject.events({
       duration : _duration
     };
 
-    //We verify the name and the url of the project (not null and not already used)
+    //We verify all data of the project (not null and not already used) see lib/collections/project.js
 
     var errors = validateProject(project);
     if(errors.name || errors.url || errors.file || errors.downUrl || errors.frameRate || errors.duration){
@@ -135,7 +142,7 @@ Template.newproject.events({
             }
             else{
 
-              //We use odmb api if a movie title is given
+              //We use odmb api if a movie title is given to put this data in the xml file
               var filmTitle = $('#filmTitle').val();
               if(filmTitle!=null && filmTitle!=''){
                 var movie = filmTitle.split(',');
@@ -178,11 +185,13 @@ Template.newproject.events({
     addUser();
   },
 
+  //on double click of a user in the options given by the search of users
   'dblclick .option' (event){
     event.preventDefault();
     addUser();
   },
 
+  //On click of removing a user that has been added in the list of participants
   'click .remove_circle' (event, instance){
       var elm = event.target;
       var $elm = $(elm);
@@ -217,7 +226,7 @@ Template.newproject.events({
 });
 
 Template.newproject.onDestroyed(()=>{
-  //put wrong values for the event => unsuscribe the user for the channel of this project
+  //put wrong values for the event => unsubscribe the user for the channel of this project
 
   if(eventDDPVideo!=null){
     eventDDPVideo.setClient({
@@ -227,7 +236,7 @@ Template.newproject.onDestroyed(()=>{
   }
 });
 
-
+//Fonction which will add the user(s) selected to the list of participants or give errors if a problem occurs
 function addUser(){
   var _newParticipants = $('#participant').val();
   var errors={};

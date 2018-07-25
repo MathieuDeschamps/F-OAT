@@ -1,3 +1,4 @@
+//Startup is used to set the language of a logged user before rendering anything
 if (Meteor.isClient) {
   Meteor.startup(() => {
     Tracker.autorun(() => {

@@ -85,7 +85,7 @@ export class configExtractorManager{
 
 		var JQidDivButton='#'+idDivButton;
 		var idButton=idDivButton+'_FinalButton';
-		$(JQidDivButton).append('<a class="btn waves-effect waves-light" id="'+idButton+'">Launch '+'</a>');
+		$(JQidDivButton).append('<a class="btn waves-effect waves-light bold" id="'+idButton+'">Launch '+'</a>');
 
 		var JQidButton='#'+idButton;
 		$(JQidButton).click(function(){
@@ -131,8 +131,16 @@ export class configExtractorManager{
 					console.log('JQlabel : ',JQlabelConfig);
 					that.displayForm(xmlxsdForm,xmlxsdObj,extractor,i,idDivButton,idDivForm,JQlabelConfig);
 				}else{
-					// Extraction launch
+					// Extraction launched
 					toastr.success(TAPi18n.__('extractionProgress'));
+
+					var date = moment().calendar();
+					var val = "Project "+project.name+" : Extraction "+extractor.name+" is running.";
+					Meteor.call('addNotifications',idProject,date,val,function(err,res){
+						if(err){
+							toastr.error(err.reason);
+						}
+					});
 
 					Meteor.call("putRequest",idProject,params,extractor,(err,result)=>{
 						if (err){
@@ -146,6 +154,8 @@ export class configExtractorManager{
 								appId: Router.current().params._id,
 								_id: Meteor.userId()
 							});
+
+							//listener in configAnnotation.js, send the result given by extractor
 							eventNewExtraction.emit('newExtraction',extractor._id,result);
 						}
 					});

@@ -4,6 +4,7 @@ import { Template } from 'meteor/templating';
 import './playerCommand.html'
 import '../videoPlayer/videoPlayer.js';
 
+//vidPlayerCommandListener is used to only set once the listener
 var vidPlayerCommandListener;
 
 Template.project.onRendered(function(){
@@ -19,10 +20,8 @@ Template.project.onRendered(function(){
 	idsCommands[8] = "partialButton";
 	var playerCommand;
 	this.playerCommandTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
-		// console.log('playerCommand waiting')
 		if(Session.get('videoPlayer') === 1 && Session.get('projectReady') === 1 ) {
 			playerCommand = new PlayerCommand(idsCommands);
-			// console.log('playerCommand created')
 			vidCtrl.setPlayerCommand(playerCommand);
 			if(!vidPlayerCommandListener){
 				vidPlayerCommandListener = true;

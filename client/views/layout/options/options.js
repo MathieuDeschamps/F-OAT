@@ -16,6 +16,7 @@ Template.options.helpers({
 
 Template.options.events({
 
+  //Add a new extractor if no errors are found
   'click #submit' (event, instance){
 
     //ip RegExp
@@ -54,6 +55,7 @@ Template.options.events({
 
   },
 
+  //Remove an extractor
   'click #delete' (event,instance){
     var elm = event.target;
     var $elm = $(elm);
@@ -67,6 +69,7 @@ Template.options.events({
     });
   },
 
+  //Update the name and IP of an extractor
   'click #update' (event, instance){
 
     var $elm = $(event.target).closest('tr');

@@ -392,11 +392,12 @@ export class TimeLine {
         }
         if(item.start < item.end){
           vidCtrl.play();
+          vidCtrl.setPartialPlaying(true);
         }else if(item.start === item.end){
           vidCtrl.setCurrentFrame(item.start);
+          vidCtrl.setPartialPlaying(false);
         }
         vidCtrl.setPlayingInterval(item.start, item.end);
-        vidCtrl.setPartialPlaying(true);
       } else {
         vidCtrl.setPlayingInterval(1, this.nb_frames);
         vidCtrl.setPartialPlaying(false);
@@ -463,6 +464,7 @@ export class TimeLine {
         vidCtrl.setPlayingInterval(current_item.start, current_item.end);
         vidCtrl.play();
       }else if(current_item.start === current_item.end){
+        vidCtrl.setPartialPlaying(false);
         vidCtrl.setCurrentFrame(current_item.start)
       }
     }

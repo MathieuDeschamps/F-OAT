@@ -12,6 +12,7 @@ if (Meteor.isServer) {
 Meteor.methods({
   /**
   Remove the video from collection and update fileId in project
+  @idProject : id of the project that will change his fileId field.
   */
   removeVideo : function(idProject){
     check(idProject,String);

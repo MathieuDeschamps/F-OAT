@@ -443,13 +443,9 @@ export class XMLSelector{
   */
   eventAddElement(element){
     var stackCopy = this.stack.slice(0);
-    var headName = '';
-    if(stackCopy.length > 1){
-      headName = stackCopy[stackCopy.length - 1]+ '> '
-    }
     stackCopy.push(element.name);
     this.comboBoxList.push({
-      name : headName + element.name,
+      name : element.name,
       type : element.type,
       stack: stackCopy
     })
@@ -549,11 +545,21 @@ export class XMLSelector{
     var selectedValue = parseInt($(selected).val())
     var selectedType = this.comboBoxList[selectedValue].type;
     var selectedStack = this.comboBoxList[selectedValue].stack;
-    var selectedName = $(selected).text(TAPi18n.__('attach_filter'))
+    var selectedName = $(selected).text()
     if(typeof selectedType !== 'undefined'){
       var type = this.table.getType(selectedType);
       var divAttr = $('#'+this.divId).find('#'+idAttr);
       $(divAttr).empty();
+      var divStack = $('<div/>');
+      var textDivStack = TAPi18n.__('path_filter');
+      var separator = ''
+      $(selectedStack).each(function(i, elt){
+        textDivStack += separator + elt;
+        separator = ' > ';
+      })
+      $(divStack).addClass('col s12')
+      $(divStack).text(textDivStack);
+      $(divAttr).append(divStack);
       if(typeof type !== 'undefined' &&
         typeof type.attrs !== 'undefined'){
         var i = 0;

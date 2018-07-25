@@ -24,19 +24,23 @@ export class Overlay{
     this.draw_rect();
   }
 
+  /* Set the new XMLXSDForm
+  */
   setXMLXSDForm(xmlxsdForm){
     if(xmlxsdForm instanceof XMLXSDForm){
       this.xmlxsdForm = xmlxsdForm;
     }
   }
 
-  /* Draw points base on this.points and their events
+  /* Draw circles based on this.points and their events
   */
   draw_circles(){
     var x1;
     var y1;
 
     if(this.firstDrawCircles){
+
+      //Line is used to join each points
       this.line = d3.line()
         .curve(d3.curveCardinal);
 
@@ -49,12 +53,14 @@ export class Overlay{
       var width = $('#' + this.divId).find('svg').width();
       var height = $('#' + this.divId).find('svg').height();
       var that = this;
+
       svg.append("rect")
       .attr("width", width)
       .attr("height", height)
       .on("mousemove", function() { mousemove();})
       .on("mouseup", function() { mouseup();});
 
+      //y1 and x1 are used to scale everything with the width and height of the page and so the width and height of the svg
       y1 = d3.scaleLinear()
       .domain([0, 1])
       .range([0, height]);
@@ -74,9 +80,6 @@ export class Overlay{
 
       that = this
 
-      d3.select(window)
-
-
       svg.node().focus();
       this.firstDrawCircles = false;
     }
@@ -87,14 +90,19 @@ export class Overlay{
       .datum(this.points)
       .attr("class", "line")
 
+      //Call redraw internal function each time draw_circles is called after first time
       d3.select(window)
       .call(function(){redraw();})
     }
 
+    /*
+      Internal function that will redraw svg and all circles
+    */
     function redraw() {
       var width = $('#' + that.divId).find('svg').width();
       var height = $('#' + that.divId).find('svg').height();
 
+      //Used to set the good selected circle or select the last of the array
       var pointSelected = false;
       if(that.selected!=null){
         that.points.forEach(function(point){
@@ -130,6 +138,7 @@ export class Overlay{
 
       svg.select("path").attr("d", that.line);
 
+      //Draw a new circle for every point(x,y) in the data
       var circle = svg.selectAll("circle")
       .data(that.points);
 
@@ -144,6 +153,7 @@ export class Overlay{
         redraw();
        })
        .on('mouseup', function(d){
+         //Update the data in the form when a circle has been dragged and dropped
            if(typeof d.stack !== 'undefined'){
              if(d.x != null && d.y != null){
                var newX = d.x.toFixed(4)
@@ -175,7 +185,9 @@ export class Overlay{
 
     }
 
-
+    /*
+      Function not used : allow to create a new circle on click
+    */
     // function mousedown() {
     //   var width = $('#' + that.divId).find('svg').width();
     //   var height = $('#' + that.divId).find('svg').height();
@@ -189,6 +201,9 @@ export class Overlay{
     //   that.draw_circles();
     // }
 
+    /*
+    Internal function used when user drag a circle
+    */
     function mousemove() {
       if (!that.dragged) return;
       var m = d3.mouse(svg.node());
@@ -203,6 +218,9 @@ export class Overlay{
       }
     }
 
+    /*
+    Internal function called when user drop a circle
+    */
     function mouseup() {
       if (!that.dragged) return;
       mousemove();
@@ -211,6 +229,11 @@ export class Overlay{
 
   }
 
+
+  /*
+    Draw rectangles based on this.rect and their events. Works almost same as draw_circles
+    but with rectangles and another drag & drop function
+  */
   draw_rect(){
     var x1;
     var y1;
@@ -248,6 +271,9 @@ export class Overlay{
       .call(function(){redraw();});
     }
 
+    /*
+      Internal function that will redraw svg and all rectangles
+    */
     function redraw() {
       var width = $('#' + that.divId).find('svg').width();
       var height = $('#' + that.divId).find('svg').height();
@@ -273,6 +299,7 @@ export class Overlay{
       .domain([0, 1])
       .range([0, width]);
 
+      // class .face is used on data rectangles to avoid removing the first svg rectangle which is the container
       svg.selectAll('.face').remove();
 
       var rect = svg.selectAll('.face')
@@ -304,6 +331,7 @@ export class Overlay{
         }
       })
 
+      //Drag and drop function of d3js v4
       svg.selectAll(".face").call(d3.drag().on("start", dragStarted)
       .on("drag", dragged)
       .on("end", dragEnded));
@@ -312,6 +340,9 @@ export class Overlay{
 
     }
 
+    /*
+    Function called whenever a rectangle start to be dragged
+    */
     function dragStarted(d) {
       d3.select(this).raise().classed("active", true);
       var width = $('#' + that.divId).find('svg').width();
@@ -320,7 +351,11 @@ export class Overlay{
       that.distancesRect.y = d3.event.y/height - d.top;
     }
 
+    /*
+    Function called when a rectangle is getting dragged
+    */
     function dragged(d) {
+
       var width = $('#' + that.divId).find('svg').width();
       var height = $('#' + that.divId).find('svg').height();
 
@@ -345,6 +380,9 @@ export class Overlay{
       .attr("y", d.y = y1(d.top));
     }
 
+    /*
+    Function called when a rectangle is getting dropped. Will update the data of the xmlxsdForm
+    */
     function dragEnded(d) {
       d3.select(this).classed("active", false);
       if(typeof d.stack !== 'undefined'){

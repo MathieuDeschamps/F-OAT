@@ -2,22 +2,25 @@ import { Projects } from '../../../../lib/collections/projects.js';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { configAnnotationManager } from './configAnnotationManager.js';
-
 import { Extractors } from '/lib/collections/extractors.js';
 
 import './configAnnotation.html';
 
 eventLiveUpdate = null;
 eventLiveUpdateSet = null;
+
+//These 4 are used to create only once each listener
 var newExtractionListener;
 var liveUpdateListener;
 var getXmlsListener;
 var setXmlsListener;
+
 var manager;
 
 
 Template.configAnnotation.onRendered(()=>{
-  //Wait for project to be rendered before doing that
+
+  //Event called when a new extraction is done to show new data for every users on the page
   if(!eventNewExtraction){
     eventNewExtraction = new EventDDP('newExtraction', Meteor.connection);
   }
@@ -30,12 +33,14 @@ Template.configAnnotation.onRendered(()=>{
   if(!newExtractionListener){
     newExtractionListener = true;
     eventNewExtraction.addListener('newExtraction', function(idExtractor,version) {
+      //A small timeout is used to be sure that data is written in the file before calling the function
       setTimeout(function(){
         addAnnotation(idExtractor,version);
       },1000);
     });
   }
 
+  //Event to have live update for all users on the same project
   if(!eventLiveUpdate){
     eventLiveUpdate = new EventDDP('liveUpdate',Meteor.connection);
   }
@@ -45,7 +50,6 @@ Template.configAnnotation.onRendered(()=>{
     _id: Meteor.userId()
   });
 
-
   if(!liveUpdateListener){
     liveUpdateListener = true;
     eventLiveUpdate.addListener('liveUpdate',function(idVisualizer,xml){
@@ -53,6 +57,7 @@ Template.configAnnotation.onRendered(()=>{
     });
   }
 
+  //Event used with the getXmlsListener for a user cming on the project page, to get the last version of the project
   if(!eventLiveUpdateSet){
     eventLiveUpdateSet = new EventDDP('setUpdate',Meteor.connection);
   }
@@ -79,16 +84,14 @@ Template.configAnnotation.onRendered(()=>{
   }
 
   this.configAnnotationManagerTracker = Tracker.autorun(function doWhenProjectRendered(computation) {
+    //Wait for project and video player to be ready before creating the manager
     if(Session.get('projectReady') === 1 && Session.get('videoPlayer') === 1) {
-      // console.log('config XMLArray',xmlArray)
-      // console.log('config XSDArray', xsdArray)
       var idProject = Router.current().params._id;
       var project = Projects.findOne(idProject);
       var nbFrames = 0
       if(typeof project !== 'undefined'){
         nbFrames = parseInt(project.duration * project.frameRate)
       }
-      console.log("nbframes",nbFrames);
 
       manager = new configAnnotationManager(xsdArray, xmlArray, nbFrames, "configAnnotation", ["configAnnotationForm","timeLines","overlay"],"saveButtonAnnotations")
 
@@ -138,11 +141,15 @@ function updateManager(idVisualizer,xml){
 }
 
 function updateManagerXmls(xmls){
-  manager.updateXmls(xmls);
+  if(manager instanceof configAnnotationManager){
+    manager.updateXmls(xmls);
+  }
 }
 
 function getManagerXmls(){
-  return manager.getXmls();
+  if(manager instanceof configAnnotationManager){
+    return manager.getXmls();
+  }
 }
 
 
@@ -152,16 +159,25 @@ Template.configAnnotation.onDestroyed(()=>{
     !this.configAnnotationManagerTracker.stopped){
   this.configAnnotationManagerTracker.stop();
   }
+
+  //Set wrong values to unsubscribe for events
   eventNewExtraction.setClient({
     appId: -1,
     _id: -1
   });
-  if(manager instanceof configAnnotationManager){
-    manager.destroyVisualizersEventDDP();
-  }
 
   eventLiveUpdate.setClient({
     appId: -1,
     _id: -1
   });
+
+  eventLiveUpdateSet.setClient({
+    appId: -1,
+    _id: -1
+  });
+
+  //Do the same for events in all visualizers
+  if(manager instanceof configAnnotationManager){
+    manager.destroyVisualizersEventDDP();
+  }
 });

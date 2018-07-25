@@ -4,6 +4,7 @@ import {Writer} from '../../components/class/Writer.js'
 
 import './omdbForm.html'
 
+//API_KEY : key used to request the omdbapi
 var API_KEY = 'ef18ae37';
 
 Template.omdbForm.onCreated(function(){
@@ -29,7 +30,7 @@ Template.omdbForm.helpers({
 
 
 Template.omdbForm.events({
-
+  //Click on the search button will give a list of titles that matches the title given
   'click #searchMovie' (event,instance){
       var movie = $('#filmTitle').val();
       var errors = {}
@@ -38,6 +39,8 @@ Template.omdbForm.events({
         $('#searchLoading').addClass('active');
         var titles = [];
         Session.set('searchTitles',titles);
+
+        //Do a search request on omdbapi with the title given by user
         $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&s='+encodeURI(movie)+'&r=xml',function(data){
           var results = $(data).find('root').children('result[title]');
           if(results.length==0){
@@ -62,11 +65,13 @@ Template.omdbForm.events({
       return Session.set('postSearchErrors',errors);
   },
 
+  //Avoid user to validate if the title is just what he wrote and not what he selected in the list
   'keyup #filmTitle' (event,instance){
     $('#filmTitle').attr('name','false');
     $('#modifyMovie').attr('disabled',true);
   },
 
+  //Click on one of the options given in the list of title from research
   'click .select_title'(event,instance){
     var elm = event.target;
     var $elm = $(elm);
