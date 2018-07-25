@@ -249,20 +249,19 @@ export class XMLFilter{
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visitXMLXSDElt ', xmlxsdElt);
     var that = this;
-    if(xmlxsdElt.eltsList.length === 0 && this.toVisit.length > 0){
+    if(xmlxsdElt.eltsList.length === 0){
       // no element in the list but the filter want to filtering on this element
       this.isMatching = false;
-    }else{
-      $(xmlxsdElt.eltsList).each(function(i, elt){
-        if(that.toVisit.length === 0){
-          if(that.isMatching){
-            that.isMatching = XMLFilter.matchElement(elt, that.currentFilter)
-          }
-        }else{
-          elt.accept(that);
-        }
-      })
     }
+    $(xmlxsdElt.eltsList).each(function(i, elt){
+      if(that.toVisit.length === 0){
+        if(that.isMatching){
+          that.isMatching = XMLFilter.matchElement(elt, that.currentFilter);
+        }
+      }else{
+        elt.accept(that);
+      }
+    })
   }
 
   /* Visitor pattern : visit function
@@ -315,7 +314,9 @@ export class XMLFilter{
     matchedFilterList.forEach(function(filter){
       if(XMLFilter.samePlace(filter.filterStack, filter.attachedStack)){
         if(!XMLFilter.matchElement(xmlxsdElement, filter)){
-          return false
+          that.isMatching = false;
+          // exit the loop
+          return;
         }
       }else if(XMLFilter.childStack(filter.filterStack, filter.attachedStack)){
         that.currentFilter = filter;
@@ -323,17 +324,20 @@ export class XMLFilter{
         if(that.toVisit.length > 0){
           xmlxsdElement.accept(that);
           // console.log('that.isMatching', that.isMatching)
-          if(!this.isMatching){
+          if(!that.isMatching){
             // exit the loop
             return
           }
         }else{
+          console.log('matchFilter: Bad Filter')
           //TODO return something
         }
 
       }
 
     })
+    // console.log('xmlxsdElement', xmlxsdElement);
+    // console.log('this.isMatching', this.isMatching);
     return this.isMatching;
   }
 

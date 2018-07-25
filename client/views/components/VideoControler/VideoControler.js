@@ -154,6 +154,7 @@ export class VideoControler {
 			case 'freeze' :
 				//this.isPlaying=false;
 				this.pause();
+				console.log('ici')
 				this.setCurrentFrame(this.beginSelect);
 				break;
 		}
@@ -193,6 +194,8 @@ export class VideoControler {
 	// Fonction de l'intervalle en mode partial
 	partialPlay(){
 		// console.log('partialPlay',this.getCurrentFrame(),this.beginSelect,this.endSelect)
+		console.log('this.beginSelect', this.beginSelect)
+		console.log('this.endSelect', this.endSelect)
 		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
 			this.setCurrentFrame(this.beginSelect);
 		}else{

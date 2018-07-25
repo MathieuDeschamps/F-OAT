@@ -391,13 +391,13 @@ export class TimeLine {
           this.xmlxsdForm.displayForm(item.stack);
         }
         if(item.start < item.end){
-          vidCtrl.play();
+          // vidCtrl.play();
+          vidCtrl.setPlayingInterval(item.start, item.end);
           vidCtrl.setPartialPlaying(true);
         }else if(item.start === item.end){
           vidCtrl.setCurrentFrame(item.start);
           vidCtrl.setPartialPlaying(false);
         }
-        vidCtrl.setPlayingInterval(item.start, item.end);
       } else {
         vidCtrl.setPlayingInterval(1, this.nb_frames);
         vidCtrl.setPartialPlaying(false);
