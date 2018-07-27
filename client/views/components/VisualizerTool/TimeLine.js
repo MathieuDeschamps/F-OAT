@@ -393,7 +393,8 @@ export class TimeLine {
         if(item.start < item.end){
           vidCtrl.setPlayingInterval(item.start, item.end);
           vidCtrl.setPartialPlaying(true);
-          vidCtrl.play();
+          vidCtrl.setCurrentFrame(item.start);
+          // vidCtrl.play();
         }else if(item.start === item.end){
           vidCtrl.setCurrentFrame(item.start);
           vidCtrl.setPartialPlaying(false);
