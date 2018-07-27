@@ -15,8 +15,7 @@ projectExists = function(){
 }
 
 var project;
-//API_KEY : omdbapi key to do request
-var API_KEY = 'ef18ae37';
+
 
 Template.team.onCreated(function(){
   Session.set("search/keyword","");
@@ -135,7 +134,7 @@ Template.team.events({
     var idProject = Router.current().params._id;
 
     //get the data of the movie chosen by the user, parse it and modify XML
-    $.get('https://www.omdbapi.com/?apikey='+API_KEY+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
+    $.get('https://www.omdbapi.com/?apikey='+Meteor.settings.public.omdbapi_key+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
       var result = $(data).find('root').find('movie');
       result.removeAttr('poster')
             .removeAttr('metascore')

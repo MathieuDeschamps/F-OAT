@@ -34,9 +34,9 @@
   "extractorHelpP4" : "Pour utiliser un extracteur, il suffit de cocher l'extracteur souhaité en haut à droite de la page d'un projet, et de remplir les paramètres selon vos besoins. Une extraction peut prendre plusieurs minutes à plusieurs heures selon l'analyse, évitez de quitter l'application pendant ce temps afin d'éviter tout problème.",
 
   "filterHelpP1" : "Si une ligne de temps est présente dans les affichages d'un extracteur, alors une fonctionnalité de filtre est à disposition.",
-  "filterHelpP2" : "Celle-ci se trouve sous la ligne de temps. Vous pouvez alors ajouter un filtre sur un ou plusieurs éléments des données de l'extracteur (Par exemple, je ne souhaite que les frames ayant un timeId inférieur à 2000, je ne souhaite que les passages contenant tel acteur, ...).",
+  "filterHelpP2" : "Celle-ci se trouve sous la ligne de temps. Vous pouvez alors ajouter un filtre sur un ou plusieurs éléments des données de l'extracteur, en ajoutant des contraintes sur ses attributs (Par exemple, je ne souhaite que les frames ayant un timeId inférieur à 2000, je ne souhaite que les frames contenant tel acteur, ...).",
   "filterHelpP3" : "Lorsque le filtre est activé, la ligne de temps de l'extracteur sera filtrée et redessinée pour afficher les résultats selon votre demande.",
-
+  "filterHelpP4" : "Lorsque l'on souhaite passer des contraintes sur un élément qui ne s'affiche pas sur la ligne de temps, on peut passer par un système permettant de lier un élément à un de ses éléments parents, et donc de passer des contraintes sur cet élément parent. Par exemple si l'on souhaite ajouter des contraintes sur l'élément shotProperties (un élément enfant de shot) indiquant la distance et l'angle choisi dans un plan, alors on peut attacher cette contrainte au plan et seuls les plans validant la contrainte s'afficheront.",
 
   "contactUs" : "Pour tout autre problème, question ou suggestion sur l'application, contactez nous via notre github en créant un nouvel 'Issue' "
 

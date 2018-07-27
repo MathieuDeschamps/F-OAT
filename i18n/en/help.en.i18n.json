@@ -36,6 +36,7 @@
   "filterHelpP1" : "If the extractor selected displays a timeline, then a filter feature is available.",
   "filterHelpP2" : "This feature is under the timeline of the extractor. You can add a filter on one or more elements of the extractor's data (For example, I only want frames with a timeId higher than 2000, I only want scenes with this actor,...).",
   "filterHelpP3" : "When a filter is activated, the timeline will be redrawn to display the results filtered as you needed.",
+  "filterHelpP4" : "When we want to add constraints on an element that does not appear on the limeline, we can use a system to attach an element to his parent. For example, if you want to add a constraint on shotProperties element (child element of shot) which says the distance and angle of a shot, then we can attach this constraint to the shot and only the valid shots will be displayed on the timeline.",
 
   "contactUs" : "For every other issue or questions or suggestion on the application, contact us on our github, create a new issue and we will answer as fast as we can "
 

@@ -43,6 +43,7 @@ Template.videoPlayer.onRendered(function () {
           url = project.url;
         }
         else{
+          //Permet de récupérer le chemin vers la vidéo si c'est un fichier local
           url = file.link();
         }
         Player.setSrc(url);
