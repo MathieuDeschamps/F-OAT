@@ -6,7 +6,6 @@ import { SeekBar } from '../playerCommand/SeekBar.js';
 import  '/public/renderers/vimeo.js';
 import './videoPlayer.html';
 import './videoPlayer.css';
-import { Parser } from '../../components/class/Parser.js'
 
 eventDDPVideo = null;
 

@@ -145,7 +145,7 @@ export class configAnnotationManager{
   */
   addAnnotation(idExtractor,version){
     var idProject = Router.current().params._id;
-    var xmlPath = '/tmp/' + idProject + '/annotation.xml';
+    var xmlPath = '/dir-foat/' + idProject + '/annotation.xml';
     Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
       if(xmlErr){
         alert(xmlErr.reason);
@@ -168,7 +168,7 @@ export class configAnnotationManager{
           }
         });
         //Recuperer uniquement le xml du nouvel extracteur
-        extractorPath  = '/tmp/'+ idExtractor + '/' + version + '/descriptor.xsd';
+        extractorPath  = '/dir-foat/'+ idExtractor + '/' + version + '/descriptor.xsd';
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
             toastr.error(xsdErr.reason);

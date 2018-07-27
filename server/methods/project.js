@@ -24,8 +24,8 @@ Meteor.methods({
 
     //Write the file on server
     var fs = Npm.require("fs");
-    var dir = "/tmp/"+id;
-    var dirSi = "/tmp/signature";
+    var dir = "/dir-foat/"+id;
+    var dirSi = "/dir-foat/signature";
 
     //Create a directory for the project if it doesn't exist
     if (!fs.existsSync(dir)){
@@ -35,7 +35,7 @@ Meteor.methods({
     if (!fs.existsSync(dirSi)){
       fs.mkdirSync(dirSi);
     }
-    //By default, write file in .meteor/local/build/programs/server/ but we write in tmp.
+    //By default, write file in .meteor/local/build/programs/server/ but we write in dir-foat.
     fs.writeFile(dir+"/"+project.url, buffer, 'base64', function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
@@ -44,20 +44,6 @@ Meteor.methods({
         console.log("File saved successfully!")
       }
     });
-
-    //Création du hacher avec la foction MD5 en utlilisant les données de la vidéo "buffer"
-    let si = JSON.stringify({signature: crypto.createHash('sha1').update(buffer).digest("hex")});
-    //Creation du fichier pour la signature des videos
-    fs.writeFile(dirSi+"/"+nameV+ ".json", si, function(err) {
-      if(err) {
-        throw (new Meteor.Error(500, 'Failed to save file.', err));
-      }
-      else{
-        console.log("File saved successfully!")
-      }
-    });
-
-
   },
 
   /**
@@ -163,7 +149,7 @@ Meteor.methods({
 */
   updateXML: function(project,buffer){
     var fs = Npm.require("fs");
-    var dir = "/tmp/"+project._id;
+    var dir = "/dir-foat/"+project._id;
     fs.writeFile(dir+"/annotation.xml", buffer, function(err) {
       if(err) {
         throw (new Meteor.Error(500, 'Failed to save file.', err));
@@ -182,7 +168,7 @@ Meteor.methods({
   addDefaultExtractor : function(idProject,newXml){
     var fs = Npm.require("fs");
 
-    var old_xml_string = fs.readFileSync("/tmp/"+idProject+"/annotation.xml","utf8");
+    var old_xml_string = fs.readFileSync("/dir-foat/"+idProject+"/annotation.xml","utf8");
     var old_xml = cheerio.load(old_xml_string,{
       xml:{
         normalizeWhitespace :false,
@@ -194,7 +180,7 @@ Meteor.methods({
     new_data = '\n\t\t<omdbapi>\n\t\t</omdbapi>\n';
     old_xml(new_data).appendTo(idExtractor);
     old_xml(newXml).appendTo('omdbapi');
-    var dir = "/tmp/"+idProject;
+    var dir = "/dir-foat/"+idProject;
 
     fs.writeFile(dir+"/annotation.xml",old_xml.html(),function (err) {
       if(err) {
@@ -214,7 +200,7 @@ Meteor.methods({
   modifyDefaultExtractor : function(idProject,newXml){
     var fs = Npm.require("fs");
 
-    var old_xml_string = fs.readFileSync("/tmp/"+idProject+"/annotation.xml","utf8");
+    var old_xml_string = fs.readFileSync("/dir-foat/"+idProject+"/annotation.xml","utf8");
     var old_xml = cheerio.load(old_xml_string,{
       xml:{
         normalizeWhitespace :false,
@@ -229,7 +215,7 @@ Meteor.methods({
     new_data = '\n\t\t<'+name+'>\n\t\t</'+name+'>\n';
     old_xml(new_data).appendTo(idExtractor);
     old_xml(newXml).appendTo(name);
-    var dir = "/tmp/"+idProject;
+    var dir = "/dir-foat/"+idProject;
 
     fs.writeFile(dir+"/annotation.xml",old_xml.html(),function (err) {
       if(err) {
@@ -253,8 +239,7 @@ Meteor.methods({
 */
 createFileXML = function(id){
   var fs = Npm.require("fs");
-  //  var dir = "/tmp/"+project._id;
-  var dir = "/tmp/"+id;
+  var dir = "/dir-foat/"+id;
 
   if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
