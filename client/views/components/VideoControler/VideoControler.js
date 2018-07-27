@@ -1,5 +1,5 @@
 import { PlayerCommand } from '../playerCommand/PlayerCommand.js'
-import { TimeLine} from '../class/TimeLine.js'
+import { TimeLine} from '../VisualizerTool/TimeLine.js'
 
 export class VideoControler {
 	constructor(vid,frameRate, duration){
@@ -104,11 +104,12 @@ export class VideoControler {
 			var that = this;
 			// add a delay before notify the observers
 			// which lasts the time to set the current time
-			// the value of the delay is arbitary
+			var duration = Math.max(200, Math.abs(newCurrentFrame - that.getCurrentFrame())/5)
 			setTimeout(function() {
+				// console.log('duration', duration)
 				// console.log('currentFrame expected: ', newCurrentFrame, ' real: ', that.getCurrentFrame());
 				that.notifyAttachedObjects();
-			}, 200);
+			}, duration);
 	}
 
 	// Longueur de la vidéo
@@ -186,7 +187,7 @@ export class VideoControler {
 	// Fonction de l'intervalle en mode full
 	fullPlay(){
 		newCurrentFrame = this.getCurrentFrame()
-		this.notifyAttachedObjects(newCurrentFrame);
+		this.notifyAttachedObjects();
 		// console.log("full");
 	}
 
@@ -196,7 +197,7 @@ export class VideoControler {
 		if (this.getCurrentFrame()>this.endSelect||this.getCurrentFrame()<this.beginSelect){
 			this.setCurrentFrame(this.beginSelect);
 		}else{
-			this.notifyAttachedObjects(this.getCurrentFrame());
+			this.notifyAttachedObjects();
 		}
 		// console.log("partial");
 	}
@@ -227,7 +228,7 @@ export class VideoControler {
 		clearInterval(this.updateInterval);
 		this.vid.removeEventListener('playing');
 		// var newCurrentFrame = this.getCurrentFrame();
-		// this.notifyAttachedObjects(newCurrentFrame);
+		this.notifyAttachedObjects();
 	}
 
 	// Définition de l'intervalle de lecture
@@ -239,7 +240,7 @@ export class VideoControler {
 			this.endSelect=end;
 			if(this.playerCommand instanceof PlayerCommand){
 				$("#"+this.playerCommand.idBeginSelect).val(begin);
-				$("#"+this.playerCommand.idEndSelect).val(end);
+				$("#"+this.playerCommand.idEndSelect).val(end)
 			}
 		}
 		this.setMode();

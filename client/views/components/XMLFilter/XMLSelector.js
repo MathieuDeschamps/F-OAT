@@ -1,4 +1,5 @@
 import { XMLFilter } from '../XMLFilter/XMLFilter.js'
+import { XSDObject } from '../XSDParser/XSDObject.js'
 export class XMLSelector{
 
   /* Constructor
@@ -15,7 +16,7 @@ export class XMLSelector{
     this.table = xsdObj.table;
     this.stack = [];
     this.comboBoxList = [];
-    this.xmlFilter = new XMLFilter(this);
+    this.xmlFilter = new XMLFilter();
     this.currentAttr = undefined
     // value to prevent to generate code for attr out of attrManage restriction
     // which occurs when node value type are different of void type.
@@ -30,12 +31,23 @@ export class XMLSelector{
   */
   generateSelector(){
     var that = this;
-    var divParent =  $('#'+this.divId);
-    // $('#'+this.divId).append(divParent);
 
-    var divAdd = $('<div/>');
-    $(divAdd).addClass('row');
-    $(divParent).append(divAdd);
+    var help = $('<a/>')
+    $(help).addClass('right');
+    $(help).attr('target','_blank');
+    $(help).attr('href','/help#filter_help');
+    var iconHelp = $('<i/>');
+    $(iconHelp).addClass('material-icons');
+    $(iconHelp).text('help');
+    $(help).append(iconHelp);
+    $('#'+this.divId).append(help);
+
+    var divParent =  $('<div/>')
+    $('#'+this.divId).append(divParent);
+
+    var divAddFilter = $('<div/>')
+    $(divAddFilter).addClass('valign-wraper row')
+    $(divParent).append(divAddFilter);
 
     var idAddFilter = this.divId+'_addFilter';
     var addFilter = $('<a/>');
@@ -46,7 +58,7 @@ export class XMLSelector{
     $(addFilter).attr('id', idAddFilter);
     $(addFilter).attr('title', TAPi18n.__('add_filter'))
     $(addFilter).on('click',function(){ that.eventAddFilter()});
-    $(divAdd).append(addFilter);
+    $(divAddFilter).append(addFilter);
     var iconAdd =  $('<i/>');
     $(iconAdd).addClass('material-icons left');
     $(iconAdd).text('add');
@@ -55,28 +67,18 @@ export class XMLSelector{
     var labelAddFilter = $('<a/>')
     $(labelAddFilter).addClass('btn-flat disabled');
     $(labelAddFilter).text(TAPi18n.__('add_filter'))
-    $(divAdd).append(labelAddFilter);
-
-    var help = $('<a/>')
-    $(help).attr('target','_blank');
-    $(help).attr('href','/help#filter_help');
-    $(help).css('padding-top','20px');
-    var iconHelp = $('<i/>');
-    $(iconHelp).addClass('material-icons');
-    $(iconHelp).text('help');
-    $(help).append(iconHelp);
-    $(divAdd).append(help);
+    $(divAddFilter).append(labelAddFilter);
 
     var divFilter = $('<div/>');
-    $(divFilter).addClass('row');
-    $(divFilter).addClass('valign-wrapper');
+    $(divFilter).addClass('valign-wrapper row')
     $(divParent).append(divFilter);
 
 
     var idFilterButton = this.divId+'_filter';
     var filterButton = $('<input/>');
     $(filterButton).attr('type', 'checkbox');
-    $(filterButton).attr('class', 'filled-in');
+    $(filterButton).addClass('filled-in');
+    $(filterButton).addClass('right');
     $(filterButton).attr('id', idFilterButton);
     $(filterButton).on('click',function(){ that.eventFilter(this)});
     $(divFilter).append(filterButton);
@@ -85,7 +87,7 @@ export class XMLSelector{
     $(labelFilter).attr('for', idFilterButton);
     $(divFilter).append(labelFilter);
 
-    var labelFilter = $('<a/>');
+    var labelFilter = $('<p/>');
     $(labelFilter).addClass('btn-flat disabled');
     $(labelFilter).text(TAPi18n.__('filter'))
     $(divFilter).append(labelFilter);
@@ -289,6 +291,10 @@ export class XMLSelector{
   @defaultValue: of the input by default
   */
   generateInputSelector(optionsOp, type, step, defaultValue){
+    if(!(optionsOp instanceof Array && typeof type === 'string')){
+      console.log('generateInputSelector; Illegal Argument Exception')
+      return;
+    }
     var that = this;
     var currentAttr = this.currentAttr;
     var currentFilterIndex = this.currentFilterIndex;
@@ -355,6 +361,12 @@ export class XMLSelector{
   @type: of the input element
   */
   generateSelectSelector(optionsOp, options, type){
+    if(!(optionsOp instanceof Array &&
+       options instanceof Array &&
+       typeof type === 'string')){
+      console.log('generateSelectSelector; Illegal Argument Exception')
+      return;
+    }
     var that = this;
     var currentAttr = this.currentAttr;
     var currentFilterIndex = this.currentFilterIndex;
@@ -430,7 +442,7 @@ export class XMLSelector{
   @element: add to the comboxList
   */
   eventAddElement(element){
-    var stackCopy = this.stack.slice(0)
+    var stackCopy = this.stack.slice(0);
     stackCopy.push(element.name);
     this.comboBoxList.push({
       name : element.name,
@@ -484,7 +496,6 @@ export class XMLSelector{
       option = $('<option/>');
       $(option).text(element.name);
       $(option).val(i);
-      $(option).mouseover(function(e){console.log('là', e)})
       $(select).append(option);
     })
     $(select).material_select();
@@ -492,8 +503,6 @@ export class XMLSelector{
     var divAttr = $('<div/>');
     $(divAttr).addClass('col s9');
     $(divAttr).attr('id', idAttr)
-    // $(divAttr).addClass('divborder')
-    // $(divAttr).css('background', 'white')
     $(divSelect).append(divAttr);
 
     this.indexFilter++;
@@ -504,6 +513,10 @@ export class XMLSelector{
   @target: the delete button
   */
   eventDeleteFilter(index, target){
+    if(typeof index !== 'number'){
+      console.log('eventDeleteFilter: Illegal Argument Exception');
+      return
+    }
     $(target).parents('div').first().remove();
     this.xmlFilter.deleteFilter(index);
   }
@@ -515,21 +528,21 @@ export class XMLSelector{
     this.xmlFilter.setIsActive($(target).prop('checked'))
   }
 
-  eventOption(target){
-    console.log('ici')
-  }
-
   /* Event handler for selecting and element
   @idAttr: of the div to display the code for the attributs
   @index: of the filter
   @target: the select element
   */
   eventSelectElement(idAttr, index, target){
+    if(!(typeof idAttr === 'string' && typeof index === 'number')){
+      console.log('eventSelectElement: Illegal Argument Exception');
+      return;
+    }
     var that = this;
     var oldFilterIndex = this.currentFilterIndex;
     this.currentFilterIndex = index;
     var selected = $(target).find(':selected')
-    var selectedValue = $(selected).val()
+    var selectedValue = parseInt($(selected).val())
     var selectedType = this.comboBoxList[selectedValue].type;
     var selectedStack = this.comboBoxList[selectedValue].stack;
     var selectedName = $(selected).text()
@@ -537,21 +550,72 @@ export class XMLSelector{
       var type = this.table.getType(selectedType);
       var divAttr = $('#'+this.divId).find('#'+idAttr);
       $(divAttr).empty();
+      var divStack = $('<div/>');
+      var textDivStack = TAPi18n.__('path_filter');
+      var separator = ''
+      $(selectedStack).each(function(i, elt){
+        textDivStack += separator + elt;
+        separator = ' > ';
+      })
+      $(divStack).addClass('col s12')
+      $(divStack).text(textDivStack);
+      $(divAttr).append(divStack);
       if(typeof type !== 'undefined' &&
         typeof type.attrs !== 'undefined'){
         var i = 0;
         this.xmlFilter.deleteFilter(index);
-        this.xmlFilter.setStack(index, selectedStack);
+        this.xmlFilter.setFilterStack(index, selectedStack);
         $.each(type.attrs, function(key, attr){
-          // if(i % 2 == 0){
-          //   var div = $('<div/>')
-          //   $(div).addClass('col s12')
-          //   $(divAttr).append(div)
-          // }
           attr.accept(that);
           i++;
         })
       }
+
+      // add attach to
+      var divParent = $('<div/>');
+      $(divParent).addClass('col s12');
+      $(divAttr).append(divParent);
+
+      var label = $('<p/>');
+      $(label).text(TAPi18n.__('attach_filter'));
+      $(label).addClass('col s4')
+      $(divParent).append(label);
+
+      var divFilter = $('<div>');
+      $(divFilter).addClass('inline-field inline');
+      $(divFilter).addClass('col s8')
+      $(divParent).append(divFilter);
+
+      var select = $('<select/>');
+      $(select).addClass('style-input-duration');
+      $(select).addClass('white');
+      $(select).change(function(){
+        that.eventSelectAttach(index, this);
+      })
+      $(divFilter).append(select);
+      var copySelectedStack =  selectedStack.slice(0);
+      // remove this.nameExtractor
+      copySelectedStack.shift();
+      copySelectedStack.forEach(function(name, i){
+        option = $('<option/>');
+        $(option).text(name);
+        if(name === selectedName){
+          $(option).prop('selected', true);
+        }
+        // Retrieve the index of name in the comboBoxList
+        var index
+        for(var i = 0, l = that.comboBoxList.length; i < l; i++){
+           if( name == that.comboBoxList[i].name){
+             index = i;
+           }
+        }
+        $(option).val(index);
+        $(select).append(option);
+      })
+      $(select).material_select();
+      // init the value attachedStack of the filter
+      this.eventSelectAttach(index, select);
+
     }
     this.currentFilterIndex = oldFilterIndex;
   }
@@ -563,6 +627,12 @@ export class XMLSelector{
   @type: of the attr (bool, text, number,...)
   */
   eventAttrValue(index, nameAttr, target, type){
+    if(!(typeof index === 'number' &&
+        typeof nameAttr === 'string' &&
+        typeof type === 'string')){
+      console.log('eventAttrValue: Illegal Argument Exception');
+      return;
+    }
     var value = $(target).val();
     var parsedValue
     // case select multiple
@@ -578,7 +648,7 @@ export class XMLSelector{
     this.xmlFilter.setAttrValue(index, nameAttr, parsedValue)
   }
 
-  /* Parse the value of the input for the XMLFIlter object
+  /* Parse the value of the input for the XMLFilter object
   @value: the stirng which parse
   @type: of the input (text, number, bool)
   @returns: the parsedValue, default NaN for number and '' otherwise
@@ -631,6 +701,16 @@ export class XMLSelector{
   eventAttrOp(index, nameAttr, target){
     var op = $(target).val();
     this.xmlFilter.setAttrOp(index, nameAttr, op)
+  }
+
+  /* Event handler for selecting and attached element
+  @index: of the filter
+  @target: the select element
+  */
+  eventSelectAttach(index, target){
+    var i =  $(target).val();
+    var stack = this.comboBoxList[i].stack
+    this.xmlFilter.setAttachedStack(index, stack)
   }
 
 }

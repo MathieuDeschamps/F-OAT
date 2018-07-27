@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js'
 export class Overlay{
   /*
   @data: is an array of timeId and positions

@@ -1103,15 +1103,24 @@ export class XMLXSDForm{
 				if(divBody.length === 1){
 					if($(this).prop('opened')){
 						var maxHeight = $(divBody).prop('scrollHeight');
+						$(divBody).css('overflow', 'hidden');
 						$(divBody).css('max-height', 0+'px');
 						$(this).children('i').text('keyboard_arrow_right')
 						$(this).prop('opened', false)
 					}else{
 						var maxHeight = $(divBody).prop('scrollHeight');
 						$(divBody).css('max-height', maxHeight+'px');
+						// Add a delay before change the overflow property
+						// the duration of the delay depend of the time of the transition
+						// The transition properties are defined in main.css .editor-body
+						setTimeout(function() {
+							$(divBody).css('overflow', 'visible');
+						},500)
+
 						$(this).children('i').text('keyboard_arrow_down')
 						$(this).prop('opened', true)
 					}
+					console.log('divBody', $(divBody));
 				}
 			},
 			id: idHeader,
@@ -1206,7 +1215,6 @@ export class XMLXSDForm{
 				var displayed = $(that.displayedElement.seqList[0]).filter(function(j,seq){
 					return elm.tag===seq.name;
 				});
-
 				if(displayed[0].eltsList[elm.i]!=null){
 					that.displayedElement = displayed[0].eltsList[elm.i];
 

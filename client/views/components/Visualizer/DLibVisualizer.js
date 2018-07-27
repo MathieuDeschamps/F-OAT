@@ -1,8 +1,8 @@
-import { TimeLine } from '../class/TimeLine.js'
+import { TimeLine } from '../VisualizerTool/TimeLine.js'
 import { TimeLineDlib } from '../VisualizerBuilder/TimeLineDlib.js'
-import { Overlay } from '../class/Overlay.js';
+import { Overlay } from '../VisualizerTool/Overlay.js';
 import { OverlayDlib} from '../VisualizerBuilder/OverlayDlib.js'
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
 export class DLibVisualizer{

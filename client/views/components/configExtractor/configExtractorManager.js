@@ -2,7 +2,7 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Videos} from '../../../../lib/collections/videos.js';
 import {XSDObject} from '../XSDParser/XSDObject.js';
 import {XMLXSDObj} from '../XMLXSDParser/XMLXSDObj.js';
-import {XMLXSDForm} from '../XMLXSDForm/XMLXSDForm.js';
+import {XMLXSDForm} from '../VisualizerTool/XMLXSDForm.js';
 import {XMLGenerator} from '../XMLGenerator/XMLGenerator.js';
 
 eventNewExtraction = null
@@ -39,8 +39,6 @@ export class configExtractorManager{
 			$(JQidDiv).css('display','block');
 			$(JQidDiv).html('<div id="'+idDivForm+'"></div>');
 			$(JQidDiv).append('<div id="'+idDivButton+'"></div>');
-			/*var path='/parameters.xsd';
-			Meteor.call("getXml",path, (err,result)=>{*/
 
 			//console.log(extractor.ip);
 			Meteor.call("getExtractorsParam",extractor.ip,(err,result)=>{
@@ -98,7 +96,7 @@ export class configExtractorManager{
 
 			var params={"param" : paramsXML};
 			// console.log('param en JSON',params);
-			$(JQidDivButton).html('');
+			// $(JQidDivButton).html('');
 
 
 			// Initialisation

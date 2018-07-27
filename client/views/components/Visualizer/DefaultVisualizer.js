@@ -1,4 +1,4 @@
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
 export class DefaultVisualizer{

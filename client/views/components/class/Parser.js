@@ -6,7 +6,7 @@ export class Parser{
   */
   static getListExtractors(xml){
     if(xml == undefined){
-      console.log('getListExtractors : Illegal Argument Exception');
+      console.log('getListExtractors: Illegal Argument Exception');
     }else{
       var XMLDoc = $.parseXML(xml);
       var extractors= [];
@@ -23,7 +23,7 @@ export class Parser{
   */
   static getListTimeId(xml){
     if(xml == undefined){
-      console.log('getNbFrames : Illegal Argument Exception');
+      console.log('getNbFrames: Illegal Argument Exception');
     }else{
       var XMLObject = $.parseXML(xml);
       var timeId;

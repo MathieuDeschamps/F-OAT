@@ -1,10 +1,10 @@
 import { Parser } from '../class/Parser.js'
 import { Projects } from '../../../../lib/collections/projects.js';
-import { TimeLine } from '../class/TimeLine.js'
+import { TimeLine } from '../VisualizerTool/TimeLine.js'
 import { VisualizerFactory } from '../Visualizer/VisualizerFactory.js'
 import { XSDObject } from '../XSDParser/XSDObject.js';
 import { XMLXSDObj } from '../XMLXSDParser/XMLXSDObj.js';
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js';
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js';
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js';
 import { Writer } from '../class/Writer.js'
 
@@ -82,7 +82,6 @@ export class configAnnotationManager{
         idsDiv.forEach(function(idDiv){
           var JQidDiv = '#' + idDiv;
           $(JQidDiv).css('display', 'none');
-
         })
         // Timeline lost the focus of the vidCtrl when it is hidden
         if(vidCtrl.focusedTimeLine instanceof TimeLine){
@@ -146,7 +145,7 @@ export class configAnnotationManager{
   */
   addAnnotation(idExtractor,version){
     var idProject = Router.current().params._id;
-    var xmlPath = '/tmp/' + idProject + '/annotation.xml';
+    var xmlPath = '/dir-foat/' + idProject + '/annotation.xml';
     Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
       if(xmlErr){
         alert(xmlErr.reason);
@@ -169,7 +168,7 @@ export class configAnnotationManager{
           }
         });
         //Recuperer uniquement le xml du nouvel extracteur
-        extractorPath  = '/tmp/'+ idExtractor + '/' + version + '/descriptor.xsd';
+        extractorPath  = '/dir-foat/'+ idExtractor + '/' + version + '/descriptor.xsd';
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
             toastr.error(xsdErr.reason);

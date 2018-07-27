@@ -6,7 +6,6 @@ import { SeekBar } from '../playerCommand/SeekBar.js';
 import  '/public/renderers/vimeo.js';
 import './videoPlayer.html';
 import './videoPlayer.css';
-import { Parser } from '../../components/class/Parser.js'
 
 eventDDPVideo = null;
 
@@ -246,7 +245,7 @@ Template.videoPlayer.onDestroyed(function(){
 
 // This function is used to check that the file is a video
 function checkExtension(verifExt, fileValue){
-  var fileExtension = fileValue.substring(fileValue.lastIndexOf(".")+1, fileValue.lenght);
+  var fileExtension = fileValue.substring(fileValue.lastIndexOf(".")+1, fileValue.length);
   fileExtension = fileExtension.toLowerCase();
   for (var ext of verifExt){
     if(fileExtension==ext){

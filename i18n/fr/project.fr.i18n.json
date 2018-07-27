@@ -16,6 +16,8 @@
   "add_filter" : "Ajouter un filtre",
   "remove_filter" :  "Supprimer le filtre",
   "set_filter" : "Définir un filtre...",
+  "path_filter" : "Chemin:",
+  "attach_filter" : "Lier à:",
   "choose_option" : "Choisissez votre option",
   "errorExtensionFile" : "Le fichier doit être un fichier .mp4",
   "errorFile" : "Donnez un fichier à télécharger"

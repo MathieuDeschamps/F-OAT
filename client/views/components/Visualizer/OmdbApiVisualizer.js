@@ -1,4 +1,4 @@
-import { OmdbApiForm } from '../XMLXSDForm/OmdbApiForm.js'
+import { OmdbApiForm } from '../VisualizerTool/OmdbApiForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
 export class OmdbApiVisualizer{

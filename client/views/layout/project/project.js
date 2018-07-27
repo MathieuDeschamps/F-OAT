@@ -90,7 +90,7 @@ Template.project.onCreated(()=>{
 Template.project.onRendered(()=>{
   $("#saveButtonAnnotations").css('display', 'none');
   if(projectExists()){
-    var xmlPath = '/tmp/' + Router.current().params._id + '/annotation.xml'
+    var xmlPath = '/dir-foat/' + Router.current().params._id + '/annotation.xml'
     var extractorPath
 
     if(!eventDeleteProject){
@@ -129,7 +129,7 @@ Template.project.onRendered(()=>{
         // add the extractor list and build the forms
         $(extractors).each(function(i,extractor){
 
-        extractorPath  = '/tmp/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
+        extractorPath  = '/dir-foat/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
             // console.log('path', pathExtractor)

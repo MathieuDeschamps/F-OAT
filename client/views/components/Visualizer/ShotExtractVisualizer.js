@@ -1,9 +1,9 @@
-import { TimeLine } from '../class/TimeLine.js'
+import { TimeLine } from '../VisualizerTool/TimeLine.js'
 import { TimeLineShot } from '../VisualizerBuilder/TimeLineShot.js'
-import { Overlay } from '../class/Overlay.js';
+import { Overlay } from '../VisualizerTool/Overlay.js';
 import { OverlayPosition} from '../VisualizerBuilder/OverlayPosition.js'
 import { XMLSelector } from '../XMLFilter/XMLSelector.js'
-import { XMLXSDForm } from '../XMLXSDForm/XMLXSDForm.js'
+import { XMLXSDForm } from '../VisualizerTool/XMLXSDForm.js'
 import { XMLGenerator } from '../XMLGenerator/XMLGenerator.js'
 
 export class ShotExtractVisualizer{
@@ -81,12 +81,6 @@ export class ShotExtractVisualizer{
     }else{
       console.log("error",generator.getErrorMessage());
     }
-  }
-
-  /* Obsever pattern : update function
-  */
-  updateVideoControler(){
-    this.notifyAll()
   }
 
   /* Visualize the XMLXSDObject
