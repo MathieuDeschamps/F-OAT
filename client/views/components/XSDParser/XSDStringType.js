@@ -35,7 +35,7 @@ export class XSDStringType {
 	*/
 	// TODO : check if s is a string
 	holds(s){
-		result=true;
+		var result=true;
 		if (s.length < this.minLength){
 				result=false;
 		}

@@ -418,7 +418,6 @@ export class XMLXSDForm{
 					if(deletable){
 						this.eventHandler.push({
 							function:function(){
-								console.log('deleted')
 								var duration = 500 // 500ms
 								$(this).parent().parent().fadeOut(duration);
 								that.displayedElement = parentElement;
@@ -1065,7 +1064,7 @@ export class XMLXSDForm{
 		enumValues.forEach(function(option){
 			if (defaultValue === option){
 				result+='<option value="'+option+'" selected="selected">'+option+'</option>';
-				isSelected = true
+				var isSelected = true
 			}else{
 				result+='<option value="'+option+'">'+option+'</option>';
 			}
@@ -1120,7 +1119,6 @@ export class XMLXSDForm{
 						$(this).children('i').text('keyboard_arrow_down')
 						$(this).prop('opened', true)
 					}
-					console.log('divBody', $(divBody));
 				}
 			},
 			id: idHeader,
@@ -1148,7 +1146,7 @@ export class XMLXSDForm{
 				var jqIdInput='#'+idInput;
 				var oldValue = attr.value;
 				attr.setValue($(jqIdInput).val());
-				newValue = attr.value;
+				var newValue = attr.value;
 				$(jqIdInput).val(newValue);
 				if(typeof that.visualizer !== 'undefined' &&
 					oldValue !== newValue){

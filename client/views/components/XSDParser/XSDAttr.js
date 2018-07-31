@@ -28,7 +28,7 @@ export class XSDAttr {
 		if (typeName != undefined){
 			this.type=typeName;
 		}else{
-			simpleType=$(attr).children('xs\\:simpleType');
+			var simpleType=$(attr).children('xs\\:simpleType');
 			if (simpleType.length==1){
 				this.type=table.createSimpleType(simpleType[0]);
 			}else if (simpleType.length>1){

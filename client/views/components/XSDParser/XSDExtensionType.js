@@ -16,7 +16,7 @@ export class XSDExtensionType{
 
 		var attrs={};
 		$(extens).children('xs\\:attribute').each(function(i,attr){
-			attrObj=new XSDAttr(attr,table);
+			var attrObj=new XSDAttr(attr,table);
 			if (attrs[attrObj.name] == undefined){
 				attrs[attrObj.name]=attrObj;
 			}else{

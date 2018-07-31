@@ -17,8 +17,7 @@ export class XSDObject{
 	*/
 	constructor(XSD){
 		// Getting the schema node
-		schema = $(XSD).find('xs\\:schema');
-
+		var schema = $(XSD).find('xs\\:schema')[0];
 		// Initialisation of the symbol table
 		this.table=new XSDSymbolTable();
 
@@ -48,7 +47,7 @@ export class XSDObject{
 		});
 
 		// root creation
-		rootDescription=$(schema).children('xs\\:element')[0]; // Other elements are ignored if present
+		var rootDescription=$(schema).children('xs\\:element')[0]; // Other elements are ignored if present
 		this.root=new XSDElt(rootDescription,this.table);
 	}
 

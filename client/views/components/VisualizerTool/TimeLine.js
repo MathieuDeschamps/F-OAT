@@ -329,7 +329,7 @@ export class TimeLine {
         });
 
         //update old rect
-        rects = itemRects.selectAll("rect")
+        var rects = itemRects.selectAll("rect")
         .data(visItems, function(d){
           return d.id
         })
@@ -485,7 +485,7 @@ export class TimeLine {
   moveReadLine(){
       this.current_frame = vidCtrl.getCurrentFrame();
       // move the read line of main
-      x1 = this.scale_x1(this.current_frame);
+      var x1 = this.scale_x1(this.current_frame);
       var main_read_line =   $('#'+this.chart_id).find('.read_line:eq(0)')
 
       // update the brush when the read line is out of the main  windows
@@ -525,7 +525,7 @@ export class TimeLine {
           .attr('x2', x1);
 
       // move the read line of mini
-      x2 = this.scale_x2(this.current_frame);
+      var x2 = this.scale_x2(this.current_frame);
       $('#'+this.chart_id).find('.read_line:eq(1)')
           .attr('x1', x2)
           .attr('x2', x2);

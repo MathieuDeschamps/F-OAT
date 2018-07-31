@@ -68,7 +68,7 @@ export class XSDRestrictionType{
 		if (enumuratedList.length>0){
 			this.enumeratedValues=[];
 			$(enumuratedList).each(function(i,enumTag){
-				value=$(enumTag).attr('value');
+				var value=$(enumTag).attr('value');
 				var convertValue = that.convert(value)
 				that.addEnumeratedValue(convertValue)
 			});

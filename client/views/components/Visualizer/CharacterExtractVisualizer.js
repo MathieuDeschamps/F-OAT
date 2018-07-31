@@ -32,7 +32,7 @@ export class CharacterExtractVisualizer{
   *         false otherwise
   */
   alreadyAttached(newObserver){
-    result = false;
+    var result = false;
     this.observers.forEach(function(observer){
       if(observer.equals(newObserver)){
         result = true;

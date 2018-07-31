@@ -47,7 +47,7 @@ export class XSDSymbolTable{
 	@returns: string
 	*/
 	newTypeName(){
-		typeName="__type__"+this.typeIdNumber;
+		var typeName="__type__"+this.typeIdNumber;
 		this.typeIdNumber++;
 		return typeName;
 	}
@@ -125,7 +125,7 @@ export class XSDSymbolTable{
 				var attrs={};
 				var that=this;
 				$(typeDef).children("xs\\:attribute").each(function(i,attr){
-					attrObj=new XSDAttr(attr,that);
+					var attrObj=new XSDAttr(attr,that);
 					if (attrs[attrObj.name] == undefined){
 						attrs[attrObj.name]=attrObj;
 					}else{
@@ -207,7 +207,8 @@ export class XSDSymbolTable{
 	*/
 	complexTypeKind(typeDef){
 		// undefined si mal défini
-		N=0;
+		var N=0;
+		var kind;
 		switch ($(typeDef).children("xs\\:sequence").length){
 			case 0 : break;
 			case 1 : kind="sequence";

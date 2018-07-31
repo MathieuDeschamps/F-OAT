@@ -37,7 +37,7 @@ export class Writer{
     var tab = "";
 
     if(depth!=0){
-      for(i = 1; i < depth; i++ ){
+      for(var i = 1; i < depth; i++ ){
         tab += "\t";
       }
       // add the node and the attributes

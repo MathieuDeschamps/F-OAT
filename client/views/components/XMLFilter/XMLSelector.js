@@ -423,7 +423,7 @@ export class XMLSelector{
     $(selectValue).append(defaultValue);
 
     options.forEach(function(option){
-      optionValue = $('<option/>');
+      var optionValue = $('<option/>');
       $(optionValue).text(option);
       $(optionValue).val(option);
       $(selectValue).append(optionValue);
@@ -597,7 +597,7 @@ export class XMLSelector{
       // remove this.nameExtractor
       copySelectedStack.shift();
       copySelectedStack.forEach(function(name, i){
-        option = $('<option/>');
+        var option = $('<option/>');
         $(option).text(name);
         if(name === selectedName){
           $(option).prop('selected', true);

@@ -186,7 +186,7 @@ export class VideoControler {
 
 	// Fonction de l'intervalle en mode full
 	fullPlay(){
-		newCurrentFrame = this.getCurrentFrame()
+		var newCurrentFrame = this.getCurrentFrame()
 		this.notifyAttachedObjects();
 		// console.log("full");
 	}

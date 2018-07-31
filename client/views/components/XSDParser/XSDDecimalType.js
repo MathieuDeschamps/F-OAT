@@ -35,7 +35,7 @@ export class XSDDecimalType {
 	@returns: boolean
 	*/
 	holds(n){
-		result=true;
+		var result=true;
 		if (typeof n == "number"){
 			if (this.minEx!="unbounded"){
 				if (n <= this.minEx){
