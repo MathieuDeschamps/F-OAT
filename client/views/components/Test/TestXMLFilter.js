@@ -230,19 +230,27 @@ export class TestXMLFilter{
     Assert.equals('match string = ""', true, result)
 
     result = XMLFilter.match('test','=', 'test')
-    Assert.equals('match string =', true, result)
+    Assert.equals('match string "test"="test"', true, result)
     result = XMLFilter.match('test1','=', 'test')
-    Assert.equals('match string =', false, result)
+    Assert.equals('match string "test1"="test"', true, result)
 
     result = XMLFilter.match('test', '!=', 'test1')
-    Assert.equals('match string !=', true, result)
+    Assert.equals('match string "test"!="test1"', true, result)
     result = XMLFilter.match('test', '!=', 'test')
-    Assert.equals('match string !=', false, result)
+    Assert.equals('match string "test"!="test"', false, result)
 
     result = XMLFilter.match('0', '!=', 0)
     Assert.equals('match  "0"!=0', true, result)
     result = XMLFilter.match('0', '=', 0)
     Assert.equals('match  "0"=0', false, result)
+
+
+    result = XMLFilter.match('Right elbow', '=', 'Right')
+    Assert.equals('match  "Right elbow"="Right"', true, result)
+    result = XMLFilter.match('Right', '=', 'Right elbow')
+    Assert.equals('match  "Right"="Right elbow"', false, result)
+    result = XMLFilter.match('right elbow', '=', 'Right')
+    Assert.equals('match  "right"="Right elbow"', false, result)
 
     result = XMLFilter.match(0, '<', 0)
     Assert.equals('match int 0 < 0', false, result)
@@ -364,7 +372,7 @@ export class TestXMLFilter{
     filter2 = {'attrs':{'set':{'op':'!=', 'value':['a','b']}}};
     xmlxsdElement2 = {'attrs':{'set':{'value':'c'}}};
     result = XMLFilter.matchElement(xmlxsdElement2, filter2)
-    Assert.equals('matchElement set ["a", "b"] !="c" ', true, result);        
+    Assert.equals('matchElement set ["a", "b"] !="c" ', true, result);
     xmlxsdElement2 = {'attrs':{'set':{'value':'b'}}};
     result = XMLFilter.matchElement(xmlxsdElement2, filter2)
     Assert.equals('matchElement set ["a", "b"] !="b" ', false, result);

@@ -104,7 +104,7 @@ export class VideoControler {
 			var that = this;
 			// add a delay before notify the observers
 			// which lasts the time to set the current time
-			var duration = Math.max(200, Math.abs(newCurrentFrame - that.getCurrentFrame())/5)
+			var duration = Math.min(1000,Math.max(200, Math.abs(newCurrentFrame - that.getCurrentFrame())/5))
 			setTimeout(function() {
 				// console.log('duration', duration)
 				// console.log('currentFrame expected: ', newCurrentFrame, ' real: ', that.getCurrentFrame());

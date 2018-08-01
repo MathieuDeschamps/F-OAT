@@ -63,7 +63,7 @@ export class TimeLine {
 
     this.filter_id = this.div_id+'_filter';
     var filter_div = $('<div/>');
-    $(filter_div).addClass('divborder');
+    $(filter_div).addClass('divborder-config');
     $(filter_div).addClass('indigo');
     $(filter_div).addClass('lighten-5');
     $(filter_div).attr('id', this.filter_id);

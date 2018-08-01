@@ -249,19 +249,23 @@ export class XMLFilter{
   visitXMLXSDElt(xmlxsdElt){
     // console.log('visitXMLXSDElt ', xmlxsdElt);
     var that = this;
+    var result = false
     if(xmlxsdElt.eltsList.length === 0){
       // no element in the list but the filter want to filtering on this element
       this.isMatching = false;
     }
     $(xmlxsdElt.eltsList).each(function(i, elt){
       if(that.toVisit.length === 0){
-        if(that.isMatching){
-          that.isMatching = XMLFilter.matchElement(elt, that.currentFilter);
-        }
+          if(XMLFilter.matchElement(elt, that.currentFilter)){
+            result = true;
+          }
       }else{
         elt.accept(that);
       }
     })
+    if(that.toVisit.length === 0){
+      this.isMatching = result;
+    }
   }
 
   /* Visitor pattern : visit function
@@ -343,11 +347,11 @@ export class XMLFilter{
 
   static matchElement(xmlxsdElement,filter){
     var result = true;
+    this.isMatching = true;
     $.each(filter.attrs, function(key, filterAttr){
+
       if(typeof xmlxsdElement.attrs[key] !== 'undefined' &&
         xmlxsdElement.attrs[key] !== null &&
-        typeof xmlxsdElement.attrs[key].value !== 'undefined' &&
-        typeof xmlxsdElement.attrs[key].value !== null &&
         result ){
           var currentAttrValue = xmlxsdElement.attrs[key].value;
           if(filterAttr.value instanceof Array){
@@ -388,7 +392,16 @@ export class XMLFilter{
     if(!(filterAttrOp === '=' && filterAttrValue === '')){
       switch (filterAttrOp) {
         case '=':
-          if(value !== filterAttrValue){
+        if(typeof value !== typeof filterAttrValue){
+          result = false;
+        }else  if(typeof value === 'string' &&
+          typeof filterAttrValue === 'string' &&
+          value.indexOf(filterAttrValue) === -1){
+            // when the value contains the filterAttr
+            result = false;
+          }else if(typeof value !== 'string' &&
+            typeof filterAttrValue !== 'string' &&
+            value !== filterAttrValue){
             result = false;
           }
           break;

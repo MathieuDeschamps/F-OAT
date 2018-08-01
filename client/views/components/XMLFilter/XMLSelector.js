@@ -47,6 +47,7 @@ export class XMLSelector{
 
     var divAddFilter = $('<div/>')
     $(divAddFilter).addClass('valign-wraper row')
+    $(divAddFilter).css('margin-bottom', '0px')
     $(divParent).append(divAddFilter);
 
     var idAddFilter = this.divId+'_addFilter';
@@ -71,6 +72,7 @@ export class XMLSelector{
 
     var divFilter = $('<div/>');
     $(divFilter).addClass('valign-wrapper row')
+    $(divFilter).css('margin-bottom', '0px')
     $(divParent).append(divFilter);
 
 
@@ -270,7 +272,6 @@ export class XMLSelector{
       if(xsdString.isEnumerated()){
         this.generateSelectSelector(optionsOp, xsdString.enumeration, 'text');
       }else{
-        console.log('value', value);
         this.generateInputSelector(optionsOp, 'text', undefined, value);
       }
     }
