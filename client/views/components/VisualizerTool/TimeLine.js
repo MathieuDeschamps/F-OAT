@@ -478,7 +478,6 @@ export class TimeLine {
     this.updateVisualizer();
   }
 
-
   /* move the read lines of the time line
    on the current frame of the video controler
   */

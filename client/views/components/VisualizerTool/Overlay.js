@@ -229,7 +229,6 @@ export class Overlay{
 
   }
 
-
   /*
     Draw rectangles based on this.rect and their events. Works almost same as draw_circles
     but with rectangles and another drag & drop function

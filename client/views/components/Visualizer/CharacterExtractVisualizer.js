@@ -102,7 +102,7 @@ export class CharacterExtractVisualizer{
     timeLine.setXMLXSDForm(xmlxsdForm);
     this.attach(timeLine);
 
-    console.log('timeLineData', timeLineData);
+    // console.log('timeLineData', timeLineData);
   }
 
   /*

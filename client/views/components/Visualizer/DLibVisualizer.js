@@ -112,8 +112,8 @@ export class DLibVisualizer{
     overlay.setXMLXSDForm(xmlxsdForm);
     this.attach(overlay);
 
-    console.log('timeLineData', timeLineData);
-    console.log('overlayData', overlayData);
+    // console.log('timeLineData', timeLineData);
+    // console.log('overlayData', overlayData);
 
   }
 
