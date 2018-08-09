@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import {Projects } from "../lib/collections/projects.js";
 import {HTTP} from "meteor/http";
 const fs = require('fs');
-export const xmlPath = "/dir-foat/";
+export const xmlPath = "/var/www/foat/project/";
 
 Meteor.startup(() => {
   // code to run on server at startup

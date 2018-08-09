@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating';
 import { Projects } from '../../../../lib/collections/projects.js';
 import { Videos } from '../../../../lib/collections/videos.js';
 import { VideoControler } from '../VideoControler/VideoControler.js';
-import { SeekBar } from '../playerCommand/SeekBar.js';
 import  '/public/renderers/vimeo.js';
 import './videoPlayer.html';
 import './videoPlayer.css';
@@ -18,7 +17,8 @@ Template.videoPlayer.onCreated(function(){
 });
 
 var Player;
-Template.videoPlayer.onRendered(function () {
+Template.videoPlayer.onRendered(function (){
+
   Session.set('videoPlayer', 0);
 
   //This event will refresh the video Player src when a file upload is done, so all users on project can read it without refreshing
@@ -48,12 +48,6 @@ Template.videoPlayer.onRendered(function () {
         Player.setSrc(url);
         Player.load();
         vidCtrl.pause();
-        vidCtrl.detachAll();
-        vid=$("#videoDisplayId").get(0);
-        vidCtrl=new VideoControler(vid, project.frameRate, project.duration);
-        seekBarMng=new SeekBar(vidCtrl, "currentFrame");
-        vidCtrl.attach(seekBarMng,1);
-
         //event listeners in project.js & playerCommand.js
         eventDDPVideo.emit('videoCtrl');
         eventDDPVideo.emit('playerCommand');
@@ -89,11 +83,18 @@ Template.videoPlayer.onRendered(function () {
       mediaElement.setSrc(url);
     }
   });
-  vid=$("#videoDisplayId").get(0);
-  vidCtrl=new VideoControler(vid, project.frameRate, project.duration);
-  seekBarMng=new SeekBar(vidCtrl, "currentFrame");
-  vidCtrl.attach(seekBarMng,1);
+
+  var vid=$("#videoDisplayId").get(0);
+  // if the vidCtrl didn't exist created
+  // else the template rerendered because the video player has change
+  // this occur when the project using a locla vifeo file.
+  if (typeof vidCtrl === "undefined") {
+    vidCtrl=new VideoControler(vid, project.frameRate, project.duration);
+  }else{
+    vidCtrl.setVid(vid);
+  }
   Session.set('videoPlayer', 1);
+
 });
 
 Template.videoPlayer.helpers({
@@ -224,7 +225,8 @@ Template.videoPlayer.events({
 Template.videoPlayer.onDestroyed(function(){
   //Destroy event, videoContainer and Player on leaving the route
   vidCtrl.pause();
-  vidCtrl.detachAll();
+  // vidCtrl.detachAll();
+
   $('.videoContainer').remove();
 
   eventDDPVideo.setClient({

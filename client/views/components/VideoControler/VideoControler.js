@@ -68,6 +68,13 @@ export class VideoControler {
 			this.playerCommand = playerCommand;
 		}
 	}
+
+
+	setVid(video){
+		if(typeof video !== 'undefined'){
+			this.vid = video;
+		}
+	}
 	// Frame-Time management
 
 	// Conversion

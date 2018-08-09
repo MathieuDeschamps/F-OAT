@@ -123,7 +123,7 @@ export class configAnnotationManager{
 
         Meteor.call("updateXML",project,xml,(err,result)=>{
           if(err){
-            alert(err.reason);
+            console.log(err.reason);
           }else{
             toastr.success(TAPi18n.__('save'));
             // VideoControler update
@@ -145,7 +145,7 @@ export class configAnnotationManager{
   */
   addAnnotation(idExtractor,version){
     var idProject = Router.current().params._id;
-    var xmlPath = '/dir-foat/' + idProject + '/annotation.xml';
+    var xmlPath = '/var/www/foat/project/' + idProject + '/annotation.xml';
     Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
       if(xmlErr){
         alert(xmlErr.reason);
@@ -168,7 +168,7 @@ export class configAnnotationManager{
           }
         });
         //Recuperer uniquement le xml du nouvel extracteur
-        extractorPath  = '/dir-foat/'+ idExtractor + '/' + version + '/descriptor.xsd';
+        extractorPath  = '/var/www/foat/extractor/'+ idExtractor + '/' + version + '/descriptor.xsd';
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
             toastr.error(xsdErr.reason);

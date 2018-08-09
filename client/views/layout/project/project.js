@@ -90,7 +90,7 @@ Template.project.onCreated(()=>{
 Template.project.onRendered(()=>{
   $("#saveButtonAnnotations").css('display', 'none');
   if(projectExists()){
-    var xmlPath = '/dir-foat/' + Router.current().params._id + '/annotation.xml'
+    var xmlPath = '/var/www/foat/project/' + Router.current().params._id + '/annotation.xml'
     var extractorPath
 
     if(!eventDeleteProject){
@@ -111,7 +111,8 @@ Template.project.onRendered(()=>{
 
     Meteor.call("getXml",xmlPath,(xmlErr,result)=>{
       if(xmlErr){
-        alert(xmlErr.reason);
+        // console.log('xmlPath', xmlPath);
+        console.log(xmlErr.reason);
       }else{
         var xmlDoc = result.data
         var xmlParsed = $.parseXML(result.data)
@@ -129,11 +130,11 @@ Template.project.onRendered(()=>{
         // add the extractor list and build the forms
         $(extractors).each(function(i,extractor){
 
-        extractorPath  = '/dir-foat/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
+        extractorPath  = '/var/www/foat/extractor/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
-            // console.log('path', pathExtractor)
-            // alert(xsdErr.reason);
+            // console.log('path', extractorPath)
+            console.log(xsdErr.reason);
           }else{
             // build the forms for the editor
             var xmlTmp = $(xmlParsed).find('extractors').children().filter(function(){

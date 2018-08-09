@@ -7,7 +7,7 @@ import '../videoPlayer/videoPlayer.js';
 //vidPlayerCommandListener is used to only set once the listener
 var vidPlayerCommandListener;
 
-Template.project.onRendered(function(){
+Template.playerCommand.onRendered(function(){
 	var idsCommands = new Array(9);
 	idsCommands[0] = "playButton";
 	idsCommands[1] = "pauseButton";
@@ -21,7 +21,7 @@ Template.project.onRendered(function(){
 	var playerCommand;
 	this.playerCommandTracker = Tracker.autorun(function doWhenVideoPlayerRendered(computation) {
 		if(Session.get('videoPlayer') === 1 && Session.get('projectReady') === 1 ) {
-			playerCommand = new PlayerCommand(idsCommands);
+			playerCommand = new PlayerCommand(vidCtrl, idsCommands);
 			vidCtrl.setPlayerCommand(playerCommand);
 			if(!vidPlayerCommandListener){
 				vidPlayerCommandListener = true;

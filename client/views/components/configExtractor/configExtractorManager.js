@@ -43,7 +43,7 @@ export class configExtractorManager{
 			//console.log(extractor.ip);
 			Meteor.call("getExtractorsParam",extractor.ip,(err,result)=>{
 				if(err){
-					alert(err.reason);
+					console.log('extractor params', err.reason);
 					$(JQidDiv).html('The parameters of '+extractor.name+' are not available.');
 				}else{
 					that.manageParameters(result,extractor,i,idDiv,idDivForm,idDivButton,JQlabelConfig);
