@@ -46,10 +46,8 @@ export class Overlay{
 
       var svg = d3.select("#"+this.divId).append("svg")
 
-      $('#' + this.divId).find("svg").css({
-        'width': $('#videoContainer').width() + 'px',
-        'height': $('#videoContainer').height() + 'px'
-      })
+      this.resize();
+
       var width = $('#' + this.divId).find('svg').width();
       var height = $('#' + this.divId).find('svg').height();
       var that = this;
@@ -243,12 +241,11 @@ export class Overlay{
 
       var svg = d3.select("#"+this.divId).select("svg");
 
-      $('#' + this.divId).find("svg").css({
-        'width': $('#videoContainer').width() + 'px',
-        'height': $('#videoContainer').height() + 'px'
-      })
+      this.resize();
+
       var width = $('#' + this.divId).find('svg').width();
       var height = $('#' + this.divId).find('svg').height();
+
       var that = this;
 
       y1 = d3.scaleLinear()
@@ -413,6 +410,14 @@ export class Overlay{
         }
       }
     }
+  }
+
+  // resize the overlay dimension
+  resize(){
+    $('#'+this.divId).find("svg").css({
+      'width': $('#videoContainer').width() + 'px',
+      'height': $('#videoContainer').height() + 'px'
+    });
   }
 
   /* Observer pattern : update function

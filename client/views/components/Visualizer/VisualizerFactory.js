@@ -1,5 +1,4 @@
 import { ShotExtractVisualizer } from './ShotExtractVisualizer.js';
-import { CharacterExtractVisualizer } from './CharacterExtractVisualizer.js';
 import { DefaultVisualizer } from './DefaultVisualizer.js';
 import { OmdbApiVisualizer } from './OmdbApiVisualizer.js';
 import { DLibVisualizer } from './DLibVisualizer.js';
@@ -42,15 +41,7 @@ export class VisualizerFactory{
         divOverlay = $('<div/>')
         $(divOverlay).attr('id', idOverlay).css('display', 'none');
         $('#' + this.divIdOverlay).append(divOverlay);
-
         visualizer = new ShotExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name, this.nbFrames, idForm, idTimeLine, idOverlay);
-        break;
-      case "character-extract":
-        divTimeLine = $('<div/>');
-        $(divTimeLine).attr('id', idTimeLine).addClass('row').css('display', 'none');
-        $('#' + this.divIdTimeLine).append(divTimeLine);
-
-        visualizer = new CharacterExtractVisualizer(this.xsdObj, this.xmlxsdObj,id, name,this.nbFrames, idForm, idTimeLine);
         break;
       case "omdbapi":
         visualizer = new OmdbApiVisualizer(this.xmlxsdObj,id, name, idForm);

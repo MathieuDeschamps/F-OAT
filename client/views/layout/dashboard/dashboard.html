@@ -8,6 +8,8 @@
           <thead>
             <tr>
               <th>{{_ 'name'}}</th>
+              <th>{{_ 'frame_rate'}}</th>
+              <th>{{_ 'duration'}}</th>
               <th>{{_ 'owner'}}</th>
               <th>{{_ 'url'}}</th>
               <th>{{_ 'actions'}}</th>
@@ -20,6 +22,12 @@
                 <a href="/project/{{_id}}">
                   {{name}}
                 </a>
+              </td>
+              <td>
+                {{frameRate}}
+              </td>
+              <td>
+                {{durationFormated duration}}
               </td>
               <td>
                 {{owner}}

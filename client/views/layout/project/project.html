@@ -4,9 +4,9 @@
       <div class="row">
         <div class="col s8">
           {{#if isFile}}
+            <div id="overlay">
+            </div>
             {{#if uploadIsDone}}
-              <div id="overlay">
-              </div>
               {{> videoPlayer}}
               {{> playerCommand}}
             {{else}}
@@ -17,7 +17,7 @@
             </div>
             {{> videoPlayer}}
             {{> playerCommand}}
-          {{/if}}          
+          {{/if}}
             <div id="timeLines">
             </div>
         </div>

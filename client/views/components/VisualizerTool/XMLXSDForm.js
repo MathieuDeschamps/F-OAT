@@ -1,3 +1,5 @@
+import { Writer } from '../class/Writer.js';
+
 export class XMLXSDForm{
 
 	/* Constructor
@@ -104,7 +106,7 @@ export class XMLXSDForm{
 			var $divElement = $('<div class="editor-element"/>');
 			$divBody.append($divElement);
 			// check if the element can be delete or not
-			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
+			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs && Writer.hasRightToWrite()){
 				$divElement.append(that.generateHeaderContent(idName, 'keyboard_arrow_right',
 					xmlxsdElt.name,true, idClear));
 			}
@@ -127,7 +129,7 @@ export class XMLXSDForm{
 				eventName:'click'
 			});
 
-			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
+			if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs && Writer.hasRightToWrite()){
 				that.eventHandler.push({
 					function:function(){
 						var duration = 500 // 500ms
@@ -150,7 +152,7 @@ export class XMLXSDForm{
 
 		});
 		//Bouton d'ajout d'elt si nécessaire
-		if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
+		if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs && Writer.hasRightToWrite()){
 			var idEltAdd=that.id+'_elt_'+xmlxsdElt.name +'_add';
 
 			$divBody.append(that.generateHeaderContent(idEltAdd, 'add_circle',
@@ -223,10 +225,10 @@ export class XMLXSDForm{
 			if(typeof parentElement.obj !== 'undefined' &&
 				typeof parentElement.obj.name !== 'undefined' &&
 				parentElement.obj.name === 'sequence'){
-				var xmlxsdElt = $(parentElement.obj.seqList[0]).filter(function(){
-					return this.name === lastElement.tag
-				})[0]
-				var deletable = xmlxsdElt.canBeDeleted(lastElement.i);
+					var xmlxsdElt = $(parentElement.obj.seqList[0]).filter(function(){
+						return this.name === lastElement.tag
+					})[0]
+					var deletable = xmlxsdElt.canBeDeleted(lastElement.i) && Writer.hasRightToWrite();
 					if(deletable){
 						this.eventHandler.push({
 							function:function(){
@@ -270,7 +272,7 @@ export class XMLXSDForm{
 					var $divElement = $('<div class="editor-element"/>');
 					$divBody.append($divElement)
 
-					if(xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
+					if(xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs && Writer.hasRightToWrite()){
 						$divElement.append(that.generateHeaderContent(idName,'keyboard_arrow_right',
 							xmlxsdElt.name,true, idClear));
 					}else{
@@ -293,7 +295,7 @@ export class XMLXSDForm{
 						eventName:'click'
 					});
 
-					if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs){
+					if (xmlxsdElt.eltsList.length!=xmlxsdElt.minOccurs && Writer.hasRightToWrite()){
 						that.eventHandler.push({
 							function:function(){
 								var duration = 500 // 500ms
@@ -317,7 +319,7 @@ export class XMLXSDForm{
 				});
 
 				//Bouton d'ajout d'elt si nécessaire
-				if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs){
+				if (xmlxsdElt.eltsList.length!=xmlxsdElt.maxOccurs && Writer.hasRightToWrite()){
 					var idEltAdd=that.id+'_elt_'+xmlxsdElt.name+'_add_'+k+'-'+j;
 
 					$divBody.append(that.generateHeaderContent(idEltAdd, 'add_circle',
@@ -414,7 +416,7 @@ export class XMLXSDForm{
 				var xmlxsdElt = $(parentElement.obj.seqList[0]).filter(function(){
 					return this.name === lastElement.tag
 				})[0]
-				var deletable = xmlxsdElt.canBeDeleted(lastElement.i);
+				var deletable = xmlxsdElt.canBeDeleted(lastElement.i) && Writer.hasRightToWrite();
 					if(deletable){
 						this.eventHandler.push({
 							function:function(){
@@ -1035,7 +1037,7 @@ export class XMLXSDForm{
 		if(typeof defaultValue !== 'undefined'){
 			result+='value="'+ defaultValue +'" '
 		}
-		if(disabled){
+		if(disabled || !Writer.hasRightToWrite()){
 			result+='disabled '
 		}
 		result+='/>'
@@ -1051,7 +1053,7 @@ export class XMLXSDForm{
 	generateSelect(id, enumValues, defaultValue,disabled){
 		var result = ''
 		var that = this
-		if(disabled){
+		if(disabled || !Writer.hasRightToWrite()){
 			result+='<select id="'+ id +'" class="default-browser white style-input-xmlform" disabled>'
 		}else{
 			result+='<select id="'+ id +'" class="default-browser white style-input-xmlform">'
