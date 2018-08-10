@@ -152,10 +152,11 @@ export class configAnnotationManager{
       }else{
         var xmlDoc = result.data;
         var xmlParsed = $.parseXML(result.data)
-        var xmlExtractor = $(xmlParsed).find('extractors').children().each(function(i,elem){
+        var xmlExtractor
+        $(xmlParsed).find('extractors').children().each(function(i,elem){
           if ($(elem).prop('tagName') === idExtractor &&
              $(elem).attr('version') === version){
-               return elem;
+               xmlExtractor = elem;
           }
         });
         var exists = false;
@@ -190,7 +191,8 @@ export class configAnnotationManager{
               var xsdObj = new XSDObject(xsd);
               var xmlxsdObj = new XMLXSDObj(xmlExtractor, xsdObj);
               var visualizerFactory = new VisualizerFactory(xsdObj, xmlxsdObj, this.nbFrames, this.visualizerDivs )
-              var extractor = xmlExtractor.clone().empty()
+              var extractor = $.parseXML('<'+$(xmlExtractor).prop("tagName")+' name="'+$(xmlExtractor).attr('name')+'" version="'+$(xmlExtractor).attr('version')+'"/>')
+              extractor = $(extractor)[0].children[0];
               var visualizer = visualizerFactory.getVisualizer(extractor)
               visualizer.visualize()
               this.visualizers.push(visualizer);

@@ -4,6 +4,8 @@ import {Writer} from '../../components/class/Writer.js'
 
 import './omdbForm.html'
 
+var omdbapi_key = "ef18ae37";
+
 Template.omdbForm.onCreated(function(){
   Session.set('searchTitles',[]);
   Session.set('postSearchErrors',{});
@@ -36,11 +38,9 @@ Template.omdbForm.events({
         $('#searchLoading').addClass('active');
         var titles = [];
         Session.set('searchTitles',titles);
-        console.log("METEOR SETTINGS",Meteor.settings.public);
-        console.log("METEOR SETTINGS",Meteor.settings.public.omdbapi_key);
 
         //Do a search request on omdbapi with the title given by user
-        $.get('https://www.omdbapi.com/?apikey='+Meteor.settings.public.omdbapi_key+'&s='+encodeURI(movie)+'&r=xml',function(data){
+        $.get('https://www.omdbapi.com/?apikey='+omdbapi_key+'&s='+encodeURI(movie)+'&r=xml',function(data){
           var results = $(data).find('root').children('result[title]');
           if(results.length==0){
             errors.search = TAPi18n.__('errorSearch');

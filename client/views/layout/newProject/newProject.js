@@ -4,6 +4,8 @@ import {Projects} from '../../../../lib/collections/projects.js';
 import {Writer} from '../../components/class/Writer.js'
 import './newProject.html';
 
+var omdbapi_key = "ef18ae37";
+
 /*
 * On creation of the template, initialize session vars.
 * postSubmitErrors : errors in the form
@@ -143,7 +145,7 @@ Template.newproject.events({
               var filmTitle = $('#filmTitle').val();
               if(filmTitle!=null && filmTitle!=''){
                 var movie = filmTitle.split(',');
-                $.get('https://www.omdbapi.com/?apikey='+Meteor.settings.public.omdbapi_key+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
+                $.get('https://www.omdbapi.com/?apikey='+omdbapi_key+'&t='+encodeURI(movie[0])+'&y='+encodeURI(movie[1])+'&r=xml',function(data){
                   var result = $(data).find('root').find('movie');
                   result.removeAttr('poster')
                         .removeAttr('metascore')
