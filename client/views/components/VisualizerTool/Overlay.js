@@ -79,7 +79,10 @@ export class Overlay{
       .attr("class", "line")
 
       that = this
-      // svg.node().focus();
+
+      if(svg.node()){
+        svg.node().focus();
+      }
       this.firstDrawCircles = false;
     }
     else{
@@ -258,7 +261,9 @@ export class Overlay{
 
       that = this
 
-      // svg.node().focus();
+      if(svg.node()){
+        svg.node().focus();
+      }
       this.firstDrawRect = false;
     }
     else{

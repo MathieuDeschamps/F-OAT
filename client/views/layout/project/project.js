@@ -130,7 +130,7 @@ Template.project.onRendered(()=>{
         // add the extractor list and build the forms
         $(extractors).each(function(i,extractor){
 
-        extractorPath  = '/var/www/foat/extractor/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
+        var extractorPath  = '/var/www/foat/extractor/'+ extractor[0].tagName + '/' + $(extractor).attr('version') + '/descriptor.xsd'
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
             // console.log('path', extractorPath)

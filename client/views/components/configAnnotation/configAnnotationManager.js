@@ -168,7 +168,7 @@ export class configAnnotationManager{
           }
         });
         //Recuperer uniquement le xml du nouvel extracteur
-        extractorPath  = '/var/www/foat/extractor/'+ idExtractor + '/' + version + '/descriptor.xsd';
+        var extractorPath  = '/var/www/foat/extractor/'+ idExtractor + '/' + version + '/descriptor.xsd';
         Meteor.call("getXml", extractorPath, (xsdErr,resultExtractor)=>{
           if(xsdErr){
             toastr.error(xsdErr.reason);
