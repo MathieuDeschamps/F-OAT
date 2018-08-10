@@ -19,7 +19,14 @@ Template.dashboard.helpers({
       }
     }
     return false;
+  },
 
+  durationFormated(seconds){
+    seconds = Number(seconds);
+      var hours = Math.floor(seconds / 3600);
+      var minutes = Math.floor(seconds % 3600 / 60);
+      var seconds = Math.floor(seconds % 3600 % 60);
+      return ((hours > 0 ? hours + ":" + (minutes < 10 ? "0" : "") : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
   }
 });
 

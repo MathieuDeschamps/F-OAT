@@ -1,6 +1,8 @@
 {
   "dash_projects": "Your projects",
   "name": "Name",
+  "frame_rate": "FPS",
+  "duration": "Duration",
   "owner": "Owner",
   "url": "URL",
   "actions": "Actions",

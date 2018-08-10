@@ -1,3 +1,5 @@
+import {Projects} from '../../../../lib/collections/projects.js';
+
 export class Writer{
 
 
@@ -69,4 +71,24 @@ export class Writer{
     }
     return result;
   }
+
+
+  // function which check if the current user has the right write on the project
+  static hasRightToWrite(){
+    var idProject = Router.current().params._id
+    var project = Projects.findOne(idProject)
+    if(!project){
+      return false;
+    }
+    var username = Meteor.user().username
+    var participant = $(project.participants).filter(function(i,p){
+      return p.username == username && p.right == "Write"
+    })
+    if(project.owner == username || participant.length > 0){
+      return true
+    }else{
+      return false
+    }
+  }
+
 }

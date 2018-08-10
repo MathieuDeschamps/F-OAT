@@ -1,6 +1,6 @@
 import { PlayerCommand } from '../playerCommand/PlayerCommand.js'
 import { TimeLine} from '../VisualizerTool/TimeLine.js'
-
+import { Overlay } from '../VisualizerTool/Overlay.js'
 export class VideoControler {
 	constructor(vid,frameRate, duration){
 
@@ -73,6 +73,12 @@ export class VideoControler {
 	setVid(video){
 		if(typeof video !== 'undefined'){
 			this.vid = video;
+			// Resize the overlay elements because the format of the video has change 
+			this.attachedObject.forEach(function(object){
+				if(object instanceof Overlay){
+					object.resize();
+				}
+			});
 		}
 	}
 	// Frame-Time management
