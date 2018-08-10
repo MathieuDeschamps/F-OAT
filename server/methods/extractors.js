@@ -26,7 +26,21 @@ Meteor.methods({
     if(old){
       return -1;
     }
-    Extractors.insert({name :   extractor.name, ip: extractor.ip, owner: user.username});
+
+    // generate a id for the extractor with a letter at the beginning
+    var idExtractor = "";
+    var alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    do{
+      idExtractor += alphanum.charAt(Math.floor(Math.random() * alphanum.length - 11));
+      for (var i = 1; i < 17; i++){
+        idExtractor += alphanum.charAt(Math.floor(Math.random() * alphanum.length));
+      }
+
+    }while(Extractors.findOne(idExtractor));
+
+
+    var exist = true
+    Extractors.insert({_id : idExtractor, name :   extractor.name, ip: extractor.ip, owner: user.username});
     return 1;
   },
 
