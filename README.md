@@ -19,3 +19,8 @@ Filmic Online Analysis Tool
 - Extensible automatic analysis
 - Shared analysis
 - Manual annotations and correction
+
+
+## Documentation in French
+
+https://www.overleaf.com/read/vpgnqrvvfmtr
